@@ -414,7 +414,7 @@ class ConditionalResult(BaseModel):
     effect: str
 
 
-class CustomInteraction(discord.Interaction):
+class Inter(discord.Interaction):
     client: BotModel
 
 

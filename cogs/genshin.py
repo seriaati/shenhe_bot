@@ -172,7 +172,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         ),
     )
     async def slash_register(self, inter: discord.Interaction):
-        i: models.CustomInteraction = inter  # type: ignore
+        i: models.Inter = inter  # type: ignore
         await i.response.defer(ephemeral=True)
         await ui.ManageAccounts.return_accounts(i)
 
@@ -318,7 +318,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         ),
     )
     async def claim(self, inter: discord.Interaction):
-        i: models.CustomInteraction = inter  # type: ignore
+        i: models.Inter = inter  # type: ignore
         await ui.DailyReward.return_claim_reward(i, self.genshin_app)
 
     @checks.check_cookie()
@@ -348,7 +348,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         member: Optional[discord.User | discord.Member] = None,
         ephemeral: bool = True,
     ):
-        i: models.CustomInteraction = inter  # type: ignore
+        i: models.Inter = inter  # type: ignore
         member = member or i.user
         user_locale = await get_user_lang(i.user.id, self.bot.pool)
         locale = user_locale or i.locale
@@ -730,7 +730,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         name="events", description=_("View ongoing genshin events", hash=452)
     )
     async def events(self, inter: discord.Interaction):
-        i: models.CustomInteraction = inter  # type: ignore
+        i: models.Inter = inter  # type: ignore
         await ui.EventTypeChooser.return_events(i)
 
     @checks.check_account()
@@ -754,7 +754,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     @app_commands.rename(query=_("query", hash=509))
     async def search(self, inter: discord.Interaction, query: str):
-        i: models.CustomInteraction = inter  # type: ignore
+        i: models.Inter = inter  # type: ignore
 
         if not query.isdigit():
             raise exceptions.AutocompleteError
@@ -877,7 +877,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         inter: discord.Interaction,
         member: Optional[discord.User | discord.Member] = None,
     ):
-        i: models.CustomInteraction = inter  # type: ignore
+        i: models.Inter = inter  # type: ignore
         await i.response.defer()
         member = member or i.user
 
@@ -1037,7 +1037,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         ),
     )
     async def slash_lineup(self, inter: discord.Interaction):
-        i: models.CustomInteraction = inter  # type: ignore
+        i: models.Inter = inter  # type: ignore
         locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
 
         client = self.bot.genshin_client

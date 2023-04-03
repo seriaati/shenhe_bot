@@ -42,7 +42,7 @@ class Dropdown(ui.Select):
 
         self.locale = locale
 
-    async def callback(self, i: models.CustomInteraction):
+    async def callback(self, i: models.Inter):
         await i.response.defer()
         locale = self.locale
 

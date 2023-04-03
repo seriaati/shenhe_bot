@@ -5,7 +5,7 @@ from apps.db.utility import get_user_lang
 from apps.genshin import check_cookie_predicate
 from apps.text_map import text_map
 from dev.base_ui import BaseView
-from dev.models import CustomInteraction
+from dev.models import Inter
 
 
 class View(BaseView):
@@ -23,7 +23,7 @@ class MeTooButton(ui.Button):
         super().__init__(style=ButtonStyle.green, label=label)
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await i.response.defer()
         await check_cookie_predicate(i)
 

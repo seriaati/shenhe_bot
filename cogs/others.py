@@ -22,7 +22,7 @@ from apps.db.utility import create_user_settings
 from apps.draw.main_funcs import compress_image
 from apps.text_map import text_map, to_ambr_top
 from dev.exceptions import AutocompleteError
-from dev.models import BotModel, CustomInteraction, DefaultEmbed, ErrorEmbed
+from dev.models import BotModel, DefaultEmbed, ErrorEmbed, Inter
 from ui.others import Feedback, ManageAccounts, SettingsMenu
 from ui.others.settings import CustomImage
 
@@ -43,7 +43,7 @@ class OthersCog(commands.Cog, name="others"):
         description=_("View and change your user settings in Shenhe", hash=534),
     )
     async def settings(self, inter: discord.Interaction):
-        i: CustomInteraction = inter  # type: ignore
+        i: Inter = inter  # type: ignore
         await create_user_settings(i.user.id, self.bot.pool)
         await SettingsMenu.return_settings(i)
 
@@ -51,7 +51,7 @@ class OthersCog(commands.Cog, name="others"):
         name="accounts", description=_("Manage your accounts in Shenhe", hash=544)
     )
     async def accounts_command(self, inter: discord.Interaction):
-        i: CustomInteraction = inter  # type: ignore
+        i: Inter = inter  # type: ignore
         await i.response.defer(ephemeral=True)
         await ManageAccounts.return_accounts(i)
 
@@ -223,7 +223,7 @@ class OthersCog(commands.Cog, name="others"):
         image_name: str,
         character_id: str,
     ):
-        i: CustomInteraction = inter  # type: ignore
+        i: Inter = inter  # type: ignore
         await i.response.defer()
 
         locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale

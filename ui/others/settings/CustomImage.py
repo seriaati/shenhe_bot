@@ -9,9 +9,9 @@ import dev.config as config
 from ambr import AmbrTopAPI
 from apps.genshin import get_character_emoji
 from apps.text_map import text_map, to_ambr_top
-from dev.base_ui import BaseModal, BaseView, EnkaView
 from data.game.elements import get_element_emoji, get_element_list
-from dev.models import CustomInteraction, DefaultEmbed, ErrorEmbed
+from dev.base_ui import BaseModal, BaseView, EnkaView
+from dev.models import DefaultEmbed, ErrorEmbed, Inter
 from ui.genshin import EnkaDamageCalc
 from utility import divide_chunks
 
@@ -40,7 +40,7 @@ class ElementButton(ui.Button):
         self.element = element
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await element_button_callback(i, self.view, self.element)
 
 
@@ -49,7 +49,7 @@ class GoBack(ui.Button):
         super().__init__(emoji=asset.back_emoji)
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         self.view.clear_items()
         elements = get_element_list()
         for index, element in enumerate(elements):
@@ -65,11 +65,11 @@ class GoBackCharacter(ui.Button):
         self.element = element
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await element_button_callback(i, self.view, self.element)
 
 
-async def element_button_callback(i: CustomInteraction, view: View, element: str):
+async def element_button_callback(i: Inter, view: View, element: str):
     ambr = AmbrTopAPI(i.client.session, to_ambr_top(view.locale))
     characters = await ambr.get_character()
     if not isinstance(characters, List):
@@ -118,7 +118,7 @@ class AddImage(ui.Button):
         self.element = element
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await i.response.send_modal(
             AddImageModal(self.view.locale, self.character_id, self.view, self.element)
         )
@@ -145,7 +145,7 @@ class AddImageModal(BaseModal):
         self.view = view
         self.element = element
 
-    async def on_submit(self, i: CustomInteraction) -> None:
+    async def on_submit(self, i: Inter) -> None:
         check = await image.validate_image_url(self.url.value, i.client.session)
         if not check:
             return await i.response.send_message(
@@ -188,7 +188,7 @@ class RemoveImage(ui.Button):
         self.locale = locale
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         custom_image = await image.get_user_custom_image(
             i.user.id, self.character_id, i.client.pool
         )
@@ -222,7 +222,7 @@ class ImageSelect(ui.Select):
         self.element = element
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await image.change_user_custom_image(
             i.user.id, self.character_id, self.values[0], i.client.pool
         )
@@ -242,7 +242,7 @@ class CharacterSelect(ui.Select):
         self.element = element
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await return_custom_image_interaction(
             self.view, i, int(self.values[0].split("-")[0]), self.element
         )
@@ -250,7 +250,7 @@ class CharacterSelect(ui.Select):
 
 async def return_custom_image_interaction(
     view: Union[View, EnkaView],
-    i: CustomInteraction,
+    i: Inter,
     character_id: int,
     element: str,
 ):

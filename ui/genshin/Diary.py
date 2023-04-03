@@ -11,13 +11,7 @@ from apps.db import get_user_lang
 from apps.genshin import GenshinApp
 from apps.text_map import text_map
 from dev.base_ui import BaseView
-from dev.models import (
-    CustomInteraction,
-    DefaultEmbed,
-    DiaryLogsResult,
-    DiaryResult,
-    ErrorEmbed,
-)
+from dev.models import DefaultEmbed, DiaryLogsResult, DiaryResult, ErrorEmbed, Inter
 from utility import divide_chunks
 
 
@@ -45,7 +39,7 @@ class InfoButton(Button):
         super().__init__(emoji=asset.info_emoji)
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await i.response.send_message(
             embed=DefaultEmbed(description=text_map.get(398, self.view.locale)),
             ephemeral=True,
@@ -61,7 +55,7 @@ class MonthSelect(Select):
 
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         user_locale = await get_user_lang(i.user.id, i.client.pool)
         embed = DefaultEmbed()
         embed.set_author(
@@ -97,7 +91,7 @@ class Primo(Button):
         super().__init__(label=label, emoji=asset.primo_emoji)
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         if not self.label:
             raise AssertionError
 
@@ -109,16 +103,14 @@ class Mora(Button):
         super().__init__(label=label, emoji=asset.mora_emoji)
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         if not self.label:
             raise AssertionError
 
         await primo_mora_button_callback(i, self.view, False, self.label)
 
 
-async def primo_mora_button_callback(
-    i: CustomInteraction, view: View, is_primo: bool, label: str
-):
+async def primo_mora_button_callback(i: Inter, view: View, is_primo: bool, label: str):
     await i.response.defer(ephemeral=True)
     result = await view.genshin_app.get_diary_logs(
         view.member.id, i.user.id, is_primo, i.locale

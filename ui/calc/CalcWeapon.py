@@ -12,9 +12,9 @@ from apps.draw import main_funcs
 from apps.draw.utility import image_gen_transition
 from apps.genshin import get_weapon_emoji, level_to_ascension_phase
 from apps.text_map import text_map, to_ambr_top
-from dev.base_ui import BaseModal, BaseView
 from data.game.weapon_exp import get_weapon_exp_table
 from data.game.weapon_types import get_weapon_type_emoji
+from dev.base_ui import BaseModal, BaseView
 from dev.exceptions import InvalidAscensionInput, InvalidWeaponCalcInput
 from ui.calc.AddToTodo import AddButton
 from utility import divide_chunks
@@ -46,7 +46,7 @@ class WeaponTypeButton(ui.Button):
         self.weapon_type = weapon_type
         self.view: View
 
-    async def callback(self, i: models.CustomInteraction):
+    async def callback(self, i: models.Inter):
         ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.view.locale))
         weapons = await ambr.get_weapon()
         if not isinstance(weapons, typing.List):
@@ -86,7 +86,7 @@ class WeaponSelect(ui.Select):
         )
         self.view: View
 
-    async def callback(self, i: models.CustomInteraction) -> typing.Any:
+    async def callback(self, i: models.Inter) -> typing.Any:
         await i.response.send_modal(LevelModal(self.values[0], self.view.locale))
 
 
@@ -129,7 +129,7 @@ class LevelModal(BaseModal):
         self.weapon_id = weapon_id
         self.locale = locale
 
-    async def on_submit(self, i: models.CustomInteraction) -> None:
+    async def on_submit(self, i: models.Inter) -> None:
         await i.response.defer()
         locale = self.locale
 

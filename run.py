@@ -240,7 +240,7 @@ async def main() -> None:
         return await bot.process_commands(after)
 
     @bot.listen()
-    async def on_interaction(i: models.CustomInteraction):
+    async def on_interaction(i: models.Inter):
         if i.command is None:
             return
 

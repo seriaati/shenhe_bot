@@ -7,7 +7,7 @@ import dev.config as config
 from apps.db import get_user_lang
 from apps.text_map import text_map
 from dev.base_ui import BaseView
-from dev.models import CustomInteraction
+from dev.models import Inter
 
 
 class GeneralPaginatorView(BaseView):
@@ -99,7 +99,7 @@ class GeneralPaginatorView(BaseView):
 class GeneralPaginator:
     def __init__(
         self,
-        i: CustomInteraction,
+        i: Inter,
         embeds: List[discord.Embed],
         custom_children: Optional[List[Union[ui.Button, ui.Select]]] = None,
     ):

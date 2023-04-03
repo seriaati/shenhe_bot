@@ -29,7 +29,7 @@ class Select(discord.ui.Select):
         super().__init__(placeholder=placeholder, options=options)
         self.view: View
 
-    async def callback(self, i: models.CustomInteraction):
+    async def callback(self, i: models.Inter):
         embed = DefaultEmbed()
         embed.set_image(url="attachment://overview.jpeg")
         fp = await main_funcs.draw_wish_overview_card(

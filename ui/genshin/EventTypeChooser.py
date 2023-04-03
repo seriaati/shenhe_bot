@@ -13,7 +13,7 @@ from apps.db import get_user_lang
 from apps.hoyolab_rss_feeds.create_feed import create_feed
 from apps.text_map import text_map, to_genshin_py
 from dev.base_ui import BaseView
-from dev.models import CustomInteraction, DefaultEmbed
+from dev.models import DefaultEmbed, Inter
 from utility import parse_html
 from utility.paginator import GeneralPaginator, GeneralPaginatorView
 
@@ -31,7 +31,7 @@ class Hoyolab(ui.Button):
         super().__init__(label="HoYoLAB", emoji=asset.hoyolab_emoji)
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await i.response.defer()
 
         user_locale = await get_user_lang(i.user.id, i.client.pool)
@@ -94,7 +94,7 @@ class Genshin(ui.Button):
         )
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await i.response.defer()
         genshin_py_locale = to_genshin_py(self.view.locale)
         event_overview_api = f"https://sg-hk4e-api.hoyoverse.com/common/hk4e_global/announcement/api/getAnnList?game=hk4e&game_biz=hk4e_global&lang={genshin_py_locale}&announcement_version=1.21&auth_appid=announcement&bundle_id=hk4e_global&channel_id=1&level=8&platform=pc&region=os_asia&sdk_presentation_style=fullscreen&sdk_screen_transparent=true&uid=901211014"
@@ -160,7 +160,7 @@ class EventTypeSelect(ui.Select):
         self.embeds = embeds
         self.view: GeneralPaginatorView
 
-    async def callback(self, i: CustomInteraction) -> Any:
+    async def callback(self, i: Inter) -> Any:
         self.view.current_page = 0
         self.view.embeds = self.embeds[self.values[0]]
         await self.view.update_children(i)
@@ -172,11 +172,11 @@ class GOBack(ui.Button):
             label=text_map.get(282, locale), style=discord.ButtonStyle.green, row=3
         )
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await return_events(i)
 
 
-async def return_events(i: CustomInteraction):
+async def return_events(i: Inter):
     await i.response.defer()
     user_locale = await get_user_lang(i.user.id, i.client.pool)
     view = View(user_locale or i.locale)

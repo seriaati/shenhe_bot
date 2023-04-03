@@ -398,7 +398,7 @@ def convert_wl_to_mora(wl: int) -> int:
 
 
 async def get_wish_history_embed(
-    i: models.CustomInteraction,
+    i: models.Inter,
     query: str,
     member: Optional[discord.User | discord.Member] = None,
 ) -> List[discord.Embed]:
@@ -455,7 +455,7 @@ async def get_wish_history_embed(
 
 
 async def get_wish_info_embed(
-    i: models.CustomInteraction,
+    i: models.Inter,
     locale: str,
     wish_info: models.WishInfo,
     import_command: bool = False,

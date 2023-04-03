@@ -10,7 +10,7 @@ from apps.draw import main_funcs
 from apps.draw.utility import image_gen_transition
 from apps.text_map import text_map, to_ambr_top
 from dev.base_ui import BaseView
-from dev.models import AbyssHalf, CustomInteraction, DefaultEmbed, DrawInput
+from dev.models import AbyssHalf, DefaultEmbed, DrawInput, Inter
 from utility import divide_chunks
 
 
@@ -55,7 +55,7 @@ class ChamberSelect(ui.Select):
         )
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await select_callback(i, self.view, self.values[0])
 
 
@@ -64,7 +64,7 @@ class InstantButton(ui.Button):
         super().__init__(label=label, style=discord.ButtonStyle.primary, row=2)
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         if self.label is None:
             raise AssertionError
         await select_callback(i, self.view, self.label)
@@ -75,11 +75,11 @@ class BuffButton(ui.Button):
         super().__init__(label=label, style=discord.ButtonStyle.green, row=2)
         self.embed = embed
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await i.response.edit_message(embed=self.embed, attachments=[])
 
 
-async def select_callback(i: CustomInteraction, view: View, value: str):
+async def select_callback(i: Inter, view: View, value: str):
     await image_gen_transition(i, view, view.locale)
     ambr = AmbrTopAPI(i.client.session, to_ambr_top(view.locale))  # type: ignore
     halfs = view.halfs[value]

@@ -52,7 +52,7 @@ class LeaderboardSelect(ui.Select):
         super().__init__(placeholder=placeholder, options=options)
         self.view: View
 
-    async def callback(self, i: models.CustomInteraction):
+    async def callback(self, i: models.Inter):
         self.view.type = self.values[0]
         await select_callback(self.view, i, self.values[0])
 
@@ -80,12 +80,12 @@ class AbyssSeasonSelect(ui.Select):
         )
         self.view: View
 
-    async def callback(self, i: models.CustomInteraction):
+    async def callback(self, i: models.Inter):
         self.view.season = int(self.values[0])
         await select_callback(self.view, i, self.view.type)
 
 
-async def select_callback(view: View, i: models.CustomInteraction, leaderboard: str):
+async def select_callback(view: View, i: models.Inter, leaderboard: str):
     view.type = leaderboard
     pool = i.client.pool
     session = i.client.session
@@ -404,7 +404,7 @@ class Global(ui.Button):
         )
         self.view: View
 
-    async def callback(self, i: models.CustomInteraction):
+    async def callback(self, i: models.Inter):
         self.view.area = "global"
         await select_callback(self.view, i, self.view.type)
 
@@ -414,7 +414,7 @@ class Server(ui.Button):
         super().__init__(label=label, emoji="🏠", custom_id="server", row=4)
         self.view: View
 
-    async def callback(self, i: models.CustomInteraction):
+    async def callback(self, i: models.Inter):
         self.view.area = "server"
         await select_callback(self.view, i, self.view.type)
 

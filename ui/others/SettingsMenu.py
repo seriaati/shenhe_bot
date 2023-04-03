@@ -7,9 +7,9 @@ import dev.asset as asset
 import dev.config as config
 from apps.db import get_user_auto_redeem, get_user_lang, get_user_theme
 from apps.text_map import text_map
-from dev.base_ui import BaseView, GoBackButton
 from data.others.language_options import lang_options
-from dev.models import CustomInteraction, DefaultEmbed, OriginalInfo
+from dev.base_ui import BaseView, GoBackButton
+from dev.models import DefaultEmbed, Inter, OriginalInfo
 from ui.others.settings import CustomImage, Notif
 
 
@@ -31,7 +31,7 @@ class Appearance(ui.Button):
         super().__init__(emoji=asset.monitor_emoji, label=label)
         self.view: View
 
-    async def callback(self, i: CustomInteraction) -> Any:
+    async def callback(self, i: Inter) -> Any:
         locale = self.view.locale
 
         dark_mode = await get_user_theme(i.user.id, i.client.pool)  # type: ignore
@@ -53,7 +53,7 @@ class ModeButton(ui.Button):
         self.toggle = toggle
         self.view: View
 
-    async def callback(self, i: CustomInteraction) -> Any:
+    async def callback(self, i: Inter) -> Any:
         await i.client.pool.execute(
             "UPDATE user_settings SET dark_mode = $1 WHERE user_id = $2",
             self.toggle,
@@ -73,7 +73,7 @@ class Langauge(ui.Button):
         super().__init__(emoji=asset.earth_emoji, label=label)
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         locale = await get_user_lang(i.user.id, i.client.pool) or i.locale  # type: ignore
 
         embed = get_language_embed(i.user.display_avatar.url, locale)
@@ -85,7 +85,7 @@ class LanguageGoBack(ui.Button):
     def __init__(self):
         super().__init__(emoji=asset.back_emoji, row=2)
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await return_settings(i, edit=True)
 
 
@@ -105,7 +105,7 @@ class LangSelect(ui.Select):
         super().__init__(options=options, placeholder=text_map.get(32, locale), row=1)
         self.locale = locale
 
-    async def callback(self, i: CustomInteraction) -> Any:
+    async def callback(self, i: Inter) -> Any:
         self.view: View
 
         converted_locale = self.values[0] if self.values[0] != "none" else None
@@ -129,7 +129,7 @@ class CustomProfileImage(ui.Button):
         self.locale = locale
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         view = CustomImage.View(self.locale)
         view.add_item(GoBackButton(self.view.original_info))
 
@@ -146,7 +146,7 @@ class Notification(ui.Button):
         self.locale = locale
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await Notif.return_view(i, self.locale, OriginalInfo(view=self.view, embed=i.message.embeds[0], children=self.view.children.copy()))  # type: ignore
 
 
@@ -158,7 +158,7 @@ class AutoRedeem(ui.Button):
         self.locale = locale
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         auto_redeem = await get_user_auto_redeem(i.user.id, i.client.pool)  # type: ignore
 
         embed = get_redeem_embed(i.user.display_avatar.url, self.locale)
@@ -179,7 +179,7 @@ class RedeemButton(ui.Button):
         self.locale = locale
         self.view: View
 
-    async def callback(self, i: CustomInteraction) -> Any:
+    async def callback(self, i: Inter) -> Any:
         await i.client.pool.execute(
             "UPDATE user_settings SET auto_redeem = $1 WHERE user_id = $2",
             self.toggle,
@@ -191,7 +191,7 @@ class RedeemButton(ui.Button):
         await i.response.edit_message(embed=embed, view=view)
 
 
-async def return_settings(i: CustomInteraction, edit: bool = False):
+async def return_settings(i: Inter, edit: bool = False):
     locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
 
     embed = DefaultEmbed(

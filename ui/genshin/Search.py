@@ -10,10 +10,10 @@ from ambr import AmbrTopAPI
 from apps.draw import main_funcs
 from apps.genshin import get_fight_prop
 from apps.text_map import get_weekday_name, text_map
-from dev.base_ui import BaseView
 from data.game.elements import get_element_emoji
 from data.game.fight_prop import percentage_fight_props
-from dev.models import CustomInteraction, DefaultEmbed, DrawInput
+from dev.base_ui import BaseView
+from dev.models import DefaultEmbed, DrawInput, Inter
 from utility import divide_chunks, get_weekday_int_with_name
 
 
@@ -42,7 +42,7 @@ class QuickNavigation(ui.Select):
         super().__init__(placeholder=placeholder, options=options)
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await i.response.defer()
         if self.values[0] == "1":
             fp = await main_funcs.draw_material_card(
@@ -87,13 +87,13 @@ class BookVolumeNav(ui.Select):
         super().__init__(placeholder=placeholder, options=options)
         self.view: BookVolView
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await i.response.edit_message(embed=self.view.embeds[self.values[0]])
 
 
 async def parse_character_wiki(
     character: ambr_models.CharacterDetail,
-    i: CustomInteraction,
+    i: Inter,
     locale: discord.Locale | str,
     client: AmbrTopAPI,
     dark_mode: bool,
@@ -211,7 +211,7 @@ def format_stat(curve: float, initial_value: float, percentage: bool = False) ->
 
 async def parse_weapon_wiki(
     weapon: ambr_models.WeaponDetail,
-    i: CustomInteraction,
+    i: Inter,
     locale: discord.Locale | str,
     client: AmbrTopAPI,
     dark_mode: bool,
@@ -291,7 +291,7 @@ async def parse_weapon_wiki(
 
 async def parse_material_wiki(
     material: ambr_models.MaterialDetail,
-    i: CustomInteraction,
+    i: Inter,
     locale: discord.Locale | str,
     client: AmbrTopAPI,
     dark_mode: bool,
@@ -367,7 +367,7 @@ async def parse_material_wiki(
 
 async def parse_artifact_wiki(
     artifact: ambr_models.ArtifactDetail,
-    i: CustomInteraction,
+    i: Inter,
     locale: discord.Locale | str,
 ):
     rarity_str = ""
@@ -390,7 +390,7 @@ async def parse_artifact_wiki(
 
 async def parse_monster_wiki(
     monster: ambr_models.MonsterDetail,
-    i: CustomInteraction,
+    i: Inter,
     locale: discord.Locale | str,
     client: AmbrTopAPI,
     dark_mode: bool,
@@ -425,7 +425,7 @@ async def parse_monster_wiki(
 
 async def parse_food_wiki(
     food: ambr_models.FoodDetail,
-    i: CustomInteraction,
+    i: Inter,
     locale: discord.Locale | str,
     client: AmbrTopAPI,
     dark_mode: bool,
@@ -472,7 +472,7 @@ async def parse_food_wiki(
 
 async def parse_furniture_wiki(
     furniture: ambr_models.FurnitureDetail,
-    i: CustomInteraction,
+    i: Inter,
     locale: discord.Locale | str,
     client: AmbrTopAPI,
     dark_mode: bool,
@@ -513,7 +513,7 @@ async def parse_furniture_wiki(
 
 async def parse_namecard_wiki(
     namecard: ambr_models.NameCardDetail,
-    i: CustomInteraction,
+    i: Inter,
     locale: discord.Locale | str,
 ):
     rarity_str = ""
@@ -528,7 +528,7 @@ async def parse_namecard_wiki(
 
 async def parse_book_wiki(
     book: ambr_models.BookDetail,
-    i: CustomInteraction,
+    i: Inter,
     locale: discord.Locale | str,
     client: AmbrTopAPI,
 ):

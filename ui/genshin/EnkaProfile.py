@@ -50,7 +50,7 @@ class InfoButton(ui.Button):
         )
         self.view: View
 
-    async def callback(self, i: models.CustomInteraction):
+    async def callback(self, i: models.Inter):
         await i.response.send_message(
             embed=models.DefaultEmbed(description=text_map.get(399, self.view.locale)),
             ephemeral=True,
@@ -69,7 +69,7 @@ class OverviewButton(ui.Button):
         )
         self.view: View
 
-    async def callback(self, i: models.CustomInteraction):
+    async def callback(self, i: models.Inter):
         set_custom_image = utils.get(self.view.children, custom_id="set_custom_image")
         calculate = utils.get(self.view.children, custom_id="calculate")
         show_artifacts = utils.get(self.view.children, custom_id="show_artifacts")
@@ -105,7 +105,7 @@ class SetCustomImage(ui.Button):
         )
         self.view: EnkaView
 
-    async def callback(self, i: models.CustomInteraction) -> Any:
+    async def callback(self, i: models.Inter) -> Any:
         character = utils.get(self.view.data.characters, id=int(self.view.character_id))
         if character is None:
             raise AssertionError
@@ -127,7 +127,7 @@ class BoxButton(ui.Button):
         self.options = options
         self.view: EnkaView
 
-    async def callback(self, i: models.CustomInteraction):
+    async def callback(self, i: models.Inter):
         self.view.clear_items()
         count = 1
         for option in self.options:
@@ -149,7 +149,7 @@ class PageSelect(ui.Select):
         super().__init__(placeholder=plceholder, options=character_options)
         self.view: EnkaView
 
-    async def callback(self, i: models.CustomInteraction) -> Any:
+    async def callback(self, i: models.Inter) -> Any:
         self.view.character_id = self.values[0]
         await EnkaDamageCalc.go_back_callback(i, self.view)
 
@@ -166,7 +166,7 @@ class CalculateDamageButton(ui.Button):
         )
         self.view: EnkaView
 
-    async def callback(self, i: models.CustomInteraction) -> Any:
+    async def callback(self, i: models.Inter) -> Any:
         now = get_dt_now()
         if now.month == 4 and now.day == 1:
             raise FeatureDisabled
@@ -189,7 +189,7 @@ class ShowArtifacts(ui.Button):
         )
         self.view: EnkaView
 
-    async def callback(self, i: models.CustomInteraction) -> Any:
+    async def callback(self, i: models.Inter) -> Any:
         character = utils.get(self.view.data.characters, id=int(self.view.character_id))
         if not character:
             raise AssertionError
@@ -216,7 +216,7 @@ class CardSettings(ui.Button):
         super().__init__(emoji=asset.settings_emoji, row=1, disabled=True)
         self.view: EnkaView
 
-    async def callback(self, i: models.CustomInteraction) -> Any:
+    async def callback(self, i: models.Inter) -> Any:
         view = ProfileSettings.View(self.view.locale, self.view)
         view.author = i.user
         await i.response.edit_message(

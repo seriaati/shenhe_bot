@@ -10,12 +10,12 @@ import dev.asset as asset
 import dev.exceptions as exceptions
 from apps.db import get_user_lang
 from apps.text_map import text_map
-from dev.models import CustomInteraction, ErrorEmbed, OriginalInfo
+from dev.models import ErrorEmbed, Inter, OriginalInfo
 from utility import log
 
 
 async def global_error_handler(
-    i: CustomInteraction,
+    i: Inter,
     e: typing.Union[Exception, discord.app_commands.AppCommandError],
 ):
     locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
@@ -155,7 +155,7 @@ class BaseView(discord.ui.View):
         self.author: typing.Optional[discord.Member | discord.User] = None
         self.original_info: typing.Optional[OriginalInfo] = None
 
-    async def interaction_check(self, i: CustomInteraction) -> bool:
+    async def interaction_check(self, i: Inter) -> bool:
         if self.author is None:
             return True
 
@@ -170,7 +170,7 @@ class BaseView(discord.ui.View):
             )
         return self.author.id == i.user.id
 
-    async def on_error(self, i: CustomInteraction, e: Exception, item) -> None:
+    async def on_error(self, i: Inter, e: Exception, item) -> None:
         await global_error_handler(i, e)
 
     async def on_timeout(self) -> None:
@@ -186,7 +186,7 @@ class BaseView(discord.ui.View):
 
 
 class BaseModal(discord.ui.Modal):
-    async def on_error(self, i: CustomInteraction, e: Exception) -> None:
+    async def on_error(self, i: Inter, e: Exception) -> None:
         await global_error_handler(i, e)
 
 
@@ -198,7 +198,7 @@ class GoBackButton(discord.ui.Button):
         self.original_children = original_info.children
         self.original_attachments = original_info.attachments
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await i.response.defer()
 
         self.original_view.clear_items()

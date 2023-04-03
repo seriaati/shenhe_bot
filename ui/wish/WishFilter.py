@@ -6,7 +6,7 @@ from discord.ui import Select
 from apps.db import get_user_lang
 from apps.genshin import get_wish_history_embed
 from apps.text_map import text_map
-from dev.models import CustomInteraction
+from dev.models import Inter
 from utility.wish_paginator import WishPaginatorView
 
 
@@ -15,7 +15,7 @@ class SelectBanner(Select):
         super().__init__(placeholder=placeholder, options=options, row=3)
         self.view: WishPaginatorView
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await filter_callback(self, i, self.view.banner_filters)
 
 
@@ -28,12 +28,12 @@ class SelectRarity(Select):
         self.select_banner = select_banner
         self.view: WishPaginatorView
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await filter_callback(self, i, self.view.rarity_filters)
 
 
 async def filter_callback(
-    self_var: SelectBanner | SelectRarity, i: CustomInteraction, filter_list: List
+    self_var: SelectBanner | SelectRarity, i: Inter, filter_list: List
 ):
     user_locale = await get_user_lang(i.user.id, i.client.pool)
     if self_var.values[0] not in filter_list:

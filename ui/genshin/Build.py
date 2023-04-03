@@ -12,9 +12,9 @@ from apps.draw import main_funcs
 from apps.draw.utility import image_gen_transition
 from apps.genshin import get_character_builds, get_character_emoji
 from apps.text_map import cond_text, text_map, to_genshin_py
-from dev.base_ui import BaseView
 from data.game.elements import get_element_emoji, get_element_list
-from dev.models import CustomInteraction, DefaultEmbed, DrawInput
+from dev.base_ui import BaseView
+from dev.models import DefaultEmbed, DrawInput, Inter
 from utility.utils import disable_view_items
 
 
@@ -35,7 +35,7 @@ class ElementButton(ui.Button):
         self.element = element
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await element_button_callback(i, self.element, self.view)
 
 
@@ -44,7 +44,7 @@ class ShowThoughts(ui.Button):
         super().__init__(emoji="💭", row=1)
         self.embed = embed
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await i.response.edit_message(embed=self.embed)
 
 
@@ -61,7 +61,7 @@ class CharacterSelect(ui.Select):
         self.element = element
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
         builds = get_character_builds(self.values[0], self.builds, locale)
         embeds = []
@@ -112,7 +112,7 @@ class BuildSelect(ui.Select):
         super().__init__(options=options, placeholder=placeholder, row=0)
         self.build_embeds = build_embeds
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await i.response.edit_message(embed=self.build_embeds[int(self.values[0])])
 
 
@@ -122,7 +122,7 @@ class TeamButton(ui.Button):
         self.character_id = character_id
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
         dark_mode = await get_user_theme(i.user.id, i.client.pool)
 
@@ -202,7 +202,7 @@ class TeamSelect(ui.Select):
         self.character_id = character_id
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await image_gen_transition(i, self.view, self.locale)
 
         embeds, attachments = await get_embeds_for_lineup(
@@ -222,7 +222,7 @@ class TeamSelect(ui.Select):
 
 
 async def get_embeds_for_lineup(
-    i: CustomInteraction,
+    i: Inter,
     locale: discord.Locale | str,
     dark_mode: bool,
     lineup: genshin.models.LineupPreview,
@@ -263,7 +263,7 @@ class GoBackOriginal(ui.Button):
         self.embed = embed
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         self.view.clear_items()
         for item in self.items:
             self.view.add_item(item)
@@ -277,7 +277,7 @@ class GoBack(ui.Button):
         self.element = element
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         self.view.clear_items()
         if self.place_to_go_back == "element":
             elements = get_element_list()
@@ -290,7 +290,7 @@ class GoBack(ui.Button):
             await element_button_callback(i, self.element, self.view)
 
 
-async def element_button_callback(i: CustomInteraction, element: str, view: View):
+async def element_button_callback(i: Inter, element: str, view: View):
     with open(f"data/builds/{element.lower()}.yaml", "r", encoding="utf-8") as f:
         builds: typing.Dict[str, typing.Any] = yaml.full_load(f)  # type: ignore
     user_locale = await get_user_lang(i.user.id, i.client.pool)

@@ -4,7 +4,7 @@ from discord import ButtonStyle, Locale
 from discord.ui import Button
 
 from apps.text_map import text_map
-from dev.models import CustomInteraction, DefaultEmbed
+from dev.models import DefaultEmbed, Inter
 
 
 class AddButton(Button):
@@ -19,7 +19,7 @@ class AddButton(Button):
         self.materials = materials
         self.locale = locale
 
-    async def callback(self, i: CustomInteraction) -> Any:
+    async def callback(self, i: Inter) -> Any:
         for item_id, item_count in self.materials.items():
             await i.client.pool.execute(
                 "INSERT INTO todo (user_id, item, max) VALUES ($1, $2, $3) ON CONFLICT (user_id, item) DO UPDATE SET max = todo.max + $3",

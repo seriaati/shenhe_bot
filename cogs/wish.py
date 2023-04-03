@@ -38,7 +38,7 @@ class WishCog(commands.GroupCog, name="wish"):
         name="import", description=_("import your genshin wish history", hash=474)
     )
     async def wish_import(self, inter: discord.Interaction):
-        i: models.CustomInteraction = inter  # type: ignore
+        i: models.Inter = inter  # type: ignore
         await wish_import_command(i)
 
     @check_account()
@@ -52,7 +52,7 @@ class WishCog(commands.GroupCog, name="wish"):
     async def wish_file_import(
         self, inter: discord.Interaction, file: discord.Attachment
     ):
-        i: models.CustomInteraction = inter  # type: ignore
+        i: models.Inter = inter  # type: ignore
         locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
         try:
             wish_history: List[Dict[str, Any]] = ast.literal_eval(
@@ -130,7 +130,7 @@ class WishCog(commands.GroupCog, name="wish"):
     async def wish_history(
         self, inter: discord.Interaction, member: Optional[discord.User] = None
     ):
-        i: models.CustomInteraction = inter  # type: ignore
+        i: models.Inter = inter  # type: ignore
         user_locale = await get_user_lang(i.user.id, self.bot.pool)
         embeds = await get_wish_history_embed(i, "", member)
         options = [
