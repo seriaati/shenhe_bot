@@ -7,7 +7,7 @@ import discord
 from discord import ui
 
 import dev.asset as asset
-import config
+import dev.config as config
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.genshin import get_farm_data, get_uid, get_uid_tz

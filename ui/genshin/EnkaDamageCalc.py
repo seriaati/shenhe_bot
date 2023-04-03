@@ -8,7 +8,7 @@ from discord import ui, utils
 from pyppeteer import browser
 
 import dev.asset as asset
-import config
+import dev.config as config
 import yelan.damage_calculator as damage_calc
 from apps.db import get_profile_ver, get_user_theme
 from apps.db.custom_image import get_user_custom_image

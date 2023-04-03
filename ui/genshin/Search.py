@@ -5,7 +5,7 @@ from discord import ui
 
 import ambr.models as ambr_models
 import dev.asset as asset
-import config
+import dev.config as config
 from ambr import AmbrTopAPI
 from apps.draw import main_funcs
 from apps.genshin import get_fight_prop

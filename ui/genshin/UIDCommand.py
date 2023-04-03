@@ -1,7 +1,7 @@
 from discord import ButtonStyle, Interaction, Locale
 from discord.ui import Button
 
-import config
+import dev.config as config
 from apps.text_map import text_map
 from dev.base_ui import BaseView
 

@@ -6,7 +6,7 @@ from discord.ui import Button, Select
 from matplotlib import pyplot as plt
 
 import dev.asset as asset
-import config
+import dev.config as config
 from apps.db import get_user_lang
 from apps.genshin import GenshinApp
 from apps.text_map import text_map

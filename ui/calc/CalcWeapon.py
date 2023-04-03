@@ -4,7 +4,7 @@ import discord
 from discord import ui
 
 import dev.asset as asset
-import config
+import dev.config as config
 import dev.models as models
 from ambr import AmbrTopAPI, Material, WeaponDetail
 from apps.db import get_user_theme

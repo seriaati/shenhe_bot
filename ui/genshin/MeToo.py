@@ -1,6 +1,6 @@
 from discord import ButtonStyle, Locale, ui
 
-import config
+import dev.config as config
 from apps.db.utility import get_user_lang
 from apps.genshin import check_cookie_predicate
 from apps.text_map import text_map

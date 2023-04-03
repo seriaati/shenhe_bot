@@ -3,7 +3,7 @@ from typing import List
 import discord
 from discord import ui
 
-import config
+import dev.config as config
 from apps.db import get_user_lang
 from apps.text_map import text_map
 from dev.base_ui import BaseView

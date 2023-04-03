@@ -5,7 +5,7 @@ import enkanetwork as enka
 from discord import ui, utils
 
 import dev.asset as asset
-import config
+import dev.config as config
 import dev.models as models
 from apps.db import get_user_theme
 from apps.draw.main_funcs import draw_artifact_card

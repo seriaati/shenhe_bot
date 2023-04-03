@@ -5,7 +5,7 @@ from discord import Interaction, Locale, SelectOption
 from discord.ui import Button, Select
 
 import dev.asset as asset
-import config
+import dev.config as config
 from ambr import AmbrTopAPI
 from apps.genshin import get_character_emoji
 from apps.text_map import text_map, to_ambr_top

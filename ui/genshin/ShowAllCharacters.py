@@ -12,7 +12,7 @@ from discord import ui
 
 import ambr
 import dev.asset as asset
-import config
+import dev.config as config
 import data.game.elements as game_elements
 from apps.db import get_user_theme
 from apps.db.json import read_json

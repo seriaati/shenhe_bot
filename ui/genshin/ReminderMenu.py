@@ -3,7 +3,7 @@ import discord
 from discord import ui
 
 import dev.asset as asset
-import config
+import dev.config as config
 from ambr import AmbrTopAPI
 from apps.genshin import (
     check_cookie_predicate,

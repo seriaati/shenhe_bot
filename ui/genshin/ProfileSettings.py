@@ -3,7 +3,7 @@ import typing
 import discord
 from discord import ui
 
-import config
+import dev.config as config
 from apps.db.utility import create_user_settings, get_profile_ver
 from apps.genshin import edit_enka_cache, get_uid
 from apps.text_map import text_map

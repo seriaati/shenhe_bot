@@ -2,7 +2,7 @@ from typing import List
 
 import discord
 
-import config
+import dev.config as config
 import dev.models as models
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs

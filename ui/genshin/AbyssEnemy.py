@@ -3,7 +3,7 @@ from typing import Dict, List
 import discord
 from discord import ui
 
-import config
+import dev.config as config
 from ambr import AmbrTopAPI, Material, Monster
 from apps.db import get_user_theme
 from apps.draw import main_funcs

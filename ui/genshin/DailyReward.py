@@ -6,7 +6,7 @@ from discord import ButtonStyle, Locale
 from discord.errors import InteractionResponded
 from discord.ui import Button
 
-import config
+import dev.config as config
 from apps.db import get_user_lang
 from apps.genshin import GenshinApp
 from apps.text_map import text_map

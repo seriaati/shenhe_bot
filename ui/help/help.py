@@ -5,7 +5,7 @@ import aiofiles
 import discord
 from discord import ui, utils
 
-import config
+import dev.config as config
 import dev.models as models
 from apps.text_map import text_map
 from dev.base_ui import BaseView

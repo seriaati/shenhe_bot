@@ -3,7 +3,7 @@ from typing import Any
 import discord
 from discord import ui
 
-import config
+import dev.config as config
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.draw.main_funcs import draw_abyss_one_page

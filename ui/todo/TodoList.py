@@ -5,7 +5,7 @@ from discord import ButtonStyle, Locale, SelectOption
 from discord.ui import Button, Select, TextInput
 
 import dev.asset as asset
-import config
+import dev.config as config
 import dev.models as models
 from ambr import AmbrTopAPI, Material
 from apps.db import get_user_lang, get_user_theme

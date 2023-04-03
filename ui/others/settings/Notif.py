@@ -2,7 +2,7 @@ import discord
 from discord import ui
 
 import dev.asset as asset
-import config
+import dev.config as config
 from apps.db import get_user_notif
 from apps.text_map import text_map
 from dev.base_ui import BaseView, GoBackButton

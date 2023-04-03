@@ -6,7 +6,7 @@ from genshin import Client
 from genshin.models import LineupPreview, LineupScenario
 
 import dev.asset as asset
-import config
+import dev.config as config
 from ambr import Character
 from apps.db import get_user_theme
 from apps.draw import main_funcs
