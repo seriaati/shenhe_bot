@@ -1,9 +1,11 @@
-from discord import ButtonStyle, Interaction, Locale, ui
+from discord import ButtonStyle, Locale, ui
 
 import config
+from apps.db.utility import get_user_lang
 from apps.genshin import check_cookie_predicate
 from apps.text_map import text_map
 from base_ui import BaseView
+from models import CustomInteraction
 
 
 class View(BaseView):
@@ -21,11 +23,16 @@ class MeTooButton(ui.Button):
         super().__init__(style=ButtonStyle.green, label=label)
         self.view: View
 
-    async def callback(self, i: Interaction):
+    async def callback(self, i: CustomInteraction):
         await i.response.defer()
         await check_cookie_predicate(i)
 
         result = await self.view.genshin_app.redeem_code(
             i.user.id, i.user.id, self.view.code, i.locale
         )
-        await i.followup.send(embed=result.result, view=self.view)
+        if not result.success:
+            view = None
+        else:
+            locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
+            view = View(self.view.code, self.view.genshin_app, locale)
+        await i.edit_original_response(embed=result.result, view=view)
