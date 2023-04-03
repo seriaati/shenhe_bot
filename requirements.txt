@@ -19,7 +19,7 @@ matplotlib==3.7.1
 Pillow==9.4.0
 psutil==5.9.4
 pydantic==1.10.7
-pygit2==1.11.1
+pygit2==1.12.0
 pyppeteer==1.0.2
 python-dotenv==1.0.0
 python_dateutil==2.8.2
