@@ -2,7 +2,7 @@ import asyncpg
 import discord
 from discord import ui
 
-import asset
+import dev.asset as asset
 import config
 from ambr import AmbrTopAPI
 from apps.genshin import (

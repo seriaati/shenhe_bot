@@ -5,7 +5,7 @@ import genshin
 import yaml
 from discord import ui
 
-import asset
+import dev.asset as asset
 import config
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs

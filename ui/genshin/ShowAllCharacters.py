@@ -11,7 +11,7 @@ from dateutil import parser
 from discord import ui
 
 import ambr
-import asset
+import dev.asset as asset
 import config
 import data.game.elements as game_elements
 from apps.db import get_user_theme

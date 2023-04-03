@@ -3,7 +3,7 @@ from typing import Any
 import discord
 from discord import ui
 
-import asset
+import dev.asset as asset
 import config
 from apps.db import get_user_auto_redeem, get_user_lang, get_user_theme
 from apps.text_map import text_map

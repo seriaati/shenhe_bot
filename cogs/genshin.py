@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 from enkanetwork import Assets
 
 import apps.genshin.checks as checks
-import asset
+import dev.asset as asset
 import dev.exceptions as exceptions
 import dev.models as models
 import ui

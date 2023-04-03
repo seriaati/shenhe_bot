@@ -12,7 +12,7 @@ from discord.ext import commands, tasks
 
 import ambr
 import apps.genshin as genshin_app
-import asset
+import dev.asset as asset
 import dev.models as models
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs

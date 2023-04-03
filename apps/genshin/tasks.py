@@ -8,7 +8,7 @@ import aiohttp
 import asyncpg
 import genshin
 
-import asset
+import dev.asset as asset
 import dev.models as models
 from apps.db import get_user_notif
 from apps.text_map import AMBR_LANGS, get_element_name, text_map

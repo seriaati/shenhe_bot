@@ -5,7 +5,7 @@ from discord import File, Locale, Member, User, utils
 from discord.ui import Button, Select
 from matplotlib import pyplot as plt
 
-import asset
+import dev.asset as asset
 import config
 from apps.db import get_user_lang
 from apps.genshin import GenshinApp

@@ -3,7 +3,7 @@ import typing
 import discord
 from discord import ui
 
-import asset
+import dev.asset as asset
 import config
 import dev.models as models
 from ambr import AmbrTopAPI, Material, WeaponDetail

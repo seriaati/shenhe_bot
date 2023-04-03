@@ -7,7 +7,7 @@ from dateutil import parser
 from discord import ui
 from discord.utils import format_dt
 
-import asset
+import dev.asset as asset
 import config
 from apps.db import get_user_lang
 from apps.hoyolab_rss_feeds.create_feed import create_feed

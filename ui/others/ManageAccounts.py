@@ -7,7 +7,7 @@ from discord import ui
 from logingateway import HuTaoLoginAPI
 from logingateway.exception import UserTokenNotFound
 
-import asset
+import dev.asset as asset
 import config
 from apps.db import get_user_lang
 from apps.genshin import get_account_select_options, get_uid_region_hash

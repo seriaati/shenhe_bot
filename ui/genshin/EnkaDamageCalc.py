@@ -7,7 +7,7 @@ import PIL
 from discord import ui, utils
 from pyppeteer import browser
 
-import asset
+import dev.asset as asset
 import config
 import yelan.damage_calculator as damage_calc
 from apps.db import get_profile_ver, get_user_theme

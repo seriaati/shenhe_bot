@@ -4,7 +4,7 @@ import asyncpg
 from discord import Interaction, Locale, SelectOption
 from discord.ui import Button, Select
 
-import asset
+import dev.asset as asset
 import config
 from ambr import AmbrTopAPI
 from apps.genshin import get_character_emoji

@@ -5,7 +5,7 @@ from discord.ui import Button, Select
 from genshin import Client
 from genshin.models import LineupPreview, LineupScenario
 
-import asset
+import dev.asset as asset
 import config
 from ambr import Character
 from apps.db import get_user_theme

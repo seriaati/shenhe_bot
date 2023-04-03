@@ -15,7 +15,7 @@ from discord.ext import commands
 from discord.ui import Button, View
 from dotenv import load_dotenv
 
-import asset
+import dev.asset as asset
 from ambr import AmbrTopAPI, Character
 from apps.db import custom_image, get_user_lang
 from apps.db.utility import create_user_settings

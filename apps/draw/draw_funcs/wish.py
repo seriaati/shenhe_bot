@@ -3,7 +3,7 @@ import io
 import discord
 from PIL import Image, ImageDraw
 
-import asset
+import dev.asset as asset
 from apps.draw.utility import (
     circular_crop,
     dynamic_font_size,

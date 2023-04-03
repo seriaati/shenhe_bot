@@ -6,7 +6,7 @@ import enkanetwork
 import genshin
 import sentry_sdk
 
-import asset
+import dev.asset as asset
 import dev.exceptions as exceptions
 from apps.db import get_user_lang
 from apps.text_map import text_map

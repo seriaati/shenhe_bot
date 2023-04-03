@@ -4,7 +4,7 @@ import asyncpg
 from discord import ButtonStyle, Locale, SelectOption
 from discord.ui import Button, Select, TextInput
 
-import asset
+import dev.asset as asset
 import config
 import dev.models as models
 from ambr import AmbrTopAPI, Material

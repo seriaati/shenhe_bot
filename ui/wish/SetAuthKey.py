@@ -6,7 +6,7 @@ import discord
 import genshin
 from discord import ui
 
-import asset
+import dev.asset as asset
 import config
 from apps.db import get_user_lang
 from apps.genshin import get_account_select_options, get_uid, get_wish_info_embed

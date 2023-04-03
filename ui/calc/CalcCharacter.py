@@ -4,7 +4,7 @@ import discord
 from discord import ui, utils
 
 import ambr.models as ambr_models
-import asset
+import dev.asset as asset
 import config
 import dev.models as models
 from ambr import AmbrTopAPI

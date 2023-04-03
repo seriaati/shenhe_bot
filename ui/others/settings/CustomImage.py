@@ -4,7 +4,7 @@ import discord
 from discord import ui
 
 import apps.db.custom_image as image
-import asset
+import dev.asset as asset
 import config
 from ambr import AmbrTopAPI
 from apps.genshin import get_character_emoji

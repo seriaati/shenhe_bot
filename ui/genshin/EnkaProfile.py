@@ -4,7 +4,7 @@ import discord
 import enkanetwork as enka
 from discord import ui, utils
 
-import asset
+import dev.asset as asset
 import config
 import dev.models as models
 from apps.db import get_user_theme

@@ -3,7 +3,7 @@ from typing import List, Union
 import discord
 from PIL import Image, ImageDraw
 
-import asset
+import dev.asset as asset
 from ambr import Character
 from apps.draw.utility import (
     circular_crop,

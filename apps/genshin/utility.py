@@ -12,7 +12,7 @@ import yaml
 from discord import Locale
 from discord.utils import format_dt, get
 
-import asset
+import dev.asset as asset
 import dev.models as models
 from ambr import AmbrTopAPI, Character, Domain, Material, Weapon
 from ambr.models import CharacterDetail

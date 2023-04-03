@@ -6,7 +6,7 @@ import enkanetwork
 from PIL import Image, ImageChops, ImageDraw
 
 import apps.draw.utility as draw_utility
-import asset
+import dev.asset as asset
 from apps.text_map import text_map
 from dev.models import DynamicBackgroundInput, TopPadding
 
