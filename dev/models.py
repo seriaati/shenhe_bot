@@ -118,6 +118,50 @@ class BotModel(commands.AutoShardedBot):
     disabled_commands: typing.List[str] = []
 
 
+class ShenheEmbed(discord.Embed):
+    def __init__(
+        self,
+        title: typing.Optional[str] = None,
+        description: typing.Optional[str] = None,
+        color: typing.Optional[int] = 0xA68BD3,
+    ):
+        super().__init__(title=title, description=description, color=color)
+
+    def set_title(
+        self,
+        map_hash: int,
+        locale: typing.Union[discord.Locale, str],
+        user: typing.Union[discord.Member, discord.User],
+    ):
+        self.set_author(
+            name=text_map.get(map_hash, locale), icon_url=user.display_avatar.url
+        )
+        return self
+
+
+class DefaultEmbed(ShenheEmbed):
+    def __init__(
+        self,
+        title: typing.Optional[str] = None,
+        description: typing.Optional[str] = None,
+    ):
+        super().__init__(title=title, description=description, color=0xA68BD3)
+
+
+class ErrorEmbed(ShenheEmbed):
+    def __init__(
+        self,
+        title: typing.Optional[str] = None,
+        description: typing.Optional[str] = None,
+    ):
+        super().__init__(title=title, description=description, color=0xFC5165)
+
+
+class EmbedField(BaseModel):
+    name: str
+    value: str
+
+
 class TodoList:
     def __init__(self):
         self.dict: typing.Dict[int, int] = {}
@@ -152,9 +196,12 @@ class UserCustomImage(BaseModel):
     from_shenhe: bool
 
 
-class GenshinAppResult(BaseModel):
+V = typing.TypeVar("V")
+
+
+class GenshinAppResult(typing.Generic[V], BaseModel):
     success: bool
-    result: typing.Any
+    result: typing.Union[V, ErrorEmbed]
 
 
 class AbyssResult(BaseModel):
@@ -369,50 +416,6 @@ class ConditionalResult(BaseModel):
 
 class CustomInteraction(discord.Interaction):
     client: BotModel
-
-
-class ShenheEmbed(discord.Embed):
-    def __init__(
-        self,
-        title: typing.Optional[str] = None,
-        description: typing.Optional[str] = None,
-        color: typing.Optional[int] = 0xA68BD3,
-    ):
-        super().__init__(title=title, description=description, color=color)
-
-    def set_title(
-        self,
-        map_hash: int,
-        locale: typing.Union[discord.Locale, str],
-        user: typing.Union[discord.Member, discord.User],
-    ):
-        self.set_author(
-            name=text_map.get(map_hash, locale), icon_url=user.display_avatar.url
-        )
-        return self
-
-
-class DefaultEmbed(ShenheEmbed):
-    def __init__(
-        self,
-        title: typing.Optional[str] = None,
-        description: typing.Optional[str] = None,
-    ):
-        super().__init__(title=title, description=description, color=0xA68BD3)
-
-
-class ErrorEmbed(ShenheEmbed):
-    def __init__(
-        self,
-        title: typing.Optional[str] = None,
-        description: typing.Optional[str] = None,
-    ):
-        super().__init__(title=title, description=description, color=0xFC5165)
-
-
-class EmbedField(BaseModel):
-    name: str
-    value: str
 
 
 class TalentBoost(Enum):

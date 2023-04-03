@@ -11,7 +11,13 @@ from apps.db import get_user_lang
 from apps.genshin import GenshinApp
 from apps.text_map import text_map
 from dev.base_ui import BaseView
-from dev.models import CustomInteraction, DefaultEmbed, DiaryLogsResult, DiaryResult
+from dev.models import (
+    CustomInteraction,
+    DefaultEmbed,
+    DiaryLogsResult,
+    DiaryResult,
+    ErrorEmbed,
+)
 from utility import divide_chunks
 
 
@@ -64,26 +70,26 @@ class MonthSelect(Select):
         )
         await i.response.edit_message(embed=embed, attachments=[])
         user_locale = await get_user_lang(i.user.id, i.client.pool)
-        result = await self.view.genshin_app.get_diary(
+        r = await self.view.genshin_app.get_diary(
             self.view.member.id, i.user.id, i.locale, int(self.values[0])
         )
-        if not result.success:
-            await i.followup.send(embed=result.result)
-        else:
-            diary_result: DiaryResult = result.result
-            fp = diary_result.file
-            fp.seek(0)
-            view = View(
-                i.user,
-                self.view.member,
-                self.view.genshin_app,
-                user_locale or i.locale,
-            )
-            view.message = await i.edit_original_response(
-                embed=diary_result.embed,
-                view=view,
-                attachments=[File(fp, "diary.jpeg")],
-            )
+        if isinstance(r.result, ErrorEmbed):
+            return await i.followup.send(embed=r.result)
+
+        result = r.result
+        fp = result.file
+        fp.seek(0)
+        view = View(
+            i.user,
+            self.view.member,
+            self.view.genshin_app,
+            user_locale or i.locale,
+        )
+        view.message = await i.edit_original_response(
+            embed=result.embed,
+            view=view,
+            attachments=[File(fp, "diary.jpeg")],
+        )
 
 
 class Primo(Button):
@@ -117,7 +123,11 @@ async def primo_mora_button_callback(
     result = await view.genshin_app.get_diary_logs(
         view.member.id, i.user.id, is_primo, i.locale
     )
-    log_result: DiaryLogsResult = result.result
+    if isinstance(result.result, ErrorEmbed):
+        await i.followup.send(embed=result.result, ephemeral=True)
+        return
+
+    log_result = result.result
 
     embed = DefaultEmbed()
     embed.title = label

@@ -82,33 +82,29 @@ class GenshinApp:
     @genshin_error_handler
     async def claim_daily_reward(
         self, user_id: int, author_id: int, locale: discord.Locale
-    ):
+    ) -> models.GenshinAppResult[models.ShenheEmbed]:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         try:
             reward = await shenhe_user.client.claim_daily_reward()
         except genshin.errors.AlreadyClaimed:
-            return (
-                models.ErrorEmbed().set_author(
-                    name=text_map.get(40, locale, shenhe_user.user_locale),
-                    icon_url=shenhe_user.discord_user.display_avatar.url,
-                ),
-                False,
+            embed = models.ErrorEmbed().set_author(
+                name=text_map.get(40, locale, shenhe_user.user_locale),
+                icon_url=shenhe_user.discord_user.display_avatar.url,
             )
+            return models.GenshinAppResult(success=False, result=embed)
         else:
-            return (
-                models.DefaultEmbed(
-                    description=f"{text_map.get(41, locale, shenhe_user.user_locale)} {reward.amount}x {reward.name}"
-                ).set_author(
-                    name=text_map.get(42, locale, shenhe_user.user_locale),
-                    icon_url=shenhe_user.discord_user.display_avatar.url,
-                ),
-                True,
+            embed = models.DefaultEmbed(
+                description=f"{text_map.get(41, locale, shenhe_user.user_locale)} {reward.amount}x {reward.name}"
+            ).set_author(
+                name=text_map.get(42, locale, shenhe_user.user_locale),
+                icon_url=shenhe_user.discord_user.display_avatar.url,
             )
+            return models.GenshinAppResult(success=True, result=embed)
 
     @genshin_error_handler
     async def get_real_time_notes(
         self, user_id: int, author_id: int, locale: discord.Locale
-    ) -> models.GenshinAppResult:
+    ) -> models.GenshinAppResult[models.RealtimeNoteResult]:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         notes = await shenhe_user.client.get_genshin_notes(shenhe_user.uid)
         draw_input = models.DrawInput(
@@ -182,11 +178,12 @@ class GenshinApp:
         namecard: enkanetwork.model.assets.NamecardAsset,
         avatar_asset: discord.Asset,
         locale: discord.Locale,
-    ) -> models.GenshinAppResult:
+    ) -> models.GenshinAppResult[models.StatsResult]:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         uid = shenhe_user.uid
         if uid is None:
             raise UIDNotFound
+
         embed = models.DefaultEmbed()
         embed.set_image(url="attachment://stat_card.jpeg")
         fp = self.bot.stats_card_cache.get(uid)
@@ -210,6 +207,7 @@ class GenshinApp:
                 len(characters),
             )
             self.bot.stats_card_cache[uid] = fp
+
         return models.GenshinAppResult(
             success=True, result=models.StatsResult(embed=embed, file=fp)
         )
@@ -217,7 +215,7 @@ class GenshinApp:
     @genshin_error_handler
     async def get_area(
         self, user_id: int, author_id: int, locale: discord.Locale
-    ) -> models.GenshinAppResult:
+    ) -> models.GenshinAppResult[models.AreaResult]:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         uid = shenhe_user.uid
         if uid is None:
@@ -252,7 +250,7 @@ class GenshinApp:
         author_id: int,
         locale: discord.Locale,
         month: Optional[int] = None,
-    ) -> models.GenshinAppResult:
+    ) -> models.GenshinAppResult[models.DiaryResult]:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         if shenhe_user.china:
             shenhe_user.client.region = genshin.Region.CHINESE
@@ -291,7 +289,7 @@ class GenshinApp:
     @genshin_error_handler
     async def get_diary_logs(
         self, user_id: int, author_id: int, primo: bool, locale: discord.Locale
-    ):
+    ) -> models.GenshinAppResult[models.DiaryLogsResult]:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         if shenhe_user.china:
             shenhe_user.client.region = genshin.Region.CHINESE
@@ -330,17 +328,18 @@ class GenshinApp:
     @genshin_error_handler
     async def get_abyss(
         self, user_id: int, author_id: int, previous: bool, locale: discord.Locale
-    ) -> models.GenshinAppResult:
+    ) -> models.GenshinAppResult[models.AbyssResult]:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         if shenhe_user.uid is None:
             raise UIDNotFound
+
         user = await shenhe_user.client.get_partial_genshin_user(shenhe_user.uid)
         abyss = await shenhe_user.client.get_genshin_spiral_abyss(
             shenhe_user.uid, previous=previous
         )
         characters = await shenhe_user.client.get_genshin_characters(shenhe_user.uid)
-        author_locale = await get_user_lang(author_id, self.bot.pool)
-        new_locale = author_locale or shenhe_user.user_locale or locale
+
+        new_locale = shenhe_user.user_locale or locale
         if not abyss.ranks.most_kills:
             embed = models.ErrorEmbed(description=text_map.get(74, new_locale))
             embed.set_author(
@@ -354,6 +353,7 @@ class GenshinApp:
             "discord_user": shenhe_user.discord_user,
             "characters": list(characters),
         }
+
         overview = models.DefaultEmbed()
         overview.set_image(url="attachment://overview_card.jpeg")
         overview.set_author(
@@ -361,6 +361,7 @@ class GenshinApp:
             icon_url=shenhe_user.discord_user.display_avatar.url,
         )
         overview.set_footer(text=text_map.get(254, new_locale))
+
         dark_mode = await get_user_theme(author_id, self.bot.pool)
         cache = self.bot.abyss_overview_card_cache
         fp = cache.get(shenhe_user.uid)
@@ -376,21 +377,23 @@ class GenshinApp:
                 user,
             )
             cache[shenhe_user.uid] = fp
-        result[
-            "title"
-        ] = f"{text_map.get(47, new_locale)} | {text_map.get(77, new_locale)} {abyss.season}"
-        result["overview"] = overview
-        result["overview_card"] = fp
-        result["floors"] = [floor for floor in abyss.floors if floor.floor >= 9]
-        result["uid"] = shenhe_user.uid
+
         return models.GenshinAppResult(
-            result=models.AbyssResult(**result), success=True
+            result=models.AbyssResult(
+                title=f"{text_map.get(47, new_locale)} | {text_map.get(77, new_locale)} {abyss.season}",
+                overview=overview,
+                overview_card=fp,
+                floors=[floor for floor in abyss.floors if floor.floor >= 9],
+                uid=shenhe_user.uid,
+                **result,
+            ),
+            success=True,
         )
 
     @genshin_error_handler
     async def get_all_characters(
         self, user_id: int, author_id: int, locale: discord.Locale
-    ) -> models.GenshinAppResult:
+    ) -> models.GenshinAppResult[models.CharacterResult]:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         client = shenhe_user.client
         characters = await client.get_genshin_characters(shenhe_user.uid)
@@ -401,6 +404,7 @@ class GenshinApp:
             await update_talents_json(
                 characters, client, self.bot.pool, shenhe_user.uid, self.bot.session
             )
+
         return models.GenshinAppResult(
             success=True, result=models.CharacterResult(characters=characters)
         )
@@ -408,7 +412,7 @@ class GenshinApp:
     @genshin_error_handler
     async def redeem_code(
         self, user_id: int, author_id: int, code: str, locale: discord.Locale
-    ) -> models.GenshinAppResult:
+    ) -> models.GenshinAppResult[discord.Embed]:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         try:
             await shenhe_user.client.redeem_code(code)
@@ -456,7 +460,7 @@ class GenshinApp:
     @genshin_error_handler
     async def get_activities(
         self, user_id: int, author_id: int, locale: discord.Locale
-    ) -> models.GenshinAppResult:
+    ) -> models.GenshinAppResult[List[discord.Embed]]:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         uid = shenhe_user.uid
         if uid is None:
@@ -483,8 +487,9 @@ class GenshinApp:
         summer: genshin.models.Summer,
         user: discord.User | discord.Member | discord.ClientUser,
         locale: discord.Locale | str,
-    ) -> list[discord.Embed]:
-        embeds = []
+    ) -> List[discord.Embed]:
+        embeds: List[discord.Embed] = []
+
         embed = models.DefaultEmbed().set_author(
             name=text_map.get(111, locale),
             icon_url=user.display_avatar.url,
@@ -501,6 +506,7 @@ class GenshinApp:
             name=text_map.get(111, locale),
             icon_url=user.display_avatar.url,
         )
+
         surfs = summer.surfpiercer
         value = ""
         for surf in surfs:
@@ -517,6 +523,7 @@ class GenshinApp:
         embed.add_field(name=text_map.get(116, locale), value=value)
         embed.set_thumbnail(url="https://i.imgur.com/Qt4Tez0.png")
         embeds.append(embed)
+
         memories = summer.memories
         for memory in memories:
             embed = models.DefaultEmbed().set_author(
@@ -530,6 +537,7 @@ class GenshinApp:
                 value=f"{text_map.get(119, locale)}: {memory.finish_time}",
             )
             embeds.append(embed)
+
         realms = summer.realm_exploration
         for realm in realms:
             embed = models.DefaultEmbed().set_author(
@@ -545,6 +553,7 @@ class GenshinApp:
                 f"{text_map.get(122, locale)} {realm.skills_used} {text_map.get(121, locale)}",
             )
             embeds.append(embed)
+
         return embeds
 
     async def get_user_uid(self, user_id: int) -> int | None:
