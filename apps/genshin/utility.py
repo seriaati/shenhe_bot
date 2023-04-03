@@ -208,7 +208,7 @@ def get_uid_tz(uid: Optional[int]) -> int:
 
 async def get_shenhe_account(
     user_id: int,
-    bot: models.ShenheBot,
+    bot: models.BotModel,
     *,
     locale: Optional[discord.Locale | str] = None,
     custom_cookie: Optional[Dict[str, Any]] = None,

@@ -42,7 +42,7 @@ load_dotenv()
 
 class GenshinCog(commands.Cog, name="genshin"):
     def __init__(self, bot):
-        self.bot: models.ShenheBot = bot
+        self.bot: models.BotModel = bot
         self.genshin_app = genshin_app.GenshinApp(self.bot)
         self.debug = self.bot.debug
 

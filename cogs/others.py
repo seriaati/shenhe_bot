@@ -22,7 +22,7 @@ from apps.db.utility import create_user_settings
 from apps.draw.main_funcs import compress_image
 from apps.text_map import text_map, to_ambr_top
 from dev.exceptions import AutocompleteError
-from dev.models import CustomInteraction, DefaultEmbed, ErrorEmbed, ShenheBot
+from dev.models import BotModel, CustomInteraction, DefaultEmbed, ErrorEmbed
 from ui.others import Feedback, ManageAccounts, SettingsMenu
 from ui.others.settings import CustomImage
 
@@ -31,7 +31,7 @@ load_dotenv()
 
 class OthersCog(commands.Cog, name="others"):
     def __init__(self, bot):
-        self.bot: ShenheBot = bot
+        self.bot: BotModel = bot
         try:
             with open("text_maps/avatar.json", "r", encoding="utf-8") as f:
                 self.avatar: Dict[str, Dict[str, str]] = json.load(f)

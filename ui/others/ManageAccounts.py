@@ -12,9 +12,9 @@ import dev.config as config
 from apps.db import get_user_lang
 from apps.genshin import get_account_select_options, get_uid_region_hash
 from apps.text_map import text_map, to_hutao_login_lang
-from dev.base_ui import BaseModal, BaseView
 from cogs.login import register_user
-from dev.models import CustomInteraction, DefaultEmbed, ShenheBot
+from dev.base_ui import BaseModal, BaseView
+from dev.models import BotModel, CustomInteraction, DefaultEmbed
 from utility import log
 
 
@@ -113,7 +113,7 @@ class ResendToken(ui.Button):
         self.view: View
 
     async def callback(self, i: CustomInteraction):
-        bot: ShenheBot = i.client  # type: ignore
+        bot: BotModel = i.client  # type: ignore
 
         await i.response.defer()
         api = bot.gateway.api

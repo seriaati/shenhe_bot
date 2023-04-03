@@ -39,7 +39,7 @@ def schedule_error_handler(func):
 
 class Schedule(commands.Cog):
     def __init__(self, bot):
-        self.bot: models.ShenheBot = bot
+        self.bot: models.BotModel = bot
         self.debug = self.bot.debug
         if not self.debug:
             self.run_tasks.start()

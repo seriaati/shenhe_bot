@@ -96,7 +96,7 @@ class WishInfo(BaseModel):
     novice_banner_num: int
 
 
-class ShenheBot(commands.AutoShardedBot):
+class BotModel(commands.AutoShardedBot):
     genshin_client: genshin.Client
     session: aiohttp.ClientSession
     browsers: typing.Dict[str, Browser]
@@ -368,7 +368,7 @@ class ConditionalResult(BaseModel):
 
 
 class CustomInteraction(discord.Interaction):
-    client: ShenheBot
+    client: BotModel
 
 
 class ShenheEmbed(discord.Embed):

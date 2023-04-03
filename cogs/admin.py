@@ -7,13 +7,13 @@ from pathlib import Path
 from discord.ext import commands
 from diskcache import FanoutCache
 
-from dev.models import DefaultEmbed, ShenheBot
+from dev.models import BotModel, DefaultEmbed
 from utility.utils import dm_embed
 
 
 class AdminCog(commands.Cog, name="admin"):
     def __init__(self, bot):
-        self.bot: ShenheBot = bot
+        self.bot: BotModel = bot
 
     @commands.is_owner()
     @commands.command(name="maintenance")

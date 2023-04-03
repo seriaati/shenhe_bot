@@ -20,8 +20,8 @@ from apps.genshin import (
 )
 from apps.genshin.checks import check_cookie
 from apps.text_map import text_map, to_ambr_top
-from dev.base_ui import capture_exception
 from data.game.standard_characters import get_standard_characters
+from dev.base_ui import capture_exception
 from dev.exceptions import FeatureDisabled
 from ui.wish import ChooseBanner, ChooseWeapon, SetAuthKey, WishFilter
 from ui.wish.SetAuthKey import wish_import_command
@@ -30,7 +30,7 @@ from utility.wish_paginator import WishPaginator
 
 class WishCog(commands.GroupCog, name="wish"):
     def __init__(self, bot):
-        self.bot: models.ShenheBot = bot
+        self.bot: models.BotModel = bot
         super().__init__()
 
     @check_account()
