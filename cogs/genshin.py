@@ -16,7 +16,7 @@ from enkanetwork import Assets
 
 import apps.genshin.checks as checks
 import asset
-import exceptions
+import dev.exceptions as exceptions
 import dev.models as models
 import ui
 import utility.utils as utils

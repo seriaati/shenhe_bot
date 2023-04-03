@@ -30,7 +30,7 @@ from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
-from exceptions import ShenheAccountNotFound
+from dev.exceptions import ShenheAccountNotFound
 from utility import divide_chunks, get_dt_now
 
 

@@ -21,7 +21,7 @@ from apps.db import custom_image, get_user_lang
 from apps.db.utility import create_user_settings
 from apps.draw.main_funcs import compress_image
 from apps.text_map import text_map, to_ambr_top
-from exceptions import AutocompleteError
+from dev.exceptions import AutocompleteError
 from dev.models import CustomInteraction, DefaultEmbed, ErrorEmbed, ShenheBot
 from ui.others import Feedback, ManageAccounts, SettingsMenu
 from ui.others.settings import CustomImage

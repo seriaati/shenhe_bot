@@ -15,7 +15,7 @@ from apps.db.json import read_json
 from apps.draw import main_funcs
 from apps.text_map import get_month_name, text_map
 from base_ui import get_error_handle_embed
-from exceptions import UIDNotFound
+from dev.exceptions import UIDNotFound
 from utility import get_dt_now, log
 
 from .utility import (

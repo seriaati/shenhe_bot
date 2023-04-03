@@ -5,7 +5,7 @@ import aiohttp
 import asyncpg
 import enkanetwork
 
-from exceptions import NoCharacterFound
+from dev.exceptions import NoCharacterFound
 from dev.models import EnkaInfoResponse
 
 

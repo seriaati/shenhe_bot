@@ -13,7 +13,7 @@ from apps.genshin import (
 )
 from apps.text_map import text_map, to_ambr_top
 from base_ui import BaseModal, BaseView
-from exceptions import NumbersOnly
+from dev.exceptions import NumbersOnly
 from dev.models import DefaultEmbed
 from ui.genshin import TalentNotificationMenu, WeaponNotificationMenu
 from utility import divide_chunks

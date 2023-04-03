@@ -15,7 +15,7 @@ from apps.text_map import text_map, to_ambr_top
 from base_ui import BaseModal, BaseView
 from data.game.weapon_exp import get_weapon_exp_table
 from data.game.weapon_types import get_weapon_type_emoji
-from exceptions import InvalidAscensionInput, InvalidWeaponCalcInput
+from dev.exceptions import InvalidAscensionInput, InvalidWeaponCalcInput
 from ui.calc.AddToTodo import AddButton
 from utility import divide_chunks
 
