@@ -16,7 +16,7 @@ from apps.genshin import (
     get_current_abyss_season,
 )
 from apps.text_map import text_map, to_ambr_top
-from base_ui import BaseView
+from dev.base_ui import BaseView
 
 
 class EmptyLeaderboard(Exception):

@@ -9,7 +9,7 @@ import config
 from ambr import AmbrTopAPI
 from apps.genshin import get_character_emoji
 from apps.text_map import text_map, to_ambr_top
-from base_ui import BaseView
+from dev.base_ui import BaseView
 from data.game.elements import convert_elements, elements
 from ui.genshin import ReminderMenu
 

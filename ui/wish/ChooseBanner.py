@@ -6,7 +6,7 @@ import config
 import dev.models as models
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
-from base_ui import BaseView
+from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, DrawInput
 
 

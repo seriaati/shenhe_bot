@@ -12,7 +12,7 @@ from apps.draw import main_funcs
 from apps.draw.utility import image_gen_transition
 from apps.genshin import get_weapon_emoji, level_to_ascension_phase
 from apps.text_map import text_map, to_ambr_top
-from base_ui import BaseModal, BaseView
+from dev.base_ui import BaseModal, BaseView
 from data.game.weapon_exp import get_weapon_exp_table
 from data.game.weapon_types import get_weapon_type_emoji
 from dev.exceptions import InvalidAscensionInput, InvalidWeaponCalcInput

@@ -17,7 +17,7 @@ import dev.models as models
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
-from base_ui import capture_exception
+from dev.base_ui import capture_exception
 from utility import dm_embed, log
 from utility.fetch_card import fetch_cards
 from utility.utils import get_dt_now

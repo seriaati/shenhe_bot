@@ -12,7 +12,7 @@ import dev.asset as asset
 import dev.models as models
 from apps.db import get_user_notif
 from apps.text_map import AMBR_LANGS, get_element_name, text_map
-from base_ui import capture_exception
+from dev.base_ui import capture_exception
 from data.game.elements import convert_element
 from utility import dm_embed, log
 

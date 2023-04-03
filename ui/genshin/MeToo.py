@@ -4,7 +4,7 @@ import config
 from apps.db.utility import get_user_lang
 from apps.genshin import check_cookie_predicate
 from apps.text_map import text_map
-from base_ui import BaseView
+from dev.base_ui import BaseView
 from dev.models import CustomInteraction
 
 

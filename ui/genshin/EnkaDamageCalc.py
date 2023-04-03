@@ -15,7 +15,7 @@ from apps.db.custom_image import get_user_custom_image
 from apps.draw import main_funcs
 from apps.genshin import get_browser, get_character_fanarts
 from apps.text_map import text_map
-from base_ui import BaseView, EnkaView
+from dev.base_ui import BaseView, EnkaView
 from dev.exceptions import CardNotReady, NoCharacterFound
 from dev.models import CustomInteraction, DrawInput, ErrorEmbed
 from utility.utils import divide_chunks

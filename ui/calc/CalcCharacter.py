@@ -20,7 +20,7 @@ from apps.genshin import (
     level_to_ascension_phase,
 )
 from apps.text_map import text_map, to_ambr_top
-from base_ui import BaseModal, BaseView
+from dev.base_ui import BaseModal, BaseView
 from data.game.elements import get_element_color, get_element_emoji, get_element_list
 from data.game.upgrade_exp import get_exp_table
 from dev.exceptions import InvalidWeaponCalcInput

@@ -20,7 +20,7 @@ from apps.draw import main_funcs
 from apps.draw.utility import image_gen_transition
 from apps.genshin.utility import get_shenhe_account, get_uid, update_talents_json
 from apps.text_map import text_map
-from base_ui import BaseView
+from dev.base_ui import BaseView
 from dev.models import CustomInteraction, DefaultEmbed, DrawInput, ErrorEmbed
 from utility.utils import get_dt_now
 

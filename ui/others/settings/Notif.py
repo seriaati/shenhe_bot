@@ -5,7 +5,7 @@ import dev.asset as asset
 import config
 from apps.db import get_user_notif
 from apps.text_map import text_map
-from base_ui import BaseView, GoBackButton
+from dev.base_ui import BaseView, GoBackButton
 from dev.models import CustomInteraction, DefaultEmbed, OriginalInfo
 
 

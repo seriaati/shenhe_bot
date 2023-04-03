@@ -3,7 +3,7 @@ from discord.ui import Button
 
 import config
 from apps.text_map import text_map
-from base_ui import BaseView
+from dev.base_ui import BaseView
 
 
 class View(BaseView):

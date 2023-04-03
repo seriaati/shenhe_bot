@@ -8,7 +8,7 @@ from discord import ui, utils
 import config
 import dev.models as models
 from apps.text_map import text_map
-from base_ui import BaseView
+from dev.base_ui import BaseView
 from utility.paginator import GeneralPaginator
 from utility.utils import divide_chunks
 

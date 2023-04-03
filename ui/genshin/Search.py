@@ -10,7 +10,7 @@ from ambr import AmbrTopAPI
 from apps.draw import main_funcs
 from apps.genshin import get_fight_prop
 from apps.text_map import get_weekday_name, text_map
-from base_ui import BaseView
+from dev.base_ui import BaseView
 from data.game.elements import get_element_emoji
 from data.game.fight_prop import percentage_fight_props
 from dev.models import CustomInteraction, DefaultEmbed, DrawInput
