@@ -698,11 +698,15 @@ class GenshinCog(commands.Cog, name="genshin"):
         result = await self.genshin_app.redeem_code(
             i.user.id, i.user.id, code, i.locale
         )
-        view = ui.MeToo.View(
-            code,
-            self.genshin_app,
-            await get_user_lang(i.user.id, self.bot.pool) or i.locale,
-        )
+        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
+        view = ui.MeToo.View(code, self.genshin_app, locale)
+        if not result.success:
+            view.add_item(
+                discord.ui.Button(
+                    label=text_map.get(768, locale),
+                    url=f"https://genshin.hoyoverse.com/en/gift?code={code}",
+                )
+            )
         await i.followup.send(
             embed=result.result,
             view=view,
