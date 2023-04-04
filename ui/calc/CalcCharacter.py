@@ -11,7 +11,7 @@ from ambr import AmbrTopAPI
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.draw.utility import image_gen_transition
-from apps.enka.get_data import get_character_skill_order
+from apps.enka.api_docs import get_character_skill_order
 from apps.genshin import (
     check_cookie_predicate,
     get_character_emoji,
