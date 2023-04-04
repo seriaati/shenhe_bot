@@ -1,10 +1,10 @@
 from discord import Interaction, Locale, TextStyle
 from discord.ui import TextInput
 
-import config
+import dev.config as config
 from apps.text_map import text_map
-from base_ui import BaseModal
-from models import DefaultEmbed
+from dev.base_ui import BaseModal
+from dev.models import DefaultEmbed
 
 
 class FeedbackModal(BaseModal):

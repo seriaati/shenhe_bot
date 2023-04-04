@@ -3,13 +3,14 @@ from typing import Any
 import discord
 from discord import ui
 
-import config
+import dev.config as config
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.draw.main_funcs import draw_abyss_one_page
+from apps.genshin.models import AbyssResult
 from apps.text_map import text_map
-from base_ui import BaseView
-from models import AbyssResult, CustomInteraction, DefaultEmbed, DrawInput
+from dev.base_ui import BaseView
+from dev.models import DefaultEmbed, DrawInput, Inter
 
 
 class View(BaseView):
@@ -41,7 +42,7 @@ class FloorSelect(ui.Select):
         self.add_option(label=text_map.get(643, locale), value="one-page")
         self.abyss_result = result
 
-    async def callback(self, i: CustomInteraction) -> Any:
+    async def callback(self, i: Inter) -> Any:
         await i.response.defer()
         dark_mode = await get_user_theme(i.user.id, i.client.pool)
         locale = await get_user_lang(i.user.id, i.client.pool) or i.locale

@@ -8,7 +8,7 @@ from discord.app_commands import locale_str as _
 from discord.ext import commands
 
 import ambr
-import models
+import dev.models as models
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.genshin import (
@@ -20,9 +20,9 @@ from apps.genshin import (
 )
 from apps.genshin.checks import check_cookie
 from apps.text_map import text_map, to_ambr_top
-from base_ui import capture_exception
 from data.game.standard_characters import get_standard_characters
-from exceptions import FeatureDisabled
+from dev.base_ui import capture_exception
+from dev.exceptions import FeatureDisabled
 from ui.wish import ChooseBanner, ChooseWeapon, SetAuthKey, WishFilter
 from ui.wish.SetAuthKey import wish_import_command
 from utility.wish_paginator import WishPaginator
@@ -30,7 +30,7 @@ from utility.wish_paginator import WishPaginator
 
 class WishCog(commands.GroupCog, name="wish"):
     def __init__(self, bot):
-        self.bot: models.ShenheBot = bot
+        self.bot: models.BotModel = bot
         super().__init__()
 
     @check_account()
@@ -38,7 +38,7 @@ class WishCog(commands.GroupCog, name="wish"):
         name="import", description=_("import your genshin wish history", hash=474)
     )
     async def wish_import(self, inter: discord.Interaction):
-        i: models.CustomInteraction = inter  # type: ignore
+        i: models.Inter = inter  # type: ignore
         await wish_import_command(i)
 
     @check_account()
@@ -52,7 +52,7 @@ class WishCog(commands.GroupCog, name="wish"):
     async def wish_file_import(
         self, inter: discord.Interaction, file: discord.Attachment
     ):
-        i: models.CustomInteraction = inter  # type: ignore
+        i: models.Inter = inter  # type: ignore
         locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
         try:
             wish_history: List[Dict[str, Any]] = ast.literal_eval(
@@ -130,7 +130,7 @@ class WishCog(commands.GroupCog, name="wish"):
     async def wish_history(
         self, inter: discord.Interaction, member: Optional[discord.User] = None
     ):
-        i: models.CustomInteraction = inter  # type: ignore
+        i: models.Inter = inter  # type: ignore
         user_locale = await get_user_lang(i.user.id, self.bot.pool)
         embeds = await get_wish_history_embed(i, "", member)
         options = [

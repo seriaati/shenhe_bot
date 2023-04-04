@@ -5,17 +5,17 @@ from discord.ui import Button, Select
 from genshin import Client
 from genshin.models import LineupPreview, LineupScenario
 
-import asset
-import config
+import dev.asset as asset
+import dev.config as config
 from ambr import Character
 from apps.db import get_user_theme
 from apps.draw import main_funcs
 from apps.draw.utility import image_gen_transition
 from apps.genshin import get_character_emoji
 from apps.text_map import text_map, to_genshin_py
-from base_ui import BaseView
 from data.game.elements import get_element_emoji, get_element_list
-from models import CustomInteraction, DefaultEmbed, DrawInput
+from dev.base_ui import BaseView
+from dev.models import DefaultEmbed, DrawInput, Inter
 from utility.utils import disable_view_items
 
 
@@ -50,7 +50,7 @@ class CharacterSelectButton(Button):
         super().__init__(style=ButtonStyle.primary, label=label, emoji=asset.user_emoji)
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         self.view.clear_items()
 
         elements = get_element_list()
@@ -68,7 +68,7 @@ class ElementButton(Button):
         self.element = element
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await i.response.defer()
         self.view.clear_items()
 
@@ -105,7 +105,7 @@ class CharacterSelector(Select):
         )
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         self.view.clear_items()
         self.view.characters += [int(o.split("-")[0]) for o in self.values]
 
@@ -147,7 +147,7 @@ class ClearCharacter(Button):
         self.items = items
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         self.view.characters = []
 
         self.view.remove_item(self)
@@ -169,7 +169,7 @@ class ScenarioSelector(Select):
         self.scenario_dict = scenario_dict
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         self.view.scenario = self.scenario_dict[self.values[0]]
 
         if i.message is not None:
@@ -188,7 +188,7 @@ class SearchLineup(Button):
         super().__init__(style=ButtonStyle.green, label=label, emoji=asset.search_emoji)
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await search_lineup(i, self.view)
 
 
@@ -207,7 +207,7 @@ class LineupSelector(Select):
         self.embed = embed
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await image_gen_transition(i, self.view, self.view.locale)
 
         lineup = self.lineup_dict[self.values[0]]
@@ -251,7 +251,7 @@ class GoBack(Button):
         self.items = items
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         self.view.clear_items()
         for item in self.items:
             self.view.add_item(item)
@@ -277,7 +277,7 @@ def update_search_status(view: View, embed: Embed) -> Embed:
     return embed
 
 
-async def search_lineup(i: CustomInteraction, view: View):
+async def search_lineup(i: Inter, view: View):
     await i.response.defer()
 
     locale = view.locale

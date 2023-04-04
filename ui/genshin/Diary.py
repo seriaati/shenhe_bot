@@ -5,13 +5,13 @@ from discord import File, Locale, Member, User, utils
 from discord.ui import Button, Select
 from matplotlib import pyplot as plt
 
-import asset
-import config
+import dev.asset as asset
+import dev.config as config
 from apps.db import get_user_lang
 from apps.genshin import GenshinApp
 from apps.text_map import text_map
-from base_ui import BaseView
-from models import CustomInteraction, DefaultEmbed, DiaryLogsResult, DiaryResult
+from dev.base_ui import BaseView
+from dev.models import DefaultEmbed, ErrorEmbed, Inter
 from utility import divide_chunks
 
 
@@ -39,7 +39,7 @@ class InfoButton(Button):
         super().__init__(emoji=asset.info_emoji)
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await i.response.send_message(
             embed=DefaultEmbed(description=text_map.get(398, self.view.locale)),
             ephemeral=True,
@@ -55,7 +55,7 @@ class MonthSelect(Select):
 
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         user_locale = await get_user_lang(i.user.id, i.client.pool)
         embed = DefaultEmbed()
         embed.set_author(
@@ -64,26 +64,26 @@ class MonthSelect(Select):
         )
         await i.response.edit_message(embed=embed, attachments=[])
         user_locale = await get_user_lang(i.user.id, i.client.pool)
-        result = await self.view.genshin_app.get_diary(
+        r = await self.view.genshin_app.get_diary(
             self.view.member.id, i.user.id, i.locale, int(self.values[0])
         )
-        if not result.success:
-            await i.followup.send(embed=result.result)
-        else:
-            diary_result: DiaryResult = result.result
-            fp = diary_result.file
-            fp.seek(0)
-            view = View(
-                i.user,
-                self.view.member,
-                self.view.genshin_app,
-                user_locale or i.locale,
-            )
-            view.message = await i.edit_original_response(
-                embed=diary_result.embed,
-                view=view,
-                attachments=[File(fp, "diary.jpeg")],
-            )
+        if isinstance(r.result, ErrorEmbed):
+            return await i.followup.send(embed=r.result)
+
+        result = r.result
+        fp = result.file
+        fp.seek(0)
+        view = View(
+            i.user,
+            self.view.member,
+            self.view.genshin_app,
+            user_locale or i.locale,
+        )
+        view.message = await i.edit_original_response(
+            embed=result.embed,
+            view=view,
+            attachments=[File(fp, "diary.jpeg")],
+        )
 
 
 class Primo(Button):
@@ -91,7 +91,7 @@ class Primo(Button):
         super().__init__(label=label, emoji=asset.primo_emoji)
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         if not self.label:
             raise AssertionError
 
@@ -103,21 +103,23 @@ class Mora(Button):
         super().__init__(label=label, emoji=asset.mora_emoji)
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         if not self.label:
             raise AssertionError
 
         await primo_mora_button_callback(i, self.view, False, self.label)
 
 
-async def primo_mora_button_callback(
-    i: CustomInteraction, view: View, is_primo: bool, label: str
-):
+async def primo_mora_button_callback(i: Inter, view: View, is_primo: bool, label: str):
     await i.response.defer(ephemeral=True)
     result = await view.genshin_app.get_diary_logs(
         view.member.id, i.user.id, is_primo, i.locale
     )
-    log_result: DiaryLogsResult = result.result
+    if isinstance(result.result, ErrorEmbed):
+        await i.followup.send(embed=result.result, ephemeral=True)
+        return
+
+    log_result = result.result
 
     embed = DefaultEmbed()
     embed.title = label

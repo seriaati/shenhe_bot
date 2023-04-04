@@ -6,7 +6,7 @@ import discord
 
 from apps.genshin import get_character_fanarts
 from apps.text_map import text_map
-from models import CustomInteraction, DefaultEmbed, UserCustomImage
+from dev.models import DefaultEmbed, Inter, UserCustomImage
 
 
 async def get_user_custom_image_options(
@@ -68,7 +68,7 @@ async def get_user_custom_image_options(
 
 
 async def get_user_custom_image_embed(
-    i: CustomInteraction,
+    i: Inter,
     locale: discord.Locale | str,
     character_id: str,
     custom_image: typing.Optional[UserCustomImage] = None,

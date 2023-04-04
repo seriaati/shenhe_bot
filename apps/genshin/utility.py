@@ -12,8 +12,8 @@ import yaml
 from discord import Locale
 from discord.utils import format_dt, get
 
-import asset
-import models
+import dev.asset as asset
+import dev.models as models
 from ambr import AmbrTopAPI, Character, Domain, Material, Weapon
 from ambr.models import CharacterDetail
 from apps.db import get_user_lang
@@ -30,7 +30,7 @@ from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
-from exceptions import ShenheAccountNotFound
+from dev.exceptions import ShenheAccountNotFound
 from utility import divide_chunks, get_dt_now
 
 
@@ -208,7 +208,7 @@ def get_uid_tz(uid: Optional[int]) -> int:
 
 async def get_shenhe_account(
     user_id: int,
-    bot: models.ShenheBot,
+    bot: models.BotModel,
     *,
     locale: Optional[discord.Locale | str] = None,
     custom_cookie: Optional[Dict[str, Any]] = None,
@@ -398,7 +398,7 @@ def convert_wl_to_mora(wl: int) -> int:
 
 
 async def get_wish_history_embed(
-    i: models.CustomInteraction,
+    i: models.Inter,
     query: str,
     member: Optional[discord.User | discord.Member] = None,
 ) -> List[discord.Embed]:
@@ -455,7 +455,7 @@ async def get_wish_history_embed(
 
 
 async def get_wish_info_embed(
-    i: models.CustomInteraction,
+    i: models.Inter,
     locale: str,
     wish_info: models.WishInfo,
     import_command: bool = False,

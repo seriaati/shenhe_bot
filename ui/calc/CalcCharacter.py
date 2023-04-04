@@ -4,9 +4,9 @@ import discord
 from discord import ui, utils
 
 import ambr.models as ambr_models
-import asset
-import config
-import models
+import dev.asset as asset
+import dev.config as config
+import dev.models as models
 from ambr import AmbrTopAPI
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
@@ -20,10 +20,10 @@ from apps.genshin import (
     level_to_ascension_phase,
 )
 from apps.text_map import text_map, to_ambr_top
-from base_ui import BaseModal, BaseView
 from data.game.elements import get_element_color, get_element_emoji, get_element_list
 from data.game.upgrade_exp import get_exp_table
-from exceptions import InvalidWeaponCalcInput
+from dev.base_ui import BaseModal, BaseView
+from dev.exceptions import InvalidWeaponCalcInput
 from ui.calc.AddToTodo import AddButton
 
 
@@ -44,7 +44,7 @@ class ElementButton(ui.Button):
         self.view: View
         self.element = element
 
-    async def callback(self, i: models.CustomInteraction):
+    async def callback(self, i: models.Inter):
         locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
         ambr = AmbrTopAPI(i.client.session, to_ambr_top(locale))
         characters = await ambr.get_character()
@@ -70,7 +70,7 @@ class CharacterSelect(ui.Select):
         super().__init__(options=options, placeholder=placeholder)
         self.view: View
 
-    async def callback(self, i: models.CustomInteraction):
+    async def callback(self, i: models.Inter):
         locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
         embed = models.DefaultEmbed().set_author(
             name=text_map.get(608, locale), icon_url=asset.loader
@@ -146,7 +146,7 @@ class SpawnTargetLevelModal(ui.Button):
         self.init_levels = init_levels
         self.suggested_levels = suggested_levels
 
-    async def callback(self, i: models.CustomInteraction):
+    async def callback(self, i: models.Inter):
         await i.response.send_modal(
             TargetLevelModal(
                 self.character_id, self.locale, self.init_levels, self.suggested_levels
@@ -232,7 +232,7 @@ class InitLevelModal(BaseModal):
         self.character_id = character_id
         self.locale = locale
 
-    async def on_submit(self, i: models.CustomInteraction):
+    async def on_submit(self, i: models.Inter):
         await i.response.defer()
         # validate input
         try:
@@ -283,7 +283,7 @@ class SpawnInitModal(ui.Button):
         )
         self.modal = modal
 
-    async def callback(self, i: models.CustomInteraction):
+    async def callback(self, i: models.Inter):
         await i.response.send_modal(self.modal)
 
 
@@ -367,7 +367,7 @@ class TargetLevelModal(BaseModal):
         self.init_levels = init_levels
         self.locale = locale
 
-    async def on_submit(self, i: models.CustomInteraction) -> None:
+    async def on_submit(self, i: models.Inter) -> None:
         await i.response.defer()
         # validate input
         try:
@@ -546,7 +546,7 @@ async def validate_level_input(
     e: str,
     q: str,
     ascension: str,
-    i: models.CustomInteraction,
+    i: models.Inter,
     locale: discord.Locale | str,
 ):
     embed = models.DefaultEmbed().set_author(

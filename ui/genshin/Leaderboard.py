@@ -3,9 +3,9 @@ from typing import Dict, List
 import discord
 from discord import ui, utils
 
-import asset
-import config
-import models
+import dev.asset as asset
+import dev.config as config
+import dev.models as models
 from ambr import AmbrTopAPI, Character
 from apps.db import get_user_theme
 from apps.draw import main_funcs
@@ -16,7 +16,7 @@ from apps.genshin import (
     get_current_abyss_season,
 )
 from apps.text_map import text_map, to_ambr_top
-from base_ui import BaseView
+from dev.base_ui import BaseView
 
 
 class EmptyLeaderboard(Exception):
@@ -52,7 +52,7 @@ class LeaderboardSelect(ui.Select):
         super().__init__(placeholder=placeholder, options=options)
         self.view: View
 
-    async def callback(self, i: models.CustomInteraction):
+    async def callback(self, i: models.Inter):
         self.view.type = self.values[0]
         await select_callback(self.view, i, self.values[0])
 
@@ -80,12 +80,12 @@ class AbyssSeasonSelect(ui.Select):
         )
         self.view: View
 
-    async def callback(self, i: models.CustomInteraction):
+    async def callback(self, i: models.Inter):
         self.view.season = int(self.values[0])
         await select_callback(self.view, i, self.view.type)
 
 
-async def select_callback(view: View, i: models.CustomInteraction, leaderboard: str):
+async def select_callback(view: View, i: models.Inter, leaderboard: str):
     view.type = leaderboard
     pool = i.client.pool
     session = i.client.session
@@ -404,7 +404,7 @@ class Global(ui.Button):
         )
         self.view: View
 
-    async def callback(self, i: models.CustomInteraction):
+    async def callback(self, i: models.Inter):
         self.view.area = "global"
         await select_callback(self.view, i, self.view.type)
 
@@ -414,7 +414,7 @@ class Server(ui.Button):
         super().__init__(label=label, emoji="🏠", custom_id="server", row=4)
         self.view: View
 
-    async def callback(self, i: models.CustomInteraction):
+    async def callback(self, i: models.Inter):
         self.view.area = "server"
         await select_callback(self.view, i, self.view.type)
 

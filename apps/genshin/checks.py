@@ -3,7 +3,7 @@ from typing import Optional
 import asyncpg
 from discord import Interaction, Member, User, app_commands
 
-from exceptions import NoCookie, NoUID, NoWishHistory
+from dev.exceptions import NoCookie, NoUID, NoWishHistory
 
 from .utility import get_uid
 

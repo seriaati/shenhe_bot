@@ -1,12 +1,12 @@
 import discord
 from discord import ui
 
-import asset
-import config
+import dev.asset as asset
+import dev.config as config
 from apps.db import get_user_notif
 from apps.text_map import text_map
-from base_ui import BaseView, GoBackButton
-from models import CustomInteraction, DefaultEmbed, OriginalInfo
+from dev.base_ui import BaseView, GoBackButton
+from dev.models import DefaultEmbed, Inter, OriginalInfo
 
 
 class View(BaseView):
@@ -33,7 +33,7 @@ class NotificationButton(ui.Button):
         self.locale = locale
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await i.client.pool.execute(
             "UPDATE user_settings SET notification = $1 WHERE user_id = $2",
             self.toggle,
@@ -45,7 +45,7 @@ class NotificationButton(ui.Button):
 
 
 async def return_view(
-    i: CustomInteraction, locale: discord.Locale | str, original_info: OriginalInfo
+    i: Inter, locale: discord.Locale | str, original_info: OriginalInfo
 ):
     notif = await get_user_notif(i.user.id, i.client.pool)  # type: ignore
     view = View(locale, notif, original_info)

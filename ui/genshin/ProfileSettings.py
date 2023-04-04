@@ -3,13 +3,13 @@ import typing
 import discord
 from discord import ui
 
-import config
+import dev.config as config
 from apps.db.utility import create_user_settings, get_profile_ver
 from apps.genshin import edit_enka_cache, get_uid
 from apps.text_map import text_map
-from base_ui import BaseView, EnkaView
-from exceptions import UIDNotFound
-from models import CustomInteraction, DefaultEmbed, ErrorEmbed
+from dev.base_ui import BaseView, EnkaView
+from dev.exceptions import UIDNotFound
+from dev.models import DefaultEmbed, ErrorEmbed, Inter
 from ui.genshin.EnkaDamageCalc import GoBack
 
 
@@ -60,7 +60,7 @@ class VersionButton(ui.Button):
         self.locale = locale
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         ver = await get_profile_ver(i.user.id, i.client.pool)
         embed = self.view.gen_version_embed(ver)
         self.view.clear_items()
@@ -90,7 +90,7 @@ class VersionSelect(ui.Select):
         self.locale = locale
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await create_user_settings(i.user.id, i.client.pool)
         await i.client.pool.execute(
             "UPDATE user_settings SET profile_ver = $1 WHERE user_id = $2",
@@ -114,7 +114,7 @@ class CacheButton(ui.Button):
         self.locale = locale
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         embed = self.view.gen_cache_embed()
         self.view.clear_items()
 
@@ -154,7 +154,7 @@ class CacheSelect(ui.Select):
         )
         self.locale = locale
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         uid = await get_uid(i.user.id, i.client.pool)
         if uid is None:
             raise UIDNotFound

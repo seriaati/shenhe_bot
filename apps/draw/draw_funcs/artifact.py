@@ -5,7 +5,7 @@ import enkanetwork as enka
 from discord import Locale
 from PIL import Image, ImageDraw
 
-import asset
+import dev.asset as asset
 from apps.draw.utility import circular_crop, get_cache, get_font
 from apps.text_map import text_map
 from data.game.artifact_slot import get_artifact_slot_name

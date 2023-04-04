@@ -4,11 +4,11 @@ import asyncpg
 from discord import Interaction, Locale, SelectOption
 from discord.ui import Button, Select
 
-import config
+import dev.config as config
 from ambr import AmbrTopAPI
 from apps.genshin import get_weapon_emoji
 from apps.text_map import text_map, to_ambr_top
-from base_ui import BaseView
+from dev.base_ui import BaseView
 from data.game.weapon_types import get_weapon_type_emoji
 from ui.genshin import ReminderMenu
 from utility import divide_chunks

@@ -2,12 +2,12 @@ from typing import List
 
 import discord
 
-import config
-import models
+import dev.config as config
+import dev.models as models
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
-from base_ui import BaseView
-from models import DefaultEmbed, DrawInput
+from dev.base_ui import BaseView
+from dev.models import DefaultEmbed, DrawInput
 
 
 class View(BaseView):
@@ -29,7 +29,7 @@ class Select(discord.ui.Select):
         super().__init__(placeholder=placeholder, options=options)
         self.view: View
 
-    async def callback(self, i: models.CustomInteraction):
+    async def callback(self, i: models.Inter):
         embed = DefaultEmbed()
         embed.set_image(url="attachment://overview.jpeg")
         fp = await main_funcs.draw_wish_overview_card(

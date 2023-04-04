@@ -6,12 +6,12 @@ from discord import ButtonStyle, Locale
 from discord.errors import InteractionResponded
 from discord.ui import Button
 
-import config
+import dev.config as config
 from apps.db import get_user_lang
 from apps.genshin import GenshinApp
 from apps.text_map import text_map
-from base_ui import BaseView
-from models import CustomInteraction, DefaultEmbed, ErrorEmbed
+from dev.base_ui import BaseView
+from dev.models import DefaultEmbed, ErrorEmbed, Inter
 from utility import divide_chunks, get_dt_now
 
 
@@ -30,7 +30,7 @@ class ClaimReward(Button):
         super().__init__(style=ButtonStyle.blurple, label=text_map.get(603, locale))
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await i.response.defer()
         result, _ = await self.view.genshin_app.claim_daily_reward(
             i.user.id, i.user.id, i.locale
@@ -48,7 +48,7 @@ class ClaimRewardToggle(Button):
         self.locale = locale
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await i.client.pool.execute(
             "UPDATE user_accounts SET daily_checkin = NOT daily_checkin WHERE user_id = $1 AND uid = $2",
             i.user.id,
@@ -61,7 +61,7 @@ class ClaimRewardToggle(Button):
         await return_claim_reward(i, self.view.genshin_app)
 
 
-async def return_claim_reward(i: CustomInteraction, genshin_app: GenshinApp):
+async def return_claim_reward(i: Inter, genshin_app: GenshinApp):
     try:
         await i.response.defer()
     except InteractionResponded:

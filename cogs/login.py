@@ -15,14 +15,14 @@ from logingateway.model import (
 )
 
 from apps.text_map import text_map
-from models import DefaultEmbed, ShenheBot
+from dev.models import BotModel, DefaultEmbed
 from utility import log
 
 load_dotenv()
 
 
 class LoginGatewayCog(commands.Cog):
-    def __init__(self, bot: ShenheBot) -> None:
+    def __init__(self, bot: BotModel) -> None:
         self.bot = bot
         self.gateway = HuTaoLoginAPI(
             client_id=os.getenv("HUTAO_CLIENT_ID", ""),
@@ -92,7 +92,7 @@ class LoginGatewayCog(commands.Cog):
             pass
 
 
-async def setup(client: ShenheBot):
+async def setup(client: BotModel):
     await client.add_cog(LoginGatewayCog(client))
 
 

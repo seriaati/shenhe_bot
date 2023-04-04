@@ -5,7 +5,7 @@ from discord.ext import commands
 
 import ui
 from apps.db import get_user_lang
-from models import CustomInteraction
+from dev.models import Inter
 
 
 class HelpCog(commands.Cog):
@@ -16,7 +16,7 @@ class HelpCog(commands.Cog):
         name="help", description=_("View a list of all commands", hash=486)
     )
     async def help(self, inter: discord.Interaction):
-        i: CustomInteraction = inter  # type: ignore
+        i: Inter = inter  # type: ignore
         user_locale = await get_user_lang(i.user.id, i.client.pool)
         view = ui.HelpView(user_locale or i.locale)
         await i.response.send_message(view=view)

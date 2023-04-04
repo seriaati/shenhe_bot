@@ -4,9 +4,9 @@ from typing import Dict, List
 import genshin
 from PIL import Image, ImageDraw
 
-import asset
+import dev.asset as asset
 from apps.draw.utility import draw_dynamic_background, get_cache, get_font
-from models import DynamicBackgroundInput
+from dev.models import DynamicBackgroundInput
 
 
 def character_card(

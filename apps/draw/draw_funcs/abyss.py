@@ -5,7 +5,7 @@ import discord
 import genshin
 from PIL import Image, ImageDraw
 
-import asset
+import dev.asset as asset
 from apps.draw.draw_funcs import leaderboard
 from apps.draw.utility import (
     draw_dynamic_background,
@@ -14,7 +14,7 @@ from apps.draw.utility import (
     get_font,
 )
 from apps.text_map import text_map
-from models import (
+from dev.models import (
     CharacterUsageResult,
     DynamicBackgroundInput,
     RunLeaderboardUser,

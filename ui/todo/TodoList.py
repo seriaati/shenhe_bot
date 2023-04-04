@@ -4,14 +4,14 @@ import asyncpg
 from discord import ButtonStyle, Locale, SelectOption
 from discord.ui import Button, Select, TextInput
 
-import asset
-import config
-import models
+import dev.asset as asset
+import dev.config as config
+import dev.models as models
 from ambr import AmbrTopAPI, Material
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
-from base_ui import BaseModal, BaseView
+from dev.base_ui import BaseModal, BaseView
 from utility.todo_paginator import TodoPaginator, TodoPaginatorView
 
 
@@ -47,7 +47,7 @@ class AddItem(Button):
         )
 
     @staticmethod
-    async def callback(i: models.CustomInteraction):
+    async def callback(i: models.Inter):
         locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
         await i.response.send_modal(AddItemModal(locale))
 
@@ -69,7 +69,7 @@ class EditOrRemove(Button):
         self.action = action
         self.view: TodoPaginatorView
 
-    async def callback(self, i: models.CustomInteraction):
+    async def callback(self, i: models.Inter):
         self.view.clear_items()
         self.view.add_item(
             ItemSelect(
@@ -88,7 +88,7 @@ class ClearItems(Button):
         super().__init__(label=label, disabled=disabled, row=3, emoji=asset.clear_emoji)
 
     @staticmethod
-    async def callback(i: models.CustomInteraction):
+    async def callback(i: models.Inter):
         pool: asyncpg.Pool = i.client.pool  # type: ignore
         await pool.execute("DELETE FROM todo WHERE user_id = $1", i.user.id)
         await return_todo(i)
@@ -125,7 +125,7 @@ class ItemSelect(Select):
         self.item_dict = item_dict
         self.view: TodoPaginatorView
 
-    async def callback(self, i: models.CustomInteraction):
+    async def callback(self, i: models.Inter):
         pool: asyncpg.Pool = i.client.pool  # type: ignore
 
         row = await pool.fetchrow(
@@ -159,7 +159,7 @@ class AddItemModal(BaseModal):
         self.count.label = text_map.get(308, locale)
         self.count.placeholder = text_map.get(170, locale).format(a=90)
 
-    async def on_submit(self, i: models.CustomInteraction) -> None:
+    async def on_submit(self, i: models.Inter) -> None:
         pool: asyncpg.Pool = i.client.pool  # type: ignore
 
         if not self.count.value.isdigit():
@@ -210,7 +210,7 @@ class InputItemAmountModal(BaseModal):
             str(current_amount) if action is models.TodoAction.EDIT else str(max_amount)
         )
 
-    async def on_submit(self, i: models.CustomInteraction) -> None:
+    async def on_submit(self, i: models.Inter) -> None:
         pool: asyncpg.Pool = i.client.pool  # type: ignore
 
         if not self.count.value.isdigit():
@@ -235,7 +235,7 @@ class InputItemAmountModal(BaseModal):
         await return_todo(i)
 
 
-async def return_todo(i: models.CustomInteraction):
+async def return_todo(i: models.Inter):
     await i.response.defer()
 
     locale = await get_user_lang(i.user.id, i.client.pool) or i.locale

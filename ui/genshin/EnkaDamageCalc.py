@@ -7,17 +7,17 @@ import PIL
 from discord import ui, utils
 from pyppeteer import browser
 
-import asset
-import config
+import dev.asset as asset
+import dev.config as config
 import yelan.damage_calculator as damage_calc
 from apps.db import get_profile_ver, get_user_theme
 from apps.db.custom_image import get_user_custom_image
 from apps.draw import main_funcs
 from apps.genshin import get_browser, get_character_fanarts
 from apps.text_map import text_map
-from base_ui import BaseView, EnkaView
-from exceptions import CardNotReady, NoCharacterFound
-from models import CustomInteraction, DrawInput, ErrorEmbed
+from dev.base_ui import BaseView, EnkaView
+from dev.exceptions import CardNotReady, NoCharacterFound
+from dev.models import DrawInput, ErrorEmbed, Inter
 from utility.utils import divide_chunks
 from yelan.data.GO_modes import HIT_MODE_TEXTS
 
@@ -130,7 +130,7 @@ class GoBack(ui.Button):
         super().__init__(emoji=asset.back_emoji, row=4)
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         if isinstance(self.view, EnkaView):
             view = self.view
         else:
@@ -138,7 +138,7 @@ class GoBack(ui.Button):
         await go_back_callback(i, view)
 
 
-async def go_back_callback(i: CustomInteraction, enka_view: EnkaView):
+async def go_back_callback(i: Inter, enka_view: EnkaView):
     await i.response.defer()
 
     enka_view.clear_items()
@@ -211,7 +211,7 @@ class HitModeButton(ui.Button):
         self.hit_mode = hit_mode
         self.view: View
 
-    async def callback(self, i: CustomInteraction) -> Any:
+    async def callback(self, i: Inter) -> Any:
         self.view.calculator.hit_mode = self.hit_mode
         await damage_calc.return_current_status(i, self.view)
 
@@ -223,7 +223,7 @@ class ReactionModeSelect(ui.Select):
         )
         self.view: View
 
-    async def callback(self, i: CustomInteraction) -> Any:
+    async def callback(self, i: Inter) -> Any:
         self.view.calculator.reaction_mode = (
             "" if self.values[0] == "none" else self.values[0]
         )
@@ -237,7 +237,7 @@ class InfusionAuraSelect(ui.Select):
         )
         self.view: View
 
-    async def callback(self, i: CustomInteraction) -> Any:
+    async def callback(self, i: Inter) -> Any:
         self.view.calculator.infusion_aura = (
             "" if self.values[0] == "none" else self.values[0]
         )
@@ -255,7 +255,7 @@ class GoBackToCalc(ui.Button):
         super().__init__(emoji=asset.back_emoji, row=4)
         self.view: TeamSelectView
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         view = self.view.prev_view
         view.author = i.user
         await i.response.edit_message(view=view)
@@ -275,7 +275,7 @@ class TeamSelectButton(ui.Button):
         self.placeholder = placeholder
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         view = TeamSelectView(self.view)
         view.add_item(GoBackToCalc())
         divided: List[List[discord.SelectOption]] = list(
@@ -304,7 +304,7 @@ class TeamSelect(ui.Select):
         )
         self.view: TeamSelectView
 
-    async def callback(self, i: CustomInteraction) -> Any:
+    async def callback(self, i: Inter) -> Any:
         self.view.prev_view.calculator.team = self.values
         await damage_calc.return_current_status(i, self.view.prev_view)
 
@@ -320,5 +320,5 @@ class RunCalc(ui.Button):
         )
         self.view: View
 
-    async def callback(self, i: CustomInteraction) -> Any:
+    async def callback(self, i: Inter) -> Any:
         await damage_calc.return_damage(i, self.view)

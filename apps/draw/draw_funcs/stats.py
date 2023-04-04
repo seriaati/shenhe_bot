@@ -6,7 +6,7 @@ import enkanetwork
 import genshin
 from PIL import Image, ImageDraw
 
-import asset
+import dev.asset as asset
 from apps.draw.utility import circular_crop, get_cache, get_font
 
 

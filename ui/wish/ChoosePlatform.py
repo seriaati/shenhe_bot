@@ -3,11 +3,11 @@ from typing import List
 import discord
 from discord import ui
 
-import config
+import dev.config as config
 from apps.db import get_user_lang
 from apps.text_map import text_map
-from base_ui import BaseView
-from models import CustomInteraction, DefaultEmbed
+from dev.base_ui import BaseView
+from dev.models import DefaultEmbed, Inter
 from ui.wish import SetAuthKey
 
 import_options = {
@@ -92,7 +92,7 @@ class ChooseMethod(ui.Select):
         super().__init__(placeholder=text_map.get(3, locale), options=options)
         self.locale = locale
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         self.view: View
         embeds = []
         option = import_options.get(self.values[0], {})
@@ -121,7 +121,7 @@ class SubmitLink(ui.Button):
         )
         self.locale = locale
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await i.response.send_modal(SetAuthKey.Modal(self.locale))
 
 
@@ -130,7 +130,7 @@ class GOBack(ui.Button):
         super().__init__(emoji="<:left:982588994778972171>")
         self.view: View
 
-    async def callback(self, i: CustomInteraction):
+    async def callback(self, i: Inter):
         await i.response.defer(ephemeral=True)
         user_locale = await get_user_lang(i.user.id, i.client.pool)
         view = View(self.view.locale)

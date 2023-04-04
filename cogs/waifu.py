@@ -3,12 +3,12 @@ from discord.ext import commands
 from discord.ui import Button, View
 
 from apps.db import get_user_lang
-from models import DefaultEmbed, ShenheBot
+from dev.models import BotModel, DefaultEmbed
 
 
 class WaifuCog(commands.Cog):
     def __init__(self, bot):
-        self.bot: ShenheBot = bot
+        self.bot: BotModel = bot
 
     @app_commands.command(name="waifu", description="指令都去哪了？")
     async def waifu_command(self, i: Interaction):

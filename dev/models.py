@@ -1,8 +1,8 @@
 import asyncio
 import io
+import typing
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
 
 import aiohttp
 import asyncpg
@@ -22,8 +22,8 @@ from apps.text_map import text_map
 class ShenheAccount(BaseModel):
     client: genshin.Client
     uid: int
-    discord_user: Union[discord.User, discord.Member]
-    user_locale: Optional[str] = None
+    discord_user: typing.Union[discord.User, discord.Member]
+    user_locale: typing.Optional[str] = None
     china: bool
     daily_checkin: bool
 
@@ -33,7 +33,7 @@ class ShenheAccount(BaseModel):
 
 class DamageResult(BaseModel):
     result_embed: discord.Embed
-    cond_embed: Optional[discord.Embed] = None
+    cond_embed: typing.Optional[discord.Embed] = None
 
     class Config:
         arbitrary_types_allowed = True
@@ -45,7 +45,7 @@ class NotificationUser(BaseModel):
     current: int
     max: int
     uid: int
-    last_notif: Optional[datetime] = None
+    last_notif: typing.Optional[datetime] = None
 
 
 class DrawInput(BaseModel):
@@ -61,7 +61,7 @@ class DrawInput(BaseModel):
 class RecentWish(BaseModel):
     name: str
     pull_num: int
-    icon: Optional[str] = None
+    icon: typing.Optional[str] = None
 
 
 class WishItem(BaseModel):
@@ -77,7 +77,7 @@ class WishData(BaseModel):
     pity: int
     four_star: int
     five_star: int
-    recents: List[RecentWish]
+    recents: typing.List[RecentWish]
 
 
 class Wish(BaseModel):
@@ -96,10 +96,10 @@ class WishInfo(BaseModel):
     novice_banner_num: int
 
 
-class ShenheBot(commands.AutoShardedBot):
+class BotModel(commands.AutoShardedBot):
     genshin_client: genshin.Client
     session: aiohttp.ClientSession
-    browsers: Dict[str, Browser]
+    browsers: typing.Dict[str, Browser]
     gateway: HuTaoLoginAPI
     pool: asyncpg.Pool
     debug: bool
@@ -108,21 +108,65 @@ class ShenheBot(commands.AutoShardedBot):
     maintenance: bool = False
     maintenance_time: str = ""
     launch_time = datetime.utcnow()
-    gd_text_map: Dict[str, Dict[str, str]]
+    gd_text_map: typing.Dict[str, typing.Dict[str, str]]
     stats_card_cache = cachetools.TTLCache(maxsize=512, ttl=120)
     area_card_cache = cachetools.TTLCache(maxsize=512, ttl=120)
     abyss_overview_card_cache = cachetools.TTLCache(maxsize=512, ttl=120)
     abyss_floor_card_cache = cachetools.TTLCache(maxsize=512, ttl=120)
     abyss_one_page_cache = cachetools.TTLCache(maxsize=512, ttl=120)
-    tokenStore: Dict[str, Any] = {}
-    disabled_commands: List[str] = []
+    tokenStore: typing.Dict[str, typing.Any] = {}
+    disabled_commands: typing.List[str] = []
+
+
+class ShenheEmbed(discord.Embed):
+    def __init__(
+        self,
+        title: typing.Optional[str] = None,
+        description: typing.Optional[str] = None,
+        color: typing.Optional[int] = 0xA68BD3,
+    ):
+        super().__init__(title=title, description=description, color=color)
+
+    def set_title(
+        self,
+        map_hash: int,
+        locale: typing.Union[discord.Locale, str],
+        user: typing.Union[discord.Member, discord.User],
+    ):
+        self.set_author(
+            name=text_map.get(map_hash, locale), icon_url=user.display_avatar.url
+        )
+        return self
+
+
+class DefaultEmbed(ShenheEmbed):
+    def __init__(
+        self,
+        title: typing.Optional[str] = None,
+        description: typing.Optional[str] = None,
+    ):
+        super().__init__(title=title, description=description, color=0xA68BD3)
+
+
+class ErrorEmbed(ShenheEmbed):
+    def __init__(
+        self,
+        title: typing.Optional[str] = None,
+        description: typing.Optional[str] = None,
+    ):
+        super().__init__(title=title, description=description, color=0xFC5165)
+
+
+class EmbedField(BaseModel):
+    name: str
+    value: str
 
 
 class TodoList:
     def __init__(self):
-        self.dict: Dict[int, int] = {}
+        self.dict: typing.Dict[int, int] = {}
 
-    def add_item(self, item: Dict[int, int]):
+    def add_item(self, item: typing.Dict[int, int]):
         key = list(item.keys())[0]
         value = list(item.values())[0]
         if value <= 0:
@@ -132,7 +176,7 @@ class TodoList:
         else:
             self.dict[key] = value
 
-    def remove_item(self, item: Dict[int, int]):
+    def remove_item(self, item: typing.Dict[int, int]):
         key = list(item.keys())[0]
         value = list(item.values())[0]
         if key in self.dict:
@@ -140,7 +184,7 @@ class TodoList:
             if self.dict[key] <= 0:
                 self.dict.pop(key)
 
-    def return_list(self) -> Dict[int, int]:
+    def return_list(self) -> typing.Dict[int, int]:
         return self.dict
 
 
@@ -152,67 +196,10 @@ class UserCustomImage(BaseModel):
     from_shenhe: bool
 
 
-class GenshinAppResult(BaseModel):
-    success: bool
-    result: Any
-
-
-class AbyssResult(BaseModel):
-    embed_title: str = Field(alias="title")
-    abyss: genshin.models.SpiralAbyss
-    genshin_user: genshin.models.PartialGenshinUserStats = Field(alias="user")
-    discord_user: discord.User | discord.Member | discord.ClientUser
-    overview_embed: discord.Embed = Field(alias="overview")
-    overview_file: io.BytesIO = Field(alias="overview_card")
-    abyss_floors: List[genshin.models.Floor] = Field(alias="floors")
-    characters: List[genshin.models.Character]
-    uid: int
-
-    class Config:
-        arbitrary_types_allowed = True
-
-
-class RealtimeNoteResult(BaseModel):
-    embed: discord.Embed
-    draw_input: DrawInput
-    notes: genshin.models.Notes
-
-    class Config:
-        arbitrary_types_allowed = True
-
-
-class StatsResult(BaseModel):
-    embed: discord.Embed
-    file: io.BytesIO
-
-    class Config:
-        arbitrary_types_allowed = True
-
-
-class AreaResult(BaseModel):
-    embed: discord.Embed
-    file: io.BytesIO
-
-    class Config:
-        arbitrary_types_allowed = True
-
-
-class DiaryResult(BaseModel):
-    embed: discord.Embed
-    file: io.BytesIO
-
-    class Config:
-        arbitrary_types_allowed = True
-
-
-class CharacterResult(BaseModel):
-    characters: List[genshin.models.Character]
-
-
 class CharacterBuild(BaseModel):
     embed: discord.Embed
-    weapon: Optional[str] = None
-    artifact: Optional[str] = None
+    weapon: typing.Optional[str] = None
+    artifact: typing.Optional[str] = None
     is_thought: bool
 
     class Config:
@@ -239,7 +226,7 @@ class TopPadding(BaseModel):
 
 
 class DynamicBackgroundInput(BaseModel):
-    top_padding: Union[TopPadding, int]
+    top_padding: typing.Union[TopPadding, int]
     left_padding: int
     right_padding: int
     bottom_padding: int
@@ -248,7 +235,7 @@ class DynamicBackgroundInput(BaseModel):
     card_x_padding: int
     card_y_padding: int
     card_num: int
-    max_card_num: Optional[int] = None
+    max_card_num: typing.Optional[int] = None
     background_color: str
     draw_title: bool = True
 
@@ -299,7 +286,7 @@ class RunLeaderboardUser(BaseModel):
 
 class LeaderboardResult(BaseModel):
     fp: io.BytesIO
-    current_user: Union[RunLeaderboardUser, SingleStrikeLeaderboardUser]
+    current_user: typing.Union[RunLeaderboardUser, SingleStrikeLeaderboardUser]
 
     class Config:
         arbitrary_types_allowed = True
@@ -313,26 +300,26 @@ class TodoItem(BaseModel):
 
 class AbyssHalf(BaseModel):
     num: int
-    enemies: List[str]
+    enemies: typing.List[str]
 
 
 class AbyssChamber(BaseModel):
     num: int
     enemy_level: int
-    halfs: List[AbyssHalf]
+    halfs: typing.List[AbyssHalf]
 
 
 class AbyssFloor(BaseModel):
     num: int
-    chambers: List[AbyssChamber]
+    chambers: typing.List[AbyssChamber]
 
 
 class InitLevels(BaseModel):
-    level: Optional[int] = None
-    a_level: Optional[int] = None
-    e_level: Optional[int] = None
-    q_level: Optional[int] = None
-    ascension_phase: Optional[int] = None
+    level: typing.Optional[int] = None
+    a_level: typing.Optional[int] = None
+    e_level: typing.Optional[int] = None
+    q_level: typing.Optional[int] = None
+    ascension_phase: typing.Optional[int] = None
 
 
 class TodoAction(str, Enum):
@@ -342,73 +329,28 @@ class TodoAction(str, Enum):
 
 class OriginalInfo(BaseModel):
     view: discord.ui.View
-    children: List[discord.ui.Item]
-    embed: Optional[discord.Embed] = None
-    attachments: Optional[List[discord.Attachment]] = None
+    children: typing.List[discord.ui.Item]
+    embed: typing.Optional[discord.Embed] = None
+    attachments: typing.Optional[typing.List[discord.Attachment]] = None
 
     class Config:
         arbitrary_types_allowed = True
 
 
-class DiaryLogsResult(BaseModel):
-    primo_per_day: Dict[int, int]
-    before_adding: Dict[int, int]
-
-
 class FarmData(BaseModel):
     domain: ambr.Domain
-    characters: List[ambr.Character] = []
-    weapons: List[ambr.Weapon] = []
+    characters: typing.List[ambr.Character] = []
+    weapons: typing.List[ambr.Weapon] = []
 
 
 class ConditionalResult(BaseModel):
-    cond: Dict[str, Any]
+    cond: typing.Dict[str, typing.Any]
     desc: str
     effect: str
 
 
-class CustomInteraction(discord.Interaction):
-    client: ShenheBot
-
-
-class ShenheEmbed(discord.Embed):
-    def __init__(
-        self,
-        title: Optional[str] = None,
-        description: Optional[str] = None,
-        color: Optional[int] = 0xA68BD3,
-    ):
-        super().__init__(title=title, description=description, color=color)
-
-    def set_title(
-        self,
-        map_hash: int,
-        locale: Union[discord.Locale, str],
-        user: Union[discord.Member, discord.User],
-    ):
-        self.set_author(
-            name=text_map.get(map_hash, locale), icon_url=user.display_avatar.url
-        )
-        return self
-
-
-class DefaultEmbed(ShenheEmbed):
-    def __init__(
-        self,
-        title: Optional[str] = None,
-        description: Optional[str] = None,
-    ):
-        super().__init__(title=title, description=description, color=0xA68BD3)
-
-
-class ErrorEmbed(ShenheEmbed):
-    def __init__(self, title: Optional[str] = None, description: Optional[str] = None):
-        super().__init__(title=title, description=description, color=0xFC5165)
-
-
-class EmbedField(BaseModel):
-    name: str
-    value: str
+class Inter(discord.Interaction):
+    client: BotModel
 
 
 class TalentBoost(Enum):

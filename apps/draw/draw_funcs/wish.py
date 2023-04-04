@@ -3,7 +3,7 @@ import io
 import discord
 from PIL import Image, ImageDraw
 
-import asset
+import dev.asset as asset
 from apps.draw.utility import (
     circular_crop,
     dynamic_font_size,
@@ -12,7 +12,7 @@ from apps.draw.utility import (
     global_write,
 )
 from apps.text_map import text_map
-from models import WishData
+from dev.models import WishData
 
 
 def overview(

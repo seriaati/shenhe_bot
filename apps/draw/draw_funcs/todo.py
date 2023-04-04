@@ -4,7 +4,7 @@ from typing import List, Optional, Tuple
 import discord
 from PIL import Image, ImageDraw
 
-import asset
+import dev.asset as asset
 from ambr import Material
 from apps.draw.utility import (
     circular_crop,
@@ -14,7 +14,7 @@ from apps.draw.utility import (
     get_font,
     human_format,
 )
-from models import DynamicBackgroundInput, TopPadding
+from dev.models import DynamicBackgroundInput, TopPadding
 
 
 def material_card(

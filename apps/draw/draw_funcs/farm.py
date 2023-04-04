@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw
 
 from apps.draw.utility import get_cache, get_font
 from apps.genshin.utility import get_domain_title
-from models import FarmData
+from dev.models import FarmData
 
 
 def draw_domain_card(

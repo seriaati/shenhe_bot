@@ -2,8 +2,8 @@ import asyncpg
 import discord
 from discord import ui
 
-import asset
-import config
+import dev.asset as asset
+import dev.config as config
 from ambr import AmbrTopAPI
 from apps.genshin import (
     check_cookie_predicate,
@@ -12,9 +12,9 @@ from apps.genshin import (
     get_weapon_emoji,
 )
 from apps.text_map import text_map, to_ambr_top
-from base_ui import BaseModal, BaseView
-from exceptions import NumbersOnly
-from models import DefaultEmbed
+from dev.base_ui import BaseModal, BaseView
+from dev.exceptions import NumbersOnly
+from dev.models import DefaultEmbed
 from ui.genshin import TalentNotificationMenu, WeaponNotificationMenu
 from utility import divide_chunks
 

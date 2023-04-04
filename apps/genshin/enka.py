@@ -5,8 +5,8 @@ import aiohttp
 import asyncpg
 import enkanetwork
 
-from exceptions import NoCharacterFound
-from models import EnkaInfoResponse
+from dev.exceptions import NoCharacterFound
+from dev.models import EnkaInfoResponse
 
 
 async def get_enka_info(uid: int, session: aiohttp.ClientSession) -> EnkaInfoResponse:

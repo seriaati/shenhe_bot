@@ -6,7 +6,7 @@ from discord.ui import Button, Select
 
 from ambr import Material
 from apps.draw import main_funcs
-from models import CustomInteraction, DrawInput, TodoItem
+from dev.models import DrawInput, Inter, TodoItem
 from utility.paginator import GeneralPaginator, GeneralPaginatorView
 
 
@@ -47,7 +47,7 @@ class TodoPaginatorView(GeneralPaginatorView):
 class TodoPaginator(GeneralPaginator):
     def __init__(
         self,
-        i: CustomInteraction,
+        i: Inter,
         embeds: List[Embed],
         materials: List[Tuple[Material, int | str]],
         dark_mode: bool,

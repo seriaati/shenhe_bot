@@ -15,9 +15,9 @@ from dotenv import load_dotenv
 from enkanetwork import Assets
 
 import apps.genshin.checks as checks
-import asset
-import exceptions
-import models
+import dev.asset as asset
+import dev.exceptions as exceptions
+import dev.models as models
 import ui
 import utility.utils as utils
 from ambr import AmbrTopAPI, Character, Material, Weapon
@@ -25,10 +25,10 @@ from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.genshin import (
     enka,
-    genshin_app,
     get_character_emoji,
     get_uid,
     get_uid_region_hash,
+    hoyolab,
     leaderboard,
 )
 from apps.genshin_data import abyss
@@ -42,8 +42,8 @@ load_dotenv()
 
 class GenshinCog(commands.Cog, name="genshin"):
     def __init__(self, bot):
-        self.bot: models.ShenheBot = bot
-        self.genshin_app = genshin_app.GenshinApp(self.bot)
+        self.bot: models.BotModel = bot
+        self.genshin_app = hoyolab.GenshinApp(self.bot)
         self.debug = self.bot.debug
 
         # Right click commands
@@ -172,7 +172,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         ),
     )
     async def slash_register(self, inter: discord.Interaction):
-        i: models.CustomInteraction = inter  # type: ignore
+        i: models.Inter = inter  # type: ignore
         await i.response.defer(ephemeral=True)
         await ui.ManageAccounts.return_accounts(i)
 
@@ -202,30 +202,26 @@ class GenshinCog(commands.Cog, name="genshin"):
     ):
         await i.response.defer(ephemeral=ephemeral)
         member = member or i.user
-        result = await self.genshin_app.get_real_time_notes(
-            member.id, i.user.id, i.locale
+
+        r = await self.genshin_app.get_real_time_notes(member.id, i.user.id, i.locale)
+        if isinstance(r.result, models.ErrorEmbed):
+            return await i.followup.send(embed=r.result, ephemeral=True)
+
+        result = r.result
+        await i.followup.send(
+            embed=result.embed.set_image(url="https://i.imgur.com/cBykL8X.gif"),
+            ephemeral=ephemeral,
         )
-        if not result.success:
-            await i.followup.send(embed=result.result, ephemeral=True)
-        else:
-            note_result: models.RealtimeNoteResult = result.result
-            await i.followup.send(
-                embed=note_result.embed.set_image(
-                    url="https://i.imgur.com/cBykL8X.gif"
-                ),
-                ephemeral=ephemeral,
-            )
-            fp = await main_funcs.draw_realtime_card(
-                note_result.draw_input,
-                note_result.notes,
-            )
-            fp.seek(0)
-            await i.edit_original_response(
-                embed=note_result.embed.set_image(
-                    url="attachment://realtime_notes.jpeg"
-                ),
-                attachments=[discord.File(fp, filename="realtime_notes.jpeg")],
-            )
+
+        fp = await main_funcs.draw_realtime_card(
+            result.draw_input,
+            result.notes,
+        )
+        fp.seek(0)
+        await i.edit_original_response(
+            embed=result.embed.set_image(url="attachment://realtime_notes.jpeg"),
+            attachments=[discord.File(fp, filename="realtime_notes.jpeg")],
+        )
 
     @checks.check_account()
     @app_commands.command(
@@ -270,21 +266,21 @@ class GenshinCog(commands.Cog, name="genshin"):
         if namecard is None:
             raise AssertionError("Namecard not found")
 
-        result = await self.genshin_app.get_stats(
+        r = await self.genshin_app.get_stats(
             member.id, i.user.id, namecard, member.display_avatar, i.locale
         )
-        if not result.success:
-            await i.followup.send(embed=result.result, ephemeral=True)
-        else:
-            stats_result: models.StatsResult = result.result
-            fp = stats_result.file
-            fp.seek(0)
-            _file = discord.File(fp, "stat_card.jpeg")
-            await i.followup.send(
-                embed=stats_result.embed,
-                ephemeral=context_command,
-                files=[_file],
-            )
+        if isinstance(r.result, models.ErrorEmbed):
+            return await i.followup.send(embed=r.result, ephemeral=True)
+
+        result = r.result
+        fp = result.file
+        fp.seek(0)
+        _file = discord.File(fp, "stat_card.jpeg")
+        await i.followup.send(
+            embed=result.embed,
+            ephemeral=context_command,
+            files=[_file],
+        )
 
     @checks.check_cookie()
     @app_commands.command(
@@ -302,15 +298,16 @@ class GenshinCog(commands.Cog, name="genshin"):
     ):
         await i.response.defer()
         member = member or i.user
-        result = await self.genshin_app.get_area(member.id, i.user.id, i.locale)
-        if not result.success:
-            await i.followup.send(embed=result.result)
-        else:
-            area_result: models.AreaResult = result.result
-            fp = area_result.file
-            fp.seek(0)
-            image = discord.File(fp, "area.jpeg")
-            await i.followup.send(embed=area_result.embed, files=[image])
+
+        r = await self.genshin_app.get_area(member.id, i.user.id, i.locale)
+        if isinstance(r.result, models.ErrorEmbed):
+            return await i.followup.send(embed=r.result)
+
+        result = r.result
+        fp = result.file
+        fp.seek(0)
+        image = discord.File(fp, "area.jpeg")
+        await i.followup.send(embed=result.embed, files=[image])
 
     @checks.check_cookie()
     @app_commands.command(
@@ -321,7 +318,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         ),
     )
     async def claim(self, inter: discord.Interaction):
-        i: models.CustomInteraction = inter  # type: ignore
+        i: models.Inter = inter  # type: ignore
         await ui.DailyReward.return_claim_reward(i, self.genshin_app)
 
     @checks.check_cookie()
@@ -351,7 +348,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         member: Optional[discord.User | discord.Member] = None,
         ephemeral: bool = True,
     ):
-        i: models.CustomInteraction = inter  # type: ignore
+        i: models.Inter = inter  # type: ignore
         member = member or i.user
         user_locale = await get_user_lang(i.user.id, self.bot.pool)
         locale = user_locale or i.locale
@@ -363,10 +360,10 @@ class GenshinCog(commands.Cog, name="genshin"):
         )
 
         r = await self.genshin_app.get_all_characters(member.id, i.user.id, i.locale)
-        if not r.success:
+        if isinstance(r.result, models.ErrorEmbed):
             return await i.followup.send(embed=r.result, ephemeral=ephemeral)
 
-        result: models.CharacterResult = r.result
+        result = r.result
         client = AmbrTopAPI(self.bot.session)
         characters = await client.get_character(
             include_beta=False, include_traveler=False
@@ -396,22 +393,19 @@ class GenshinCog(commands.Cog, name="genshin"):
         member = member or i.user
         await i.response.defer()
         user_locale = await get_user_lang(i.user.id, self.bot.pool)
-        result = await self.genshin_app.get_diary(member.id, i.user.id, i.locale)
-        if not result.success:
-            await i.followup.send(embed=result.result)
-        else:
-            diary_result: models.DiaryResult = result.result
-            view = ui.Diary.View(
-                i.user, member, self.genshin_app, user_locale or i.locale
-            )
-            fp = diary_result.file
-            fp.seek(0)
-            await i.followup.send(
-                embed=diary_result.embed,
-                view=view,
-                files=[discord.File(fp, "diary.jpeg")],
-            )
-            view.message = await i.original_response()
+        r = await self.genshin_app.get_diary(member.id, i.user.id, i.locale)
+        if isinstance(r.result, models.ErrorEmbed):
+            return await i.followup.send(embed=r.result)
+        result = r.result
+        view = ui.Diary.View(i.user, member, self.genshin_app, user_locale or i.locale)
+        fp = result.file
+        fp.seek(0)
+        await i.followup.send(
+            embed=result.embed,
+            view=view,
+            files=[discord.File(fp, "diary.jpeg")],
+        )
+        view.message = await i.original_response()
 
     @checks.check_cookie()
     @app_commands.command(
@@ -444,9 +438,10 @@ class GenshinCog(commands.Cog, name="genshin"):
         result = await self.genshin_app.get_abyss(
             member.id, i.user.id, previous == 1, i.locale
         )
-        if not result.success:
+        if isinstance(result.result, models.ErrorEmbed):
             return await i.followup.send(embed=result.result)
-        abyss_result: models.AbyssResult = result.result
+
+        abyss_result = result.result
         view = ui.Abyss.View(i.user, abyss_result, user_locale or i.locale)
         fp = abyss_result.overview_file
         fp.seek(0)
@@ -695,20 +690,20 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.rename(code=_("code", hash=451))
     async def redeem(self, i: discord.Interaction, code: str):
         await i.response.defer()
-        result = await self.genshin_app.redeem_code(
-            i.user.id, i.user.id, code, i.locale
-        )
+        r = await self.genshin_app.redeem_code(i.user.id, i.user.id, code, i.locale)
         locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
+
         view = ui.MeToo.View(code, self.genshin_app, locale)
-        if not result.success:
+        if isinstance(r.result, models.ErrorEmbed):
             view.add_item(
                 discord.ui.Button(
                     label=text_map.get(768, locale),
                     url=f"https://genshin.hoyoverse.com/en/gift?code={code}",
                 )
             )
+
         await i.followup.send(
-            embed=result.result,
+            embed=r.result,
             view=view,
         )
         view.message = await i.original_response()
@@ -732,7 +727,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         name="events", description=_("View ongoing genshin events", hash=452)
     )
     async def events(self, inter: discord.Interaction):
-        i: models.CustomInteraction = inter  # type: ignore
+        i: models.Inter = inter  # type: ignore
         await ui.EventTypeChooser.return_events(i)
 
     @checks.check_account()
@@ -756,7 +751,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     @app_commands.rename(query=_("query", hash=509))
     async def search(self, inter: discord.Interaction, query: str):
-        i: models.CustomInteraction = inter  # type: ignore
+        i: models.Inter = inter  # type: ignore
 
         if not query.isdigit():
             raise exceptions.AutocompleteError
@@ -879,13 +874,15 @@ class GenshinCog(commands.Cog, name="genshin"):
         inter: discord.Interaction,
         member: Optional[discord.User | discord.Member] = None,
     ):
-        i: models.CustomInteraction = inter  # type: ignore
+        i: models.Inter = inter  # type: ignore
         await i.response.defer()
         member = member or i.user
-        result = await self.genshin_app.get_activities(member.id, i.user.id, i.locale)
-        if not result.success:
-            return await i.followup.send(embed=result.result, ephemeral=True)
-        await GeneralPaginator(i, result.result).start(followup=True)
+
+        r = await self.genshin_app.get_activities(member.id, i.user.id, i.locale)
+        if isinstance(r.result, models.ErrorEmbed):
+            return await i.followup.send(embed=r.result, ephemeral=True)
+
+        await GeneralPaginator(i, r.result).start(followup=True)
 
     @app_commands.command(
         name="beta",
@@ -1037,7 +1034,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         ),
     )
     async def slash_lineup(self, inter: discord.Interaction):
-        i: models.CustomInteraction = inter  # type: ignore
+        i: models.Inter = inter  # type: ignore
         locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
 
         client = self.bot.genshin_client
