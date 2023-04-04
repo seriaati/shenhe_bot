@@ -18,7 +18,6 @@ from apps.genshin import (
     get_wish_history_embed,
     get_wish_info_embed,
 )
-from apps.genshin.checks import check_cookie
 from apps.text_map import text_map, to_ambr_top
 from data.game.standard_characters import get_standard_characters
 from dev.base_ui import capture_exception
