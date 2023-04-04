@@ -1,7 +1,7 @@
 import json
 from typing import Dict, List
 
-with open("genshin-substat-lookup/rollTable.json", "r") as f:
+with open("data/game/rollTable.json", "r") as f:
     roll_table: Dict[str, Dict[str, Dict[str, List[List[float]]]]] = json.load(f)
 
 
