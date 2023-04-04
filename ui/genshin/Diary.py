@@ -11,7 +11,7 @@ from apps.db import get_user_lang
 from apps.genshin import GenshinApp
 from apps.text_map import text_map
 from dev.base_ui import BaseView
-from dev.models import DefaultEmbed, DiaryLogsResult, DiaryResult, ErrorEmbed, Inter
+from dev.models import DefaultEmbed, ErrorEmbed, Inter
 from utility import divide_chunks
 
 

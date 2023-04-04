@@ -393,22 +393,19 @@ class GenshinCog(commands.Cog, name="genshin"):
         member = member or i.user
         await i.response.defer()
         user_locale = await get_user_lang(i.user.id, self.bot.pool)
-        result = await self.genshin_app.get_diary(member.id, i.user.id, i.locale)
-        if isinstance(result.result, models.ErrorEmbed):
-            await i.followup.send(embed=result.result)
-        else:
-            diary_result: models.DiaryResult = result.result
-            view = ui.Diary.View(
-                i.user, member, self.genshin_app, user_locale or i.locale
-            )
-            fp = diary_result.file
-            fp.seek(0)
-            await i.followup.send(
-                embed=diary_result.embed,
-                view=view,
-                files=[discord.File(fp, "diary.jpeg")],
-            )
-            view.message = await i.original_response()
+        r = await self.genshin_app.get_diary(member.id, i.user.id, i.locale)
+        if isinstance(r.result, models.ErrorEmbed):
+            return await i.followup.send(embed=r.result)
+        result = r.result
+        view = ui.Diary.View(i.user, member, self.genshin_app, user_locale or i.locale)
+        fp = result.file
+        fp.seek(0)
+        await i.followup.send(
+            embed=result.embed,
+            view=view,
+            files=[discord.File(fp, "diary.jpeg")],
+        )
+        view.message = await i.original_response()
 
     @checks.check_cookie()
     @app_commands.command(
