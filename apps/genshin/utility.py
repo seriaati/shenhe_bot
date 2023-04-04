@@ -566,11 +566,11 @@ async def get_character_suggested_talent_levels(
     if not isinstance(character, Character):
         return [1, 1, 1]
     with open(f"data/builds/{character.element.lower()}.yaml") as f:
-        builds: Dict[str, Any] = yaml.safe_load(f)
-    character_build = builds.get(chinese_character_name)
+        builds: Dict[str, Any] = yaml.safe_load(f)  # type: ignore
+    character_build = builds.get(chinese_character_name)  # type: ignore
     if character_build is None:
         return [1, 1, 1]
-    talents = builds[chinese_character_name]["builds"][0]["talents"]  # 2/2/2
+    talents = builds[chinese_character_name]["builds"][0]["talents"]  # type: ignore
     talents = talents.split("/")
     return [int(talent) for talent in talents]
 

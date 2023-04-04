@@ -271,7 +271,7 @@ def global_write(
 
 
 def has_glyph(font: TTFont, glyph: str):
-    return any(ord(glyph) in table.cmap.keys() for table in font["cmap"].tables)
+    return any(ord(glyph) in table.cmap.keys() for table in font["cmap"].tables)  # type: ignore
 
 
 def resize_and_crop_image(
@@ -306,7 +306,7 @@ def resize_and_crop_image(
 
     if dark_mode:
         # add dark transparency to the image
-        im = Image.alpha_composite(im, Image.new("RGBA", im.size, (0, 0, 0, 50)))
+        im = Image.alpha_composite(im, Image.new("RGBA", im.size, (0, 0, 0, 50))) # type: ignore
 
     # make rounded corners
     radius = 20 if version == 1 else 25

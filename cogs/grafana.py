@@ -8,4 +8,4 @@ class GrafanaCog(commands.Cog):
 
 
 async def setup(bot: commands.AutoShardedBot):
-    await bot.add_cog(PrometheusCog(bot, port=7005))
+    await bot.add_cog(PrometheusCog(bot, port=7005))  # type: ignore

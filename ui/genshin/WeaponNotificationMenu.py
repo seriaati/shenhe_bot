@@ -8,8 +8,8 @@ import dev.config as config
 from ambr import AmbrTopAPI
 from apps.genshin import get_weapon_emoji
 from apps.text_map import text_map, to_ambr_top
-from dev.base_ui import BaseView
 from data.game.weapon_types import get_weapon_type_emoji
+from dev.base_ui import BaseView
 from ui.genshin import ReminderMenu
 from utility import divide_chunks
 
@@ -124,7 +124,7 @@ class WeaponSelect(Select):
         data_list = await pool.fetchval(
             "SELECT item_list FROM weapon_notification WHERE user_id = $1", i.user.id
         )
-        weapon_list: List[str] = data_list
+        weapon_list: List[str] = data_list  # type: ignore
         for weapon_id in self.values:
             if weapon_id in weapon_list:
                 weapon_list.remove(weapon_id)

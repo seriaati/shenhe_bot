@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord.ui import Button, View
 
 from apps.db import get_user_lang
-from dev.models import BotModel, DefaultEmbed
+from dev.models import BotModel, DefaultEmbed, Inter
 
 
 class WaifuCog(commands.Cog):
@@ -11,7 +11,8 @@ class WaifuCog(commands.Cog):
         self.bot: BotModel = bot
 
     @app_commands.command(name="waifu", description="指令都去哪了？")
-    async def waifu_command(self, i: Interaction):
+    async def waifu_command(self, inter: Interaction):
+        i: Inter = inter  # type: ignore
         locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
         locale = str(locale)
         view = View()

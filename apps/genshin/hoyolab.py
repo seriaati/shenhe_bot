@@ -15,14 +15,7 @@ from apps.draw import main_funcs
 from apps.text_map import get_month_name, text_map
 from dev.base_ui import get_error_handle_embed
 from dev.exceptions import UIDNotFound
-from dev.models import (
-    BotModel,
-    DefaultEmbed,
-    DrawInput,
-    ErrorEmbed,
-    ShenheAccount,
-    ShenheEmbed,
-)
+from dev.models import BotModel, DefaultEmbed, DrawInput, ErrorEmbed, ShenheAccount
 from utility import get_dt_now, log
 
 from .models import *
@@ -88,7 +81,7 @@ class GenshinApp:
     @genshin_error_handler
     async def claim_daily_reward(
         self, user_id: int, author_id: int, locale: discord.Locale
-    ) -> GenshinAppResult[ShenheEmbed]:
+    ) -> GenshinAppResult[DefaultEmbed]:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         try:
             reward = await shenhe_user.client.claim_daily_reward()

@@ -126,7 +126,7 @@ class ShenheCommandTree(app_commands.CommandTree):
     async def on_error(
         self, i: discord.Interaction, e: app_commands.AppCommandError, /
     ) -> None:
-        return await global_error_handler(i, e)
+        return await global_error_handler(i, e)  # type: ignore
 
 
 class Shenhe(BotModel):

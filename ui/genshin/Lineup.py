@@ -127,7 +127,7 @@ class CharacterSelector(Select):
                 self.view.scenario_dict,
             )
         )
-        self.view.add_item(self.view.lineup_selector)
+        self.view.add_item(self.view.lineup_selector)  # type: ignore
 
         if i.message is not None:
             embed = i.message.embeds[0]

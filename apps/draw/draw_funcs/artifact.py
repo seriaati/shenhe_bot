@@ -24,7 +24,7 @@ def combine_artifact_images(images: List[Image.Image], dark_mode: bool) -> io.By
     background_color = (
         asset.dark_theme_background if dark_mode else asset.light_theme_background
     )
-    im = Image.new("RGB", (num_cols * size[0], num_rows * size[1]), background_color)
+    im = Image.new("RGB", (num_cols * size[0], num_rows * size[1]), background_color)  # type: ignore
 
     # Paste each image onto the new image
     for i, item in enumerate(images):

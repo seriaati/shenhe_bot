@@ -92,7 +92,7 @@ class AdminCog(commands.Cog, name="admin"):
             name=ctx.author.name + "#" + ctx.author.discriminator,
             icon_url=ctx.author.display_avatar.url,
         )
-        success = await dm_embed(user, embed)
+        success = await dm_embed(user, embed)  # type: ignore
         if not success:
             await ctx.send("failed to send message")
         else:

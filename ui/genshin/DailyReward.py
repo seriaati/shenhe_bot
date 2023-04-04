@@ -32,12 +32,12 @@ class ClaimReward(Button):
 
     async def callback(self, i: Inter):
         await i.response.defer()
-        result, _ = await self.view.genshin_app.claim_daily_reward(
+        r = await self.view.genshin_app.claim_daily_reward(
             i.user.id, i.user.id, i.locale
         )
         for item in self.view.children:
             item.disabled = True  # type: ignore
-        await i.edit_original_response(embed=result, view=self.view)
+        await i.edit_original_response(embed=r.result, view=self.view)
         await asyncio.sleep(2)
         await return_claim_reward(i, self.view.genshin_app)
 
