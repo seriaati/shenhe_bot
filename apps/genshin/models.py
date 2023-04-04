@@ -25,6 +25,9 @@ class GenshinAppResult(typing.Generic[V], BaseModel):
     success: bool
     result: typing.Union[V, ErrorEmbed]
 
+    class Config:
+        arbitrary_types_allowed = True
+
 
 class AbyssResult(BaseModel):
     embed_title: str = Field(alias="title")
