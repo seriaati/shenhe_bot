@@ -108,7 +108,7 @@ class CharacterSelect(Select):
         data_list = await pool.fetchval(
             "SELECT item_list FROM talent_notification WHERE user_id = $1", i.user.id
         )
-        character_list: List[str] = data_list # type: ignore
+        character_list: List[str] = data_list  # type: ignore
         for character_id in self.values:
             if character_id in character_list:
                 character_list.remove(character_id)

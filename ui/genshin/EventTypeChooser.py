@@ -54,7 +54,7 @@ class Hoyolab(ui.Button):
             embed = DefaultEmbed(event["title"])
             embed.add_field(
                 name=text_map.get(625, locale),
-                value=format_dt(date_published, "R"), # type: ignore
+                value=format_dt(date_published, "R"),  # type: ignore
                 inline=False,
             )
             embed.add_field(
@@ -127,11 +127,11 @@ class Genshin(ui.Button):
                 embed.set_image(url=e["banner"])
                 embed.add_field(
                     name=text_map.get(406, self.view.locale),
-                    value=format_dt(parser.parse(e["start_time"]), "R"), # type: ignore
+                    value=format_dt(parser.parse(e["start_time"]), "R"),  # type: ignore
                 )
                 embed.add_field(
                     name=text_map.get(407, self.view.locale),
-                    value=format_dt(parser.parse(e["end_time"]), "R"), # type: ignore
+                    value=format_dt(parser.parse(e["end_time"]), "R"),  # type: ignore
                 )
                 embed.add_field(
                     name=text_map.get(408, self.view.locale),

@@ -225,7 +225,7 @@ class UpdateTalentsJson(ui.Button):
         if (
             talents
             and "last_updated" in talents
-            and get_dt_now() - parser.parse(talents["last_updated"]) # type: ignore
+            and get_dt_now() - parser.parse(talents["last_updated"])  # type: ignore
             < timedelta(hours=1)
         ):
             return await i.edit_original_response(
