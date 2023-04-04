@@ -9,19 +9,19 @@ discord-ext-prometheus @ git+https://github.com/Apollo-Roboto/discord.py-ext-pro
 discord.py==2.2.2
 diskcache==5.4.0
 enkanetwork.py @ git+https://github.com/mrwan200/EnkaNetwork.py
-fontTools==4.39.2
+fontTools==4.39.3
 genshin @ git+https://github.com/thesadru/genshin.py
 GGanalysis @ git+https://github.com/OneBST/GGanalysis
 hoyolab_rss_feeds==2.1.1
 hutao-login-gateway @ git+https://github.com/Hu-tao-bot/login-service-library-python
 jishaku==2.5.1
 matplotlib==3.7.1
-Pillow==9.4.0
+Pillow==9.5.0
 psutil==5.9.4
 pydantic==1.10.7
-pygit2==1.11.1
+pygit2==1.12.0
 pyppeteer==1.0.2
 python-dotenv==1.0.0
 python_dateutil==2.8.2
 PyYAML==6.0
-sentry_sdk==1.17.0
+sentry_sdk==1.18.0
