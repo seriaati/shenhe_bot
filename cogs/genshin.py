@@ -25,10 +25,10 @@ from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.genshin import (
     enka,
-    genshin_app,
     get_character_emoji,
     get_uid,
     get_uid_region_hash,
+    hoyolab,
     leaderboard,
 )
 from apps.genshin_data import abyss
@@ -43,7 +43,7 @@ load_dotenv()
 class GenshinCog(commands.Cog, name="genshin"):
     def __init__(self, bot):
         self.bot: models.BotModel = bot
-        self.genshin_app = genshin_app.GenshinApp(self.bot)
+        self.genshin_app = hoyolab.GenshinApp(self.bot)
         self.debug = self.bot.debug
 
         # Right click commands
