@@ -1,9 +1,8 @@
-from typing import List, Union
+from typing import Union
 
 import discord
 
 import dev.asset as asset
-from apps.db import get_user_lang
 from apps.text_map import text_map
 from apps.wish.utils import get_wish_history_embeds
 from dev.models import Inter
