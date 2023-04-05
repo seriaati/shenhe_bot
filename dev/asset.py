@@ -89,3 +89,6 @@ aether_name_dict = {
 }
 friendship_emoji = "<:friendship:1090512792563494932>"
 friendship_no_box_emoji = "<:friendship_no_box:1090512813073637496>"
+three_star_emoji = "<:three_star:1093025817895911474>"
+four_star_emoji = "<:four_star:1093025792092549131>"
+five_star_emoji = "<:five_star:1093025770407985182>"
