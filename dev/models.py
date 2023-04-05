@@ -12,7 +12,7 @@ import genshin
 from discord.ext import commands
 from enkanetwork.model.base import EnkaNetworkResponse
 from logingateway import HuTaoLoginAPI
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel
 from pyppeteer.browser import Browser
 
 import ambr.models as ambr
@@ -56,44 +56,6 @@ class DrawInput(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
-
-
-class RecentWish(BaseModel):
-    name: str
-    pull_num: int
-    icon: typing.Optional[str] = None
-
-
-class WishItem(BaseModel):
-    name: str
-    banner: int
-    rarity: int
-    time: datetime
-
-
-class WishData(BaseModel):
-    title: str
-    total_wishes: int
-    pity: int
-    four_star: int
-    five_star: int
-    recents: typing.List[RecentWish]
-
-
-class Wish(BaseModel):
-    time: datetime
-    rarity: int
-    name: str
-
-
-class WishInfo(BaseModel):
-    total: int
-    newest_wish: Wish
-    oldest_wish: Wish
-    character_banner_num: int
-    permanent_banner_num: int
-    weapon_banner_num: int
-    novice_banner_num: int
 
 
 class BotModel(commands.AutoShardedBot):
