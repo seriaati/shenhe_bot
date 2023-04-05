@@ -73,7 +73,7 @@ class LinkUID(ui.Button):
                 current,
                 nickname
             FROM   user_accounts
-            WHERE  user_id = $1 
+            WHERE  user_id = $1
             """,
             i.user.id,
         )
@@ -96,7 +96,7 @@ class UIDSelect(ui.Select):
             """
             UPDATE wish_history
             SET    uid = $1
-            WHERE  user_id = $2 
+            WHERE  user_id = $2
             """,
             self.values[0],
             i.user.id,
@@ -289,13 +289,11 @@ class ConfirmWishimport(ui.Button):
                     raise AssertionError
                 await pool.execute(
                     """
-                    INSERT INTO wish_history (
-                    wish_id, user_id, uid, wish_name,
+                    INSERT INTO wish_history
+                    (wish_id, user_id, uid, wish_name,
                     wish_rarity, wish_time, wish_type,
-                    wish_banner_type, item_id, pity_pull
-                    ) 
-                    VALUES 
-                    ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                    wish_banner_type, item_id, pity_pull)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
                     ON CONFLICT DO NOTHING
                     """,
                     wish.id,
@@ -315,13 +313,12 @@ class ConfirmWishimport(ui.Button):
                     raise AssertionError
                 await pool.execute(
                     """
-                    INSERT INTO wish_history (
-                    wish_id, user_id, UID, wish_name, wish_rarity, 
-                    wish_time, wish_type, wish_banner_type, 
-                    item_id
-                    ) 
-                    VALUES 
-                    ($1, $2, $3, $4, $5, $6, $7, $8, $9) ON CONFLICT DO NOTHING
+                    INSERT INTO wish_history
+                    (wish_id, user_id, UID, wish_name, wish_rarity,
+                    wish_time, wish_type, wish_banner_type,
+                    item_id)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                    ON CONFLICT DO NOTHING
                     """,
                     wish.id,
                     i.user.id,
@@ -340,11 +337,11 @@ class ConfirmWishimport(ui.Button):
             rows = await pool.fetch(
                 """
                 SELECT *
-                FROM   wish_history
-                WHERE  user_id = $1
+                FROM    wish_history
+                WHERE   user_id = $1
                     AND wish_banner_type = $2
                     AND uid = $3
-                ORDER  BY wish_id ASC 
+                ORDER BY wish_id ASC
                 """,
                 i.user.id,
                 banner,
@@ -504,7 +501,7 @@ async def get_wish_import_embed(
         SELECT *
         FROM   wish_history
         WHERE  user_id = $1
-        ORDER  BY wish_id DESC 
+        ORDER  BY wish_id DESC
         """,
         i.user.id,
     )
