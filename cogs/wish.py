@@ -1,7 +1,6 @@
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 import discord
-import GGanalysis.games.genshin_impact as GI
 import yaml
 from discord import app_commands
 from discord.app_commands import locale_str as _
@@ -15,10 +14,8 @@ from apps.genshin import check_account, check_wish_history, get_uid
 from apps.text_map import text_map, to_ambr_top
 from apps.wish.models import RecentWish, WishData, WishHistory, WishInfo, WishItem
 from apps.wish.utils import get_wish_history_embeds, get_wish_info_embed
-from data.game.standard_characters import get_standard_characters
 from dev.base_ui import capture_exception
-from dev.exceptions import FeatureDisabled
-from ui.wish import ChooseBanner, ChooseWeapon, SetAuthKey, WishFilter
+from ui.wish import ChooseBanner, SetAuthKey, WishFilter
 from ui.wish.SetAuthKey import wish_import_command
 from utility.wish_paginator import WishPaginator
 
