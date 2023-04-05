@@ -10,7 +10,7 @@ import discord
 import genshin
 import yaml
 from discord import Locale
-from discord.utils import format_dt, get
+from discord.utils import get
 
 import dev.asset as asset
 import dev.models as models
@@ -31,9 +31,7 @@ from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
 from dev.exceptions import ShenheAccountNotFound
-from utility import divide_chunks, get_dt_now
-
-from ..wish.models import WishInfo
+from utility import get_dt_now
 
 
 def calculate_artifact_score(substats: dict):
