@@ -1,8 +1,10 @@
 import ast
+import json
 from typing import Any, Dict, List, Optional
 
 import discord
 import GGanalysis.games.genshin_impact as GI
+import yaml
 from discord import app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -11,14 +13,10 @@ import ambr
 import dev.models as models
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
-from apps.genshin import (
-    check_account,
-    check_wish_history,
-    get_uid,
-    get_wish_history_embed,
-    get_wish_info_embed,
-)
+from apps.genshin import check_account, check_wish_history, get_uid
 from apps.text_map import text_map, to_ambr_top
+from apps.wish.models import RecentWish, WishData, WishHistory, WishInfo, WishItem
+from apps.wish.utils import get_wish_history_embeds, get_wish_info_embed
 from data.game.standard_characters import get_standard_characters
 from dev.base_ui import capture_exception
 from dev.exceptions import FeatureDisabled
@@ -28,7 +26,7 @@ from utility.wish_paginator import WishPaginator
 
 
 class WishCog(commands.GroupCog, name="wish"):
-    def __init__(self, bot):
+    def __init__(self, bot) -> None:
         self.bot: models.BotModel = bot
         super().__init__()
 
@@ -36,7 +34,7 @@ class WishCog(commands.GroupCog, name="wish"):
     @app_commands.command(
         name="import", description=_("import your genshin wish history", hash=474)
     )
-    async def wish_import(self, inter: discord.Interaction):
+    async def wish_import(self, inter: discord.Interaction) -> None:
         i: models.Inter = inter  # type: ignore
         await wish_import_command(i)
 
@@ -50,43 +48,31 @@ class WishCog(commands.GroupCog, name="wish"):
     )
     async def wish_file_import(
         self, inter: discord.Interaction, file: discord.Attachment
-    ):
+    ) -> None:
         i: models.Inter = inter  # type: ignore
         locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
         try:
-            wish_history: List[Dict[str, Any]] = ast.literal_eval(
-                (await file.read()).decode("utf-8")
-            )
+            rows = yaml.safe_load((await file.read()).decode("utf-8"))
+            wish_history = [WishHistory.from_row(row) for row in rows]  # type: ignore
             character_banner = 0
             weapon_banner = 0
             permanent_banner = 0
             novice_banner = 0
 
             for wish in wish_history:
-                banner_type = wish["wish_banner_type"]
-                if banner_type in (301, 400):
+                if wish.banner in (301, 400):
                     character_banner += 1
-                elif banner_type == 302:
+                elif wish.banner == 302:
                     weapon_banner += 1
-                elif banner_type == 200:
+                elif wish.banner == 200:
                     permanent_banner += 1
-                elif banner_type == 100:
+                elif wish.banner == 100:
                     novice_banner += 1
 
-            newest_wish = wish_history[0]
-            oldest_wish = wish_history[-1]
-            wish_info = models.WishInfo(
+            wish_info = WishInfo(
                 total=len(wish_history),
-                newest_wish=models.Wish(
-                    time=newest_wish["wish_time"],
-                    name=newest_wish["wish_name"],
-                    rarity=newest_wish["wish_rarity"],
-                ),
-                oldest_wish=models.Wish(
-                    time=oldest_wish["wish_time"],
-                    name=oldest_wish["wish_name"],
-                    rarity=oldest_wish["wish_rarity"],
-                ),
+                newest_wish=wish_history[0],
+                oldest_wish=wish_history[-1],
                 character_banner_num=character_banner,
                 weapon_banner_num=weapon_banner,
                 permanent_banner_num=permanent_banner,
@@ -102,23 +88,12 @@ class WishCog(commands.GroupCog, name="wish"):
             view.author = i.user
             await i.response.send_message(embed=embed, view=view)
             view.message = await i.original_response()
-        except (UnicodeEncodeError, UnicodeDecodeError):
-            await i.response.send_message(
-                embed=models.ErrorEmbed(
-                    description=text_map.get(567, locale)
-                ).set_author(
-                    name=text_map.get(195, locale), icon_url=i.user.display_avatar.url
-                ),
-                ephemeral=True,
-            )
         except Exception as e:  # skipcq: PYL-W0703
             capture_exception(e)
             await i.response.send_message(
                 embed=models.ErrorEmbed(
-                    description=text_map.get(693, locale)
-                ).set_author(
-                    name=text_map.get(135, locale), icon_url=i.user.display_avatar.url
-                ),
+                    description=text_map.get(567, locale)
+                ).set_title(135, locale, i.user),
                 ephemeral=True,
             )
 
@@ -130,36 +105,15 @@ class WishCog(commands.GroupCog, name="wish"):
         self, inter: discord.Interaction, member: Optional[discord.User] = None
     ):
         i: models.Inter = inter  # type: ignore
-        user_locale = await get_user_lang(i.user.id, self.bot.pool)
-        embeds = await get_wish_history_embed(i, "", member)
-        options = [
-            discord.SelectOption(
-                label=text_map.get(645, i.locale, user_locale) + " 1", value="301"
-            ),
-            discord.SelectOption(
-                label=text_map.get(645, i.locale, user_locale) + " 2", value="400"
-            ),
-            discord.SelectOption(
-                label=text_map.get(646, i.locale, user_locale), value="302"
-            ),
-            discord.SelectOption(
-                label=text_map.get(647, i.locale, user_locale), value="100"
-            ),
-            discord.SelectOption(
-                label=text_map.get(655, i.locale, user_locale), value="200"
-            ),
-        ]
-        select_banner = WishFilter.SelectBanner(
-            text_map.get(662, i.locale, user_locale), options
-        )
+        locale = (await get_user_lang(i.user.id, self.bot.pool)) or i.locale
+        embeds = await get_wish_history_embeds(i, "", member)
+
         await WishPaginator(
             i,
             embeds,
             [
-                select_banner,
-                WishFilter.SelectRarity(
-                    text_map.get(661, i.locale, user_locale), select_banner
-                ),
+                select_banner := WishFilter.SelectBanner(locale),
+                WishFilter.SelectRarity(text_map.get(661, locale), select_banner),
             ],
         ).start()
 
@@ -348,7 +302,7 @@ class WishCog(commands.GroupCog, name="wish"):
         user_locale = await get_user_lang(i.user.id, self.bot.pool)
         client = ambr.AmbrTopAPI(self.bot.session, to_ambr_top(user_locale or i.locale))
 
-        wishes: List[models.WishItem] = []
+        wishes: List[WishItem] = []
         rows = await self.bot.pool.fetch(
             "SELECT wish_name, wish_banner_type, wish_rarity, wish_time FROM wish_history WHERE user_id = $1 AND uid = $2 ORDER BY wish_id DESC",
             member.id,
@@ -356,7 +310,7 @@ class WishCog(commands.GroupCog, name="wish"):
         )
         for row in rows:
             wishes.append(
-                models.WishItem(
+                WishItem(
                     name=row["wish_name"],
                     banner=row["wish_banner_type"],
                     rarity=row["wish_rarity"],
@@ -383,7 +337,7 @@ class WishCog(commands.GroupCog, name="wish"):
             200: permanent_banner,
         }
 
-        all_wish_data: Dict[str, models.WishData] = {}
+        all_wish_data: Dict[str, WishData] = {}
         options = []
 
         for banner_id, banner_wishes in banners.items():
@@ -400,7 +354,7 @@ class WishCog(commands.GroupCog, name="wish"):
             reversed_banner.reverse()
             pull = 0
 
-            recents: List[models.RecentWish] = []
+            recents: List[RecentWish] = []
             for wish in reversed_banner:
                 pull += 1
                 if wish.rarity == 5:
@@ -412,12 +366,10 @@ class WishCog(commands.GroupCog, name="wish"):
                             item = await client.get_weapon(item_id)
                     if isinstance(item, ambr.Character | ambr.Weapon):
                         recents.append(
-                            models.RecentWish(
-                                name=item.name, pull_num=pull, icon=item.icon
-                            )
+                            RecentWish(name=item.name, pull_num=pull, icon=item.icon)
                         )
                     else:
-                        recents.append(models.RecentWish(name=wish.name, pull_num=pull))
+                        recents.append(RecentWish(name=wish.name, pull_num=pull))
                     pull = 0
             recents.reverse()
 
@@ -433,7 +385,7 @@ class WishCog(commands.GroupCog, name="wish"):
             elif banner_id == 200:
                 title = text_map.get(655, i.locale, user_locale)
 
-            wish_data = models.WishData(
+            wish_data = WishData(
                 title=title,
                 total_wishes=len(banner_wishes),
                 four_star=len(four_star),
@@ -457,7 +409,7 @@ class WishCog(commands.GroupCog, name="wish"):
                 )
             )
 
-        if "400" in all_wish_data:
+        if "400" in all_wish_data and "301" in all_wish_data:
             temp = all_wish_data["301"].pity
             all_wish_data["301"].pity += all_wish_data["400"].pity
             all_wish_data["400"].pity += temp

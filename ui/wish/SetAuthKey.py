@@ -1,26 +1,29 @@
 import io
 from typing import Any, Dict, List, Tuple
+from uuid import uuid4
 
 import asyncpg
 import discord
 import genshin
+import yaml
 from discord import ui
 
 import dev.asset as asset
 import dev.config as config
 from apps.db import get_user_lang
-from apps.genshin import get_account_select_options, get_uid, get_wish_info_embed
-from apps.genshin.utility import get_shenhe_account
+from apps.genshin import get_account_select_options, get_uid
 from apps.text_map import text_map, to_genshin_py
+from apps.wish.models import WishHistory, WishInfo
+from apps.wish.utils import get_wish_info_embed
 from dev.base_ui import BaseModal, BaseView
-from dev.models import DefaultEmbed, ErrorEmbed, Inter, Wish, WishInfo
+from dev.models import DefaultEmbed, ErrorEmbed, Inter
 from ui.wish import ChoosePlatform
 from utility import log
 
 
 class View(BaseView):
     def __init__(self, locale: discord.Locale | str, disabled: bool, empty: bool):
-        super().__init__(timeout=config.mid_timeout)
+        super().__init__(timeout=config.long_timeout)
         self.locale = locale
         self.add_item(ImportWishHistory(locale, not disabled))
         self.add_item(ExportWishHistory(locale, empty))
@@ -64,7 +67,14 @@ class LinkUID(ui.Button):
             name=text_map.get(677, locale), icon_url=i.user.display_avatar.url
         )
         accounts = await i.client.pool.fetch(
-            "SELECT uid, ltuid, current, nickname FROM user_accounts WHERE user_id = $1",
+            """
+            SELECT uid,
+                ltuid,
+                current,
+                nickname
+            FROM   user_accounts
+            WHERE  user_id = $1 
+            """,
             i.user.id,
         )
         options = get_account_select_options(accounts, str(locale))  # type: ignore
@@ -83,7 +93,11 @@ class UIDSelect(ui.Select):
     async def callback(self, i: Inter):
         pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
         await pool.execute(
-            "UPDATE wish_history SET uid = $1 WHERE user_id = $2",
+            """
+            UPDATE wish_history
+            SET    uid = $1
+            WHERE  user_id = $2 
+            """,
             self.values[0],
             i.user.id,
         )
@@ -169,26 +183,23 @@ class ExportWishHistory(ui.Button):
         wishes: List[Dict[str, Any]] = []
         pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
         rows = await pool.fetch(
-            "SELECT wish_name, wish_rarity, wish_time, wish_banner_type, wish_id, item_id FROM wish_history WHERE user_id = $1 AND uid = $2 ORDER BY wish_id DESC",
+            """
+            SELECT *
+            FROM wish_history
+            WHERE user_id = $1
+                AND UID = $2
+            ORDER BY wish_id DESC
+            """,
             i.user.id,
             await get_uid(i.user.id, pool),
         )
-        for row in rows:
-            wishes.append(
-                {
-                    "wish_name": row["wish_name"],
-                    "wish_rarity": row["wish_rarity"],
-                    "wish_time": row["wish_time"],
-                    "wish_banner_type": row["wish_banner_type"],
-                    "wish_id": row["wish_id"],
-                    "item_id": row["item_id"],
-                }
-            )
+        history = [WishHistory.from_row(row) for row in rows]
+        wishes = [wish.to_dict() for wish in history]
 
-        s.write(str(wishes))
+        s.write(str(yaml.safe_dump(wishes, indent=4, allow_unicode=True)))
         s.seek(0)
         await i.followup.send(
-            file=discord.File(s, "shenhe_wish_export.txt"), ephemeral=True  # type: ignore
+            file=discord.File(s, f"SHENHE_WISH_{uuid4()}.yaml"), ephemeral=True  # type: ignore
         )
 
 
@@ -225,7 +236,12 @@ class Confirm(ui.Button):
 
         uid = await get_uid(i.user.id, pool)
         await pool.execute(
-            "DELETE FROM wish_history WHERE uid = $1 AND user_id = $2",
+            """
+            DELETE
+            FROM wish_history
+            WHERE UID = $1
+                AND user_id = $2
+            """,
             uid,
             i.user.id,
         )
@@ -247,7 +263,7 @@ class ConfirmWishimport(ui.Button):
     def __init__(
         self,
         locale: discord.Locale | str,
-        wish_history: List[genshin.models.Wish] | List[Dict[str, Any]],
+        wish_history: List[genshin.models.Wish] | List[WishHistory],
         from_text_file: bool = False,
     ):
         super().__init__(
@@ -269,18 +285,29 @@ class ConfirmWishimport(ui.Button):
 
         if self.from_text_file:
             for wish in self.wish_history:
-                if not isinstance(wish, dict):
+                if not isinstance(wish, WishHistory):
                     raise AssertionError
                 await pool.execute(
-                    "INSERT INTO wish_history (user_id, wish_name, wish_rarity, wish_time, wish_banner_type, wish_id, uid, item_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT DO NOTHING",
-                    i.user.id,
-                    wish["wish_name"],
-                    wish["wish_rarity"],
-                    wish["wish_time"],
-                    wish["wish_banner_type"],
-                    wish["wish_id"],
-                    uid,
-                    wish["item_id"],
+                    """
+                    INSERT INTO wish_history (
+                    wish_id, user_id, uid, wish_name,
+                    wish_rarity, wish_time, wish_type,
+                    wish_banner_type, item_id, pity_pull
+                    ) 
+                    VALUES 
+                    ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                    ON CONFLICT DO NOTHING
+                    """,
+                    wish.id,
+                    wish.user_id,
+                    wish.uid,
+                    wish.name,
+                    wish.rarity,
+                    wish.time,
+                    wish.type,
+                    wish.banner,
+                    wish.item_id,
+                    wish.pity,
                 )
         else:
             for wish in self.wish_history:
@@ -288,11 +315,13 @@ class ConfirmWishimport(ui.Button):
                     raise AssertionError
                 await pool.execute(
                     """
-                    INSERT INTO wish_history
-                    (wish_id, user_id, uid, wish_name, wish_rarity,
-                    wish_time, wish_type, wish_banner_type, item_id)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-                    ON CONFLICT DO NOTHING
+                    INSERT INTO wish_history (
+                    wish_id, user_id, UID, wish_name, wish_rarity, 
+                    wish_time, wish_type, wish_banner_type, 
+                    item_id
+                    ) 
+                    VALUES 
+                    ($1, $2, $3, $4, $5, $6, $7, $8, $9) ON CONFLICT DO NOTHING
                     """,
                     wish.id,
                     i.user.id,
@@ -305,32 +334,47 @@ class ConfirmWishimport(ui.Button):
                     text_map.get_id_from_name(wish.name),
                 )
 
+        # calcualte pity pulls
         banners = (100, 200, 301, 302, 400)
         for banner in banners:
-            wishes = await pool.fetch(
-                "SELECT wish_id, wish_rarity, pity_pull FROM wish_history WHERE user_id = $1 AND wish_banner_type = $2 AND uid = $3 ORDER BY wish_id ASC",
+            rows = await pool.fetch(
+                """
+                SELECT *
+                FROM   wish_history
+                WHERE  user_id = $1
+                    AND wish_banner_type = $2
+                    AND uid = $3
+                ORDER  BY wish_id ASC 
+                """,
                 i.user.id,
                 banner,
                 uid,
             )
+            wishes = [WishHistory.from_row(row) for row in rows]
 
             if not wishes:
                 count = 1
             else:
-                if wishes[-1]["pity_pull"] is None:
+                if wishes[-1].pity is None:
                     count = 1
                 else:
-                    count = wishes[-1]["pity_pull"] + 1
+                    count = wishes[-1].pity + 1
 
             for wish in wishes:
                 await pool.execute(
-                    "UPDATE wish_history SET pity_pull = $1 WHERE user_id = $2 AND wish_id = $3 AND uid = $4",
+                    """
+                    UPDATE wish_history
+                    SET    pity_pull = $1
+                    WHERE  user_id = $2
+                        AND wish_id = $3
+                        AND uid = $4 
+                    """,
                     count,
                     i.user.id,
-                    wish["wish_id"],
+                    wish.id,
                     uid,
                 )
-                if wish["wish_rarity"] == 5:
+                if wish.rarity == 5:
                     count = 1
                 else:
                     count += 1
@@ -392,10 +436,11 @@ class Modal(BaseModal):
         await i.response.edit_message(
             embed=DefaultEmbed().set_author(
                 name=text_map.get(355, locale),
-                icon_url="https://i.imgur.com/V76M9Wa.gif",
+                icon_url=asset.loader,
             ),
             view=None,
         )
+
         try:
             wish_history = await client.wish_history()
         except genshin.errors.InvalidAuthkey:
@@ -426,26 +471,18 @@ class Modal(BaseModal):
                 permanent_banner += 1
             elif wish.banner_type == genshin.models.BannerType.NOVICE:
                 novice_banner += 1
-        newest_wish = wish_history[0]
-        oldest_wish = wish_history[-1]
+
         wish_info = WishInfo(
             total=len(wish_history),
-            newest_wish=Wish(
-                time=newest_wish.time,
-                name=newest_wish.name,
-                rarity=newest_wish.rarity,
-            ),
-            oldest_wish=Wish(
-                time=oldest_wish.time,
-                name=oldest_wish.name,
-                rarity=oldest_wish.rarity,
-            ),
+            newest_wish=WishHistory.from_genshin_wish(wish_history[0], i.user.id),
+            oldest_wish=WishHistory.from_genshin_wish(wish_history[-1], i.user.id),
             character_banner_num=character_banner,
             weapon_banner_num=weapon_banner,
             permanent_banner_num=permanent_banner,
             novice_banner_num=novice_banner,
         )
-        embed = await get_wish_info_embed(i, str(locale), wish_info, True)
+        embed = await get_wish_info_embed(i, str(locale), wish_info)
+
         view = View(locale, True, True)
         view.author = i.user
         view.clear_items()
@@ -462,33 +499,33 @@ async def get_wish_import_embed(
     locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
     uid = await get_uid(i.user.id, i.client.pool)
 
-    wish_data = await pool.fetch(
+    history = await pool.fetch(
         """
-        SELECT wish_time, wish_rarity, item_id, wish_banner_type, uid
-        FROM wish_history
-        WHERE user_id = $1
-        ORDER BY wish_id DESC
+        SELECT *
+        FROM   wish_history
+        WHERE  user_id = $1
+        ORDER  BY wish_id DESC 
         """,
         i.user.id,
     )
-    if not wish_data:
+    history = [WishHistory.from_row(wish) for wish in history]
+    if not history:
         embed = DefaultEmbed(description=f"UID: {uid}").set_author(
             name=text_map.get(683, locale),
             icon_url=i.user.display_avatar.url,
         )
         return embed, linked, True
-    if any(wish["uid"] is None for wish in wish_data):
+
+    if any(wish.uid is None for wish in history):
         linked = False
 
-    newest_wish = wish_data[0]
-    oldest_wish = wish_data[-1]
     character_banner = 0
     weapon_banner = 0
     permanent_banner = 0
     novice_banner = 0
-    for wish in wish_data:
-        banner = wish["wish_banner_type"]
-        if banner in [301, 400]:
+    for wish in history:
+        banner = wish.banner
+        if banner in (301, 400):
             character_banner += 1
         elif banner == 302:
             weapon_banner += 1
@@ -496,28 +533,15 @@ async def get_wish_import_embed(
             permanent_banner += 1
         elif banner == 100:
             novice_banner += 1
+
     wish_info = WishInfo(
-        total=len(wish_data),
-        newest_wish=Wish(
-            time=newest_wish["wish_time"],
-            rarity=newest_wish["wish_rarity"],
-            name=text_map.get_weapon_name(int(newest_wish["item_id"]), locale)
-            or text_map.get_character_name(str(newest_wish["item_id"]), locale)
-            or "",
-        ),
-        oldest_wish=Wish(
-            time=oldest_wish["wish_time"],
-            rarity=oldest_wish["wish_rarity"],
-            name=text_map.get_weapon_name(int(oldest_wish["item_id"]), locale)
-            or text_map.get_character_name(str(oldest_wish["item_id"]), locale)
-            or "",
-        ),
+        total=len(history),
+        newest_wish=history[0],
+        oldest_wish=history[-1],
         character_banner_num=character_banner,
         weapon_banner_num=weapon_banner,
         permanent_banner_num=permanent_banner,
         novice_banner_num=novice_banner,
     )
-    embed = await get_wish_info_embed(
-        i, str(locale), wish_info, import_command=True, linked=linked
-    )
+    embed = await get_wish_info_embed(i, str(locale), wish_info, import_command=True)
     return embed, linked, False
