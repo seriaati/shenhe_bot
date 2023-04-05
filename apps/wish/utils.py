@@ -20,7 +20,7 @@ async def get_wish_history_embeds(
     member = member or i.user
     user_locale = await get_user_lang(i.user.id, i.client.pool)
 
-    pool: asyncpg.Pool = i.client.pool  # type: ignore
+    pool = i.client.pool
     rows = await pool.fetch(
         f"""
         SELECT *
