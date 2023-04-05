@@ -9,8 +9,8 @@ class WishPaginatorView(GeneralPaginatorView):
     def __init__(self, embeds: List[discord.Embed], locale: str):
         super().__init__(embeds, locale)
 
-        self.rarity_filters = []
-        self.banner_filters = []
+        self.rarity_filters: List[str] = []
+        self.banner_filters: List[str] = []
 
 
 class WishPaginator(GeneralPaginator):

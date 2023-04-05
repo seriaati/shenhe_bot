@@ -19,40 +19,49 @@ class SelectBanner(discord.ui.Select):
             discord.SelectOption(label=text_map.get(647, locale), value="100"),
             discord.SelectOption(label=text_map.get(655, locale), value="200"),
         ]
-        super().__init__(placeholder=text_map.get(662, locale), options=options, row=3)
+        super().__init__(
+            placeholder=text_map.get(662, locale),
+            options=options,
+            row=3,
+            max_values=len(options),
+            min_values=0,
+        )
         self.view: WishPaginatorView
 
     async def callback(self, i: Inter):
-        await filter_callback(self, i, self.view.banner_filters)
+        await filter_callback(self, i)
 
 
 class SelectRarity(discord.ui.Select):
     def __init__(self, placeholder: str, select_banner: SelectBanner):
-        super().__init__(placeholder=placeholder, row=2)
-        self.add_option(label="5", value="5", emoji=asset.five_star_emoji)
-        self.add_option(label="4", value="4", emoji=asset.four_star_emoji)
-        self.add_option(label="3", value="3", emoji=asset.three_star_emoji)
+        options = [
+            discord.SelectOption(label="5", value="5", emoji=asset.five_star_emoji),
+            discord.SelectOption(label="4", value="4", emoji=asset.four_star_emoji),
+            discord.SelectOption(label="3", value="3", emoji=asset.three_star_emoji),
+        ]
+        super().__init__(
+            placeholder=placeholder,
+            row=2,
+            options=options,
+            max_values=len(options),
+            min_values=0,
+        )
         self.select_banner = select_banner
         self.view: WishPaginatorView
 
     async def callback(self, i: Inter):
-        await filter_callback(self, i, self.view.rarity_filters)
+        await filter_callback(self, i)
 
 
-async def filter_callback(
-    self_var: SelectBanner | SelectRarity, i: Inter, filter_list: List
-):
-    user_locale = await get_user_lang(i.user.id, i.client.pool)
-    if self_var.values[0] not in filter_list:
-        filter_list.append(self_var.values[0])
-    else:
-        filter_list.remove(self_var.values[0])
-
-    for option in self_var.options:
-        if option.value in filter_list:
-            option.description = text_map.get(374, i.locale, user_locale)
-        else:
-            option.description = None
+async def filter_callback(self_var: SelectBanner | SelectRarity, i: Inter):
+    if isinstance(self_var, SelectBanner):
+        self_var.view.banner_filters = self_var.values
+        for option in self_var.options:
+            option.default = option.value in self_var.view.banner_filters
+    elif isinstance(self_var, SelectRarity):
+        self_var.view.rarity_filters = self_var.values
+        for option in self_var.options:
+            option.default = option.value in self_var.view.rarity_filters
 
     query = ""
     for index, filter_ in enumerate(self_var.view.banner_filters):
