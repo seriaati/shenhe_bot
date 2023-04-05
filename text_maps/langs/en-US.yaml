@@ -644,7 +644,7 @@
   {unique} unique
 '567': |-
   There is **NO** support for paimon.moe, please view this [GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371) for the reason.
-  The only file that is supported is the .txt file exported from Shenhe.
+  The only file that is supported is the .yaml file exported from Shenhe.
 '568': Please provide an Image URL in either .png or .jpg format
 '569': Account type
 '570': |-
@@ -785,7 +785,7 @@
 '686': 'Import your Genshin wish history from a file'
 '687': |-
   You can use the </wish file-import:123123> command to import wishes from a file
-  Only support `.txt` files exported from Shenhe
+  Only support `.yaml` files exported from Shenhe
 '688': Are you sure?
 '689': |-
   • You are about to clear your wish history for this account, this action cannot be undone.
@@ -793,8 +793,8 @@
   • You may have wishes stored in Shenhe that is no longer saved in-game, if you clear your wish history, you will lose those wishes.
 '690': Shenhe has found **{a}** wishes in this link/file
 '691': Confirm wish import
-'692': Import your Genshin wish history from a txt file exported by Shenhe
-'693': Please check the file you have provided
+'692': Import your Genshin wish history from a yaml file exported by Shenhe
+'693': ''
 '694': Ongoing
 '695': Finished
 '696': Remaining
