@@ -30,14 +30,10 @@ class AdminCog(commands.Cog, name="admin"):
             "ambr",
             "apps",
             "data",
+            "dev",
             "text_maps",
             "ui",
             "utility",
-            "asset",
-            "base_ui",
-            "config",
-            "exceptions",
-            "models",
         )
         copy_ = sys.modules.copy()
 
