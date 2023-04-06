@@ -642,8 +642,8 @@
   总数：{total}
   单独用户：{unique}
 '567': |-
-  There is **NO** support for paimon.moe, please view this [GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371) for the reason.
-  The only file that is supported is the .yaml file exported from Shenhe.
+  目前 **没有** paimoe.moe 的导入支持，原因请查看 [这个 GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371)。
+  目前唯一支持的文件是由申鹤导出的 .yaml 文件。
 '568': 请提供一个 .png 或 .jpg 格式的图像链接
 '569': 账户类别
 '570': |-
@@ -780,8 +780,7 @@
 '685': 选择导入祈愿记录的方法
 '686': '从文件中导入祈愿记录'
 '687': |-
-  You can use the </wish file-import:123123> command to import wishes from a file
-  Only support `.yaml` files exported from Shenhe
+  你可以使用 </wish file-import:123123> 指令从文件中导入祈愿记录，目前仅支持申鹤导出的 `.yaml` 文件。
 '688': 你确定吗？
 '689': |-
   • 你即将清除这个账户的所有祈愿记录，此操作无法撤销。
@@ -789,7 +788,7 @@
   • 你可能有储存在申鹤，但已经不在游戏内的祈愿记录，你将会永远失去那些祈愿记录。
 '690': 申鹤在这个链接/文件中发现了 **{a}** 笔祈愿记录资料
 '691': 确认祈愿记录导入
-'692': Import your Genshin wish history from a yaml file exported by Shenhe
+'692': 从申鹤导出的 yaml 文件中导入你的祈愿记录
 '693': ''
 '694': 进行中
 '695': 已完成
