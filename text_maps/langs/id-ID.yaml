@@ -405,29 +405,29 @@
 '367': UID ini tidak memiliki data pemain di dalamnya
 '368': Gunakan </wish import:1000187021635104890> untuk mengimpor riwayat wish kamu
 '369': Riwayat Wish
-'370': Karakter bintang 5 terakhir yang kamu pull adalah karakter standar
-'371': Karakter bintang 5 terakhir yang kamu pull adalah karakter banner
-'372': Analisis Wish luck
-'373': Keberuntunganmu lebih baik daripada **{luck}%** kebanyakan player
+'370': ''
+'371': ''
+'372': ''
+'373': ''
 '374': Memilih filter ini akan menghapusnya
 '375': Lihat banner Genshin yang sedang berlangsung
 '376': Saat ini tidak ada banner yang sedang berlangsung
 '378': Metode 1
-'379': Kamu telah menghabiskan total **{a}** penarikan untuk menarik **{b}** bintang-5 banner karakter
-'380': Jumlah pity bintang-5 kamu saat ini adalah **{a}**
+'379': ''
+'380': ''
 '381': "Perubahan {time}"
-'382': Wishing untuk pull
-'383': UP bintang-5 karakter
-'384': Diperkirakan kamu akan pull banner karakter bintang-5 di pull ke **{a}**
-'385': Diperkirakan kamu akan pull banner senjata bintang-5 di pull ke **{a}**
-'386': Prediksi angka Event wish
-'387': Standar
+'382': ''
+'383': ''
+'384': ''
+'385': ''
+'386': ''
+'387': ''
 '388': 'Ya'
 '389': 'Tidak'
-'390': Apakah ini senjata yang kamu inginkan?
-'391': Senjata bintang-5 terakhir yang kamu pull adalah
-'392': Ini adalah senjata standard atau limited waktu terbatas?
-'393': Prediksi jumlah wish senjata
+'390': ''
+'391': ''
+'392': ''
+'393': ''
 '394': |-
   1. Tekan tombol WINDOWS pada keyboardmu, lalu cari Powershell
   2. Klik Windows Powershell, lalu salin & tempel skrip di bawah ini ke Powershell, lalu tekan ENTER (hanya jika pesan 'Tekan Enter untuk melanjutkan...' belum muncul)
@@ -436,8 +436,8 @@
   5. Klik tabel, lalu tekan CTRL+A lalu CTRL+C
   6. Alt+Tab ke powershell, lalu tekan ENTER, link akan disalin ke clipboardmu
   7. Klik tombol "Kirim Tautan" dan tempel tautan di kotak teks yang muncul
-'395': senjata yang kamu inginkan
-'396': pull
+'395': ''
+'396': ''
 '397': Transformative Reactions
 '398': |-
   Jumlah singkapan ley line dikonversi dari jumlah mora yang kamu peroleh bulan ini.
@@ -484,7 +484,7 @@
 '426': Tutorial teks akan segera hadir, untuk saat ini silahkan tonton video tutorialnya
 '427': Bulan sebelum bulan lalu
 '428': Lihat Data Abyss (perlu /register)
-'429': ""
+'429': ''
 '430': Fase
 '431': Jenis data yang ingin kamu lihat
 '432': Fase Abyss Yang Mana?
@@ -642,8 +642,8 @@
   {total} total
   {unique} unique
 '567': |-
-  **TIDAK ADA** dukungan untuk paimon.moe, harap lihat [masalah GitHub](https://github.com/seriaati/shenhe_bot/issues/371) ini untuk alasannya.
-  Satu-satunya file yang didukung adalah file .txt yang diekspor dari Shenhe.
+  There is **NO** support for paimon.moe, please view this [GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371) for the reason.
+  The only file that is supported is the .yaml file exported from Shenhe.
 '568': Berikan URL gambar dalam format .png atau .jpg
 '569': Tipe akun
 '570': |-
@@ -750,10 +750,10 @@
 '654': Pull bintang 5 terbaru
 '655': Banner Permanen
 '656': Pilih Banner
-'657': poin-takdir
-'658': Angka bisa berupa 0, 1, atau 2
+'657': ''
+'658': ''
 '659': Kamu hanya dapat melakukan tindakan ini sekali setiap {hour} jam
-'660': Kamu belum melakukan pull banner senjata
+'660': ''
 '661': Pilih filter rarity
 '662': Pilih filter banner
 '663': Total primogem
@@ -783,8 +783,8 @@
 '685': Pilih metode mengimpor wish
 '686': 'Impor riwayat wish Genshinmu dari file'
 '687': |-
-  Kamu dapat menggunakan command </wish file-import:123123> untuk mengimpor wish dari sebuah file
-  Hanya mendukung file `.txt` yang diekspor dari Shenhe
+  You can use the </wish file-import:123123> command to import wishes from a file
+  Only support `.yaml` files exported from Shenhe
 '688': Apa kamu yakin?
 '689': |-
   • Kamu akan menghapus riwayat wish untuk akun ini, tindakan ini tidak dapat diurungkan.
@@ -792,8 +792,8 @@
   • Kamu mungkin memiliki wish yang disimpan di Shenhe yang tidak lagi disimpan dalam game, jika kamu menghapus riwayat wish, kamu akan kehilangan wish tersebut.
 '690': Shenhe telah menemukan **{a}** wish di tautan/file ini
 '691': Konfirmasi impor wish
-'692': Impor riwayat wish Genshinmu dari file txt yang diekspor oleh Shenhe
-'693': Silakan periksa file yang kamu berikan
+'692': Import your Genshin wish history from a yaml file exported by Shenhe
+'693': ''
 '694': Sedang berlangsung
 '695': Selesai
 '696': Tersisa
