@@ -10,7 +10,7 @@ import discord
 import genshin
 import yaml
 from discord import Locale
-from discord.utils import format_dt, get
+from discord.utils import get
 
 import dev.asset as asset
 import dev.models as models
@@ -31,7 +31,7 @@ from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
 from dev.exceptions import ShenheAccountNotFound
-from utility import divide_chunks, get_dt_now
+from utility import get_dt_now
 
 
 def calculate_artifact_score(substats: dict):
@@ -395,148 +395,6 @@ def convert_wl_to_mora(wl: int) -> int:
     if wl == 5:
         return 52000
     return 60000
-
-
-async def get_wish_history_embed(
-    i: models.Inter,
-    query: str,
-    member: Optional[discord.User | discord.Member] = None,
-) -> List[discord.Embed]:
-    member = member or i.user
-    user_locale = await get_user_lang(i.user.id, i.client.pool)
-
-    pool: asyncpg.Pool = i.client.pool  # type: ignore
-    wish_history = await pool.fetch(
-        f"""
-        SELECT wish_rarity, wish_time, item_id, pity_pull
-        FROM wish_history
-        WHERE {query} user_id = $1 AND uid = $2
-        ORDER BY wish_id DESC
-        """,
-        member.id,
-        await get_uid(member.id, pool),
-    )
-
-    if not wish_history:
-        embed = models.ErrorEmbed(
-            description=text_map.get(75, i.locale, user_locale)
-        ).set_author(
-            name=text_map.get(648, i.locale, user_locale),
-            icon_url=member.display_avatar.url,
-        )
-        return [embed]
-    user_wish: List[str] = []
-    for wish in wish_history:
-        user_wish.append(
-            format_wish_str(
-                {
-                    "item_rarity": wish["wish_rarity"],
-                    "time": wish["wish_time"],
-                    "item_id": wish["item_id"],
-                    "pity_pull": wish["pity_pull"],
-                },
-                user_locale or i.locale,
-            )
-        )
-
-    split_user_wish: List[List[str]] = list(divide_chunks(user_wish, 20))
-
-    embeds: List[discord.Embed] = []
-    for small_segment in split_user_wish:
-        description = "\n".join(small_segment)
-        embed = models.DefaultEmbed(description=description)
-        embed.set_author(
-            name=text_map.get(369, i.locale, user_locale),
-            icon_url=member.display_avatar.url,
-        )
-        embeds.append(embed)
-
-    return embeds
-
-
-async def get_wish_info_embed(
-    i: models.Inter,
-    locale: str,
-    wish_info: models.WishInfo,
-    import_command: bool = False,
-    linked: bool = False,
-) -> discord.Embed:
-    embed = models.DefaultEmbed(
-        description=text_map.get(673 if import_command else 690, locale).format(
-            a=wish_info.total
-        )
-    ).set_author(
-        name=text_map.get(474 if import_command else 691, locale),
-        icon_url=i.user.display_avatar.url,
-    )
-    embed.add_field(
-        name="UID",
-        value=text_map.get(674, locale) if not linked else (await get_uid(i.user.id, i.client.pool)),  # type: ignore
-        inline=False,
-    )
-    newest_wish = wish_info.newest_wish
-    oldest_wish = wish_info.oldest_wish
-    embed.add_field(
-        name=text_map.get(675, locale),
-        value=format_wish_str(
-            {
-                "time": newest_wish.time,
-                "item_rarity": newest_wish.rarity,
-                "item_id": text_map.get_id_from_name(newest_wish.name),
-            },
-            locale,
-        ),
-        inline=False,
-    )
-    embed.add_field(
-        name=text_map.get(676, locale),
-        value=format_wish_str(
-            {
-                "time": oldest_wish.time,
-                "item_rarity": oldest_wish.rarity,
-                "item_id": text_map.get_id_from_name(oldest_wish.name),
-            },
-            locale,
-        ),
-        inline=False,
-    )
-
-    embed.add_field(
-        name=text_map.get(645, locale),
-        value=wish_info.character_banner_num,
-        inline=False,
-    )
-    embed.add_field(
-        name=text_map.get(646, locale), value=wish_info.weapon_banner_num, inline=False
-    )
-    embed.add_field(
-        name=text_map.get(655, locale),
-        value=wish_info.permanent_banner_num,
-        inline=False,
-    )
-    embed.add_field(
-        name=text_map.get(647, locale), value=wish_info.novice_banner_num, inline=False
-    )
-
-    return embed
-
-
-def format_wish_str(wish_data: Dict[str, Any], locale: discord.Locale | str):
-    item_emoji = get_weapon_emoji(int(wish_data["item_id"])) or get_character_emoji(
-        str(wish_data["item_id"])
-    )
-    pity_pull = f"#{wish_data['pity_pull']}" if "pity_pull" in wish_data else ""
-    dt_str = format_dt(wish_data["time"], "d")
-    item_name = text_map.get_character_name(
-        str(wish_data["item_id"]), locale
-    ) or text_map.get_weapon_name(int(wish_data["item_id"]), locale)
-    rarity_str = f"{wish_data['item_rarity']} ✦"
-    result_str = f"{dt_str} {item_emoji} {item_name} ({rarity_str}) {pity_pull}"
-    return (
-        result_str
-        if wish_data["item_rarity"] != 5
-        else f"[{result_str}](http://shenhe.bot.nu/)"
-    )
 
 
 def level_to_ascension_phase(level: int) -> int:

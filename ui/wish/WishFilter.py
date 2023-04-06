@@ -1,51 +1,66 @@
-from typing import List
+from typing import Union
 
-from discord import SelectOption
-from discord.ui import Select
+import discord
 
-from apps.db import get_user_lang
-from apps.genshin import get_wish_history_embed
+import dev.asset as asset
 from apps.text_map import text_map
+from apps.wish.utils import get_wish_history_embeds
 from dev.models import Inter
 from utility.wish_paginator import WishPaginatorView
 
 
-class SelectBanner(Select):
-    def __init__(self, placeholder: str, options: List[SelectOption]):
-        super().__init__(placeholder=placeholder, options=options, row=3)
+class SelectBanner(discord.ui.Select):
+    def __init__(self, locale: Union[discord.Locale, str]):
+        options = [
+            discord.SelectOption(label=f"{text_map.get(645, locale)} 1", value="301"),
+            discord.SelectOption(label=f"{text_map.get(645, locale)} 2", value="400"),
+            discord.SelectOption(label=text_map.get(646, locale), value="302"),
+            discord.SelectOption(label=text_map.get(647, locale), value="100"),
+            discord.SelectOption(label=text_map.get(655, locale), value="200"),
+        ]
+        super().__init__(
+            placeholder=text_map.get(662, locale),
+            options=options,
+            row=3,
+            max_values=len(options),
+            min_values=0,
+        )
         self.view: WishPaginatorView
 
     async def callback(self, i: Inter):
-        await filter_callback(self, i, self.view.banner_filters)
+        await filter_callback(self, i)
 
 
-class SelectRarity(Select):
+class SelectRarity(discord.ui.Select):
     def __init__(self, placeholder: str, select_banner: SelectBanner):
-        super().__init__(placeholder=placeholder, row=2)
-        self.add_option(label="5 ✦", value="5")
-        self.add_option(label="4 ✦", value="4")
-        self.add_option(label="3 ✦", value="3")
+        options = [
+            discord.SelectOption(label="5", value="5", emoji=asset.five_star_emoji),
+            discord.SelectOption(label="4", value="4", emoji=asset.four_star_emoji),
+            discord.SelectOption(label="3", value="3", emoji=asset.three_star_emoji),
+        ]
+        super().__init__(
+            placeholder=placeholder,
+            row=2,
+            options=options,
+            max_values=len(options),
+            min_values=0,
+        )
         self.select_banner = select_banner
         self.view: WishPaginatorView
 
     async def callback(self, i: Inter):
-        await filter_callback(self, i, self.view.rarity_filters)
+        await filter_callback(self, i)
 
 
-async def filter_callback(
-    self_var: SelectBanner | SelectRarity, i: Inter, filter_list: List
-):
-    user_locale = await get_user_lang(i.user.id, i.client.pool)
-    if self_var.values[0] not in filter_list:
-        filter_list.append(self_var.values[0])
-    else:
-        filter_list.remove(self_var.values[0])
-
-    for option in self_var.options:
-        if option.value in filter_list:
-            option.description = text_map.get(374, i.locale, user_locale)
-        else:
-            option.description = None
+async def filter_callback(self_var: SelectBanner | SelectRarity, i: Inter):
+    if isinstance(self_var, SelectBanner):
+        self_var.view.banner_filters = self_var.values
+        for option in self_var.options:
+            option.default = option.value in self_var.view.banner_filters
+    elif isinstance(self_var, SelectRarity):
+        self_var.view.rarity_filters = self_var.values
+        for option in self_var.options:
+            option.default = option.value in self_var.view.rarity_filters
 
     query = ""
     for index, filter_ in enumerate(self_var.view.banner_filters):
@@ -63,5 +78,5 @@ async def filter_callback(
             query = query[:-4] + ") AND "
 
     self_var.view.current_page = 0
-    self_var.view.embeds = await get_wish_history_embed(i, query)
+    self_var.view.embeds = await get_wish_history_embeds(i, query)
     await self_var.view.update_children(i)

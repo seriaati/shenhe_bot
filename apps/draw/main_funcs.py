@@ -19,6 +19,7 @@ from apps.draw.utility import (
     download_images,
     extract_urls,
 )
+from apps.wish.models import WishData
 
 
 @calculate_time
@@ -189,7 +190,7 @@ async def draw_realtime_card(
 @calculate_time
 async def draw_wish_overview_card(
     draw_input: models.DrawInput,
-    wish_data: models.WishData,
+    wish_data: WishData,
     pfp: str,
     user_name: str,
 ) -> io.BytesIO:
