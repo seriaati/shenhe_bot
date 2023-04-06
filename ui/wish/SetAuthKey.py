@@ -46,7 +46,8 @@ class GOBack(ui.Button):
     def __init__(self):
         super().__init__(emoji=asset.back_emoji, style=discord.ButtonStyle.grey, row=4)
 
-    async def callback(self, i: Inter):
+    @staticmethod
+    async def callback(i: Inter):
         await wish_import_command(i)
 
 
@@ -176,7 +177,8 @@ class ExportWishHistory(ui.Button):
             disabled=disabled,
         )
 
-    async def callback(self, i: Inter):
+    @staticmethod
+    async def callback(i: Inter):
         await i.response.defer(ephemeral=True)
         s = io.StringIO()
 
@@ -231,7 +233,8 @@ class Confirm(ui.Button):
             style=discord.ButtonStyle.red,
         )
 
-    async def callback(self, i: Inter):
+    @staticmethod
+    async def callback(i: Inter):
         pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
 
         uid = await get_uid(i.user.id, pool)
@@ -255,7 +258,8 @@ class Cancel(ui.Button):
             style=discord.ButtonStyle.gray,
         )
 
-    async def callback(self, i: Inter):
+    @staticmethod
+    async def callback(i: Inter):
         await wish_import_command(i)
 
 
@@ -386,7 +390,8 @@ class CancelWishimport(ui.Button):
             style=discord.ButtonStyle.gray,
         )
 
-    async def callback(self, i: Inter):
+    @staticmethod
+    async def callback(i: Inter):
         await wish_import_command(i)
 
 
