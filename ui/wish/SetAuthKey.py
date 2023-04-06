@@ -368,7 +368,7 @@ class ConfirmWishimport(ui.Button):
                     SET    pity_pull = $1
                     WHERE  user_id = $2
                         AND wish_id = $3
-                        AND uid = $4 
+                        AND uid = $4
                     """,
                     count,
                     i.user.id,
