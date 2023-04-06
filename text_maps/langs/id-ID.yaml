@@ -642,8 +642,8 @@
   {total} total
   {unique} unique
 '567': |-
-  There is **NO** support for paimon.moe, please view this [GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371) for the reason.
-  The only file that is supported is the .yaml file exported from Shenhe.
+  **TIDAK ADA** dukungan untuk paimon.moe, harap lihat [masalah GitHub](https://github.com/seriaati/shenhe_bot/issues/371) ini untuk alasannya.
+  Satu-satunya file yang didukung adalah file .yaml yang diekspor dari Shenhe.
 '568': Berikan URL gambar dalam format .png atau .jpg
 '569': Tipe akun
 '570': |-
@@ -783,8 +783,8 @@
 '685': Pilih metode mengimpor wish
 '686': 'Impor riwayat wish Genshinmu dari file'
 '687': |-
-  You can use the </wish file-import:123123> command to import wishes from a file
-  Only support `.yaml` files exported from Shenhe
+  Kamu dapat menggunakan command </wish file-import:123123> untuk mengimpor wish dari sebuah file
+  Hanya mendukung file `.yaml` yang diekspor dari Shenhe
 '688': Apa kamu yakin?
 '689': |-
   • Kamu akan menghapus riwayat wish untuk akun ini, tindakan ini tidak dapat diurungkan.
@@ -792,7 +792,7 @@
   • Kamu mungkin memiliki wish yang disimpan di Shenhe yang tidak lagi disimpan dalam game, jika kamu menghapus riwayat wish, kamu akan kehilangan wish tersebut.
 '690': Shenhe telah menemukan **{a}** wish di tautan/file ini
 '691': Konfirmasi impor wish
-'692': Import your Genshin wish history from a yaml file exported by Shenhe
+'692': Impor riwayat wish Genshinmu dari file yaml yang diekspor oleh Shenhe
 '693': ''
 '694': Sedang berlangsung
 '695': Selesai
