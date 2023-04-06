@@ -405,29 +405,29 @@
 '367': This UID has no player data in it
 '368': Use </wish import:1000187021635104890> to import your wish history
 '369': Wish history
-'370': The last 5-star character you pulled was a standard character
-'371': The last 5-star character you pulled was a banner character
-'372': Wish luck analysis
-'373': Your luck is better than **{luck}%** of players
+'370': ''
+'371': ''
+'372': ''
+'373': ''
 '374': Choosing this filter will remove it
 '375': View ongoing Genshin banners
 '376': There are currently no ongoing banners
 '378': Method 1
-'379': You've spent a total of **{a}** pulls to pull **{b}** five-star banner characters
-'380': Your current number of five-star pity is **{a}**
+'379': ''
+'380': ''
 '381': "Changes {time}"
-'382': Wishing to pull
-'383': UP 5-star characters
-'384': It is estimated that you will pull a five-star banner character in **{a}** pulls
-'385': It is estimated that you will pull a five-star banner weapon in **{a}** pulls
-'386': Event wish number prediction
-'387': Standard
+'382': ''
+'383': ''
+'384': ''
+'385': ''
+'386': ''
+'387': ''
 '388': 'Yes'
 '389': 'No'
-'390': Is this the weapon you wanted?
-'391': The last 5-star weapon you pulled was
-'392': Is this a standard or limited time UP weapon?
-'393': Weapon wish number prediction
+'390': ''
+'391': ''
+'392': ''
+'393': ''
 '394': |-
   1. Press START on your keyboard, then search for Powershell
   2. Click Windows Powershell, then copy & paste the script below to the Powershell, then press ENTER (only when 'Press Enter to continue...' message is not showing yet)
@@ -436,8 +436,8 @@
   5. Click the table, then press CTRL+A then CTRL+C
   6. Alt+Tab to the powershell, then press ENTER, the link will be copied to your clipboard
   7. Click the submit button and paste the link to the textbox that pops up
-'395': weapons you want
-'396': pulls
+'395': ''
+'396': ''
 '397': Transformative Reactions
 '398': |-
   The number of ley line outcrops is converted from the number of mora you obtained this month.
@@ -485,7 +485,7 @@
 '426': Text tutorial is coming soon, for now please watch the video tutorial
 '427': The month before last month
 '428': View abyss data (need /register)
-'429': ""
+'429': ''
 '430': phase
 '431': The type of data you wish to view
 '432': Which abyss phase?
@@ -644,7 +644,7 @@
   {unique} unique
 '567': |-
   There is **NO** support for paimon.moe, please view this [GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371) for the reason.
-  The only file that is supported is the .txt file exported from Shenhe.
+  The only file that is supported is the .yaml file exported from Shenhe.
 '568': Please provide an Image URL in either .png or .jpg format
 '569': Account type
 '570': |-
@@ -751,10 +751,10 @@
 '654': Recent 5 star pulls
 '655': Permanent Banner
 '656': Choose a banner
-'657': fate-point
-'658': A number that is either 0, 1, or 2
+'657': ''
+'658': ''
 '659': You can only perform this action once every {hour} hour
-'660': You haven't pulled in the character banner yet
+'660': ''
 '661': Choose a rarity filter
 '662': Choose a banner filter
 '663': Total primogems
@@ -785,7 +785,7 @@
 '686': 'Import your Genshin wish history from a file'
 '687': |-
   You can use the </wish file-import:123123> command to import wishes from a file
-  Only support `.txt` files exported from Shenhe
+  Only support `.yaml` files exported from Shenhe
 '688': Are you sure?
 '689': |-
   • You are about to clear your wish history for this account, this action cannot be undone.
@@ -793,8 +793,8 @@
   • You may have wishes stored in Shenhe that is no longer saved in-game, if you clear your wish history, you will lose those wishes.
 '690': Shenhe has found **{a}** wishes in this link/file
 '691': Confirm wish import
-'692': Import your Genshin wish history from a txt file exported by Shenhe
-'693': Please check the file you have provided
+'692': Import your Genshin wish history from a yaml file exported by Shenhe
+'693': ''
 '694': En curso
 '695': Terminado
 '696': Restante
