@@ -640,8 +640,8 @@
   合計: {total}
   ユニーク: {unique}
 '567': |-
-  There is **NO** support for paimon.moe, please view this [GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371) for the reason.
-  The only file that is supported is the .yaml file exported from Shenhe.
+  paimon.moeの形式は **サポートされていません* 理由はこちらの [GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371) をご覧ください。
+  サポートされているのは、Shenheからエクスポートされた.yamlファイルのみです。
 '568': 画像のURLは.pngまたは.jpg形式で指定してください
 '569': アカウントの種類
 '570': |-
@@ -779,8 +779,8 @@
 '685': 祈願をインポートする方法を選択してください
 '686': 'ファイルから原神の祈願履歴をインポート'
 '687': |-
-  You can use the </wish file-import:123123> command to import wishes from a file
-  Only support `.yaml` files exported from Shenhe
+  </wish file-import:123123> コマンドを使用してファイルから祈願をインポートすることができます
+  申鶴からエクスポートされた `.yaml` ファイルのみをサポートします
 '688': 本当によろしいですか？
 '689': |-
   ・このアカウントの祈願履歴を削除しようとしています！この操作は元に戻すことができません。
@@ -788,7 +788,7 @@
   ・ゲーム内で保存されなくなった祈願が申鶴に保存されている場合があります。
 '690': 申鶴はこのファイル/リンクから **{a}**個の祈願が見つかりました
 '691': 祈願のインポートを確認
-'692': Import your Genshin wish history from a yaml file exported by Shenhe
+'692': 申鶴がエクスポートしたyamlファイルから原神の祈願履歴をインポート
 '693': ''
 '694': 進行中
 '695': 完了
