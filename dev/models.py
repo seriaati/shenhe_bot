@@ -299,7 +299,7 @@ class OriginalInfo(BaseModel):
         arbitrary_types_allowed = True
 
 
-class FarmData(BaseModel):
+class FarmData:
     domain: ambr.Domain
     characters: typing.List[ambr.Character] = []
     weapons: typing.List[ambr.Weapon] = []
