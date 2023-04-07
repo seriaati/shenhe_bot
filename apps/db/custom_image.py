@@ -105,6 +105,8 @@ async def validate_image_url(url: str, session: aiohttp.ClientSession) -> bool:
             return response.status == 200
     except aiohttp.InvalidURL:
         return False
+    except TimeoutError:
+        return False
 
 
 async def change_user_custom_image(
