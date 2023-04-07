@@ -337,6 +337,7 @@ def compress_image_util(fp_input: bytes) -> bytes:
     """Compress an image to a byte array"""
     im = Image.open(io.BytesIO(fp_input))
     fp = io.BytesIO()
+    im = im.convert("RGB")
     im.save(fp, format="JPEG", optimize=True, quality=50)
     fp.seek(0)
     return fp.read()
