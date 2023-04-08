@@ -8,53 +8,48 @@ import asyncpg
 import cachetools
 import discord
 import genshin
+from attr import define
 from discord.ext import commands
 from enkanetwork.model.base import EnkaNetworkResponse
 from logingateway import HuTaoLoginAPI
-from pydantic import BaseModel
 from pyppeteer.browser import Browser
 
 import ambr.models as ambr
 from apps.text_map import text_map
 
 
-class ShenheAccount(BaseModel):
+@define
+class ShenheAccount:
     client: genshin.Client
     uid: int
     discord_user: typing.Union[discord.User, discord.Member]
-    user_locale: typing.Optional[str] = None
     china: bool
     daily_checkin: bool
-
-    class Config:
-        arbitrary_types_allowed = True
+    user_locale: typing.Optional[str] = None
 
 
-class DamageResult(BaseModel):
+@define
+class DamageResult:
     result_embed: discord.Embed
     cond_embed: typing.Optional[discord.Embed] = None
 
-    class Config:
-        arbitrary_types_allowed = True
 
-
-class NotificationUser(BaseModel):
+@define
+class NotificationUser:
     user_id: int
-    threshold: int = 0
     current: int
     max: int
     uid: int
+    threshold: int = 0
     last_notif: typing.Optional[datetime] = None
 
 
-class DrawInput(BaseModel):
+@define
+class DrawInput:
     loop: asyncio.AbstractEventLoop
     session: aiohttp.ClientSession
     locale: discord.Locale | str = "en-US"
     dark_mode: bool = False
-
-    class Config:
-        arbitrary_types_allowed = True
 
 
 class BotModel(commands.AutoShardedBot):
@@ -118,7 +113,8 @@ class ErrorEmbed(ShenheEmbed):
         super().__init__(title=title, description=description, color=0xFC5165)
 
 
-class EmbedField(BaseModel):
+@define
+class EmbedField:
     name: str
     value: str
 
@@ -149,7 +145,8 @@ class TodoList:
         return self.dict
 
 
-class UserCustomImage(BaseModel):
+@define
+class UserCustomImage:
     url: str
     nickname: str
     character_id: int
@@ -157,36 +154,38 @@ class UserCustomImage(BaseModel):
     from_shenhe: bool
 
 
-class CharacterBuild(BaseModel):
+@define
+class CharacterBuild:
     embed: discord.Embed
+    is_thought: bool
     weapon: typing.Optional[str] = None
     artifact: typing.Optional[str] = None
-    is_thought: bool
-
-    class Config:
-        arbitrary_types_allowed = True
 
 
-class FightProp(BaseModel):
+@define
+class FightProp:
     name: str
     emoji: str
     substat: bool
     text_map_hash: int
 
 
-class EnkanetworkData(BaseModel):
+@define
+class EnkanetworkData:
     data: EnkaNetworkResponse
     eng_data: EnkaNetworkResponse
     cache: EnkaNetworkResponse
     eng_cache: EnkaNetworkResponse
 
 
-class TopPadding(BaseModel):
+@define
+class TopPadding:
     with_title: int
     without_title: int
 
 
-class DynamicBackgroundInput(BaseModel):
+@define
+class DynamicBackgroundInput:
     top_padding: typing.Union[TopPadding, int]
     left_padding: int
     right_padding: int
@@ -196,19 +195,21 @@ class DynamicBackgroundInput(BaseModel):
     card_x_padding: int
     card_y_padding: int
     card_num: int
-    max_card_num: typing.Optional[int] = None
     background_color: str
+    max_card_num: typing.Optional[int] = None
     draw_title: bool = True
 
 
-class SingleStrikeLeaderboardCharacter(BaseModel):
+@define
+class SingleStrikeLeaderboardCharacter:
     constellation: int
     refinement: int
     level: int
     icon: str
 
 
-class SingleStrikeLeaderboardUser(BaseModel):
+@define
+class SingleStrikeLeaderboardUser:
     user_name: str
     rank: int
     character: SingleStrikeLeaderboardCharacter
@@ -219,22 +220,22 @@ class SingleStrikeLeaderboardUser(BaseModel):
     rank: int
 
 
-class CharacterUsageResult(BaseModel):
+@define
+class CharacterUsageResult:
     fp: io.BytesIO
     first_character: ambr.Character
     uses: int
     percentage: float
 
-    class Config:
-        arbitrary_types_allowed = True
 
-
-class UsageCharacter(BaseModel):
+@define
+class UsageCharacter:
     character: ambr.Character
     usage_num: int
 
 
-class RunLeaderboardUser(BaseModel):
+@define
+class RunLeaderboardUser:
     icon_url: str
     user_name: str
     level: int
@@ -245,37 +246,40 @@ class RunLeaderboardUser(BaseModel):
     rank: int
 
 
-class LeaderboardResult(BaseModel):
+@define
+class LeaderboardResult:
     fp: io.BytesIO
     current_user: typing.Union[RunLeaderboardUser, SingleStrikeLeaderboardUser]
 
-    class Config:
-        arbitrary_types_allowed = True
 
-
-class TodoItem(BaseModel):
+@define
+class TodoItem:
     name: str
     current: int
     max: int
 
 
-class AbyssHalf(BaseModel):
+@define
+class AbyssHalf:
     num: int
     enemies: typing.List[str]
 
 
-class AbyssChamber(BaseModel):
+@define
+class AbyssChamber:
     num: int
     enemy_level: int
     halfs: typing.List[AbyssHalf]
 
 
-class AbyssFloor(BaseModel):
+@define
+class AbyssFloor:
     num: int
     chambers: typing.List[AbyssChamber]
 
 
-class InitLevels(BaseModel):
+@define
+class InitLevels:
     level: typing.Optional[int] = None
     a_level: typing.Optional[int] = None
     e_level: typing.Optional[int] = None
@@ -283,24 +287,23 @@ class InitLevels(BaseModel):
     ascension_phase: typing.Optional[int] = None
 
 
-class OriginalInfo(BaseModel):
+@define
+class OriginalInfo:
     view: discord.ui.View
     children: typing.List[discord.ui.Item]
     embed: typing.Optional[discord.Embed] = None
     attachments: typing.Optional[typing.List[discord.Attachment]] = None
 
-    class Config:
-        arbitrary_types_allowed = True
 
-
+@define
 class FarmData:
-    def __init__(self, domain: ambr.Domain):
-        self.domain = domain
-        self.characters: typing.List[ambr.Character] = []
-        self.weapons: typing.List[ambr.Weapon] = []
+    domain: ambr.Domain
+    characters: typing.List[ambr.Character] = []
+    weapons: typing.List[ambr.Weapon] = []
 
 
-class ConditionalResult(BaseModel):
+@define
+class ConditionalResult:
     cond: typing.Dict[str, typing.Any]
     desc: str
     effect: str
