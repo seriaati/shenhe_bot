@@ -295,11 +295,11 @@ class OriginalInfo:
     attachments: typing.Optional[typing.List[discord.Attachment]] = None
 
 
-@define
 class FarmData:
-    domain: ambr.Domain
-    characters: typing.List[ambr.Character] = []
-    weapons: typing.List[ambr.Weapon] = []
+    def __init__(self, domain: ambr.Domain):
+        self.domain = domain
+        self.characters: typing.List[ambr.Character] = []
+        self.weapons: typing.List[ambr.Weapon] = []
 
 
 @define
