@@ -240,7 +240,7 @@ def global_write(
     fonts: typing.Dict[str, TTFont] = {}
     for val in FONTS.values():
         path = f"resources/fonts/{val['name']}-{variation}.{val['extension']}"
-        fonts[path] = TTFont(path)
+        fonts[path] = TTFont(file=path)
 
     # prior font is the font that was used for the previous glyph
     prior_font = None
