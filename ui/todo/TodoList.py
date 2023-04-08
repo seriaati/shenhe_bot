@@ -27,9 +27,7 @@ class View(BaseView):
         self.locale = locale
         self.add_item(AddItem(text_map.get(203, locale)))
         self.add_item(
-            EditOrRemove(
-                not todo_items, text_map.get(729, locale), TodoAction.EDIT
-            )
+            EditOrRemove(not todo_items, text_map.get(729, locale), TodoAction.EDIT)
         )
         self.add_item(
             EditOrRemove(
@@ -57,14 +55,10 @@ class EditOrRemove(Button):
     def __init__(self, disabled: bool, label: str, action: TodoAction):
         super().__init__(
             label=label,
-            style=ButtonStyle.primary
-            if action is TodoAction.EDIT
-            else ButtonStyle.red,
+            style=ButtonStyle.primary if action is TodoAction.EDIT else ButtonStyle.red,
             disabled=disabled,
             row=2 if action is TodoAction.EDIT else 3,
-            emoji=asset.edit_emoji
-            if action is TodoAction.EDIT
-            else asset.remove_emoji,
+            emoji=asset.edit_emoji if action is TodoAction.EDIT else asset.remove_emoji,
         )
 
         self.action = action
@@ -197,9 +191,7 @@ class InputItemAmountModal(BaseModal):
         item_dict: Dict[str, str],
     ) -> None:
         super().__init__(
-            title=text_map.get(
-                729 if action is TodoAction.EDIT else 205, locale
-            ),
+            title=text_map.get(729 if action is TodoAction.EDIT else 205, locale),
             timeout=config.mid_timeout,
         )
 
