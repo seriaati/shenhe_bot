@@ -2,7 +2,6 @@ import asyncio
 import io
 import typing
 from datetime import datetime
-from enum import Enum
 
 import aiohttp
 import asyncpg
@@ -284,11 +283,6 @@ class InitLevels(BaseModel):
     ascension_phase: typing.Optional[int] = None
 
 
-class TodoAction(str, Enum):
-    REMOVE = "remove"
-    EDIT = "edit"
-
-
 class OriginalInfo(BaseModel):
     view: discord.ui.View
     children: typing.List[discord.ui.Item]
@@ -314,8 +308,3 @@ class ConditionalResult(BaseModel):
 
 class Inter(discord.Interaction):
     client: BotModel
-
-
-class TalentBoost(Enum):
-    BOOST_E = "boost_e"
-    BOOST_Q = "boost_q"
