@@ -3,7 +3,7 @@ import typing
 
 import discord
 import genshin
-from pydantic import BaseModel, Field
+from attr import define, field
 
 from dev.models import DrawInput, ErrorEmbed
 
@@ -21,7 +21,8 @@ __all__ = (
 V = typing.TypeVar("V")
 
 
-class GenshinAppResult(typing.Generic[V], BaseModel):
+@define
+class GenshinAppResult(typing.Generic[V]):
     success: bool
     result: typing.Union[V, ErrorEmbed]
 
@@ -29,14 +30,15 @@ class GenshinAppResult(typing.Generic[V], BaseModel):
         arbitrary_types_allowed = True
 
 
-class AbyssResult(BaseModel):
-    embed_title: str = Field(alias="title")
+@define
+class AbyssResult:
+    embed_title: str = field(alias="title")
     abyss: genshin.models.SpiralAbyss
-    genshin_user: genshin.models.PartialGenshinUserStats = Field(alias="user")
+    genshin_user: genshin.models.PartialGenshinUserStats = field(alias="user")
     discord_user: discord.User | discord.Member | discord.ClientUser
-    overview_embed: discord.Embed = Field(alias="overview")
-    overview_file: io.BytesIO = Field(alias="overview_card")
-    abyss_floors: typing.List[genshin.models.Floor] = Field(alias="floors")
+    overview_embed: discord.Embed = field(alias="overview")
+    overview_file: io.BytesIO = field(alias="overview_card")
+    abyss_floors: typing.List[genshin.models.Floor] = field(alias="floors")
     characters: typing.List[genshin.models.Character]
     uid: int
 
@@ -44,7 +46,8 @@ class AbyssResult(BaseModel):
         arbitrary_types_allowed = True
 
 
-class RealtimeNoteResult(BaseModel):
+@define
+class RealtimeNoteResult:
     embed: discord.Embed
     draw_input: DrawInput
     notes: genshin.models.Notes
@@ -53,7 +56,8 @@ class RealtimeNoteResult(BaseModel):
         arbitrary_types_allowed = True
 
 
-class StatsResult(BaseModel):
+@define
+class StatsResult:
     embed: discord.Embed
     file: io.BytesIO
 
@@ -61,7 +65,8 @@ class StatsResult(BaseModel):
         arbitrary_types_allowed = True
 
 
-class AreaResult(BaseModel):
+@define
+class AreaResult:
     embed: discord.Embed
     file: io.BytesIO
 
@@ -69,7 +74,8 @@ class AreaResult(BaseModel):
         arbitrary_types_allowed = True
 
 
-class DiaryResult(BaseModel):
+@define
+class DiaryResult:
     embed: discord.Embed
     file: io.BytesIO
 
@@ -77,10 +83,12 @@ class DiaryResult(BaseModel):
         arbitrary_types_allowed = True
 
 
-class CharacterResult(BaseModel):
+@define
+class CharacterResult:
     characters: typing.List[genshin.models.Character]
 
 
-class DiaryLogsResult(BaseModel):
+@define
+class DiaryLogsResult:
     primo_per_day: typing.Dict[int, int]
     before_adding: typing.Dict[int, int]
