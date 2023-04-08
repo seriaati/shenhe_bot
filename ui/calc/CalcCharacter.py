@@ -1,5 +1,6 @@
 from typing import List
 
+import attr
 import discord
 from discord import ui, utils
 
@@ -113,7 +114,7 @@ class CharacterSelect(ui.Select):
                     init_levels.q_level = skill_q.level if skill_q else None
 
         # change None levels in init_levels to 1
-        for key, value in init_levels.dict().items():
+        for key, value in attr.asdict(init_levels).items():
             if value is None:
                 if key == "ascension_phase":
                     setattr(
@@ -217,7 +218,7 @@ class InitLevelModal(BaseModal):
         self.q.placeholder = text_map.get(170, locale).format(a=10)
 
         # fill in defaults
-        for index, level in enumerate(init_levels.dict().values()):
+        for index, level in enumerate(attr.asdict(init_levels).items()):
             if index == 0:
                 self.init.default = str(level)
             elif index == 1:
