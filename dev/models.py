@@ -299,10 +299,11 @@ class OriginalInfo(BaseModel):
         arbitrary_types_allowed = True
 
 
-class FarmData(BaseModel):
-    domain: ambr.Domain
-    characters: typing.List[ambr.Character] = []
-    weapons: typing.List[ambr.Weapon] = []
+class FarmData:
+    def __init__(self, domain: ambr.Domain):
+        self.domain = domain
+        self.characters: typing.List[ambr.Character] = []
+        self.weapons: typing.List[ambr.Weapon] = []
 
 
 class ConditionalResult(BaseModel):
