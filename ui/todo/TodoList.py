@@ -12,6 +12,7 @@ from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
 from dev.base_ui import BaseModal, BaseView
+from dev.enum import TodoAction
 from utility.todo_paginator import TodoPaginator, TodoPaginatorView
 
 
@@ -27,14 +28,14 @@ class View(BaseView):
         self.add_item(AddItem(text_map.get(203, locale)))
         self.add_item(
             EditOrRemove(
-                not todo_items, text_map.get(729, locale), models.TodoAction.EDIT
+                not todo_items, text_map.get(729, locale), TodoAction.EDIT
             )
         )
         self.add_item(
             EditOrRemove(
                 not todo_items,
                 text_map.get(205, locale),
-                models.TodoAction.REMOVE,
+                TodoAction.REMOVE,
             )
         )
         self.add_item(ClearItems(not todo_items, text_map.get(206, locale)))
@@ -53,16 +54,16 @@ class AddItem(Button):
 
 
 class EditOrRemove(Button):
-    def __init__(self, disabled: bool, label: str, action: models.TodoAction):
+    def __init__(self, disabled: bool, label: str, action: TodoAction):
         super().__init__(
             label=label,
             style=ButtonStyle.primary
-            if action is models.TodoAction.EDIT
+            if action is TodoAction.EDIT
             else ButtonStyle.red,
             disabled=disabled,
-            row=2 if action is models.TodoAction.EDIT else 3,
+            row=2 if action is TodoAction.EDIT else 3,
             emoji=asset.edit_emoji
-            if action is models.TodoAction.EDIT
+            if action is TodoAction.EDIT
             else asset.remove_emoji,
         )
 
@@ -99,7 +100,7 @@ class ItemSelect(Select):
         self,
         locale: Locale | str,
         todo_items: List[models.TodoItem],
-        action: models.TodoAction,
+        action: TodoAction,
     ):
         options: List[SelectOption] = []
         item_dict: Dict[str, str] = {}
@@ -190,14 +191,14 @@ class InputItemAmountModal(BaseModal):
         self,
         locale: Locale | str,
         item_name: str,
-        action: models.TodoAction,
+        action: TodoAction,
         current_amount: int,
         max_amount: int,
         item_dict: Dict[str, str],
     ) -> None:
         super().__init__(
             title=text_map.get(
-                729 if action is models.TodoAction.EDIT else 205, locale
+                729 if action is TodoAction.EDIT else 205, locale
             ),
             timeout=config.mid_timeout,
         )
@@ -207,7 +208,7 @@ class InputItemAmountModal(BaseModal):
 
         self.count.label = text_map.get(210, locale).format(item=item_dict[item_name])
         self.count.default = (
-            str(current_amount) if action is models.TodoAction.EDIT else str(max_amount)
+            str(current_amount) if action is TodoAction.EDIT else str(max_amount)
         )
 
     async def on_submit(self, i: models.Inter) -> None:
@@ -216,14 +217,14 @@ class InputItemAmountModal(BaseModal):
         if not self.count.value.isdigit():
             return await return_todo(i)
 
-        if self.action is models.TodoAction.EDIT:
+        if self.action is TodoAction.EDIT:
             await pool.execute(
                 "UPDATE todo SET count = $1 WHERE item = $2 AND user_id = $3",
                 int(self.count.value),
                 self.item_name,
                 i.user.id,
             )
-        elif self.action is models.TodoAction.REMOVE:
+        elif self.action is TodoAction.REMOVE:
             await pool.execute(
                 "UPDATE todo SET max = max - $1 WHERE item = $2 AND user_id = $3",
                 int(self.count.value),

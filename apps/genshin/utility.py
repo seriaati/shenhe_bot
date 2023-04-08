@@ -13,6 +13,7 @@ from discord import Locale
 from discord.utils import get
 
 import dev.asset as asset
+import dev.enum as enum
 import dev.models as models
 from ambr import AmbrTopAPI, Character, Domain, Material, Weapon
 from ambr.models import CharacterDetail
@@ -500,7 +501,7 @@ async def get_character_fanarts(character_id: str) -> List[str]:
 
 async def calc_e_q_boost(
     session: aiohttp.ClientSession, character_id: str
-) -> models.TalentBoost:
+) -> enum.TalentBoost:
     client = AmbrTopAPI(session)
     detail = await client.get_character_detail(character_id)
     if not isinstance(detail, CharacterDetail):
@@ -508,8 +509,8 @@ async def calc_e_q_boost(
     c3 = detail.constellations[2]
     e_skill = detail.talents[1]
     if e_skill.name in c3.description:
-        return models.TalentBoost.BOOST_E
-    return models.TalentBoost.BOOST_Q
+        return enum.TalentBoost.BOOST_E
+    return enum.TalentBoost.BOOST_Q
 
 
 async def update_talents_json(
@@ -543,7 +544,7 @@ async def update_talents_json(
                 boost_dict = {}
             boost_dict[str(character_id)] = boost.value
             await write_json(pool, "genshin/talent_boost.json", boost_dict)
-        boost = models.TalentBoost(boost_dict[character_id])
+        boost = enum.TalentBoost(boost_dict[character_id])
 
         skill_order = await get_character_skill_order(str(character.id))
         a_skill = details.talents[0]
@@ -564,9 +565,9 @@ async def update_talents_json(
             q_skill = q_skill.level
             c3 = character.constellations[2]
             c5 = character.constellations[4]
-            if boost is models.TalentBoost.BOOST_E and c3.activated:
+            if boost is enum.TalentBoost.BOOST_E and c3.activated:
                 e_skill += 3
-            elif boost is models.TalentBoost.BOOST_Q and c5.activated:
+            elif boost is enum.TalentBoost.BOOST_Q and c5.activated:
                 q_skill += 3
             talents_[str(character.id)] = f"{a_skill}/{e_skill}/{q_skill}"
 
