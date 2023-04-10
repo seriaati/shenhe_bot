@@ -10,7 +10,7 @@ load_dotenv()
 
 
 class TopggStats(commands.Cog):
-    def __init__(self, bot) -> None:
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
     async def cog_load(self) -> None:
@@ -31,8 +31,10 @@ class TopggStats(commands.Cog):
             self.bot, topgg_token, post_shard_count=True, autopost=True
         )
         try:
-            await topggpy.post_guild_count()
-            log.info(f"[Top.gg] Posted server count ({self.bot.guild_count})")
+            await topggpy.post_guild_count(
+                len(self.bot.guilds), self.bot.shard_count, self.bot.shard_id
+            )
+            log.info(f"[Top.gg] Posted server count ({len(self.bot.guilds)})")
         except Exception as e:  # skipcq: PYL-W0703
             log.error(f"[Top.gg] Failed to post server count ({e})")
 
