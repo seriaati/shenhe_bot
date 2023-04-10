@@ -1,5 +1,4 @@
 import asyncio
-import io
 import json
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Tuple
@@ -7,6 +6,7 @@ from typing import Any, Dict, List, Tuple
 import aiofiles
 import discord
 import genshin
+import mystbin
 from discord import utils
 from discord.ext import commands, tasks
 
@@ -143,10 +143,13 @@ class Schedule(commands.Cog):
         lvlurarti = self.bot.get_user(lvlurarti_id) or await self.bot.fetch_user(
             lvlurarti_id
         )
-        fp = io.BytesIO()
-        fp.write(json.dumps(result, indent=4).encode())
-        fp.seek(0)
-        await lvlurarti.send(file=discord.File(fp, "abyss.json"))
+        mystbin_client = mystbin.Client()
+        paste = await mystbin_client.create_paste(
+            filename="abyss.json",
+            content=json.dumps(result, indent=4, ensure_ascii=False),
+        )
+        embed = models.DefaultEmbed("Abyss Data", f"[JSON file link]({paste.url})")
+        await lvlurarti.send(embed=embed)
 
         log.info("[Schedule] Sent abyss.json")
 
