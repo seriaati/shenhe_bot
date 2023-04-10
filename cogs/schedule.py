@@ -19,7 +19,11 @@ from apps.text_map import text_map, to_ambr_top
 from dev.base_ui import capture_exception
 from utility import dm_embed, log
 from utility.fetch_card import fetch_cards
-from utility.utils import get_dt_now
+from utility.utils import (
+    convert_dict_to_zipped_json,
+    get_discord_user_from_id,
+    get_dt_now,
+)
 
 
 def schedule_error_handler(func):
@@ -108,7 +112,7 @@ class Schedule(commands.Cog):
         log.info(f"[Schedule] Codes saved: {codes}.")
 
     @schedule_error_handler
-    async def generate_abyss_json(self):
+    async def generate_abyss_json(self) -> None:
         log.info("[Schedule] Generating abyss.json...")
 
         result: Dict[str, Any] = {}
@@ -135,21 +139,15 @@ class Schedule(commands.Cog):
                     continue
 
                 genshin_app.add_abyss_entry(result, account, abyss, list(characters))
-
         log.info("[Schedule] Generated abyss.json")
 
-        with open("abyss.json", "w") as f:
-            json.dump(result, f, indent=4, ensure_ascii=False)
-
-        owner = self.bot.get_user(410036441129943050) or await self.bot.fetch_user(
-            410036441129943050
-        )
-        await owner.send(content="Abyss.json file generated.")
-        await owner.send(file=discord.File("abyss.json"))
+        user = await get_discord_user_from_id(self.bot, 630235350526328844)
+        fp = convert_dict_to_zipped_json(result)
+        await user.send(file=discord.File(fp, "abyss.json"))
         log.info("[Schedule] Saved abyss.json")
 
     @schedule_error_handler
-    async def check_notification(self, notification_type: str):
+    async def check_notification(self, notification_type: str) -> None:
         log.info(f"[Schedule][{notification_type}] Checking...")
 
         n_users = await self.get_notification_users(notification_type)
@@ -503,7 +501,7 @@ class Schedule(commands.Cog):
         return users
 
     @staticmethod
-    async def redeem_code(user, locale, code):
+    async def redeem_code(user, locale, code) -> tuple[str, bool]:
         success = False
         value = "default_value"
         try:
