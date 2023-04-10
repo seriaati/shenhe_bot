@@ -1,6 +1,9 @@
+import json
 import logging
 import re
+import zipfile
 from datetime import datetime
+from io import BytesIO
 from itertools import islice
 from typing import Any, Dict, List, Union
 
@@ -131,3 +134,37 @@ async def dm_embed(
         return False
     else:
         return True
+
+
+def convert_dict_to_zipped_json(data_dict: Dict[str, str]) -> BytesIO:
+    """
+    Description:
+        This function takes a dictionary and returns a BytesIO object containing a zip file that contains a JSON file.
+        The JSON file contains the dictionary converted to a JSON string.
+
+    Arguments:
+        data_dict: A dictionary of strings to strings
+
+    Returns:
+        A BytesIO object containing a zip file that contains a JSON file.
+    """
+    # Convert dictionary to JSON string
+    json_str: str = json.dumps(data_dict)
+
+    # Create a BytesIO object to hold the zip file
+    zip_buffer: BytesIO = BytesIO()
+
+    # Create a zip archive containing the JSON file
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+        zip_file.writestr("data.json", json_str)
+
+    # Reset the buffer pointer to the beginning of the buffer
+    zip_buffer.seek(0)
+
+    # Return the BytesIO object containing the zipped file
+    return zip_buffer
+
+
+async def get_discord_user_from_id(bot: discord.Client, user_id: int) -> discord.User:
+    """Get a discord user from their id. If the user is not cached, fetch them from the discord API"""
+    return bot.get_user(user_id) or await bot.fetch_user(user_id)
