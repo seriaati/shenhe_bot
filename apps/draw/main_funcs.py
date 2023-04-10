@@ -19,7 +19,7 @@ from apps.draw.utility import (
     download_images,
     extract_urls,
 )
-from apps.wish.models import WishData
+from apps.wish.models import RecentWish, WishData
 
 
 @calculate_time
@@ -191,20 +191,29 @@ async def draw_realtime_card(
 async def draw_wish_overview_card(
     draw_input: models.DrawInput,
     wish_data: WishData,
-    pfp: str,
-    user_name: str,
 ) -> io.BytesIO:
-    urls = [pfp]
-    for w in wish_data.recents:
-        if w.icon is not None:
-            urls.append(w.icon)
+    urls = [w.icon for w in wish_data.recents if w.icon is not None]
     await download_images(urls, draw_input.session)
     func = functools.partial(
-        funcs.wish.overview,
+        funcs.wish.wish_overview,
         draw_input.locale,
         wish_data,
-        pfp,
-        user_name,
+        draw_input.dark_mode,
+    )
+    return await draw_input.loop.run_in_executor(None, func)
+
+
+@calculate_time
+async def draw_wish_recents_card(
+    draw_input: models.DrawInput,
+    wish_recents: List[RecentWish],
+) -> io.BytesIO:
+    urls = [w.icon for w in wish_recents if w.icon is not None]
+    await download_images(urls, draw_input.session)
+    func = functools.partial(
+        funcs.wish.draw_wish_recents,
+        draw_input.locale,
+        wish_recents,
         draw_input.dark_mode,
     )
     return await draw_input.loop.run_in_executor(None, func)
@@ -235,7 +244,7 @@ async def draw_abyss_overview_card(
     urls = extract_urls(characters)
     await download_images(urls, draw_input.session)
     func = functools.partial(
-        funcs.abyss.overview,
+        funcs.abyss.abyss_overview,
         draw_input.locale,
         draw_input.dark_mode,
         abyss_data,

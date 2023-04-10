@@ -1,42 +1,27 @@
 import io
+from typing import List
 
 import discord
 from PIL import Image, ImageDraw
 
 import dev.asset as asset
-from apps.draw.utility import (
-    circular_crop,
-    dynamic_font_size,
-    get_cache,
-    get_font,
-    global_write,
-)
+from apps.draw.utility import circular_crop, dynamic_font_size, get_cache, get_font
 from apps.text_map import text_map
-from apps.wish.models import WishData
+from apps.wish.models import RecentWish, WishData
 
 
-def overview(
+def wish_overview(
     locale: discord.Locale | str,
     wish_data: WishData,
-    pfp: str,
-    user_name: str,
     dark_mode: bool,
 ) -> io.BytesIO:
-    im = Image.open(
+    im: Image.Image = Image.open(
         f"yelan/templates/wish/[{'light' if not dark_mode else 'dark'}] Wish Overview.png"
     )
+    im = im.resize((im.width // 3, im.height // 3))
     draw = ImageDraw.Draw(im)
     fill = asset.primary_text if not dark_mode else asset.white
     locale = str(locale)
-
-    # profile picture
-    profile_pic = get_cache(pfp)
-    profile_pic = circular_crop(profile_pic)
-    profile_pic = profile_pic.resize((50, 50))
-    im.paste(profile_pic, (30, 30), profile_pic)
-
-    # user name
-    global_write(draw, (93, 37), user_name, 22, fill, "Light")
 
     # banner name
     font = get_font(locale, 40, "Bold")
@@ -98,10 +83,71 @@ def overview(
 
     offset = (55, 553)
     row = 0
-    for item in wish_data.recents:
+    for item in wish_data.recents[:8]:
         row += 1
         if row == 5:
             offset = (offset[0] + 236, 553)
+
+        # item icon
+        if item.icon is not None:
+            icon = get_cache(item.icon)
+            icon = circular_crop(icon)
+            icon = icon.resize((55, 55))
+            im.paste(icon, offset, icon)
+
+        # character name
+        font = get_font(locale, 20, "Medium")
+        fill = asset.primary_text if not dark_mode else asset.white
+        character_name = item.name
+        if font.getlength(character_name) >= 85:
+            index = 1
+            while font.getlength(character_name) >= 110:
+                character_name = character_name[: len(character_name) - index] + "..."
+                index += 1
+        draw.text((offset[0] + 69, offset[1] + 5), character_name, font=font, fill=fill)
+
+        # number of pulls
+        font = get_font(locale, 16, "Regular")
+        if 1 <= int(item.pull_num) <= 50:
+            fill = "#5FA846" if not dark_mode else "#afff9c"
+        elif 51 <= int(item.pull_num) <= 70:
+            fill = "#4f87ff" if not dark_mode else "#8cb0ff"
+        else:
+            fill = "#CF5656" if not dark_mode else "#ff8c8c"
+        draw.text(
+            (offset[0] + 69, offset[1] + 28),
+            text_map.get(396, locale).format(pull=item.pull_num),
+            font=font,
+            fill=fill,
+        )
+
+        offset = (offset[0], offset[1] + 75)
+
+    fp = io.BytesIO()
+    im = im.convert("RGB")
+    im = im.resize((im.width * 3, im.height * 3))
+    im = im.crop((0, 240, im.width, im.height))
+    im.save(fp, "JPEG", quality=95, optimize=True)
+    return fp
+
+
+def draw_wish_recents(
+    locale: discord.Locale | str,
+    recents: List[RecentWish],
+    dark_mode: bool,
+) -> io.BytesIO:
+    im: Image.Image = Image.open(
+        f"yelan/templates/wish/[{'light' if not dark_mode else 'dark'}] Wish Overview p2.png"
+    )
+    im = im.resize((im.width // 3, im.height // 3))
+    draw = ImageDraw.Draw(im)
+
+    offset = (55, 50)
+    row = 0
+    for item in recents:
+        row += 1
+        if row == 5:
+            offset = (offset[0] + 236, 50)
         elif row == 9:
             break
 
@@ -133,14 +179,15 @@ def overview(
             fill = "#CF5656" if not dark_mode else "#ff8c8c"
         draw.text(
             (offset[0] + 69, offset[1] + 28),
-            f"{item.pull_num} {text_map.get(396, locale)}",
+            text_map.get(396, locale).format(pull=item.pull_num),
             font=font,
             fill=fill,
         )
 
         offset = (offset[0], offset[1] + 75)
 
-    fp = io.BytesIO()
     im = im.convert("RGB")
+    im = im.resize((im.width * 3, im.height * 3))
+    fp = io.BytesIO()
     im.save(fp, "JPEG", quality=95, optimize=True)
     return fp
