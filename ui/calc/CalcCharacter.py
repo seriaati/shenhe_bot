@@ -218,17 +218,11 @@ class InitLevelModal(BaseModal):
         self.q.placeholder = text_map.get(170, locale).format(a=10)
 
         # fill in defaults
-        for index, level in enumerate(attr.asdict(init_levels).items()):
-            if index == 0:
-                self.init.default = str(level)
-            elif index == 1:
-                self.a.default = str(level)
-            elif index == 2:
-                self.e.default = str(level)
-            elif index == 3:
-                self.q.default = str(level)
-            elif index == 4:
-                self.ascension_phase.default = str(level)
+        self.init.default = str(init_levels.level)
+        self.a.default = str(init_levels.a_level)
+        self.e.default = str(init_levels.e_level)
+        self.q.default = str(init_levels.q_level)
+        self.ascension_phase.default = str(init_levels.ascension_phase)
 
         self.character_id = character_id
         self.locale = locale
