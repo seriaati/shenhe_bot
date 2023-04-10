@@ -6,7 +6,6 @@ from typing import Any, Dict, List, Tuple
 import aiofiles
 import discord
 import genshin
-import mystbin
 from discord import utils
 from discord.ext import commands, tasks
 
@@ -139,19 +138,10 @@ class Schedule(commands.Cog):
 
         log.info("[Schedule] Generated abyss.json")
 
-        lvlurarti_id = 630235350526328844
-        lvlurarti = self.bot.get_user(lvlurarti_id) or await self.bot.fetch_user(
-            lvlurarti_id
-        )
-        mystbin_client = mystbin.Client()
-        paste = await mystbin_client.create_paste(
-            filename="abyss.json",
-            content=json.dumps(result, indent=4, ensure_ascii=False),
-        )
-        embed = models.DefaultEmbed("Abyss Data", f"[JSON file link]({paste.url})")
-        await lvlurarti.send(embed=embed)
+        with open("abyss.json", "w") as f:
+            json.dump(result, f, indent=4, ensure_ascii=False)
 
-        log.info("[Schedule] Sent abyss.json")
+        log.info("[Schedule] Saved abyss.json")
 
     @schedule_error_handler
     async def check_notification(self, notification_type: str):
