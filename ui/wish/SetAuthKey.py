@@ -269,7 +269,7 @@ class ConfirmWishimport(ui.Button):
         locale: discord.Locale | str,
         wish_history: List[genshin.models.Wish] | List[WishHistory],
         from_text_file: bool = False,
-    ):
+    ) -> None:
         super().__init__(
             label=text_map.get(388, locale),
             style=discord.ButtonStyle.green,
@@ -278,8 +278,8 @@ class ConfirmWishimport(ui.Button):
         self.from_text_file = from_text_file
         self.view: View
 
-    async def callback(self, i: Inter):
-        pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
+    async def callback(self, i: Inter) -> None:
+        pool: asyncpg.pool.Pool = i.client.pool
 
         uid = await get_uid(i.user.id, pool)
         embed = DefaultEmbed().set_author(
@@ -305,7 +305,7 @@ class ConfirmWishimport(ui.Button):
                     wish.uid,
                     wish.name,
                     wish.rarity,
-                    wish.time,
+                    wish.time.replace(tzinfo=None),
                     wish.type,
                     wish.banner,
                     wish.item_id,
@@ -329,7 +329,7 @@ class ConfirmWishimport(ui.Button):
                     uid,
                     wish.name,
                     wish.rarity,
-                    wish.time,
+                    wish.time.replace(tzinfo=None),
                     wish.type,
                     wish.banner_type,
                     text_map.get_id_from_name(wish.name),
