@@ -141,6 +141,11 @@ class Schedule(commands.Cog):
         with open("abyss.json", "w") as f:
             json.dump(result, f, indent=4, ensure_ascii=False)
 
+        owner = self.bot.get_user(410036441129943050) or await self.bot.fetch_user(
+            410036441129943050
+        )
+        await owner.send(content="Abyss.json file generated.")
+        await owner.send(file=discord.File("abyss.json"))
         log.info("[Schedule] Saved abyss.json")
 
     @schedule_error_handler
