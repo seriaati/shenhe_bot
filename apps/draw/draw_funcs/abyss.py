@@ -7,21 +7,12 @@ from PIL import Image, ImageDraw
 
 import dev.asset as asset
 from apps.draw.draw_funcs import leaderboard
-from apps.draw.utility import (
-    draw_dynamic_background,
-    dynamic_font_size,
-    get_cache,
-    get_font,
-)
+from apps.draw.utility import (draw_dynamic_background, dynamic_font_size,
+                               get_cache, get_font)
 from apps.text_map import text_map
-from dev.models import (
-    CharacterUsageResult,
-    DynamicBackgroundInput,
-    RunLeaderboardUser,
-    SingleStrikeLeaderboardUser,
-    TopPadding,
-    UsageCharacter,
-)
+from dev.models import (CharacterUsageResult, DynamicBackgroundInput,
+                        RunLeaderboardUser, SingleStrikeLeaderboardUser,
+                        TopPadding, UsageCharacter)
 
 
 def one_page(
@@ -233,7 +224,7 @@ def run_leaderboard(
     return fp
 
 
-def overview(
+def abyss_overview(
     locale: discord.Locale | str,
     dark_mode: bool,
     abyss: genshin.models.SpiralAbyss,
