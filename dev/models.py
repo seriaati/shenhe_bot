@@ -94,6 +94,13 @@ class ShenheEmbed(discord.Embed):
         )
         return self
 
+    def set_user_footer(
+        self,
+        user: typing.Union[discord.Member, discord.User],
+    ):
+        self.set_footer(text=user.display_name, icon_url=user.display_avatar.url)
+        return self
+
 
 class DefaultEmbed(ShenheEmbed):
     def __init__(
