@@ -33,7 +33,7 @@ class TopggStats(commands.Cog):
         try:
             await topggpy.post_guild_count()
             log.info(f"Posted server count ({self.bot.topggpy.guild_count})")
-        except Exception as e:
+        except Exception as e:  # skipcq: PYL-W0703
             log.info(f"Failed to post server count\n{e.__class__.__name__}: {e}")
 
 
