@@ -143,7 +143,7 @@ class Schedule(commands.Cog):
 
         user = await get_discord_user_from_id(self.bot, 630235350526328844)
         fp = convert_dict_to_zipped_json(result)
-        await user.send(file=discord.File(fp, "abyss.json"))
+        await user.send(file=discord.File(fp, "abyss_json.zip"))
         log.info("[Schedule] Saved abyss.json")
 
     @schedule_error_handler
