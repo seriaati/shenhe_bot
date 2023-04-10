@@ -120,9 +120,10 @@ class WishCog(commands.GroupCog, name="wish"):
     @app_commands.describe(member=_("Check other user's data", hash=416))
     async def wish_overview(
         self,
-        i: discord.Interaction,
+        inter: discord.Interaction,
         member: Optional[discord.User | discord.Member] = None,
     ):
+        i: models.Inter = inter  # type: ignore
         await i.response.defer()
         member = member or i.user
         user_locale = await get_user_lang(i.user.id, self.bot.pool)
@@ -240,23 +241,14 @@ class WishCog(commands.GroupCog, name="wish"):
             all_wish_data["301"].pity += all_wish_data["400"].pity
             all_wish_data["400"].pity += temp
 
-        fp = await main_funcs.draw_wish_overview_card(
-            models.DrawInput(
-                loop=self.bot.loop,
-                session=self.bot.session,
-                locale=user_locale or i.locale,
-                dark_mode=await get_user_theme(i.user.id, self.bot.pool),
-            ),
-            list(all_wish_data.values())[0],
-            member.display_avatar.url,
-            member.display_name,
-        )
-        fp.seek(0)
         view = ChooseBanner.View(
-            member, text_map.get(656, i.locale, user_locale), options, all_wish_data
+            user_locale or i.locale, options, all_wish_data, member
         )
+        view.author = i.user
+
+        fp = await view.draw_overview_fp(i, list(all_wish_data.values())[0])
+        fp.seek(0)
         await i.followup.send(
-            embed=models.DefaultEmbed().set_image(url="attachment://overview.jpeg"),
             file=discord.File(fp, filename="overview.jpeg"),
             view=view,
         )
