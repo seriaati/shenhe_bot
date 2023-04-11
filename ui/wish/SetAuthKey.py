@@ -22,7 +22,9 @@ from utility import log
 
 
 class View(BaseView):
-    def __init__(self, locale: discord.Locale | str, disabled: bool, empty: bool):
+    def __init__(
+        self, locale: discord.Locale | str, disabled: bool, empty: bool
+    ) -> None:
         super().__init__(timeout=config.long_timeout)
         self.locale = locale
         self.add_item(ImportWishHistory(locale, not disabled))
@@ -31,7 +33,7 @@ class View(BaseView):
         self.add_item(ClearWishHistory(locale, empty))
 
 
-async def wish_import_command(i: Inter, responded: bool = False):
+async def wish_import_command(i: Inter, responded: bool = False) -> None:
     if not responded:
         await i.response.defer()
     embed, linked, empty = await get_wish_import_embed(i)
@@ -43,16 +45,16 @@ async def wish_import_command(i: Inter, responded: bool = False):
 
 
 class GOBack(ui.Button):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(emoji=asset.back_emoji, style=discord.ButtonStyle.grey, row=4)
 
     @staticmethod
-    async def callback(i: Inter):
+    async def callback(i: Inter) -> None:
         await wish_import_command(i)
 
 
 class LinkUID(ui.Button):
-    def __init__(self, locale: discord.Locale | str, disabled: bool):
+    def __init__(self, locale: discord.Locale | str, disabled: bool) -> None:
         super().__init__(
             label=text_map.get(677, locale),
             style=discord.ButtonStyle.green,
@@ -62,7 +64,7 @@ class LinkUID(ui.Button):
         )
         self.view: View
 
-    async def callback(self, i: Inter):
+    async def callback(self, i: Inter) -> None:
         locale = self.view.locale
         embed = DefaultEmbed(description=text_map.get(681, locale)).set_author(
             name=text_map.get(677, locale), icon_url=i.user.display_avatar.url
@@ -88,10 +90,10 @@ class LinkUID(ui.Button):
 class UIDSelect(ui.Select):
     def __init__(
         self, locale: discord.Locale | str, options: List[discord.SelectOption]
-    ):
+    ) -> None:
         super().__init__(placeholder=text_map.get(682, locale), options=options)
 
-    async def callback(self, i: Inter):
+    async def callback(self, i: Inter) -> None:
         pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
         await pool.execute(
             """
@@ -99,7 +101,7 @@ class UIDSelect(ui.Select):
             SET    uid = $1
             WHERE  user_id = $2
             """,
-            self.values[0],
+            int(self.values[0]),
             i.user.id,
         )
         await wish_import_command(i)
