@@ -233,7 +233,7 @@ def run_leaderboard(
     return fp
 
 
-def overview(
+def abyss_overview(
     locale: discord.Locale | str,
     dark_mode: bool,
     abyss: genshin.models.SpiralAbyss,

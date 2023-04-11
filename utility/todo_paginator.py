@@ -18,13 +18,13 @@ class TodoPaginatorView(GeneralPaginatorView):
         locale: Locale | str,
         dark_mode: bool,
         todo_items: List[TodoItem],
-    ):
+    ) -> None:
         super().__init__(embeds, str(locale))
         self.materials = materials
         self.dark_mode = dark_mode
         self.todo_items = todo_items
 
-    async def make_response(self, i):
+    async def make_response(self, i: Inter) -> None:
         fp = await main_funcs.draw_material_card(
             DrawInput(
                 loop=i.client.loop,
@@ -72,8 +72,10 @@ class TodoPaginator(GeneralPaginator):
         )
         return view
 
-    def setup_kwargs(self, view: TodoPaginatorView) -> Dict[str, Any]:
-        kwargs = super().setup_kwargs(view)
+    def setup_kwargs(
+        self, view: TodoPaginatorView, ephemeral: bool = False
+    ) -> Dict[str, Any]:
+        kwargs = super().setup_kwargs(view, ephemeral)
 
         self.first_fp.seek(0)
         kwargs["attachments"] = [File(self.first_fp, filename="todo.jpeg")]

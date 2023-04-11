@@ -1,42 +1,28 @@
 import io
+from typing import List
 
 import discord
 from PIL import Image, ImageDraw
 
 import dev.asset as asset
-from apps.draw.utility import (
-    circular_crop,
-    dynamic_font_size,
-    get_cache,
-    get_font,
-    global_write,
-)
+from apps.draw.utility import circular_crop, dynamic_font_size, get_cache, get_font
 from apps.text_map import text_map
-from apps.wish.models import WishData
+from apps.wish.models import RecentWish, WishData
+from dev.enum import CardType
 
 
-def overview(
+def wish_overview(
     locale: discord.Locale | str,
     wish_data: WishData,
-    pfp: str,
-    user_name: str,
     dark_mode: bool,
 ) -> io.BytesIO:
-    im = Image.open(
+    im: Image.Image = Image.open(
         f"yelan/templates/wish/[{'light' if not dark_mode else 'dark'}] Wish Overview.png"
     )
+    im = im.resize((im.width // 3, im.height // 3))
     draw = ImageDraw.Draw(im)
     fill = asset.primary_text if not dark_mode else asset.white
     locale = str(locale)
-
-    # profile picture
-    profile_pic = get_cache(pfp)
-    profile_pic = circular_crop(profile_pic)
-    profile_pic = profile_pic.resize((50, 50))
-    im.paste(profile_pic, (30, 30), profile_pic)
-
-    # user name
-    global_write(draw, (93, 37), user_name, 22, fill, "Light")
 
     # banner name
     font = get_font(locale, 40, "Bold")
@@ -96,14 +82,59 @@ def overview(
     font = get_font(locale, 30, "Bold")
     draw.text((30, 469), text_map.get(654, locale), font=font, fill=fill)
 
-    offset = (55, 553)
+    draw_wish_recents(
+        locale, wish_data.recents[:8], dark_mode, im, draw, CardType.OVERVIEW
+    )
+
+    fp = io.BytesIO()
+    im = im.convert("RGB")
+    im = im.resize((im.width * 3, im.height * 3))
+    im = im.crop((0, 240, im.width, im.height))
+    im.save(fp, "JPEG", quality=95, optimize=True)
+    return fp
+
+
+def draw_wish_recents_card(
+    locale: discord.Locale | str,
+    recents: List[RecentWish],
+    dark_mode: bool,
+) -> io.BytesIO:
+    im: Image.Image = Image.open(
+        f"yelan/templates/wish/[{'light' if not dark_mode else 'dark'}] Wish Overview p2.png"
+    )
+    im = im.resize((im.width // 3, im.height // 3))
+    draw = ImageDraw.Draw(im)
+
+    draw_wish_recents(locale, recents, dark_mode, im, draw, CardType.RECENTS)
+
+    im = im.convert("RGB")
+    im = im.resize((im.width * 3, im.height * 3))
+    fp = io.BytesIO()
+    im.save(fp, "JPEG", quality=95, optimize=True)
+    return fp
+
+
+def draw_wish_recents(
+    locale: discord.Locale | str,
+    recents: List[RecentWish],
+    dark_mode: bool,
+    im: Image.Image,
+    draw: ImageDraw.ImageDraw,
+    card_type: CardType,
+) -> None:
     row = 0
-    for item in wish_data.recents:
+    if card_type is CardType.OVERVIEW:
+        offset = (55, 553)
+        original_y = 553
+    elif card_type is CardType.RECENTS:
+        offset = (55, 50)
+        original_y = 50
+    for item in recents:
         row += 1
-        if row == 5:
-            offset = (offset[0] + 236, 553)
-        elif row == 9:
-            break
+        if (card_type is CardType.OVERVIEW and row == 5) or (
+            card_type is CardType.RECENTS and row == 12
+        ):
+            offset = (offset[0] + 236, original_y)
 
         # item icon
         if item.icon is not None:
@@ -133,14 +164,9 @@ def overview(
             fill = "#CF5656" if not dark_mode else "#ff8c8c"
         draw.text(
             (offset[0] + 69, offset[1] + 28),
-            f"{item.pull_num} {text_map.get(396, locale)}",
+            text_map.get(396, locale).format(pull=item.pull_num),
             font=font,
             fill=fill,
         )
 
         offset = (offset[0], offset[1] + 75)
-
-    fp = io.BytesIO()
-    im = im.convert("RGB")
-    im.save(fp, "JPEG", quality=95, optimize=True)
-    return fp

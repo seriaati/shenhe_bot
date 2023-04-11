@@ -15,7 +15,7 @@ class GeneralPaginatorView(BaseView):
         self,
         embeds: List[discord.Embed],
         locale: str,
-    ):
+    ) -> None:
         self.embeds = embeds
         self.locale = locale
 
@@ -23,12 +23,12 @@ class GeneralPaginatorView(BaseView):
 
         super().__init__(timeout=config.mid_timeout)
 
-    async def update_children(self, i: discord.Interaction):
+    async def update_children(self, i: discord.Interaction) -> None:
         """Called when a button is pressed"""
         self.update_components()
         await self.make_response(i)
 
-    def update_components(self):
+    def update_components(self) -> None:
         """Update the buttons and the page label"""
         self.first.disabled = self.current_page == 0
         self.next.disabled = self.current_page + 1 == len(self.embeds)
@@ -38,9 +38,10 @@ class GeneralPaginatorView(BaseView):
         text = text_map.get(176, self.locale)
         self.page.label = text.format(num=f"{self.current_page + 1}/{len(self.embeds)}")
 
-    async def make_response(self, i):
+    async def make_response(self, i: discord.Interaction) -> None:
         """Make the response for the interaction"""
-        await i.response.edit_message(embed=self.embeds[self.current_page], view=self)
+        embed = self.embeds[self.current_page]
+        await i.response.edit_message(embed=embed, view=self)
 
     @ui.button(
         emoji="<:double_left:982588991461281833>",
@@ -102,9 +103,7 @@ class GeneralPaginator:
         i: Inter,
         embeds: List[discord.Embed],
         custom_children: Optional[List[Union[ui.Button, ui.Select]]] = None,
-    ):
-        if custom_children is None:
-            custom_children = []
+    ) -> None:
         self.i = i
         self.embeds = embeds
         self.custom_children = custom_children
@@ -130,11 +129,11 @@ class GeneralPaginator:
             num=f"{view.current_page + 1}/{len(self.embeds)}"
         )
 
-        if len(self.custom_children) > 0:
+        if self.custom_children:
             for child in self.custom_children:
                 view.add_item(child)
 
-        kwargs = self.setup_kwargs(view)
+        kwargs = self.setup_kwargs(view, ephemeral)
         if ephemeral:
             kwargs["ephemeral"] = ephemeral
 
@@ -151,8 +150,14 @@ class GeneralPaginator:
         view.message = await self.i.original_response()
         await view.wait()
 
-    def setup_kwargs(self, view: GeneralPaginatorView) -> Dict[str, Any]:
-        kwargs: Dict[str, Any] = {"embed": self.embeds[0], "view": view}
+    def setup_kwargs(
+        self, view: GeneralPaginatorView, ephemeral: bool = False
+    ) -> Dict[str, Any]:
+        kwargs: Dict[str, Any] = {
+            "embed": self.embeds[0],
+            "view": view,
+            "epehemeral": ephemeral,
+        }
         return kwargs
 
     def setup_view(self, locale: discord.Locale | str) -> GeneralPaginatorView:

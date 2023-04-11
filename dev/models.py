@@ -80,7 +80,7 @@ class ShenheEmbed(discord.Embed):
         title: typing.Optional[str] = None,
         description: typing.Optional[str] = None,
         color: typing.Optional[int] = 0xA68BD3,
-    ):
+    ) -> None:
         super().__init__(title=title, description=description, color=color)
 
     def set_title(
@@ -88,10 +88,21 @@ class ShenheEmbed(discord.Embed):
         map_hash: int,
         locale: typing.Union[discord.Locale, str],
         user: typing.Union[discord.Member, discord.User],
-    ):
+    ) -> "ShenheEmbed":
         self.set_author(
             name=text_map.get(map_hash, locale), icon_url=user.display_avatar.url
         )
+        return self
+
+    def set_user_footer(
+        self,
+        user: typing.Union[discord.Member, discord.User],
+        uid: typing.Optional[int] = None,
+    ) -> "ShenheEmbed":
+        text = user.display_name
+        if uid:
+            text += f" | {uid}"
+        self.set_footer(text=text, icon_url=user.display_avatar.url)
         return self
 
 
@@ -100,7 +111,7 @@ class DefaultEmbed(ShenheEmbed):
         self,
         title: typing.Optional[str] = None,
         description: typing.Optional[str] = None,
-    ):
+    ) -> None:
         super().__init__(title=title, description=description, color=0xA68BD3)
 
 
@@ -296,7 +307,7 @@ class OriginalInfo:
 
 
 class FarmData:
-    def __init__(self, domain: ambr.Domain):
+    def __init__(self, domain: ambr.Domain) -> None:
         self.domain = domain
         self.characters: typing.List[ambr.Character] = []
         self.weapons: typing.List[ambr.Weapon] = []

@@ -6,7 +6,7 @@ import dev.asset as asset
 from apps.text_map import text_map
 from apps.wish.utils import get_wish_history_embeds
 from dev.models import Inter
-from utility.wish_paginator import WishPaginatorView
+from utility.wish_history_paginator import WishHistoryPaginatorView
 
 
 class SelectBanner(discord.ui.Select):
@@ -25,7 +25,7 @@ class SelectBanner(discord.ui.Select):
             max_values=len(options),
             min_values=0,
         )
-        self.view: WishPaginatorView
+        self.view: WishHistoryPaginatorView
 
     async def callback(self, i: Inter):
         await filter_callback(self, i)
@@ -46,7 +46,7 @@ class SelectRarity(discord.ui.Select):
             min_values=0,
         )
         self.select_banner = select_banner
-        self.view: WishPaginatorView
+        self.view: WishHistoryPaginatorView
 
     async def callback(self, i: Inter):
         await filter_callback(self, i)

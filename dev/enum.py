@@ -9,3 +9,8 @@ class TodoAction(str, Enum):
 class TalentBoost(Enum):
     BOOST_E = "boost_e"
     BOOST_Q = "boost_q"
+
+
+class CardType(Enum):
+    OVERVIEW = "overview"
+    RECENTS = "recents"
