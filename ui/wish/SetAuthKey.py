@@ -22,7 +22,9 @@ from utility import log
 
 
 class View(BaseView):
-    def __init__(self, locale: discord.Locale | str, disabled: bool, empty: bool) -> None:
+    def __init__(
+        self, locale: discord.Locale | str, disabled: bool, empty: bool
+    ) -> None:
         super().__init__(timeout=config.long_timeout)
         self.locale = locale
         self.add_item(ImportWishHistory(locale, not disabled))
