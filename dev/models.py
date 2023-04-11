@@ -8,7 +8,7 @@ import asyncpg
 import cachetools
 import discord
 import genshin
-from attr import define
+from attr import define, field
 from discord.ext import commands
 from enkanetwork.model.base import EnkaNetworkResponse
 from logingateway import HuTaoLoginAPI
@@ -26,6 +26,48 @@ class ShenheAccount:
     china: bool
     daily_checkin: bool
     user_locale: typing.Optional[str] = None
+
+
+@define
+class User:
+    uid: int
+    user_id: int
+
+    current: bool
+    daily_checkin: bool
+    china: bool
+    client: genshin.Client = field(init=False)
+
+    nickname: typing.Optional[str] = None
+    ltuid: typing.Optional[str] = None
+    ltoken: typing.Optional[str] = None
+    cookie_token: typing.Optional[str] = None
+
+    def __attrs_post_init__(self) -> None:
+        self.client = genshin.Client(
+            {
+                "ltuid": self.ltuid,
+                "ltoken": self.ltoken,
+                "cookie_token": self.cookie_token,
+            },
+            uid=self.uid,
+            game=genshin.Game.GENSHIN,
+            region=genshin.Region.CHINESE if self.china else genshin.Region.OVERSEAS,
+        )
+    
+    @staticmethod
+    def from_row(row: asyncpg.Record) -> "User":
+        return User(
+            uid=row["uid"],
+            user_id=row["user_id"],
+            current=row["current"],
+            daily_checkin=row["daily_checkin"],
+            china=row["china"],
+            nickname=row["nickname"],
+            ltuid=row["ltuid"],
+            ltoken=row["ltoken"],
+            cookie_token=row["cookie_token"],
+        )
 
 
 @define
