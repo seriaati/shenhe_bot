@@ -2,10 +2,11 @@ import logging
 import re
 from datetime import datetime
 from itertools import islice
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, TypeVar, Union
 
 import discord
 import pytz
+from pyparsing import Generator
 from sentry_sdk.integrations.logging import LoggingIntegration
 
 logging.basicConfig(
@@ -29,9 +30,11 @@ def time_in_range(start, end, x):
     return start <= x or x <= end
 
 
-def divide_chunks(li: List[Any], n: int):
-    for i in range(0, len(li), n):
-        yield li[i : i + n]
+T = TypeVar("T")
+
+
+def divide_chunks(li: List[T], n: int) -> Generator[list[T], None, None]:
+    return (li[i : i + n] for i in range(0, len(li), n))
 
 
 def parse_html(html_string: str):
