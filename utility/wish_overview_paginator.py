@@ -133,9 +133,7 @@ class WishOverviewPaginator(GeneralPaginator):
             for _ in range(0, total - 8, 22):
                 self.embeds.append(self.embeds[0])
 
-    def setup_kwargs(
-        self, view: GeneralPaginatorView, _: bool = False
-    ) -> Dict[str, Any]:
+    def setup_kwargs(self, view: GeneralPaginatorView) -> Dict[str, Any]:
         kwargs = {
             "view": view,
             "embed": self.embeds[0],
