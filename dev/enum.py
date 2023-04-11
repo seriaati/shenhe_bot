@@ -14,3 +14,12 @@ class TalentBoost(Enum):
 class CardType(Enum):
     OVERVIEW = "overview"
     RECENTS = "recents"
+
+class CheckInType(Enum):
+    LOCAL = "local"
+    API = "api"
+
+class CheckInAPI(Enum):
+    VERCEL = "vercel"
+    RENDER = "render"
+    DETA = "deta"
