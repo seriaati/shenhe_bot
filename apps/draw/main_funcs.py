@@ -211,7 +211,7 @@ async def draw_wish_recents_card(
     urls = [w.icon for w in wish_recents if w.icon is not None]
     await download_images(urls, draw_input.session)
     func = functools.partial(
-        funcs.wish.draw_wish_recents,
+        funcs.wish.draw_wish_recents_card,
         draw_input.locale,
         wish_recents,
         draw_input.dark_mode,
