@@ -16,22 +16,20 @@ class GeneralPaginatorView(BaseView):
         self,
         embeds: List[discord.Embed],
         locale: str,
-        fps: Optional[Dict[str, io.BytesIO]] = None,
-    ):
+    ) -> None:
         self.embeds = embeds
         self.locale = locale
-        self.files = fps
 
         self.current_page = 0
 
         super().__init__(timeout=config.mid_timeout)
 
-    async def update_children(self, i: discord.Interaction):
+    async def update_children(self, i: discord.Interaction) -> None:
         """Called when a button is pressed"""
         self.update_components()
         await self.make_response(i)
 
-    def update_components(self):
+    def update_components(self) -> None:
         """Update the buttons and the page label"""
         self.first.disabled = self.current_page == 0
         self.next.disabled = self.current_page + 1 == len(self.embeds)
@@ -41,22 +39,10 @@ class GeneralPaginatorView(BaseView):
         text = text_map.get(176, self.locale)
         self.page.label = text.format(num=f"{self.current_page + 1}/{len(self.embeds)}")
 
-    async def make_response(self, i: discord.Interaction):
+    async def make_response(self, i: discord.Interaction) -> None:
         """Make the response for the interaction"""
         embed = self.embeds[self.current_page]
-        if self.files is None:
-            files = []
-        else:
-            url = embed.image.url
-            if url is None:
-                raise ValueError("Missing image url")
-            fp = self.files.get(url)
-            if fp is None:
-                raise ValueError("Missing fp")
-            fp.seek(0)
-            files = [discord.File(fp, filename=url)]
-
-        await i.response.edit_message(embed=embed, view=self, attachments=files)
+        await i.response.edit_message(embed=embed, view=self)
 
     @ui.button(
         emoji="<:double_left:982588991461281833>",
@@ -118,12 +104,10 @@ class GeneralPaginator:
         i: Inter,
         embeds: List[discord.Embed],
         custom_children: Optional[List[Union[ui.Button, ui.Select]]] = None,
-        fps: Optional[Dict[str, io.BytesIO]] = None,
-    ):
+    ) -> None:
         self.i = i
         self.embeds = embeds
         self.custom_children = custom_children
-        self.fps = fps
 
     async def start(
         self,
@@ -150,7 +134,7 @@ class GeneralPaginator:
             for child in self.custom_children:
                 view.add_item(child)
 
-        kwargs = self.setup_kwargs(view, edit, ephemeral)
+        kwargs = self.setup_kwargs(view, ephemeral)
         if ephemeral:
             kwargs["ephemeral"] = ephemeral
 
@@ -168,23 +152,13 @@ class GeneralPaginator:
         await view.wait()
 
     def setup_kwargs(
-        self, view: GeneralPaginatorView, edit: bool, ephemeral: bool
+        self, view: GeneralPaginatorView, ephemeral: bool = False
     ) -> Dict[str, Any]:
-        kwargs: Dict[str, Any] = {"embed": self.embeds[0], "view": view}
-        if ephemeral:
-            kwargs["ephemeral"] = ephemeral
-        if self.fps:
-            url = self.embeds[0].image.url
-            if url is None:
-                raise ValueError("Missing image url")
-            fp = self.fps.get(url)
-            if fp is None:
-                raise ValueError("Missing fp")
-            fp.seek(0)
-            if edit:
-                kwargs["attachments"] = [discord.File(fp, filename=url)]
-            else:
-                kwargs["files"] = [discord.File(fp, filename=url)]
+        kwargs: Dict[str, Any] = {
+            "embed": self.embeds[0],
+            "view": view,
+            "epehemeral": ephemeral,
+        }
         return kwargs
 
     def setup_view(self, locale: discord.Locale | str) -> GeneralPaginatorView:
