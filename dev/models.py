@@ -54,7 +54,7 @@ class User:
             game=genshin.Game.GENSHIN,
             region=genshin.Region.CHINESE if self.china else genshin.Region.OVERSEAS,
         )
-    
+
     @staticmethod
     def from_row(row: asyncpg.Record) -> "User":
         return User(

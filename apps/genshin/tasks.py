@@ -67,6 +67,7 @@ def add_abyss_entry(
 
 # daily check-in
 
+
 async def claim_daily_checkin_reward(
     success_count: int,
     user: models.ShenheAccount,

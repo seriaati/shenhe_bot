@@ -15,9 +15,11 @@ class CardType(Enum):
     OVERVIEW = "overview"
     RECENTS = "recents"
 
+
 class CheckInType(Enum):
     LOCAL = "local"
     API = "api"
+
 
 class CheckInAPI(Enum):
     VERCEL = "vercel"
