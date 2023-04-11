@@ -133,7 +133,7 @@ class GeneralPaginator:
             for child in self.custom_children:
                 view.add_item(child)
 
-        kwargs = self.setup_kwargs(view, ephemeral)
+        kwargs = self.setup_kwargs(view)
         if ephemeral:
             kwargs["ephemeral"] = ephemeral
 
@@ -151,12 +151,11 @@ class GeneralPaginator:
         await view.wait()
 
     def setup_kwargs(
-        self, view: GeneralPaginatorView, ephemeral: bool = False
+        self, view: GeneralPaginatorView
     ) -> Dict[str, Any]:
         kwargs: Dict[str, Any] = {
             "embed": self.embeds[0],
             "view": view,
-            "epehemeral": ephemeral,
         }
         return kwargs
 
