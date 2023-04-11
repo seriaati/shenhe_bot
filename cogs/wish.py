@@ -12,12 +12,14 @@ from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.genshin import check_account, check_wish_history, get_uid
 from apps.text_map import text_map, to_ambr_top
-from apps.wish.models import RecentWish, WishData, WishHistory, WishInfo, WishItem
+from apps.wish.models import (RecentWish, WishData, WishHistory, WishInfo,
+                              WishItem)
 from apps.wish.utils import get_wish_history_embeds, get_wish_info_embed
 from dev.base_ui import capture_exception
 from ui.wish import ChooseBanner, SetAuthKey, WishFilter
 from ui.wish.SetAuthKey import wish_import_command
-from utility.wish_paginator import WishPaginator
+from utility.wish_history_paginator import WishHistoryPaginator
+from utility.wish_overview_paginator import WishOverviewPaginator
 
 
 class WishCog(commands.GroupCog, name="wish"):
@@ -103,7 +105,7 @@ class WishCog(commands.GroupCog, name="wish"):
         locale = (await get_user_lang(i.user.id, self.bot.pool)) or i.locale
         embeds = await get_wish_history_embeds(i, "", member)
 
-        await WishPaginator(
+        await WishHistoryPaginator(
             i,
             embeds,
             [
@@ -122,18 +124,20 @@ class WishCog(commands.GroupCog, name="wish"):
         self,
         inter: discord.Interaction,
         member: Optional[discord.User | discord.Member] = None,
-    ):
+    ) -> None:
         i: models.Inter = inter  # type: ignore
         await i.response.defer()
         member = member or i.user
-        user_locale = await get_user_lang(i.user.id, self.bot.pool)
-        client = ambr.AmbrTopAPI(self.bot.session, to_ambr_top(user_locale or i.locale))
+        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
+
+        client = ambr.AmbrTopAPI(self.bot.session, to_ambr_top(locale))
 
         wishes: List[WishItem] = []
+        uid = await get_uid(member.id, self.bot.pool)
         rows = await self.bot.pool.fetch(
             "SELECT wish_name, wish_banner_type, wish_rarity, wish_time FROM wish_history WHERE user_id = $1 AND uid = $2 ORDER BY wish_id DESC",
             member.id,
-            await get_uid(member.id, self.bot.pool),
+            uid
         )
         for row in rows:
             wishes.append(
@@ -202,15 +206,15 @@ class WishCog(commands.GroupCog, name="wish"):
 
             title = ""
             if banner_id == 100:
-                title = text_map.get(647, i.locale, user_locale)
+                title = text_map.get(647, locale)
             elif banner_id == 301:
-                title = text_map.get(645, i.locale, user_locale) + " 1"
+                title = text_map.get(645, locale) + " 1"
             elif banner_id == 400:
-                title = text_map.get(645, i.locale, user_locale) + " 2"
+                title = text_map.get(645, locale) + " 2"
             elif banner_id == 302:
-                title = text_map.get(646, i.locale, user_locale)
+                title = text_map.get(646, locale)
             elif banner_id == 200:
-                title = text_map.get(655, i.locale, user_locale)
+                title = text_map.get(655, locale)
 
             wish_data = WishData(
                 title=title,
@@ -231,7 +235,7 @@ class WishCog(commands.GroupCog, name="wish"):
         if not all_wish_data:
             return await i.followup.send(
                 embed=models.ErrorEmbed().set_author(
-                    name=text_map.get(731, i.locale, user_locale),
+                    name=text_map.get(731, locale),
                     icon_url=i.user.display_avatar.url,
                 )
             )
@@ -241,18 +245,29 @@ class WishCog(commands.GroupCog, name="wish"):
             all_wish_data["301"].pity += all_wish_data["400"].pity
             all_wish_data["400"].pity += temp
 
-        view = ChooseBanner.View(
-            user_locale or i.locale, options, all_wish_data, member
+        dark_mode = await get_user_theme(i.user.id, self.bot.pool)
+        current_banner = list(all_wish_data.keys())[0]
+        fp = await main_funcs.draw_wish_overview_card(
+            models.DrawInput(
+                loop=self.bot.loop,
+                session=self.bot.session,
+                locale=locale,
+                dark_mode=dark_mode,
+            ),
+            all_wish_data[current_banner],
         )
-        view.author = i.user
-
-        fp = await view.draw_overview_fp(i, list(all_wish_data.values())[0])
         fp.seek(0)
-        await i.followup.send(
-            file=discord.File(fp, filename="overview.jpeg"),
-            view=view,
-        )
-        view.message = await i.original_response()
+        embed = models.DefaultEmbed().set_user_footer(member, uid)
+        embed.set_image(url="attachment://wish_overview_0.jpeg")
+        
+        for option in options:
+            if option.value == current_banner:
+                option.default = True
+                break
+
+        await WishOverviewPaginator(
+            i, [embed], current_banner, all_wish_data, options, fp
+        ).start(edit=True)
 
 
 async def setup(bot: commands.AutoShardedBot) -> None:
