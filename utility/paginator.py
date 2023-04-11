@@ -150,9 +150,7 @@ class GeneralPaginator:
         view.message = await self.i.original_response()
         await view.wait()
 
-    def setup_kwargs(
-        self, view: GeneralPaginatorView
-    ) -> Dict[str, Any]:
+    def setup_kwargs(self, view: GeneralPaginatorView) -> Dict[str, Any]:
         kwargs: Dict[str, Any] = {
             "embed": self.embeds[0],
             "view": view,

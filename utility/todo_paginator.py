@@ -72,9 +72,7 @@ class TodoPaginator(GeneralPaginator):
         )
         return view
 
-    def setup_kwargs(
-        self, view: TodoPaginatorView
-    ) -> Dict[str, Any]:
+    def setup_kwargs(self, view: TodoPaginatorView) -> Dict[str, Any]:
         kwargs = super().setup_kwargs(view)
 
         self.first_fp.seek(0)
