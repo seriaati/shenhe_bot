@@ -15,7 +15,7 @@ from apps.text_map import text_map, to_ambr_top
 from apps.wish.models import RecentWish, WishData, WishHistory, WishInfo, WishItem
 from apps.wish.utils import get_wish_history_embeds, get_wish_info_embed
 from dev.base_ui import capture_exception
-from ui.wish import ChooseBanner, SetAuthKey, WishFilter
+from ui.wish import SetAuthKey, WishFilter
 from ui.wish.SetAuthKey import wish_import_command
 from utility.wish_history_paginator import WishHistoryPaginator
 from utility.wish_overview_paginator import WishOverviewPaginator
