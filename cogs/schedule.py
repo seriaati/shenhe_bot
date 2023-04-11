@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Tuple
 
@@ -8,6 +9,7 @@ import discord
 import genshin
 from discord import utils
 from discord.ext import commands, tasks
+from dotenv import load_dotenv
 
 import ambr
 import apps.genshin as genshin_app
@@ -16,14 +18,14 @@ import dev.models as models
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
+from apps.text_map.convert_locale import to_genshin_py
 from dev.base_ui import capture_exception
 from utility import dm_embed, log
 from utility.fetch_card import fetch_cards
-from utility.utils import (
-    convert_dict_to_zipped_json,
-    get_discord_user_from_id,
-    get_dt_now,
-)
+from utility.utils import (convert_dict_to_zipped_json,
+                           get_discord_user_from_id, get_dt_now)
+
+load_dotenv()
 
 
 def schedule_error_handler(func):
@@ -44,6 +46,11 @@ class Schedule(commands.Cog):
     def __init__(self, bot):
         self.bot: models.BotModel = bot
         self.debug = self.bot.debug
+        self.api_links = [
+            os.getenv("API_URL1"),
+            os.getenv("API_URL2"),
+            os.getenv("API_URL3"),
+        ]
         if not self.debug:
             self.run_tasks.start()
 
@@ -532,46 +539,50 @@ class Schedule(commands.Cog):
     async def claim_reward(self):
         """Claims daily check-in rewards for all Shenhe users that have Cookie registered"""
         log.info("[Schedule][Claim Reward] Start")
-        users = await self.get_schedule_users()
 
-        success_count = 0
-        user_count = 0
+        rows = await self.bot.pool.fetch(
+            """
+            SELECT user_id, ltoken, ltuid, uid
+            FROM user_accounts
+            WHERE daily_checkin = true
+            AND ltuid IS NOT NULL
+            AND ltoken IS NOT NULL
+            """
+        )
+        users: List[Dict[str, Any]] = []
+        for row in rows:
+            lang = await get_user_lang(row["user_id"], self.bot.pool)
+            users.append(
+                {
+                    "cookie": {"ltuid": row["ltuid"], "ltoken": row["ltoken"]},
+                    "uid": row["uid"],
+                    "user_id": row["user_id"],
+                    "lang": to_genshin_py(str(lang)),
+                }
+            )
 
-        for user in users:
-            if not user.daily_checkin:
+        # divide user list into 3 equal parts
+        div_users = [users[i::3] for i in range(3)]
+        for index, div in enumerate(div_users):
+            api_link = self.api_links[index]
+            if api_link is None:
                 continue
-
-            user_count += 1
-            (
-                success_count,
-                error,
-                error_message,
-            ) = await genshin_app.claim_daily_checkin_reward(
-                success_count, user, user.client, self.bot.pool
-            )
-
-            if error:
-                await genshin_app.handle_daily_reward_error(
-                    user, error_message, self.bot.pool
-                )
-
-            if user_count % 100 == 0:  # Sleep for 40 seconds every 100 users
-                await asyncio.sleep(40)
-
-            await asyncio.sleep(3.5)
-
-        log.info(f"[Schedule][Claim Reward] Ended ({success_count}/{user_count} users)")
-
-        # send a notification to Seria
-        seria = self.bot.get_user(410036441129943050) or await self.bot.fetch_user(
-            410036441129943050
-        )
-        await seria.send(
-            embed=models.DefaultEmbed(
-                "Automatic daily check-in report",
-                f"Claimed {success_count}/{user_count}",
-            )
-        )
+            async with self.bot.session.get(api_link) as resp:
+                if resp.status == 200:
+                    log.info(f"[Schedule][Claim Reward] Connected to API {api_link}")
+                else:
+                    log.error(f"[Schedule][Claim Reward] Failed connect API {api_link}")
+                    continue
+            for user in div:
+                async with self.bot.session.post(
+                    api_link,
+                    json=user,
+                ) as resp:
+                    response: Dict[str, Any] = await resp.json()
+                    if "reward" in response:
+                        pass
+                    else:
+                        pass
 
     @schedule_error_handler
     async def weapon_talent_base_notification(
