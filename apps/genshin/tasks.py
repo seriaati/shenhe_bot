@@ -12,8 +12,8 @@ import dev.asset as asset
 import dev.models as models
 from apps.db import get_user_notif
 from apps.text_map import AMBR_LANGS, get_element_name, text_map
-from dev.base_ui import capture_exception
 from data.game.elements import convert_element
+from dev.base_ui import capture_exception
 from utility import dm_embed, log
 
 # abyss.json
@@ -66,7 +66,6 @@ def add_abyss_entry(
 
 
 # daily check-in
-
 
 async def claim_daily_checkin_reward(
     success_count: int,
