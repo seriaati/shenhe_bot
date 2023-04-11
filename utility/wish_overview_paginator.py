@@ -101,7 +101,7 @@ class BannerSelect(discord.ui.Select):
             for _ in range(0, total - 8, 22):
                 embeds.append(embed_)
         self.view.embeds = embeds
-        
+
         for option in self.options:
             if option.value == self.view.current_banner:
                 option.default = True

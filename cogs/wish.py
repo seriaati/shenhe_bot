@@ -12,8 +12,7 @@ from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.genshin import check_account, check_wish_history, get_uid
 from apps.text_map import text_map, to_ambr_top
-from apps.wish.models import (RecentWish, WishData, WishHistory, WishInfo,
-                              WishItem)
+from apps.wish.models import RecentWish, WishData, WishHistory, WishInfo, WishItem
 from apps.wish.utils import get_wish_history_embeds, get_wish_info_embed
 from dev.base_ui import capture_exception
 from ui.wish import ChooseBanner, SetAuthKey, WishFilter
@@ -137,7 +136,7 @@ class WishCog(commands.GroupCog, name="wish"):
         rows = await self.bot.pool.fetch(
             "SELECT wish_name, wish_banner_type, wish_rarity, wish_time FROM wish_history WHERE user_id = $1 AND uid = $2 ORDER BY wish_id DESC",
             member.id,
-            uid
+            uid,
         )
         for row in rows:
             wishes.append(
@@ -259,7 +258,7 @@ class WishCog(commands.GroupCog, name="wish"):
         fp.seek(0)
         embed = models.DefaultEmbed().set_user_footer(member, uid)
         embed.set_image(url="attachment://wish_overview_0.jpeg")
-        
+
         for option in options:
             if option.value == current_banner:
                 option.default = True
