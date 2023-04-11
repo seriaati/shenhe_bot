@@ -8,6 +8,7 @@ import dev.asset as asset
 from apps.draw.utility import circular_crop, dynamic_font_size, get_cache, get_font
 from apps.text_map import text_map
 from apps.wish.models import RecentWish, WishData
+from dev.enum import CardType
 
 
 def wish_overview(
@@ -81,47 +82,9 @@ def wish_overview(
     font = get_font(locale, 30, "Bold")
     draw.text((30, 469), text_map.get(654, locale), font=font, fill=fill)
 
-    offset = (55, 553)
-    row = 0
-    for item in wish_data.recents[:8]:
-        row += 1
-        if row == 5:
-            offset = (offset[0] + 236, 553)
-
-        # item icon
-        if item.icon is not None:
-            icon = get_cache(item.icon)
-            icon = circular_crop(icon)
-            icon = icon.resize((55, 55))
-            im.paste(icon, offset, icon)
-
-        # character name
-        font = get_font(locale, 20, "Medium")
-        fill = asset.primary_text if not dark_mode else asset.white
-        character_name = item.name
-        if font.getlength(character_name) >= 85:
-            index = 1
-            while font.getlength(character_name) >= 110:
-                character_name = character_name[: len(character_name) - index] + "..."
-                index += 1
-        draw.text((offset[0] + 69, offset[1] + 5), character_name, font=font, fill=fill)
-
-        # number of pulls
-        font = get_font(locale, 16, "Regular")
-        if 1 <= int(item.pull_num) <= 50:
-            fill = "#5FA846" if not dark_mode else "#afff9c"
-        elif 51 <= int(item.pull_num) <= 70:
-            fill = "#4f87ff" if not dark_mode else "#8cb0ff"
-        else:
-            fill = "#CF5656" if not dark_mode else "#ff8c8c"
-        draw.text(
-            (offset[0] + 69, offset[1] + 28),
-            text_map.get(396, locale).format(pull=item.pull_num),
-            font=font,
-            fill=fill,
-        )
-
-        offset = (offset[0], offset[1] + 75)
+    draw_wish_recents(
+        locale, wish_data.recents[:8], dark_mode, im, draw, CardType.OVERVIEW
+    )
 
     fp = io.BytesIO()
     im = im.convert("RGB")
@@ -131,7 +94,7 @@ def wish_overview(
     return fp
 
 
-def draw_wish_recents(
+def draw_wish_recents_card(
     locale: discord.Locale | str,
     recents: List[RecentWish],
     dark_mode: bool,
@@ -142,14 +105,36 @@ def draw_wish_recents(
     im = im.resize((im.width // 3, im.height // 3))
     draw = ImageDraw.Draw(im)
 
-    offset = (55, 50)
+    draw_wish_recents(locale, recents, dark_mode, im, draw, CardType.RECENTS)
+
+    im = im.convert("RGB")
+    im = im.resize((im.width * 3, im.height * 3))
+    fp = io.BytesIO()
+    im.save(fp, "JPEG", quality=95, optimize=True)
+    return fp
+
+
+def draw_wish_recents(
+    locale: discord.Locale | str,
+    recents: List[RecentWish],
+    dark_mode: bool,
+    im: Image.Image,
+    draw: ImageDraw.ImageDraw,
+    card_type: CardType,
+) -> None:
     row = 0
+    if card_type is CardType.OVERVIEW:
+        offset = (55, 553)
+        original_y = 553
+    elif card_type is CardType.RECENTS:
+        offset = (55, 50)
+        original_y = 50
     for item in recents:
         row += 1
-        if row == 5:
-            offset = (offset[0] + 236, 50)
-        elif row == 9:
-            break
+        if (card_type is CardType.OVERVIEW and row == 5) or (
+            card_type is CardType.RECENTS and row == 12
+        ):
+            offset = (offset[0] + 236, original_y)
 
         # item icon
         if item.icon is not None:
@@ -185,9 +170,3 @@ def draw_wish_recents(
         )
 
         offset = (offset[0], offset[1] + 75)
-
-    im = im.convert("RGB")
-    im = im.resize((im.width * 3, im.height * 3))
-    fp = io.BytesIO()
-    im.save(fp, "JPEG", quality=95, optimize=True)
-    return fp
