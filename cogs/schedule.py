@@ -44,25 +44,20 @@ def schedule_error_handler(func):
 
 
 class Schedule(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot) -> None:
         self.bot: models.BotModel = bot
         self.debug = self.bot.debug
-        self.api_links = [
-            os.getenv("API_URL1"),
-            os.getenv("API_URL2"),
-            os.getenv("API_URL3"),
-        ]
         if not self.debug:
             self.run_tasks.start()
 
-    async def cog_unload(self):
+    async def cog_unload(self) -> None:
         if not self.debug:
             self.run_tasks.cancel()
 
     loop_interval = 1
 
     @tasks.loop(minutes=loop_interval)
-    async def run_tasks(self):
+    async def run_tasks(self) -> None:
         """Run the tasks every loop_interval minutes"""
         now = get_dt_now()
 
@@ -101,14 +96,14 @@ class Schedule(commands.Cog):
             asyncio.create_task(self.redeem_codes())
 
     @schedule_error_handler
-    async def update_shenhe_cache_and_data(self):
+    async def update_shenhe_cache_and_data(self) -> None:
         await self.update_ambr_cache()
         await self.update_text_map()
         await self.update_game_data()
         await self.update_card_data()
 
     @schedule_error_handler
-    async def save_codes(self):
+    async def save_codes(self) -> None:
         log.info("[Schedule] Saving codes...")
         await self.bot.pool.execute(
             "CREATE TABLE IF NOT EXISTS genshin_codes (code text)"
