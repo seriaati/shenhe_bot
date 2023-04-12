@@ -16,12 +16,9 @@ class CardType(Enum):
     RECENTS = "recents"
 
 
-class CheckInType(Enum):
-    LOCAL = "local"
-    API = "api"
-
-
 class CheckInAPI(Enum):
+    LOCAL = "local"
     VERCEL = "vercel"
     RENDER = "render"
     DETA = "deta"
+    RAILWAY = "railway"
