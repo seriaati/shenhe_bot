@@ -84,7 +84,7 @@ class DailyCheckin:
                 log.error(f"[DailyCheckin] {api.name} returned {e.status} status code")
                 await queue.put(user)
                 continue
-            except Exception as e: # skipcq: PYL-W0703
+            except Exception as e:  # skipcq: PYL-W0703
                 log.error(f"[DailyCheckin] {api.name} raised an exception", exc_info=e)
                 sentry_sdk.capture_exception(e)
             else:
