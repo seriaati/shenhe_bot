@@ -37,9 +37,9 @@
 '37': 圣遗物套装
 '38': 通过Hoyolab 的阵容模拟器来搜索原神的角色阵容
 '39': 账号已新增
-'40': You've already claimed today's daily check-in reward!
-'41': Obtained {reward}
-'42': Daily check-in reward claimed
+'40': 你已经领取过今天的每日签到奖励了！
+'41': 获得 {reward}
+'42': 已领取每日签到奖励
 '43': 总览
 '44': 活跃天数
 '45': 输入自定义图片的昵称
@@ -373,7 +373,7 @@
 '367': 此 UID 中没有玩家数据
 '368': 使用 </wish import:1000187021635104890> 来导入你的祈愿记录
 '369': 祈愿记录
-'370': Automatic HoYoLAB daily check-in
+'370': HoYoLAB 每日自动签到
 '374': 选择这个搜索条件将会移除它
 '375': 查看原神当前的卡池
 '376': 目前暂无卡池信息
@@ -804,4 +804,4 @@
   Cookie。
   如果在以后想避免该问题，你可以使用电子邮箱和密码登录的方法，使申鹤自动刷新你的Cookie。
 '768': 通过 Hoyolab 网站兑换
-'769': Toggle auto daily check-in with the buttons below
+'769': 使用下方按钮来开关每日自动签到功能
