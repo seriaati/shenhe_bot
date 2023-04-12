@@ -86,8 +86,8 @@ class DailyCheckin:
         for row in rows:
             user = model.User.from_row(row)
             if (
-                user.last_checkin_date is not None
-                and user.last_checkin_date.day != get_dt_now()
+                not user.last_checkin_date
+                or user.last_checkin_date.day != get_dt_now().day
             ):
                 await queue.put(user)
 
