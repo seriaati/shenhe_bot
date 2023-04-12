@@ -38,9 +38,9 @@
 '37': Artifact Set
 '38': Search Genshin lineups with Hoyolab's lineup simulator
 '39': Account added
-'40': You have already claimed today's login reward!
-'41': Obtained
-'42': Claim successful
+'40': You've already claimed today's daily check-in reward!
+'41': Obtained {reward}
+'42': Daily check-in reward claimed
 '43': Overview
 '44': Days Active
 '45': Type a nickname for the custom image
@@ -405,7 +405,7 @@
 '367': This UID has no player data in it
 '368': Use </wish import:1000187021635104890> to import your wish history
 '369': Wish history
-'370': ''
+'370': Automatic HoYoLAB daily check-in
 '371': ''
 '372': ''
 '373': ''
