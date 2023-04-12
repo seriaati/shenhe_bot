@@ -1,4 +1,3 @@
----
 '1': Penuh
 '2': Realm Currency
 '3': Pilih Metode Masukan
@@ -38,24 +37,16 @@
 '37': Set Artefak
 '38': Cari lineup Genshin dengan simulator lineup Hoyolab
 '39': Akun Ditambahkan
-'40': Kamu telah mengklaim hadiah login hari ini!
-'41': Diperoleh
-'42': Berhasil Diklaim!
+'40': You've already claimed today's daily check-in reward!
+'41': Obtained {reward}
+'42': Daily check-in reward claimed
 '43': Overview
 '44': Hari Aktif
 '45': Ketik nickname untuk kustom gambar
 '46': Achievements
 '47': Spiral Abyss
-'48': Oculus
-'49': Anemoculus
-'50': Geoculus
-'51': Elecroculus
 '52': "{element} karakter"
-'53': Common Chest
-'54': Exquisite Chests
-'55': Luxurious Chests
 '56': Statistik Genshin
-'57': Precious Chests
 '58': Eksplorasi Dunia
 '59': Tetapkan Gambar Kustom untuk {character_name}
 '60': Image URL
@@ -78,7 +69,6 @@
 '75': Tidak ada data keinginan yang ditemukan untuk filter ini
 '76': Data Spiral abyss tidak ditemukan
 '77': Lunar Phase
-'78': Deepest Descent
 '79': Digunakan oleh {character_name}
 '80': Serangan Terkuat
 '81': Membunuh Terbanyak
@@ -87,7 +77,6 @@
 '84': Memakai Skill Terbanyak
 '85': Spiral Abyss Overview
 '86': nama-gambar
-'87': Shenhe telah mengklaim hadiah harian hari ini untukmu!
 '88': Spiral Abyss Leaderboard ({phase}{num})
 '89': Rank
 '90': 'Build #'
@@ -98,13 +87,11 @@
 '95': Stats Karakter
 '96': Source
 '97': Artifact Thoughts
-'98': Pengingat resin telah dimatikan
 '99': 'Nyala'
 '100': 'Mati'
 '101': Beralih
 '102': Realm currency saat ini
 '103': Nomor notifikasi maks
-'104': Setelan Disimpan
 '105': Karakter
 '106': Kode sudah ditukarkan
 '107': Kode tidak valid
@@ -123,7 +110,6 @@
 '120': Berhasil ditantang
 '121': waktu
 '122': Keterampilan elemen yang dilepaskan
-'123': UID khusus dicari
 '124': Kembali ke default
 '125': |-
   • Secara default, shenhe meresponmu dengan bahasa yang sama dengan yang digunakan discord kamu
@@ -170,7 +156,6 @@
 '153': Pilih Fase Abyss
 '154': Semua Waktu
 '155': DM akan berhenti setelah beberapa kali
-'156': Memilih karakter yang notifikasinya AKTIF akan menghapus notifikasinya
 '157': Pilih Karakter
 '158': Saat ini tidak ada notifikasi yang disetel untuk karakter apa pun
 '159': Karakter Saat Ini
@@ -205,7 +190,6 @@
 '188': Gunakan command {command} untuk menghitung jumlah material yang dibutuhkan untuk menaikkan level senjata ini
 '189': Belum ada kartu untuk karakter ini, periksa lagi nanti!
 '190': Masukan Tidak Valid
-'191': Hasil Perhitungan
 '192': Konten Perhitungan
 '193': Didukung oleh Genshin Optimizer
 '194': |-
@@ -232,7 +216,6 @@
 '211': |-
   Tidak ingin melihat pesan ini lagi? Gunakan /settings
   Tidak ingin check-in otomatis lagi? Gunakan /claim
-'212': Kamu tidak dapat menghapus lebih banyak item daripada yang ada di daftar tugasmu
 '213': Cryo
 '214': Geo
 '215': Pyro
@@ -240,7 +223,6 @@
 '217': Hydro
 '218': Dendro
 '219': Electro
-'220': Developer Shenhe
 '221': Januari
 '222': Februari
 '223': Maret
@@ -260,14 +242,10 @@
 '238': Jumat
 '239': Sabtu
 '240': Minggu
-'250': item yang bisa diambil
-'251': Achievement leaderboard
 '252': The Shenhe leaderboard
 '253': Bersaing dengan pengguna Shenhe lainnya dan cobalah untuk mendapatkan peringkat tertinggi dalam berbagai kategori!
 '254': Gunakan /leaderboard untuk melihat leaderboard
 '255': Kenyamanan
-'256': Waktu dibuat
-'257': Trust
 '258': HP
 '259': HP%
 '260': Atk.
@@ -298,17 +276,11 @@
 '280': Base Speed
 '281': Speed%
 '282': Kambali
-'283': Atau masukkan UID kamu di opsi
-'284': Akun tidak valid
 '285': |-
   • Otomatis tukarkan kode Genshin Impact yang ada di [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)
   • Kamu juga dapat menukarkan kode secara manual menggunakan </redeem:1044926380456017924>
 '286': UID tidak valid atau tidak ditemukan di enka.network
 '287': Silakan aktifkan "Tampilkan Rincian" karakter di dalam game kamu
-'288': Level Player
-'289': Level Dunia
-'290': Achievement
-'291': Spiral Abyss
 '292': Max HP
 '293': win %
 '294': Lihat daftar musuh di fase abyss saat ini
@@ -317,14 +289,11 @@
 '297': Temui orang-orang hebat yang membantu saya!
 '298': Translators
 '299': Friendship Level
-'300': Pengguna Terdaftar
 '301': Stats
 '302': Ambang Batas
 '303': Resin Saat Ini
-'304': Nomor pemberitahuan max. saat ini
 '305': Gunakan /remind untuk mengubah pengaturan
 '306': Resin hampir penuh!!
-'307': Notifikasi talenta sekarang DIMATIKAN
 '308': Jumlah Item
 '309': Semuanya bisa kamu farming di hari Minggu lho! ヾ(≧▽≦*)o
 '310': Harap pilih opsi dari pelengkapan otomatis alih-alih mengetik sendiri
@@ -382,7 +351,6 @@
   4. Klik Windows Powershell, lalu salin & tempel skrip di bawah ini ke Powershell
   5. Tekan ENTER, dan link akan disalin ke clipboardmu
   6. Klik tombol "Kirim Tautan" dan tempel tautan di kotak teks yang muncul
-'359': Mengimpor riwayat wish menggunakan ponsel Androidmu
 '360': Hydro infusion
 '361': Pilih sumber informasimu
 '362': |-
@@ -405,29 +373,13 @@
 '367': UID ini tidak memiliki data pemain di dalamnya
 '368': Gunakan </wish import:1000187021635104890> untuk mengimpor riwayat wish kamu
 '369': Riwayat Wish
-'370': ''
-'371': ''
-'372': ''
-'373': ''
+'370': Automatic HoYoLAB daily check-in
 '374': Memilih filter ini akan menghapusnya
 '375': Lihat banner Genshin yang sedang berlangsung
 '376': Saat ini tidak ada banner yang sedang berlangsung
-'378': Metode 1
-'379': ''
-'380': ''
 '381': "Perubahan {time}"
-'382': ''
-'383': ''
-'384': ''
-'385': ''
-'386': ''
-'387': ''
 '388': 'Ya'
 '389': 'Tidak'
-'390': ''
-'391': ''
-'392': ''
-'393': ''
 '394': |-
   1. Tekan tombol WINDOWS pada keyboardmu, lalu cari Powershell
   2. Klik Windows Powershell, lalu salin & tempel skrip di bawah ini ke Powershell, lalu tekan ENTER (hanya jika pesan 'Tekan Enter untuk melanjutkan...' belum muncul)
@@ -436,7 +388,6 @@
   5. Klik tabel, lalu tekan CTRL+A lalu CTRL+C
   6. Alt+Tab ke powershell, lalu tekan ENTER, link akan disalin ke clipboardmu
   7. Klik tombol "Kirim Tautan" dan tempel tautan di kotak teks yang muncul
-'395': ''
 '396': "{pull} pulls"
 '397': Transformative Reactions
 '398': |-
@@ -460,7 +411,6 @@
   7. Salin semua tautan dari https://webstatic hingga game_biz=hk4e_global urlnya terlihat seperti ini: https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?.... ...&game_biz=hk4e_global
   8. Klik tombol kirim dan tempel tautan ke kotak teks yang muncul
 '404': Pebarui level talenta
-'405': Kamu belum pull banner senjata
 '406': Mulai Waktu
 '407': Akhir Waktu
 '408': Detail
@@ -484,7 +434,6 @@
 '426': Tutorial teks akan segera hadir, untuk saat ini silahkan tonton video tutorialnya
 '427': Bulan sebelum bulan lalu
 '428': Lihat Data Abyss (perlu /register)
-'429': ''
 '430': Fase
 '431': Jenis data yang ingin kamu lihat
 '432': Fase Abyss Yang Mana?
@@ -548,7 +497,6 @@
 '490': Kalkulator Enhancement Material
 '491': Hitung bahan material untuk upgrade
 '492': Video Tutorial
-'493': Waifu
 '494': Lainnya
 '495': Pilih Kategori Bantuan
 '496': Author
@@ -573,18 +521,12 @@
 '512': |-
   • Memberitahumu saat parametric transformer kamu sudah siap
   • 1 notifikasi per hari
-'513': 'Saya minta maaf untuk ini, kesalahan telah dilaporkan secara otomatis ke [seria#5334](http://discord.com/users/410036441129943050), harap sabar menunggu perbaikan'
-'514': Pengingat Realm Currency
 '515': Pengaturan Notifikasi
-'516': Ambang Batas Realm Currency
-'517': Pengingat Realm Currency dimatikan
 '518': Realm Currency hampir penuh!
 '519': |-
   [Enka.network](https://enka.network/) sedang tidak aktif, silakan coba lagi nanti.
   Periksa [twitter](https://twitter.com/EnkaNetwork) mereka untuk pembaruan.
 '520': Dendroculus
-'521': Hapus data akun
-'522': Data akun terhapus
 '523': Enka.network API error
 '524': Pengguna Terdaftar
 '525': Spread
@@ -606,10 +548,6 @@
   • Standarnya adalah mode terang
   • Lihat di bawah untuk contoh
 '539': Pengaturan
-'540': |-
-  • Dalam beberapa kasus, saya akan menekan notifikasi menggunakan Shenhe
-  • Sering kali, mereka muncul saat ada masalah kritis dengan Shenhe, atau ada pembaruan
-'541': Pesan Developer
 '542': item tidak ditemukan
 '543': Data dari cache
 '544': Kelola akun kamu di Shenhe
@@ -698,7 +636,6 @@
 '604': Check-in harian Hoyolab
 '605': Hadiah yang diklaim
 '606': Status saat ini
-'607': Lihat hadiah yang diklaim
 '608': Harap tunggu Shenhe sedang memproses data karaktermu...
 '609': Domain
 '610': Bintang Terkumpul
@@ -719,8 +656,6 @@
 '625': Tanggal dipublish
 '626': Bahan-bahan
 '627': Alihkan check-in harian
-'628': Kamu telah mengaktifkan fitur check-in harian
-'629': Kamu telah menonaktifkan fitur check-in harian
 '630': Shenhe telah secara otomatis menonaktifkan fitur check-in harian otomatis untukmu, untuk mengaktifkannya kembali, silakan gunakan </claim:1020580644365021250>
 '631': Shenhe telah secara otomatis menonaktifkan {feature} fitur untukmu, untuk mengaktifkannya kembali, silakan gunakan </remind:1020580644365021255>
 '632': Notifikasi senjata
@@ -750,10 +685,7 @@
 '654': Pull bintang 5 terbaru
 '655': Banner Permanen
 '656': Pilih Banner
-'657': ''
-'658': ''
 '659': Kamu hanya dapat melakukan tindakan ini sekali setiap {hour} jam
-'660': ''
 '661': Pilih filter rarity
 '662': Pilih filter banner
 '663': Total primogem
@@ -793,7 +725,6 @@
 '690': Shenhe telah menemukan **{a}** wish di tautan/file ini
 '691': Konfirmasi impor wish
 '692': Impor riwayat wish Genshinmu dari file yaml yang diekspor oleh Shenhe
-'693': ''
 '694': Sedang berlangsung
 '695': Selesai
 '696': Tersisa
@@ -876,3 +807,4 @@
    Harap gunakan perintah </register:1044926380242120744> untuk memuat ulang Cookie kamu secara manual dengan menambahkan kembali akun kamu.
    Jika kamu ingin menghindari masalah ini di masa mendatang, kamu dapat mendaftarkan akun kamu menggunakan metode email dan kata sandi, yang akan menyegarkan Cookie kamu secara otomatis.
 '768': Redeem di situs web
+'769': Toggle auto daily check-in with the buttons below
