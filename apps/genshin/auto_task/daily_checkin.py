@@ -147,32 +147,31 @@ class DailyCheckin:
                 user.user_id, user.user_id, discord.Locale.american_english
             )
             return result.result
-        else:
-            api_link = self.api_links[api]
-            if api_link is None:
-                raise CheckInAPIError(api, 404)
+        api_link = self.api_links[api]
+        if api_link is None:
+            raise CheckInAPIError(api, 404)
 
-            user_lang = (await get_user_lang(user.user_id, self.bot.pool)) or "en-US"
-            payload = {
-                "cookie": {
-                    "ltuid": user.ltuid,
-                    "ltoken": user.ltoken,
-                    "cookie_token": user.cookie_token,
-                },
-                "lang": to_genshin_py(str(user_lang)),
-            }
-            async with self.bot.session.post(
-                url=f"{api_link}/checkin/", json=payload
-            ) as resp:
-                if resp.status == 200:
-                    data = await resp.json()
-                    embed = self._create_embed(user_lang, data)
-                    return embed
-                else:
-                    raise CheckInAPIError(api, resp.status)
+        user_lang = (await get_user_lang(user.user_id, self.bot.pool)) or "en-US"
+        payload = {
+            "cookie": {
+                "ltuid": user.ltuid,
+                "ltoken": user.ltoken,
+                "cookie_token": user.cookie_token,
+            },
+            "lang": to_genshin_py(str(user_lang)),
+        }
+        async with self.bot.session.post(
+            url=f"{api_link}/checkin/", json=payload
+        ) as resp:
+            if resp.status == 200:
+                data = await resp.json()
+                embed = self._create_embed(user_lang, data)
+                return embed
+            raise CheckInAPIError(api, resp.status)
 
+    @staticmethod
     def _create_embed(
-        self, user_lang: str, data: Dict[str, Any]
+        user_lang: str, data: Dict[str, Any]
     ) -> Union[model.DefaultEmbed, model.ErrorEmbed]:
         if "reward" in data:
             embed = model.DefaultEmbed(

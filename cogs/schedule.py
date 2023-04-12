@@ -1,6 +1,5 @@
 import asyncio
 import json
-import os
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Tuple
 
@@ -19,7 +18,6 @@ from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.genshin import auto_task
 from apps.text_map import text_map, to_ambr_top
-from apps.text_map.convert_locale import to_genshin_py
 from dev.base_ui import capture_exception
 from utility import dm_embed, log
 from utility.fetch_card import fetch_cards
