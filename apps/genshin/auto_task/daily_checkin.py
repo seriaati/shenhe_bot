@@ -85,7 +85,10 @@ class DailyCheckin:
         )
         for row in rows:
             user = model.User.from_row(row)
-            if user.last_checkin_date is not None and user.last_checkin_date.day != get_dt_now():
+            if (
+                user.last_checkin_date is not None
+                and user.last_checkin_date.day != get_dt_now()
+            ):
                 await queue.put(user)
 
         log.info(f"[DailyCheckin] Added {queue.qsize()} users to queue")

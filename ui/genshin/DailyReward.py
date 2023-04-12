@@ -18,7 +18,11 @@ from utility import divide_chunks, get_dt_now
 
 class View(BaseView):
     def __init__(
-        self, locale: Locale | str, genshin_app: GenshinApp, uid: int, daily_checkin: bool
+        self,
+        locale: Locale | str,
+        genshin_app: GenshinApp,
+        uid: int,
+        daily_checkin: bool,
     ):
         super().__init__(timeout=config.mid_timeout)
         self.locale = locale
