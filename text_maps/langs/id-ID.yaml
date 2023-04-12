@@ -37,9 +37,9 @@
 '37': Set Artefak
 '38': Cari lineup Genshin dengan simulator lineup Hoyolab
 '39': Akun Ditambahkan
-'40': You've already claimed today's daily check-in reward!
-'41': Obtained {reward}
-'42': Daily check-in reward claimed
+'40': Knda telah mengklaim hadiah check-in harian hari ini!
+'41': Memperoleh {reward}
+'42': Hadiah check-in harian diklaim
 '43': Overview
 '44': Hari Aktif
 '45': Ketik nickname untuk kustom gambar
@@ -373,7 +373,7 @@
 '367': UID ini tidak memiliki data pemain di dalamnya
 '368': Gunakan </wish import:1000187021635104890> untuk mengimpor riwayat wish kamu
 '369': Riwayat Wish
-'370': Automatic HoYoLAB daily check-in
+'370': Check-in harian HoYoLAB otomatis
 '374': Memilih filter ini akan menghapusnya
 '375': Lihat banner Genshin yang sedang berlangsung
 '376': Saat ini tidak ada banner yang sedang berlangsung
@@ -807,4 +807,4 @@
    Harap gunakan perintah </register:1044926380242120744> untuk memuat ulang Cookie kamu secara manual dengan menambahkan kembali akun kamu.
    Jika kamu ingin menghindari masalah ini di masa mendatang, kamu dapat mendaftarkan akun kamu menggunakan metode email dan kata sandi, yang akan menyegarkan Cookie kamu secara otomatis.
 '768': Redeem di situs web
-'769': Toggle auto daily check-in with the buttons below
+'769': Alihkan check-in harian otomatis dengan tombol di bawah ini
