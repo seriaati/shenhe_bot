@@ -1,4 +1,3 @@
----
 '1': เต็ม
 '2': Realm currency
 '3': Choose an import method
@@ -38,24 +37,16 @@
 '37': Artifact Set
 '38': Search Genshin lineups with Hoyolab's lineup simulator
 '39': Account added
-'40': คุณได้รับรางวัลล็อกอินวันนี้แล้ว!
-'41': ได้รับ
-'42': รับสำเร็จ
+'40': You've already claimed today's daily check-in reward!
+'41': Obtained {reward}
+'42': Daily check-in reward claimed
 '43': ภาพรวม
 '44': จำนวนวันใช้งาน
 '45': Type a nickname for the custom image
 '46': ความสำเร็จ
 '47': Spiral Abyss
-'48': Oculi
-'49': Anemoculi
-'50': Geoculi
-'51': Electroculi
 '52': "{element} characters"
-'53': Common Chests
-'54': Exquisite Chests
-'55': Luxurious Chests
 '56': สถิติ Genshin
-'57': Precious Chests
 '58': การสำรวจโลก
 '59': Set custom image for {character_name}
 '60': Image URL
@@ -78,7 +69,6 @@
 '75': No wish data found for this filter
 '76': Spiral abyss data not found
 '77': Lunar phase
-'78': Deepest descent
 '79': Equipped by {character_name}
 '80': Strongest single strike
 '81': Most kills
@@ -87,7 +77,6 @@
 '84': Most skills used
 '85': Spiral Abyss Overview
 '86': image-name
-'87': Shenhe has claimed today's daily reward for you!
 '88': Spiral Abyss Leaderboard ({phase}{num})
 '89': rank
 '90': 'Build #'
@@ -98,13 +87,11 @@
 '95': Character Stats
 '96': Source
 '97': เรซิ่น
-'98': การแจ้งเตือนเรซิ่นได้ถูกปิดแล้ว
 '99': 'เปิด'
 '100': 'ปิด'
 '101': Toggle
 '102': Current realm currency
 '103': Max notification number
-'104': ตั้งค่าถูกบันทึก
 '105': Character
 '106': Code has been redeemed already
 '107': Code is invalid
@@ -123,7 +110,6 @@
 '120': Successfully challenged
 '121': times
 '122': Unleashed elemental skill
-'123': Custom UID searched
 '124': Back to default
 '125': |-
   • By default, shenhe responds to you with the same language your discord uses
@@ -170,7 +156,6 @@
 '153': Select an abyss phase
 '154': All time
 '155': DM will stop after this number of times
-'156': Choosing a character that already has notification ON will remove its notification
 '157': Choose a character
 '158': There are currently no notifications set for any characters
 '159': Current characters
@@ -205,7 +190,6 @@
 '188': Use the {command} command to calculate the number of materials needed to level up this weapon
 '189': No card for this character yet, check back later!
 '190': Invalid Input
-'191': Calculation results
 '192': Calculation content
 '193': Powered by Genshin Optimizer
 '194': |-
@@ -232,7 +216,6 @@
 '211': |-
   Don't want to see this message again? Use /settings
   Don't want auto check-in anymore? Use /claim
-'212': You can't remove more items than you have in your dodo list
 '213': Cryo
 '214': Geo
 '215': Pyro
@@ -240,7 +223,6 @@
 '217': Hydro
 '218': Dendro
 '219': Electro
-'220': Developer of Shenhe
 '221': January
 '222': February
 '223': March
@@ -260,14 +242,10 @@
 '238': Friday
 '239': Saturday
 '240': Sunday
-'250': farmable items
-'251': Achievement leaderboard
 '252': The Shenhe leaderboard
 '253': Compete with other Shenhe users and try to get the highest ranks in different categories!
 '254': Use /leaderboard to view the leaderboard
 '255': Comfort
-'256': Creation time
-'257': Trust
 '258': HP
 '259': HP%
 '260': Atk.
@@ -298,17 +276,11 @@
 '280': Base Speed
 '281': Speed%
 '282': Go back
-'283': Or enter your UID in the options
-'284': Invalid account
 '285': |-
   • Automatically redeem Genshin Impact codes found in [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)
   • You can also redeem codes manually using </redeem:1044926380456017924>
 '286': UID is invalid or not found in enka.network
 '287': Please turn on the character showcase toggle in-game
-'288': Player level
-'289': World level
-'290': Achievement
-'291': Spiral abyss
 '292': Max HP
 '293': win %
 '294': View the list of enemies in the current abyss phase
@@ -317,14 +289,11 @@
 '297': Meet the awesome people that helped me!
 '298': Translators
 '299': Friendship Level
-'300': Registered Users
 '301': Stats
 '302': Threshold
 '303': Current resin
-'304': Current max. notification number
 '305': Use /remind to change the settings
 '306': Resin is almost full!!
-'307': Talent notification is now turned OFF
 '308': Item amount
 '309': Everything is farmable on Sunday! ヾ(≧▽≦*)o
 '310': Please select an option from the autocomplete instead of typing your own
@@ -382,7 +351,6 @@
   4. Click Windows Powershell, then copy & paste the script below to the Powershell
   5. Press ENTER, and a link will copied to your clipboard
   6. Click the submit button and paste the link to the textbox that pops up
-'359': Importing wish history using your android phone
 '360': Hydro infusion
 '361': Choose your information source
 '362': |-
@@ -405,29 +373,13 @@
 '367': This UID has no player data in it
 '368': Use </wish import:1000187021635104890> to import your wish history
 '369': Wish history
-'370': ''
-'371': ''
-'372': ''
-'373': ''
+'370': Automatic HoYoLAB daily check-in
 '374': Choosing this filter will remove it
 '375': View ongoing Genshin banners
 '376': There are currently no ongoing banners
-'378': Method 1
-'379': ''
-'380': ''
 '381': "Changes {time}"
-'382': ''
-'383': ''
-'384': ''
-'385': ''
-'386': ''
-'387': ''
 '388': 'Yes'
 '389': 'No'
-'390': ''
-'391': ''
-'392': ''
-'393': ''
 '394': |-
   1. Press START on your keyboard, then search for Powershell
   2. Click Windows Powershell, then copy & paste the script below to the Powershell, then press ENTER (only when 'Press Enter to continue...' message is not showing yet)
@@ -436,7 +388,6 @@
   5. Click the table, then press CTRL+A then CTRL+C
   6. Alt+Tab to the powershell, then press ENTER, the link will be copied to your clipboard
   7. Click the submit button and paste the link to the textbox that pops up
-'395': ''
 '396': "{pull} pulls"
 '397': Transformative Reactions
 '398': |-
@@ -461,7 +412,6 @@
   7. Copy all the link from https://webstatic until game_biz=hk4e_global the url looks like this: https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?.......&game_biz=hk4e_global
   8. Click the submit button and paste the link to the textbox that pops up
 '404': Update talent levels
-'405': You haven't pulled in the weapon banner yet
 '406': Start time
 '407': End time
 '408': Details
@@ -485,7 +435,6 @@
 '426': Text tutorial is coming soon, for now please watch the video tutorial
 '427': The month before last month
 '428': View abyss data (need /register)
-'429': ''
 '430': phase
 '431': The type of data you wish to view
 '432': Which abyss phase?
@@ -549,7 +498,6 @@
 '490': Enhancement progress calculator
 '491': Calculate upgrade materials
 '492': Video tutorial
-'493': Waifus
 '494': Others
 '495': Choose your category
 '496': Author
@@ -574,18 +522,12 @@
 '512': |-
   • Notify you when your parametric transformer is ready
   • 1 notification per day
-'513': 'I am very sorry for this, the error has been automatically reported to [seria#5334](http://discord.com/users/410036441129943050), please patiently wait for the fix'
-'514': Realm currency reminder
 '515': Notification settings
-'516': Realm currency threshold
-'517': Realm currency reminder disabled
 '518': Realm currency is almost full!
 '519': |-
   [Enka.network](https://enka.network/) is currently down, please try again later.
   Check their [twitter](https://twitter.com/EnkaNetwork) for updates.
 '520': Dendroculus
-'521': Remove account data
-'522': Account data removed
 '523': Enka.network API error
 '524': Registered Users
 '525': Spread
@@ -607,10 +549,6 @@
   • Default is light mode
   • See below for an example
 '539': Settings
-'540': |-
-  • In some cases, I will push notifications using Shenhe
-  • Most of the time, they appear when there are critical issues with Shenhe, or there is an update
-'541': Developer Messages
 '542': Item not found
 '543': Data is from cache
 '544': Manage your accounts in Shenhe
@@ -699,7 +637,6 @@
 '604': Hoyolab daily check in
 '605': Claimed rewards
 '606': Current status
-'607': View claimed rewards
 '608': Please wait while Shenhe is processing your character data...
 '609': Domain
 '610': stars collected
@@ -720,8 +657,6 @@
 '625': Date published
 '626': Ingredients
 '627': Toggle daily check-in
-'628': You have enabled the daily check-in feature
-'629': You have disabled the daily check-in feature
 '630': Shenhe has automatically disabled the auto daily check-in feature for you, to enable it back, please use </claim:1020580644365021250>
 '631': Shenhe has automatically disabled the {feature} feature for you, to enable it back, please use </remind:1020580644365021255>
 '632': Weapon notification
@@ -751,10 +686,7 @@
 '654': Recent 5 star pulls
 '655': Permanent Banner
 '656': Choose a banner
-'657': ''
-'658': ''
 '659': You can only perform this action once every {hour} hour
-'660': ''
 '661': Choose a rarity filter
 '662': Choose a banner filter
 '663': Total primogems
@@ -794,7 +726,6 @@
 '690': Shenhe has found **{a}** wishes in this link/file
 '691': Confirm wish import
 '692': Import your Genshin wish history from a yaml file exported by Shenhe
-'693': ''
 '694': Ongoing
 '695': Finished
 '696': Remaining
@@ -877,3 +808,4 @@
   Please use the </register:1044926380242120744> command to reload your Cookie manually by adding your account again.
   If you want to avoid this issue in the future, you can register your account using the e-mail and password method, which will refresh your Cookie automatically.
 '768': Redeem on website
+'769': Toggle auto daily check-in with the buttons below
