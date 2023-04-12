@@ -56,7 +56,7 @@ def get_error_handle_embed(
     user: typing.Optional[typing.Union[discord.User, discord.Member]],
     e: Exception,
     locale: typing.Union[discord.Locale, str],
-):
+) -> ErrorEmbed:
     """Returns an error embed based on the givern error type."""
     embed = ErrorEmbed()
 
