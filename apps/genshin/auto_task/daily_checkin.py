@@ -68,7 +68,7 @@ class DailyCheckin:
             await self._send_report()
 
             log.info("[DailyCheckin] Finished")
-        except Exception as e: # skipcq: PYL-W0703
+        except Exception as e:  # skipcq: PYL-W0703
             sentry_sdk.capture_exception(e)
             log.error(f"[DailyCheckin] {e}")
 
