@@ -15,13 +15,17 @@ from apps.draw import main_funcs
 from apps.text_map import get_month_name, text_map
 from dev.base_ui import get_error_handle_embed
 from dev.exceptions import UIDNotFound
-from dev.models import (BotModel, DefaultEmbed, DrawInput, ErrorEmbed,
-                        ShenheAccount)
+from dev.models import BotModel, DefaultEmbed, DrawInput, ErrorEmbed, ShenheAccount
 from utility import get_dt_now, log
 
 from .models import *
-from .utility import (get_character_emoji, get_shenhe_account, get_uid,
-                      get_uid_tz, update_talents_json)
+from .utility import (
+    get_character_emoji,
+    get_shenhe_account,
+    get_uid,
+    get_uid_tz,
+    update_talents_json,
+)
 
 
 def genshin_error_handler(func):
@@ -80,7 +84,9 @@ class GenshinApp:
     ) -> GenshinAppResult[DefaultEmbed]:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         try:
-            reward = await shenhe_user.client.claim_daily_reward(game=genshin.Game.GENSHIN)
+            reward = await shenhe_user.client.claim_daily_reward(
+                game=genshin.Game.GENSHIN
+            )
         except genshin.errors.AlreadyClaimed:
             embed = ErrorEmbed().set_author(
                 name=text_map.get(40, locale, shenhe_user.user_locale),
@@ -90,7 +96,9 @@ class GenshinApp:
         else:
             reward_str = f"{reward.amount}x {reward.name}"
             embed = DefaultEmbed(
-                description=text_map.get(41, locale, shenhe_user.user_locale).format(reward=reward_str)
+                description=text_map.get(41, locale, shenhe_user.user_locale).format(
+                    reward=reward_str
+                )
             )
             embed.set_author(
                 name=text_map.get(42, locale, shenhe_user.user_locale),
