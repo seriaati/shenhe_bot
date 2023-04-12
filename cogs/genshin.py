@@ -23,14 +23,8 @@ import utility.utils as utils
 from ambr import AmbrTopAPI, Character, Material, Weapon
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
-from apps.genshin import (
-    enka,
-    get_character_emoji,
-    get_uid,
-    get_uid_region_hash,
-    hoyolab,
-    leaderboard,
-)
+from apps.genshin import (enka, get_character_emoji, get_uid,
+                          get_uid_region_hash, hoyolab, leaderboard)
 from apps.genshin_data import abyss
 from apps.text_map import convert_locale, text_map
 from data.cards.dice_element import get_dice_emoji
@@ -694,18 +688,23 @@ class GenshinCog(commands.Cog, name="genshin"):
         locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
 
         view = ui.MeToo.View(code, self.genshin_app, locale)
+        btn = None
         if isinstance(r.result, models.ErrorEmbed):
-            view.add_item(
-                discord.ui.Button(
-                    label=text_map.get(768, locale),
-                    url=f"https://genshin.hoyoverse.com/en/gift?code={code}",
-                )
+            btn = discord.ui.Button(
+                label=text_map.get(768, locale),
+                url=f"https://genshin.hoyoverse.com/en/gift?code={code}",
             )
+            view.add_item(btn)
 
-        await i.followup.send(
-            embed=r.result,
-            view=view,
-        )
+        try:
+            await i.followup.send(
+                embed=r.result,
+                view=view,
+            )
+        except discord.HTTPException:
+            if btn is not None:
+                view.remove_item(btn)
+            await i.followup.send(embed=r.result, view=view)
         view.message = await i.original_response()
 
     @redeem.autocomplete("code")
