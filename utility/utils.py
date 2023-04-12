@@ -5,7 +5,7 @@ import zipfile
 from datetime import datetime
 from io import BytesIO
 from itertools import islice
-from typing import Any, Dict, List, TypeVar, Union
+from typing import Dict, List, TypeVar, Union
 
 import discord
 import pytz
