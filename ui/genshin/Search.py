@@ -181,10 +181,11 @@ async def parse_character_wiki(
     # select options
     options = []
     for index, embed in enumerate(embeds):
+        prefix = embed.author.name if embed.author.name else ""
         suffix = f" | {embed.title}" if embed.title else ""
         options.append(
             discord.SelectOption(
-                label=f"{embed.author.name}{suffix}",
+                label=f"{prefix}{suffix}",
                 value=str(index),
             )
         )
