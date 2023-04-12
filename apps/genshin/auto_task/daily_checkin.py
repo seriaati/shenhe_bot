@@ -222,7 +222,7 @@ class DailyCheckin:
         try:
             await discord_user.send(embed=embed)
         except discord.Forbidden:
-            log.error(f"[DailyCheckin] Failed to send message to {user.user_id}")
+            pass
         except Exception as e:  # skipcq: PYL-W0703
             sentry_sdk.capture_exception(e)
 
