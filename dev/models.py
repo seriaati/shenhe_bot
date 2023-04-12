@@ -42,6 +42,7 @@ class User:
     ltuid: typing.Optional[str] = None
     ltoken: typing.Optional[str] = None
     cookie_token: typing.Optional[str] = None
+    last_checkin_date: typing.Optional[datetime] = None
 
     def __attrs_post_init__(self) -> None:
         self.client = genshin.Client(
@@ -67,6 +68,7 @@ class User:
             ltuid=row["ltuid"],
             ltoken=row["ltoken"],
             cookie_token=row["cookie_token"],
+            last_checkin_date=row["last_checkin_date"],
         )
 
 
@@ -101,6 +103,8 @@ class BotModel(commands.AutoShardedBot):
     gateway: HuTaoLoginAPI
     pool: asyncpg.Pool
     debug: bool
+    user: discord.ClientUser
+    owner_id: int = 410036441129943050
 
     launch_browser_in_debug: bool = False
     maintenance: bool = False
