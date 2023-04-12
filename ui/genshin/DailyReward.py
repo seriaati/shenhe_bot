@@ -6,6 +6,7 @@ from discord import ButtonStyle, Locale
 from discord.errors import InteractionResponded
 from discord.ui import Button
 
+import dev.asset as asset
 import dev.config as config
 from apps.db import get_user_lang
 from apps.genshin import GenshinApp
@@ -16,18 +17,25 @@ from utility import divide_chunks, get_dt_now
 
 
 class View(BaseView):
-    def __init__(self, locale: Locale | str, genshin_app: GenshinApp, uid: int):
+    def __init__(
+        self,
+        locale: Locale | str,
+        genshin_app: GenshinApp,
+        uid: int,
+        daily_checkin: bool,
+    ):
         super().__init__(timeout=config.mid_timeout)
         self.locale = locale
         self.genshin_app = genshin_app
         self.uid = uid
+        self.add_item(ClaimRewardOn(self.locale, daily_checkin))
+        self.add_item(ClaimRewardOff(self.locale, not daily_checkin))
         self.add_item(ClaimReward(self.locale))
-        self.add_item(ClaimRewardToggle(self.locale))
 
 
 class ClaimReward(Button):
     def __init__(self, locale: Locale | str):
-        super().__init__(style=ButtonStyle.blurple, label=text_map.get(603, locale))
+        super().__init__(style=ButtonStyle.green, label=text_map.get(603, locale))
         self.view: View
 
     async def callback(self, i: Inter):
@@ -42,15 +50,40 @@ class ClaimReward(Button):
         await return_claim_reward(i, self.view.genshin_app)
 
 
-class ClaimRewardToggle(Button):
-    def __init__(self, locale: Locale | str):
-        super().__init__(label=text_map.get(627, locale), style=ButtonStyle.green)
-        self.locale = locale
+class ClaimRewardOn(Button):
+    def __init__(self, locale: Locale | str, on: bool):
+        super().__init__(
+            style=ButtonStyle.blurple if on else ButtonStyle.gray,
+            label=text_map.get(99, locale),
+            emoji=asset.gift_outline,
+        )
         self.view: View
 
     async def callback(self, i: Inter):
         await i.client.pool.execute(
-            "UPDATE user_accounts SET daily_checkin = NOT daily_checkin WHERE user_id = $1 AND uid = $2",
+            "UPDATE user_accounts SET daily_checkin = true WHERE user_id = $1 AND uid = $2",
+            i.user.id,
+            self.view.uid,
+        )
+
+        for item in self.view.children:
+            item.disabled = True  # type: ignore
+
+        await return_claim_reward(i, self.view.genshin_app)
+
+
+class ClaimRewardOff(Button):
+    def __init__(self, locale: Locale | str, on: bool):
+        super().__init__(
+            style=ButtonStyle.blurple if on else ButtonStyle.gray,
+            label=text_map.get(100, locale),
+            emoji=asset.gift_off_outline,
+        )
+        self.view: View
+
+    async def callback(self, i: Inter):
+        await i.client.pool.execute(
+            "UPDATE user_accounts SET daily_checkin = false WHERE user_id = $1 AND uid = $2",
             i.user.id,
             self.view.uid,
         )
@@ -90,12 +123,12 @@ async def return_claim_reward(i: Inter, genshin_app: GenshinApp):
 
     embed = DefaultEmbed(
         description=f"{text_map.get(606, locale)}: {claimed_rewards}/{day_in_month}\n"
-        f"{text_map.get(101, locale)}: **__{text_map.get(99 if daily_checkin else 100, locale)}__**"
     )
     embed.set_author(
         name=text_map.get(604, locale),
         icon_url=i.user.display_avatar.url,
     )
+    embed.set_footer(text=text_map.get(769, locale))
 
     values = []
     async for reward in shenhe_user.client.claimed_rewards(limit=claimed_rewards):
@@ -107,7 +140,7 @@ async def return_claim_reward(i: Inter, genshin_app: GenshinApp):
         r = "".join(val)
         embed.add_field(name=f"{text_map.get(605, locale)} ({index+1})", value=r)
 
-    view = View(locale, genshin_app, shenhe_user.uid)
+    view = View(locale, genshin_app, shenhe_user.uid, daily_checkin)
     try:
         await i.response.send_message(embed=embed, view=view)
     except InteractionResponded:

@@ -84,7 +84,9 @@ class GenshinApp:
     ) -> GenshinAppResult[DefaultEmbed]:
         shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
         try:
-            reward = await shenhe_user.client.claim_daily_reward()
+            reward = await shenhe_user.client.claim_daily_reward(
+                game=genshin.Game.GENSHIN
+            )
         except genshin.errors.AlreadyClaimed:
             embed = ErrorEmbed().set_author(
                 name=text_map.get(40, locale, shenhe_user.user_locale),
@@ -92,12 +94,17 @@ class GenshinApp:
             )
             return GenshinAppResult(success=False, result=embed)
         else:
+            reward_str = f"{reward.amount}x {reward.name}"
             embed = DefaultEmbed(
-                description=f"{text_map.get(41, locale, shenhe_user.user_locale)} {reward.amount}x {reward.name}"
-            ).set_author(
+                description=text_map.get(41, locale, shenhe_user.user_locale).format(
+                    reward=reward_str
+                )
+            )
+            embed.set_author(
                 name=text_map.get(42, locale, shenhe_user.user_locale),
                 icon_url=shenhe_user.discord_user.display_avatar.url,
             )
+            embed.set_thumbnail(url=reward.icon)
             return GenshinAppResult(success=True, result=embed)
 
     @genshin_error_handler

@@ -8,6 +8,7 @@ import discord
 import genshin
 from discord import utils
 from discord.ext import commands, tasks
+from dotenv import load_dotenv
 
 import ambr
 import apps.genshin as genshin_app
@@ -15,6 +16,7 @@ import dev.asset as asset
 import dev.models as models
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
+from apps.genshin import auto_task
 from apps.text_map import text_map, to_ambr_top
 from dev.base_ui import capture_exception
 from utility import dm_embed, log
@@ -24,6 +26,8 @@ from utility.utils import (
     get_discord_user_from_id,
     get_dt_now,
 )
+
+load_dotenv()
 
 
 def schedule_error_handler(func):
@@ -41,20 +45,20 @@ def schedule_error_handler(func):
 
 
 class Schedule(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot) -> None:
         self.bot: models.BotModel = bot
         self.debug = self.bot.debug
         if not self.debug:
             self.run_tasks.start()
 
-    async def cog_unload(self):
+    async def cog_unload(self) -> None:
         if not self.debug:
             self.run_tasks.cancel()
 
     loop_interval = 1
 
     @tasks.loop(minutes=loop_interval)
-    async def run_tasks(self):
+    async def run_tasks(self) -> None:
         """Run the tasks every loop_interval minutes"""
         now = get_dt_now()
 
@@ -65,7 +69,7 @@ class Schedule(commands.Cog):
             asyncio.create_task(self.save_codes())
 
         if now.hour == 0 and now.minute < self.loop_interval:  # midnight
-            asyncio.create_task(self.claim_reward())
+            asyncio.create_task(auto_task.DailyCheckin(self.bot).start())
 
         if now.hour == 1 and now.minute < self.loop_interval:  # 1am
             asyncio.create_task(self.update_shenhe_cache_and_data())
@@ -93,14 +97,14 @@ class Schedule(commands.Cog):
             asyncio.create_task(self.redeem_codes())
 
     @schedule_error_handler
-    async def update_shenhe_cache_and_data(self):
+    async def update_shenhe_cache_and_data(self) -> None:
         await self.update_ambr_cache()
         await self.update_text_map()
         await self.update_game_data()
         await self.update_card_data()
 
     @schedule_error_handler
-    async def save_codes(self):
+    async def save_codes(self) -> None:
         log.info("[Schedule] Saving codes...")
         await self.bot.pool.execute(
             "CREATE TABLE IF NOT EXISTS genshin_codes (code text)"
@@ -381,7 +385,7 @@ class Schedule(commands.Cog):
 
     async def disable_notification(
         self, user_id: int, uid: int, notification_type: str
-    ):
+    ) -> None:
         await self.bot.pool.execute(
             f"UPDATE {notification_type} SET toggle = false WHERE user_id = $1 AND uid = $2",
             user_id,
@@ -527,51 +531,6 @@ class Schedule(commands.Cog):
             success = True
             value = text_map.get(109, locale)
         return value, success
-
-    @schedule_error_handler
-    async def claim_reward(self):
-        """Claims daily check-in rewards for all Shenhe users that have Cookie registered"""
-        log.info("[Schedule][Claim Reward] Start")
-        users = await self.get_schedule_users()
-
-        success_count = 0
-        user_count = 0
-
-        for user in users:
-            if not user.daily_checkin:
-                continue
-
-            user_count += 1
-            (
-                success_count,
-                error,
-                error_message,
-            ) = await genshin_app.claim_daily_checkin_reward(
-                success_count, user, user.client, self.bot.pool
-            )
-
-            if error:
-                await genshin_app.handle_daily_reward_error(
-                    user, error_message, self.bot.pool
-                )
-
-            if user_count % 100 == 0:  # Sleep for 40 seconds every 100 users
-                await asyncio.sleep(40)
-
-            await asyncio.sleep(3.5)
-
-        log.info(f"[Schedule][Claim Reward] Ended ({success_count}/{user_count} users)")
-
-        # send a notification to Seria
-        seria = self.bot.get_user(410036441129943050) or await self.bot.fetch_user(
-            410036441129943050
-        )
-        await seria.send(
-            embed=models.DefaultEmbed(
-                "Automatic daily check-in report",
-                f"Claimed {success_count}/{user_count}",
-            )
-        )
 
     @schedule_error_handler
     async def weapon_talent_base_notification(

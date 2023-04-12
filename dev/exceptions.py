@@ -1,5 +1,7 @@
 from discord import app_commands
 
+from dev.enum import CheckInAPI
+
 
 class UIDNotFound(Exception):
     def __str__(self):
@@ -83,3 +85,12 @@ class FeatureDisabled(Exception):
 
 class Maintenance(Exception):
     pass
+
+
+class CheckInAPIError(Exception):
+    def __init__(self, api: CheckInAPI, status: int) -> None:
+        self.api = api
+        self.status = status
+
+    def __str__(self) -> str:
+        return f"{self.api} returned {self.status}"
