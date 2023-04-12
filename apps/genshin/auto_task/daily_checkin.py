@@ -68,7 +68,7 @@ class DailyCheckin:
             await self._send_report()
 
             log.info("[DailyCheckin] Finished")
-        except Exception as e:
+        except Exception as e: # skipcq: PYL-W0703
             sentry_sdk.capture_exception(e)
             log.error(f"[DailyCheckin] {e}")
 
@@ -78,7 +78,7 @@ class DailyCheckin:
         rows = await self.bot.pool.fetch(
             """
             SELECT * FROM user_accounts
-            WHERE daily_checkin = true 
+            WHERE daily_checkin = true
             AND ltuid IS NOT NULL
             AND ltoken IS NOT NULL
             """
