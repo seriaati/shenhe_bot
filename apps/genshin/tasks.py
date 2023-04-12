@@ -5,16 +5,12 @@ import uuid
 
 import aiofiles
 import aiohttp
-import asyncpg
 import genshin
 
 import dev.asset as asset
 import dev.models as models
-from apps.db import get_user_notif
-from apps.text_map import AMBR_LANGS, get_element_name, text_map
+from apps.text_map import AMBR_LANGS, get_element_name
 from data.game.elements import convert_element
-from dev.base_ui import capture_exception
-from utility import dm_embed, log
 
 # abyss.json
 
@@ -63,86 +59,6 @@ def add_abyss_entry(
 
     abyss_dict["user"] = user_dict
     result["data"].append(abyss_dict)
-
-
-# daily check-in
-
-
-async def claim_daily_checkin_reward(
-    success_count: int,
-    user: models.ShenheAccount,
-    client: genshin.Client,
-    pool: asyncpg.Pool,
-) -> typing.Tuple[int, bool, str]:
-    error = False
-    error_message = ""
-    try:
-        reward = await retry_task_five_times(client.claim_daily_reward)
-    except genshin.errors.AlreadyClaimed:
-        success_count += 1
-    except genshin.errors.InvalidCookies:
-        error = True
-        error_message = text_map.get(36, "en-US", user.user_locale)
-        log.warning(f"[Schedule][Claim Reward] Invalid Cookies: {user}")
-        success_count += 1
-    except genshin.errors.GenshinException as e:
-        error = True
-        error_message = f"```{type(e)}: {e.msg}```"
-        capture_exception(e)
-    except Exception as e:  # skipcq: PYL-W0703
-        error = True
-        error_message = f"```{type(e)} {e}```"
-        capture_exception(e)
-    else:
-        await handle_daily_reward_success(user, reward, pool)
-        success_count += 1
-
-    return success_count, error, error_message
-
-
-async def handle_daily_reward_error(
-    user: models.ShenheAccount, error_message: str, pool: asyncpg.Pool
-) -> None:
-    await pool.execute(
-        """
-        UPDATE user_accounts
-        SET daily_checkin = false
-        WHERE user_id = $1 AND uid = $2
-        """,
-        user.discord_user.id,
-        user.uid,
-    )
-
-    embed = models.ErrorEmbed(
-        description=f"""
-            {error_message}
-
-            {text_map.get(630, 'en-US', user.user_locale)}
-            """
-    )
-    embed.set_author(
-        name=text_map.get(500, "en-US", user.user_locale),
-        icon_url=user.discord_user.display_avatar.url,
-    )
-    embed.set_footer(text=text_map.get(611, "en-US", user.user_locale))
-    await dm_embed(user.discord_user, embed)
-
-
-async def handle_daily_reward_success(
-    user: models.ShenheAccount,
-    reward: genshin.models.DailyReward,
-    pool: asyncpg.Pool,
-) -> None:
-    log.info(f"[Schedule][Claim Reward] Claimed reward for {user}")
-    if await get_user_notif(user.discord_user.id, pool):
-        embed = models.DefaultEmbed(
-            text_map.get(87, "en-US", user.user_locale),
-            f"{reward.name} x{reward.amount}",
-        )
-        embed.set_thumbnail(url=reward.icon)
-        embed.set_footer(text=text_map.get(211, "en-US", user.user_locale))
-
-        await dm_embed(user.discord_user, embed)
 
 
 # text maps

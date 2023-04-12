@@ -17,16 +17,14 @@ import dev.asset as asset
 import dev.models as models
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
+from apps.genshin import auto_task
 from apps.text_map import text_map, to_ambr_top
 from apps.text_map.convert_locale import to_genshin_py
 from dev.base_ui import capture_exception
 from utility import dm_embed, log
 from utility.fetch_card import fetch_cards
-from utility.utils import (
-    convert_dict_to_zipped_json,
-    get_discord_user_from_id,
-    get_dt_now,
-)
+from utility.utils import (convert_dict_to_zipped_json,
+                           get_discord_user_from_id, get_dt_now)
 
 load_dotenv()
 
@@ -75,7 +73,7 @@ class Schedule(commands.Cog):
             asyncio.create_task(self.save_codes())
 
         if now.hour == 0 and now.minute < self.loop_interval:  # midnight
-            asyncio.create_task(self.claim_reward())
+            asyncio.create_task(auto_task.DailyCheckin(self.bot).start())
 
         if now.hour == 1 and now.minute < self.loop_interval:  # 1am
             asyncio.create_task(self.update_shenhe_cache_and_data())
@@ -391,7 +389,7 @@ class Schedule(commands.Cog):
 
     async def disable_notification(
         self, user_id: int, uid: int, notification_type: str
-    ):
+    ) -> None:
         await self.bot.pool.execute(
             f"UPDATE {notification_type} SET toggle = false WHERE user_id = $1 AND uid = $2",
             user_id,
@@ -537,55 +535,6 @@ class Schedule(commands.Cog):
             success = True
             value = text_map.get(109, locale)
         return value, success
-
-    @schedule_error_handler
-    async def claim_reward(self):
-        """Claims daily check-in rewards for all Shenhe users that have Cookie registered"""
-        log.info("[Schedule][Claim Reward] Start")
-
-        rows = await self.bot.pool.fetch(
-            """
-            SELECT user_id, ltoken, ltuid, uid
-            FROM user_accounts
-            WHERE daily_checkin = true
-            AND ltuid IS NOT NULL
-            AND ltoken IS NOT NULL
-            """
-        )
-        users: List[Dict[str, Any]] = []
-        for row in rows:
-            lang = await get_user_lang(row["user_id"], self.bot.pool)
-            users.append(
-                {
-                    "cookie": {"ltuid": row["ltuid"], "ltoken": row["ltoken"]},
-                    "uid": row["uid"],
-                    "user_id": row["user_id"],
-                    "lang": to_genshin_py(str(lang)),
-                }
-            )
-
-        # divide user list into 3 equal parts
-        div_users = [users[i::3] for i in range(3)]
-        for index, div in enumerate(div_users):
-            api_link = self.api_links[index]
-            if api_link is None:
-                continue
-            async with self.bot.session.get(api_link) as resp:
-                if resp.status == 200:
-                    log.info(f"[Schedule][Claim Reward] Connected to API {api_link}")
-                else:
-                    log.error(f"[Schedule][Claim Reward] Failed connect API {api_link}")
-                    continue
-            for user in div:
-                async with self.bot.session.post(
-                    api_link,
-                    json=user,
-                ) as resp:
-                    response: Dict[str, Any] = await resp.json()
-                    if "reward" in response:
-                        pass
-                    else:
-                        pass
 
     @schedule_error_handler
     async def weapon_talent_base_notification(
