@@ -5,11 +5,10 @@ import zipfile
 from datetime import datetime
 from io import BytesIO
 from itertools import islice
-from typing import Dict, List, TypeVar, Union
+from typing import Dict, Generator, List, TypeVar, Union
 
 import discord
 import pytz
-from pyparsing import Generator
 from sentry_sdk.integrations.logging import LoggingIntegration
 
 logging.basicConfig(
