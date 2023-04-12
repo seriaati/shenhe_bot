@@ -154,6 +154,11 @@ class BaseView(discord.ui.View):
         ] = None
         self.author: typing.Optional[discord.Member | discord.User] = None
         self.original_info: typing.Optional[OriginalInfo] = None
+    
+    def disable_items(self):
+        for item in self.children:
+            if isinstance(item, (discord.ui.Button, discord.ui.Select)):
+                item.disabled = True
 
     async def interaction_check(self, i: Inter) -> bool:
         if self.author is None:
