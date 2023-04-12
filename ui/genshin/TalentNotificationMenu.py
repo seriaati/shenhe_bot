@@ -1,6 +1,5 @@
 from typing import Any, List
 
-import asyncpg
 from discord import Interaction, Locale, SelectOption
 from discord.ui import Button, Select
 
@@ -9,8 +8,9 @@ import dev.config as config
 from ambr import AmbrTopAPI
 from apps.genshin import get_character_emoji
 from apps.text_map import text_map, to_ambr_top
-from dev.base_ui import BaseView
 from data.game.elements import convert_elements, elements
+from dev.base_ui import BaseView
+from dev.models import Inter
 from ui.genshin import ReminderMenu
 
 
@@ -41,16 +41,16 @@ class ElementButton(Button):
         super().__init__(emoji=element_emoji, row=row)
         self.element = element
 
-    async def callback(self, i: Interaction) -> Any:
+    async def callback(self, i: Inter) -> Any:
         self.view: View
-        pool: asyncpg.Pool = i.client.pool  # type: ignore
+        pool = i.client.pool
         character_list: List[str] = await pool.fetchval(
             "SELECT item_list FROM talent_notification WHERE user_id = $1", i.user.id
         )
 
         locale = self.view.locale
         ambr_locale = to_ambr_top(locale)
-        client = AmbrTopAPI(i.client.session, ambr_locale)  # type: ignore
+        client = AmbrTopAPI(i.client.session, ambr_locale)
         characters = await client.get_character()
         if not isinstance(characters, list):
             raise AssertionError
@@ -103,8 +103,8 @@ class CharacterSelect(Select):
         )
         self.view: View
 
-    async def callback(self, i: Interaction) -> Any:
-        pool: asyncpg.Pool = i.client.pool  # type: ignore
+    async def callback(self, i: Inter) -> Any:
+        pool = i.client.pool
         data_list = await pool.fetchval(
             "SELECT item_list FROM talent_notification WHERE user_id = $1", i.user.id
         )
