@@ -108,7 +108,7 @@ class DailyCheckin:
                     log.error(
                         f"[DailyCheckin] {api.name} returned {resp.status} status code"
                     )
-                    raise CheckInAPIError(api, resp.status)
+                    return
 
         self.total[api] = 0
         MAX_API_ERROR = 5
