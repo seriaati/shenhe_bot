@@ -8,9 +8,8 @@ import sentry_sdk
 
 import dev.asset as asset
 import dev.exceptions as exceptions
-from utils import get_user_lang
+from utils import get_user_lang, log
 from apps.text_map import text_map
-from utils import log
 
 from .models import ErrorEmbed, Inter, OriginalInfo
 

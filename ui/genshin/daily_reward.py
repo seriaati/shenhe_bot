@@ -8,12 +8,11 @@ from discord.ui import Button
 
 import dev.asset as asset
 import dev.config as config
-from utils import get_user_lang
+from utils import divide_chunks, get_dt_now, get_user_lang
 from apps.genshin import GenshinApp
 from apps.text_map import text_map
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
-from utils import divide_chunks, get_dt_now
 
 
 class View(BaseView):

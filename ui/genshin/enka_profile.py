@@ -7,14 +7,13 @@ from discord import ui, utils
 import dev.asset as asset
 import dev.config as config
 import dev.models as models
-from utils import get_user_theme
+from utils import divide_chunks, get_dt_now, get_user_theme
 from apps.draw.main_funcs import draw_artifact_card
 from apps.text_map import text_map
 from dev.base_ui import EnkaView
 from dev.exceptions import FeatureDisabled
 from ui.genshin import enka_damage_calc, profile_settings
 from ui.others.settings import custom_image
-from utils import divide_chunks, get_dt_now
 from yelan.damage_calculator import return_current_status
 
 
