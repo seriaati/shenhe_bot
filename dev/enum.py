@@ -23,15 +23,17 @@ class CheckInAPI(Enum):
     DETA = "deta"
     RAILWAY = "railway"
 
+
 class TextMapType(Enum):
     LANG = "langs"
-    
+
     ARTIFACT = "reliquary"
     CHARACTER = "avatar"
     MATERIAL = "material"
     WEAPON = "weapon"
     DOMAIN = "dailyDungeon"
     ITEM_NAME = "item_name"
+
 
 class LangType(Enum):
     EN_US = "en-US"

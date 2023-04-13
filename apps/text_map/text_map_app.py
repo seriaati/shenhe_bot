@@ -120,10 +120,12 @@ class TextMap:
         ambr_locale = to_ambr_top(str(locale))
         return artifact_text[str(ambr_locale)]
 
-    def _open_file(self, map_type: TextMapType, lang_type: LangType = LangType.EN_US) -> typing.Dict[str, typing.Any]:
+    def _open_file(
+        self, map_type: TextMapType, lang_type: LangType = LangType.EN_US
+    ) -> typing.Dict[str, typing.Any]:
         is_yaml = True if map_type is TextMapType.LANG else False
         ext = ".yaml" if is_yaml else ".json"
-        
+
         path = "text_maps/"
         if map_type is TextMapType.LANG:
             path += f"{map_type.value}/{lang_type.value}"
