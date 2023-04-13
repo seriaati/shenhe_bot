@@ -518,7 +518,7 @@ async def update_talents_json(
     if boost_dict is None:
         boost_dict = {}
     try:
-        await client._enable_calculator_sync()
+        await client._enable_calculator_sync()  # skipcq: PYL-W0212
     except genshin.GenshinException:
         pass
 
