@@ -1,3 +1,3 @@
 from .fetch_card import *
-from .paginator import *
+from .paginators.paginator import *
 from .general import *
