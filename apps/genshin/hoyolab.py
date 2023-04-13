@@ -15,13 +15,17 @@ from apps.draw import main_funcs
 from apps.text_map import get_month_name, text_map
 from dev.base_ui import get_error_handle_embed
 from dev.exceptions import UIDNotFound
-from dev.models import (BotModel, DefaultEmbed, DrawInput, ErrorEmbed,
-                        ShenheAccount)
+from dev.models import BotModel, DefaultEmbed, DrawInput, ErrorEmbed, ShenheAccount
 from utils import get_dt_now, log
 
 from .models import *
-from .utils import (get_character_emoji, get_shenhe_account, get_uid,
-                    get_uid_tz, update_talents_json)
+from .utils import (
+    get_character_emoji,
+    get_shenhe_account,
+    get_uid,
+    get_uid_tz,
+    update_talents_json,
+)
 
 
 def genshin_error_handler(func):

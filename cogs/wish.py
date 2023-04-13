@@ -12,8 +12,7 @@ from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.genshin import check_account, check_wish_history, get_uid
 from apps.text_map import text_map, to_ambr_top
-from apps.wish.models import (RecentWish, WishData, WishHistory, WishInfo,
-                              WishItem)
+from apps.wish.models import RecentWish, WishData, WishHistory, WishInfo, WishItem
 from apps.wish.utils import get_wish_history_embeds, get_wish_info_embed
 from dev.base_ui import capture_exception
 from ui.wish import SetAuthKey, WishFilter

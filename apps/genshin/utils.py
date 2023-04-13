@@ -20,8 +20,13 @@ from ambr.models import CharacterDetail
 from apps.db import get_user_lang
 from apps.db.json import read_json, write_json
 from apps.enka.api_docs import get_character_skill_order
-from apps.text_map import (cond_text, text_map, to_ambr_top, to_genshin_py,
-                           translate_main_stat)
+from apps.text_map import (
+    cond_text,
+    text_map,
+    to_ambr_top,
+    to_genshin_py,
+    translate_main_stat,
+)
 from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
