@@ -6,7 +6,7 @@ from discord import Locale
 from PIL import Image, ImageDraw
 
 import dev.asset as asset
-from apps.draw.utility import circular_crop, get_cache, get_font
+from apps.draw.utils import circular_crop, get_cache, get_font
 from apps.text_map import text_map
 from data.game.artifact_slot import get_artifact_slot_name
 from data.game.calc_substat_roll import calculate_substat_roll

@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw
 
 import dev.asset as asset
 from ambr import Material
-from apps.draw.utility import (
+from apps.draw.utils import (
     circular_crop,
     draw_dynamic_background,
     dynamic_font_size,

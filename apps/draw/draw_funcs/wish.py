@@ -5,7 +5,7 @@ import discord
 from PIL import Image, ImageDraw
 
 import dev.asset as asset
-from apps.draw.utility import circular_crop, dynamic_font_size, get_cache, get_font
+from apps.draw.utils import circular_crop, dynamic_font_size, get_cache, get_font
 from apps.text_map import text_map
 from apps.wish.models import RecentWish, WishData
 from dev.enum import CardType

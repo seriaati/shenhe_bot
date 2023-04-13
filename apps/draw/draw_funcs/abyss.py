@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw
 
 import dev.asset as asset
 from apps.draw.draw_funcs import leaderboard
-from apps.draw.utility import (
+from apps.draw.utils import (
     draw_dynamic_background,
     dynamic_font_size,
     get_cache,

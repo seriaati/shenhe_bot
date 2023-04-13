@@ -9,7 +9,7 @@ import dev.models as models
 from ambr import AmbrTopAPI, Character
 from apps.db import get_user_theme
 from apps.draw import main_funcs
-from apps.draw.utility import image_gen_transition
+from apps.draw.utils import image_gen_transition
 from apps.genshin import (
     get_abyss_season_date_range,
     get_character_emoji,

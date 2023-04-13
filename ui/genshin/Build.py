@@ -9,7 +9,7 @@ import dev.asset as asset
 import dev.config as config
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
-from apps.draw.utility import image_gen_transition
+from apps.draw.utils import image_gen_transition
 from apps.genshin import get_character_builds, get_character_emoji
 from apps.text_map import cond_text, text_map, to_genshin_py
 from data.game.elements import get_element_emoji, get_element_list

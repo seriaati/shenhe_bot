@@ -9,7 +9,7 @@ import dev.models as models
 from ambr import AmbrTopAPI, Material, WeaponDetail
 from apps.db import get_user_theme
 from apps.draw import main_funcs
-from apps.draw.utility import image_gen_transition
+from apps.draw.utils import image_gen_transition
 from apps.genshin import get_weapon_emoji, level_to_ascension_phase
 from apps.text_map import text_map, to_ambr_top
 from data.game.weapon_exp import get_weapon_exp_table

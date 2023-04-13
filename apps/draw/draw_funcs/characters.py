@@ -5,7 +5,7 @@ import genshin
 from PIL import Image, ImageDraw
 
 import dev.asset as asset
-from apps.draw.utility import draw_dynamic_background, get_cache, get_font
+from apps.draw.utils import draw_dynamic_background, get_cache, get_font
 from dev.models import DynamicBackgroundInput
 
 

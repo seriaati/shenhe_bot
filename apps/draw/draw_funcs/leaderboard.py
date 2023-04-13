@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw
 
 import dev.asset as asset
 from ambr import Character
-from apps.draw.utility import (
+from apps.draw.utils import (
     circular_crop,
     get_cache,
     get_font,
