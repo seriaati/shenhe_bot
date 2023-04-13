@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Union
 
 import discord
 
-from apps.db.utility import get_user_theme
+from apps.db.utils import get_user_theme
 from apps.draw import main_funcs
 from apps.text_map import text_map
 from apps.wish.models import RecentWish, WishData

@@ -3,7 +3,7 @@ import typing
 import discord
 
 import dev.asset as asset
-from apps.db.utility import get_user_lang
+from apps.db.utils import get_user_lang
 from apps.genshin.utils import get_character_emoji, get_uid, get_weapon_emoji
 from apps.text_map import text_map
 from dev.models import DefaultEmbed, ErrorEmbed, Inter

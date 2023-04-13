@@ -8,7 +8,7 @@ import sentry_sdk
 from dotenv import load_dotenv
 
 import dev.models as model
-from apps.db.utility import get_user_lang, get_user_notif
+from apps.db.utils import get_user_lang, get_user_notif
 from apps.genshin.hoyolab import GenshinApp
 from apps.text_map import text_map
 from apps.text_map.convert_locale import to_genshin_py
