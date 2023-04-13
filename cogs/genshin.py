@@ -694,18 +694,23 @@ class GenshinCog(commands.Cog, name="genshin"):
         locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
 
         view = ui.MeToo.View(code, self.genshin_app, locale)
+        btn = None
         if isinstance(r.result, models.ErrorEmbed):
-            view.add_item(
-                discord.ui.Button(
-                    label=text_map.get(768, locale),
-                    url=f"https://genshin.hoyoverse.com/en/gift?code={code}",
-                )
+            btn = discord.ui.Button(
+                label=text_map.get(768, locale),
+                url=f"https://genshin.hoyoverse.com/en/gift?code={code}",
             )
+            view.add_item(btn)
 
-        await i.followup.send(
-            embed=r.result,
-            view=view,
-        )
+        try:
+            await i.followup.send(
+                embed=r.result,
+                view=view,
+            )
+        except discord.HTTPException:
+            if btn is not None:
+                view.remove_item(btn)
+            await i.followup.send(embed=r.result, view=view)
         view.message = await i.original_response()
 
     @redeem.autocomplete("code")
