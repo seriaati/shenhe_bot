@@ -13,8 +13,12 @@ from data.game.elements import get_element_emoji
 from data.game.fight_prop import percentage_fight_props
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, DrawInput, Inter
-from utils import (divide_chunks, get_fight_prop, get_weekday_int_with_name,
-                   get_weekday_name)
+from utils import (
+    divide_chunks,
+    get_fight_prop,
+    get_weekday_int_with_name,
+    get_weekday_name,
+)
 
 
 class View(BaseView):

@@ -12,8 +12,14 @@ from apps.draw import main_funcs
 from apps.text_map import text_map
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, DrawInput
-from utils import (get_dt_now, get_farm_data, get_uid, get_uid_tz,
-                   get_user_lang, get_user_theme)
+from utils import (
+    get_dt_now,
+    get_farm_data,
+    get_uid,
+    get_uid_tz,
+    get_user_lang,
+    get_user_theme,
+)
 
 
 class View(BaseView):

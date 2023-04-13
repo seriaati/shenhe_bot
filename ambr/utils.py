@@ -5,6 +5,7 @@ def format_number(text: str) -> str:
     """Format numbers into bolded texts."""
     return re.sub(r"(\(?\d+.?\d+%?\)?)", r" **\1** ", text)  # type: ignore
 
+
 def parse_html(html_string: str):
     html_string = html_string.replace("\\n", "\n")
     # replace tags with style attributes

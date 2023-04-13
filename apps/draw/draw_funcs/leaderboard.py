@@ -7,8 +7,7 @@ import dev.asset as asset
 from ambr import Character
 from apps.text_map import text_map
 from dev.models import RunLeaderboardUser, SingleStrikeLeaderboardUser
-from utils import (circular_crop, get_cache, get_font, global_write,
-                   shorten_text)
+from utils import circular_crop, get_cache, get_font, global_write, shorten_text
 
 
 def board(
