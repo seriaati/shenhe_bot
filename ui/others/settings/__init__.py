@@ -1,2 +1,2 @@
 from .custom_image import *
-from .notif import *
+from .notif_menu import *

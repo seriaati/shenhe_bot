@@ -399,7 +399,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         if isinstance(r.result, models.ErrorEmbed):
             return await i.followup.send(embed=r.result)
         result = r.result
-        view = ui.diary.View(i.user, member, self.genshin_app, user_locale or i.locale)
+        view = ui.diary_view.View(i.user, member, self.genshin_app, user_locale or i.locale)
         fp = result.file
         fp.seek(0)
         await i.followup.send(
@@ -444,7 +444,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             return await i.followup.send(embed=result.result)
 
         abyss_result = result.result
-        view = ui.abyss.View(i.user, abyss_result, user_locale or i.locale)
+        view = ui.abyss_view.View(i.user, abyss_result, user_locale or i.locale)
         fp = abyss_result.overview_file
         fp.seek(0)
         image = discord.File(fp, "overview_card.jpeg")
@@ -484,7 +484,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         name="farm", description=_("View today's farmable items", hash=446)
     )
     async def farm(self, i: discord.Interaction):
-        await ui.domain.return_farm_interaction(i)
+        await ui.domain_view.return_farm_interaction(i)
 
     @app_commands.command(
         name="build",
@@ -493,7 +493,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         ),
     )
     async def build(self, i: discord.Interaction):
-        view = ui.build.View()
+        view = ui.build_view.View()
         view.author = i.user
         await i.response.send_message(view=view)
         view.message = await i.original_response()
@@ -752,7 +752,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             raise exceptions.UIDNotFound
         embed = models.DefaultEmbed(description=text_map.get(253, locale))
         embed.set_author(name=f"👑 {text_map.get(252, locale)}")
-        view = ui.leaderboard.View(locale, uid)
+        view = ui.leaderboard_view.View(locale, uid)
         view.author = i.user
         await i.response.send_message(embed=embed, view=view)
         view.message = await i.original_response()
@@ -787,7 +787,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             character = await client.get_character_detail(query)
             if character is None:
                 raise exceptions.ItemNotFound
-            await ui.search.parse_character_wiki(
+            await ui.search_nav.parse_character_wiki(
                 character, i, locale, client, dark_mode
             )
 
@@ -795,37 +795,37 @@ class GenshinCog(commands.Cog, name="genshin"):
             weapon = await client.get_weapon_detail(int(query))
             if weapon is None:
                 raise exceptions.ItemNotFound
-            await ui.search.parse_weapon_wiki(weapon, i, locale, client, dark_mode)
+            await ui.search_nav.parse_weapon_wiki(weapon, i, locale, client, dark_mode)
 
         elif item_type == 2:  # material
             material = await client.get_material_detail(int(query))
             if material is None:
                 raise exceptions.ItemNotFound
-            await ui.search.parse_material_wiki(material, i, locale, client, dark_mode)
+            await ui.search_nav.parse_material_wiki(material, i, locale, client, dark_mode)
 
         elif item_type == 3:  # artifact
             artifact = await client.get_artifact_detail(int(query))
             if artifact is None:
                 raise exceptions.ItemNotFound
-            await ui.search.parse_artifact_wiki(artifact, i, locale)
+            await ui.search_nav.parse_artifact_wiki(artifact, i, locale)
 
         elif item_type == 4:  # monster
             monster = await client.get_monster_detail(int(query))
             if monster is None:
                 raise exceptions.ItemNotFound
-            await ui.search.parse_monster_wiki(monster, i, locale, client, dark_mode)
+            await ui.search_nav.parse_monster_wiki(monster, i, locale, client, dark_mode)
 
         elif item_type == 5:  # food
             food = await client.get_food_detail(int(query))
             if food is None:
                 raise exceptions.ItemNotFound
-            await ui.search.parse_food_wiki(food, i, locale, client, dark_mode)
+            await ui.search_nav.parse_food_wiki(food, i, locale, client, dark_mode)
 
         elif item_type == 6:  # furniture
             furniture = await client.get_furniture_detail(int(query))
             if furniture is None:
                 raise exceptions.ItemNotFound
-            await ui.search.parse_furniture_wiki(
+            await ui.search_nav.parse_furniture_wiki(
                 furniture, i, locale, client, dark_mode
             )
 
@@ -833,13 +833,13 @@ class GenshinCog(commands.Cog, name="genshin"):
             namecard = await client.get_name_card_detail(int(query))
             if namecard is None:
                 raise exceptions.ItemNotFound
-            await ui.search.parse_namecard_wiki(namecard, i, locale)
+            await ui.search_nav.parse_namecard_wiki(namecard, i, locale)
 
         elif item_type == 8:  # book
             book = await client.get_book_detail(int(query))
             if book is None:
                 raise exceptions.ItemNotFound
-            await ui.search.parse_book_wiki(book, i, locale, client)
+            await ui.search_nav.parse_book_wiki(book, i, locale, client)
 
     @search.autocomplete("query")
     async def query_autocomplete(
@@ -1071,9 +1071,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         characters = await ambr.get_character(include_beta=False)
 
         if isinstance(characters, List):
-            view = ui.lineup.View(locale, options, scenario_dict, characters)
+            view = ui.lineup_view.View(locale, options, scenario_dict, characters)
             view.author = i.user
-            await ui.lineup.search_lineup(i, view)
+            await ui.lineup_view.search_lineup(i, view)
             view.message = await i.original_response()
 
     @app_commands.command(

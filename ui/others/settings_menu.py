@@ -10,7 +10,7 @@ from apps.text_map import text_map
 from data.others.language_options import lang_options
 from dev.base_ui import BaseView, GoBackButton
 from dev.models import DefaultEmbed, Inter, OriginalInfo
-from ui.others.settings import custom_image, notif
+from ui.others.settings import custom_image, notif_menu
 
 
 class View(BaseView):
@@ -147,7 +147,7 @@ class Notification(ui.Button):
         self.view: View
 
     async def callback(self, i: Inter):
-        await notif.return_view(i, self.locale, OriginalInfo(view=self.view, embed=i.message.embeds[0], children=self.view.children.copy()))  # type: ignore
+        await notif_menu.return_view(i, self.locale, OriginalInfo(view=self.view, embed=i.message.embeds[0], children=self.view.children.copy()))  # type: ignore
 
 
 class AutoRedeem(ui.Button):
