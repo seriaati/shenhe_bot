@@ -40,9 +40,9 @@ class ElementButton(Button):
     def __init__(self, element: str, element_emoji: str, row: int):
         super().__init__(emoji=element_emoji, row=row)
         self.element = element
+        self.view: View
 
     async def callback(self, i: Inter) -> Any:
-        self.view: View
         pool = i.client.pool
         character_list: List[str] = await pool.fetchval(
             "SELECT item_list FROM talent_notification WHERE user_id = $1", i.user.id
