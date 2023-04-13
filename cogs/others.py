@@ -17,14 +17,14 @@ from dotenv import load_dotenv
 
 import dev.asset as asset
 from ambr import AmbrTopAPI, Character
-from apps.db import custom_image, get_user_lang
-from apps.db.utils import create_user_settings
+from apps.db import custom_image
 from apps.draw.main_funcs import compress_image
 from apps.text_map import text_map, to_ambr_top
 from dev.exceptions import AutocompleteError
 from dev.models import BotModel, DefaultEmbed, ErrorEmbed, Inter
 from ui.others import Feedback, ManageAccounts, SettingsMenu
 from ui.others.settings import CustomImage
+from utils import create_user_settings, get_user_lang
 
 load_dotenv()
 

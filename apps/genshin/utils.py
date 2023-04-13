@@ -17,7 +17,7 @@ import dev.enum as enum
 import dev.models as models
 from ambr import AmbrTopAPI, Character, Domain, Material, Weapon
 from ambr.models import CharacterDetail
-from apps.db import get_user_lang
+from utils import get_user_lang
 from apps.db.json import read_json, write_json
 from apps.enka.api_docs import get_character_skill_order
 from apps.text_map import (

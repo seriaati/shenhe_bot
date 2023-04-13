@@ -14,7 +14,7 @@ import ambr
 import data.game.elements as game_elements
 import dev.asset as asset
 import dev.config as config
-from apps.db import get_user_theme
+from utils import get_user_theme
 from apps.db.json import read_json
 from apps.draw import main_funcs
 from apps.draw.utils import image_gen_transition

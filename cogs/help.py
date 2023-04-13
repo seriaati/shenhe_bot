@@ -4,7 +4,7 @@ from discord.app_commands import locale_str as _
 from discord.ext import commands
 
 import ui
-from apps.db import get_user_lang
+from utils import get_user_lang
 from dev.models import Inter
 
 

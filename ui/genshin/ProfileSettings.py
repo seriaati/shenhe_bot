@@ -4,13 +4,13 @@ import discord
 from discord import ui
 
 import dev.config as config
-from apps.db.utils import create_user_settings, get_profile_ver
 from apps.genshin import edit_enka_cache, get_uid
 from apps.text_map import text_map
 from dev.base_ui import BaseView, EnkaView
 from dev.exceptions import UIDNotFound
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
 from ui.genshin.EnkaDamageCalc import GoBack
+from utils import create_user_settings, get_profile_ver
 
 
 class View(BaseView):

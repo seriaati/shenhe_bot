@@ -8,7 +8,7 @@ from discord.ext import commands
 
 import ambr
 import dev.models as models
-from apps.db import get_user_lang, get_user_theme
+from utils import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.genshin import check_account, check_wish_history, get_uid
 from apps.text_map import text_map, to_ambr_top

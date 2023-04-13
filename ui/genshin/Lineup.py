@@ -8,7 +8,7 @@ from genshin.models import LineupPreview, LineupScenario
 import dev.asset as asset
 import dev.config as config
 from ambr import Character
-from apps.db import get_user_theme
+from utils import get_user_theme
 from apps.draw import main_funcs
 from apps.draw.utils import image_gen_transition
 from apps.genshin import get_character_emoji

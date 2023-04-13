@@ -9,7 +9,7 @@ import dev.asset as asset
 import dev.config as config
 import dev.models as models
 from ambr import AmbrTopAPI
-from apps.db import get_user_lang, get_user_theme
+from utils import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.draw.utils import image_gen_transition
 from apps.enka.api_docs import get_character_skill_order

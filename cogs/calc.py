@@ -3,7 +3,7 @@ from discord.app_commands import locale_str as _
 from discord.ext import commands
 
 from ambr import AmbrTopAPI
-from apps.db import get_user_lang
+from utils import get_user_lang
 from apps.text_map import to_ambr_top
 from dev.models import BotModel, Inter
 from ui.calc import CalcCharacter, CalcWeapon

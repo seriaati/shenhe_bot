@@ -14,7 +14,7 @@ import ambr
 import apps.genshin as genshin_app
 import dev.asset as asset
 import dev.models as models
-from apps.db import get_user_lang, get_user_theme
+from utils import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.genshin import auto_task
 from apps.text_map import text_map, to_ambr_top

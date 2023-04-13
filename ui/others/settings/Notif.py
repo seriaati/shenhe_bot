@@ -3,7 +3,7 @@ from discord import ui
 
 import dev.asset as asset
 import dev.config as config
-from apps.db import get_user_notif
+from utils import get_user_notif
 from apps.text_map import text_map
 from dev.base_ui import BaseView, GoBackButton
 from dev.models import DefaultEmbed, Inter, OriginalInfo

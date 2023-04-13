@@ -10,7 +10,7 @@ from pyppeteer import browser
 import dev.asset as asset
 import dev.config as config
 import yelan.damage_calculator as damage_calc
-from apps.db import get_profile_ver, get_user_theme
+from utils import get_profile_ver, get_user_theme
 from apps.db.custom_image import get_user_custom_image
 from apps.draw import main_funcs
 from apps.genshin import get_browser, get_character_fanarts
