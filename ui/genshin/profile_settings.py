@@ -9,7 +9,7 @@ from apps.text_map import text_map
 from dev.base_ui import BaseView, EnkaView
 from dev.exceptions import UIDNotFound
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
-from ui.genshin.EnkaDamageCalc import GoBack
+from ui.genshin.enka_damage_calc import GoBack
 from utils import create_user_settings, get_profile_ver
 
 

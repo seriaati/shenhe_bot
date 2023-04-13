@@ -12,8 +12,8 @@ from apps.draw.main_funcs import draw_artifact_card
 from apps.text_map import text_map
 from dev.base_ui import EnkaView
 from dev.exceptions import FeatureDisabled
-from ui.genshin import EnkaDamageCalc, ProfileSettings
-from ui.others.settings import CustomImage
+from ui.genshin import enka_damage_calc, profile_settings
+from ui.others.settings import custom_image
 from utils import divide_chunks, get_dt_now
 from yelan.damage_calculator import return_current_status
 
@@ -109,7 +109,7 @@ class SetCustomImage(ui.Button):
         if character is None:
             raise AssertionError
 
-        await CustomImage.return_custom_image_interaction(
+        await custom_image.return_custom_image_interaction(
             self.view, i, int(self.view.character_id), character.element.name
         )
 
@@ -150,7 +150,7 @@ class PageSelect(ui.Select):
 
     async def callback(self, i: models.Inter) -> Any:
         self.view.character_id = self.values[0]
-        await EnkaDamageCalc.go_back_callback(i, self.view)
+        await enka_damage_calc.go_back_callback(i, self.view)
 
 
 class CalculateDamageButton(ui.Button):
@@ -170,7 +170,7 @@ class CalculateDamageButton(ui.Button):
         if now.month == 4 and now.day == 1:
             raise FeatureDisabled
 
-        view = EnkaDamageCalc.View(self.view, self.view.locale, i.client.browsers)
+        view = enka_damage_calc.View(self.view, self.view.locale, i.client.browsers)
         view.author = i.user
         await return_current_status(i, view)
         view.message = await i.original_response()
@@ -216,7 +216,7 @@ class CardSettings(ui.Button):
         self.view: EnkaView
 
     async def callback(self, i: models.Inter) -> Any:
-        view = ProfileSettings.View(self.view.locale, self.view)
+        view = profile_settings.View(self.view.locale, self.view)
         view.author = i.user
         await i.response.edit_message(
             embed=view.gen_settings_embed(), view=view, attachments=[]

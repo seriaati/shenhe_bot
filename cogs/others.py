@@ -22,8 +22,7 @@ from apps.draw.main_funcs import compress_image
 from apps.text_map import text_map, to_ambr_top
 from dev.exceptions import AutocompleteError
 from dev.models import BotModel, DefaultEmbed, ErrorEmbed, Inter
-from ui.others import Feedback, ManageAccounts, SettingsMenu
-from ui.others.settings import CustomImage
+from ui.others import feedback, manage_accounts, settings, settings_menu
 from utils import create_user_settings, get_user_lang
 
 load_dotenv()
@@ -45,7 +44,7 @@ class OthersCog(commands.Cog, name="others"):
     async def settings(self, inter: discord.Interaction):
         i: Inter = inter  # type: ignore
         await create_user_settings(i.user.id, self.bot.pool)
-        await SettingsMenu.return_settings(i)
+        await settings_menu.return_settings(i)
 
     @app_commands.command(
         name="accounts", description=_("Manage your accounts in Shenhe", hash=544)
@@ -53,7 +52,7 @@ class OthersCog(commands.Cog, name="others"):
     async def accounts_command(self, inter: discord.Interaction):
         i: Inter = inter  # type: ignore
         await i.response.defer(ephemeral=True)
-        await ManageAccounts.return_accounts(i)
+        await manage_accounts.return_accounts(i)
 
     @app_commands.command(
         name="credits",
@@ -246,10 +245,10 @@ class OthersCog(commands.Cog, name="others"):
             image_name,
             self.bot.pool,
         )
-        view = CustomImage.View(locale)
+        view = settings.custom_image.View(locale)
         view.author = i.user
 
-        await CustomImage.return_custom_image_interaction(
+        await settings.custom_image.return_custom_image_interaction(
             view, i, converted_character_id, character.element
         )
 
@@ -278,7 +277,7 @@ class OthersCog(commands.Cog, name="others"):
     )
     async def feedback(self, i: discord.Interaction):
         await i.response.send_modal(
-            Feedback.FeedbackModal(
+            feedback.FeedbackModal(
                 await get_user_lang(i.user.id, self.bot.pool) or i.locale
             )
         )

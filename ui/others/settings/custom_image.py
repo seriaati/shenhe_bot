@@ -12,7 +12,7 @@ from apps.text_map import text_map, to_ambr_top
 from data.game.elements import get_element_emoji, get_element_list
 from dev.base_ui import BaseModal, BaseView, EnkaView
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
-from ui.genshin import EnkaDamageCalc
+from ui.genshin import enka_damage_calc
 from utils import divide_chunks
 
 
@@ -266,7 +266,7 @@ async def return_custom_image_interaction(
     else:
         v = View(view.locale)
         embeds.append(v.gen_embed())
-        view.add_item(EnkaDamageCalc.GoBack())
+        view.add_item(enka_damage_calc.GoBack())
 
     options = await image.get_user_custom_image_options(
         character_id, i.client.pool, i.user.id, view.locale

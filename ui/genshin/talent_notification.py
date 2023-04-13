@@ -11,7 +11,7 @@ from apps.text_map import text_map, to_ambr_top
 from data.game.elements import convert_elements, elements
 from dev.base_ui import BaseView
 from dev.models import Inter
-from ui.genshin import ReminderMenu
+from ui.genshin import reminder_menu
 
 
 class View(BaseView):
@@ -33,7 +33,7 @@ class GoBackTwo(Button):
         super().__init__(emoji=asset.back_emoji, row=2)
 
     async def callback(self, i: Interaction):
-        await ReminderMenu.return_talent_notification(i, self.view)  # type: ignore
+        await reminder_menu.return_talent_notification(i, self.view)  # type: ignore
 
 
 class ElementButton(Button):
@@ -121,4 +121,4 @@ class CharacterSelect(Select):
         )
 
         await i.response.edit_message(view=self.view)
-        await ReminderMenu.return_talent_notification(i, self.view)  # type: ignore
+        await reminder_menu.return_talent_notification(i, self.view)  # type: ignore

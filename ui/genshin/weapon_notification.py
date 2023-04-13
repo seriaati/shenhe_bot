@@ -9,7 +9,7 @@ from ambr import AmbrTopAPI
 from apps.text_map import text_map, to_ambr_top
 from data.game.weapon_types import get_weapon_type_emoji
 from dev.base_ui import BaseView
-from ui.genshin import ReminderMenu
+from ui.genshin import reminder_menu
 from utils import divide_chunks, get_weapon_emoji
 
 
@@ -33,7 +33,7 @@ class GOBackReminder(Button):
         super().__init__(emoji="<:left:982588994778972171>", row=2)
 
     async def callback(self, i: Interaction):
-        await ReminderMenu.return_weapon_notification(i, self.view)  # type: ignore
+        await reminder_menu.return_weapon_notification(i, self.view)  # type: ignore
 
 
 class GOBack(Button):
@@ -136,4 +136,4 @@ class WeaponSelect(Select):
             i.user.id,
         )
         await i.response.edit_message(view=self.view)
-        await ReminderMenu.return_weapon_notification(i, self.view)  # type: ignore
+        await reminder_menu.return_weapon_notification(i, self.view)  # type: ignore

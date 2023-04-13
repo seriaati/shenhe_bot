@@ -14,7 +14,7 @@ from apps.text_map import text_map, to_genshin_py
 from apps.wish.models import WishHistory, WishInfo
 from dev.base_ui import BaseModal, BaseView
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
-from ui.wish import ChoosePlatform
+from ui.wish import choose_platform
 from utils import (
     get_account_select_options,
     get_uid,
@@ -147,7 +147,7 @@ class ImportGenshin(ui.Button):
         embed = DefaultEmbed().set_author(
             name=text_map.get(365, self.locale), icon_url=i.user.display_avatar.url
         )
-        view = ChoosePlatform.View(self.locale)
+        view = choose_platform.View(self.locale)
         view.add_item(GOBack())
         await i.response.edit_message(embed=embed, view=view)
         view.message = await i.original_response()

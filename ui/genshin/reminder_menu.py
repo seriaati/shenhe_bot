@@ -10,7 +10,7 @@ from apps.text_map import text_map, to_ambr_top
 from dev.base_ui import BaseModal, BaseView
 from dev.exceptions import NumbersOnly
 from dev.models import DefaultEmbed
-from ui.genshin import TalentNotificationMenu, WeaponNotificationMenu
+from ui.genshin import talent_notification, weapon_notification
 from utils import divide_chunks, get_character_emoji, get_uid, get_weapon_emoji
 
 
@@ -92,7 +92,7 @@ class AddWeapon(ui.Button):
 
     async def callback(self, i: discord.Interaction):
         ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.locale))  # type: ignore
-        view = WeaponNotificationMenu.View(self.locale, await ambr.get_weapon_types())
+        view = weapon_notification.View(self.locale, await ambr.get_weapon_types())
         await i.response.edit_message(view=view)
         view.author = i.user
         view.message = await i.original_response()
@@ -129,7 +129,7 @@ class AddCharacter(ui.Button):
         self.locale = locale
 
     async def callback(self, i: discord.Interaction):
-        view = TalentNotificationMenu.View(self.locale)
+        view = talent_notification.View(self.locale)
         await i.response.edit_message(view=view)
         view.author = i.user
         view.message = await i.original_response()

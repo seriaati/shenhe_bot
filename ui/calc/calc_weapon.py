@@ -13,7 +13,7 @@ from data.game.weapon_exp import get_weapon_exp_table
 from data.game.weapon_types import get_weapon_type_emoji
 from dev.base_ui import BaseModal, BaseView
 from dev.exceptions import InvalidAscensionInput, InvalidWeaponCalcInput
-from ui.calc.AddToTodo import AddButton
+from ui.calc.add_to_todo import AddButton
 from utils import (
     divide_chunks,
     get_user_theme,

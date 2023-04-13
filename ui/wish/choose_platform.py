@@ -8,7 +8,7 @@ from utils import get_user_lang
 from apps.text_map import text_map
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, Inter
-from ui.wish import SetAuthKey
+from ui.wish import set_auth_key
 
 import_options = {
     "PC - #1": {
@@ -122,7 +122,7 @@ class SubmitLink(ui.Button):
         self.locale = locale
 
     async def callback(self, i: Inter):
-        await i.response.send_modal(SetAuthKey.Modal(self.locale))
+        await i.response.send_modal(set_auth_key.Modal(self.locale))
 
 
 class GOBack(ui.Button):

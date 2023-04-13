@@ -6,7 +6,7 @@ from ambr import AmbrTopAPI
 from utils import get_user_lang
 from apps.text_map import to_ambr_top
 from dev.models import BotModel, Inter
-from ui.calc import CalcCharacter, CalcWeapon
+from ui.calc import calc_character, calc_weapon
 
 
 class CalcCog(commands.GroupCog, name="calc"):
@@ -19,7 +19,7 @@ class CalcCog(commands.GroupCog, name="calc"):
         description=_("Calculate materials needed for upgrading a character", hash=460),
     )
     async def calc_characters(self, i: Interaction):
-        view = CalcCharacter.View()
+        view = calc_character.View()
         view.author = i.user
         await i.response.send_message(view=view)
         view.message = await i.original_response()
@@ -32,7 +32,7 @@ class CalcCog(commands.GroupCog, name="calc"):
         i: Inter = inter  # type: ignore
         locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
         ambr = AmbrTopAPI(i.client.session, to_ambr_top(locale))
-        view = CalcWeapon.View(locale, await ambr.get_weapon_types())
+        view = calc_weapon.View(locale, await ambr.get_weapon_types())
         view.author = i.user
         await i.response.send_message(view=view)
         view.message = await i.original_response()

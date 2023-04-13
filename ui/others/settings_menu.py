@@ -10,7 +10,7 @@ from apps.text_map import text_map
 from data.others.language_options import lang_options
 from dev.base_ui import BaseView, GoBackButton
 from dev.models import DefaultEmbed, Inter, OriginalInfo
-from ui.others.settings import CustomImage, Notif
+from ui.others.settings import custom_image, notif
 
 
 class View(BaseView):
@@ -130,7 +130,7 @@ class CustomProfileImage(ui.Button):
         self.view: View
 
     async def callback(self, i: Inter):
-        view = CustomImage.View(self.locale)
+        view = custom_image.View(self.locale)
         view.add_item(GoBackButton(self.view.original_info))
 
         await i.response.edit_message(embed=view.gen_embed(), view=view)
@@ -147,7 +147,7 @@ class Notification(ui.Button):
         self.view: View
 
     async def callback(self, i: Inter):
-        await Notif.return_view(i, self.locale, OriginalInfo(view=self.view, embed=i.message.embeds[0], children=self.view.children.copy()))  # type: ignore
+        await notif.return_view(i, self.locale, OriginalInfo(view=self.view, embed=i.message.embeds[0], children=self.view.children.copy()))  # type: ignore
 
 
 class AutoRedeem(ui.Button):

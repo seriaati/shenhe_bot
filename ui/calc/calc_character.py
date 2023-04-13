@@ -17,7 +17,7 @@ from data.game.elements import get_element_color, get_element_emoji, get_element
 from data.game.upgrade_exp import get_exp_table
 from dev.base_ui import BaseModal, BaseView
 from dev.exceptions import InvalidWeaponCalcInput
-from ui.calc.AddToTodo import AddButton
+from ui.calc.add_to_todo import AddButton
 from utils import (
     get_character_emoji,
     get_character_suggested_talent_levels,
