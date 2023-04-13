@@ -35,7 +35,7 @@ from apps.genshin_data import abyss
 from apps.text_map import convert_locale, text_map
 from data.cards.dice_element import get_dice_emoji
 from utils import disable_view_items, log
-from utils import GeneralPaginator
+from utils.paginators import GeneralPaginator
 
 load_dotenv()
 

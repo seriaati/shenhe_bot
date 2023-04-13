@@ -9,7 +9,8 @@ import dev.config as config
 import dev.models as models
 from apps.text_map import text_map
 from dev.base_ui import BaseView
-from utils import GeneralPaginator, divide_chunks
+from utils import divide_chunks
+from utils.paginators import GeneralPaginator
 
 
 class Dropdown(ui.Select):
