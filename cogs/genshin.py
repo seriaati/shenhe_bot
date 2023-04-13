@@ -399,7 +399,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         if isinstance(r.result, models.ErrorEmbed):
             return await i.followup.send(embed=r.result)
         result = r.result
-        view = ui.diary_view.View(i.user, member, self.genshin_app, user_locale or i.locale)
+        view = ui.diary_view.View(
+            i.user, member, self.genshin_app, user_locale or i.locale
+        )
         fp = result.file
         fp.seek(0)
         await i.followup.send(
@@ -801,7 +803,9 @@ class GenshinCog(commands.Cog, name="genshin"):
             material = await client.get_material_detail(int(query))
             if material is None:
                 raise exceptions.ItemNotFound
-            await ui.search_nav.parse_material_wiki(material, i, locale, client, dark_mode)
+            await ui.search_nav.parse_material_wiki(
+                material, i, locale, client, dark_mode
+            )
 
         elif item_type == 3:  # artifact
             artifact = await client.get_artifact_detail(int(query))
@@ -813,7 +817,9 @@ class GenshinCog(commands.Cog, name="genshin"):
             monster = await client.get_monster_detail(int(query))
             if monster is None:
                 raise exceptions.ItemNotFound
-            await ui.search_nav.parse_monster_wiki(monster, i, locale, client, dark_mode)
+            await ui.search_nav.parse_monster_wiki(
+                monster, i, locale, client, dark_mode
+            )
 
         elif item_type == 5:  # food
             food = await client.get_food_detail(int(query))
