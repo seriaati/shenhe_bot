@@ -118,15 +118,15 @@ class TextMap:
         ambr_locale = to_ambr_top(str(locale))
         return artifact_text[str(ambr_locale)]
 
-    def _open_file(self, path: str) -> Dict[str, Any]:
+    @staticmethod
+    def _open_file(path: str) -> Dict[str, Any]:
         try:
             with open(path, "r", encoding="utf-8") as f:
                 if path.endswith(".json"):
                     return json.load(f)
-                elif path.endswith(".yaml"):
+                if path.endswith(".yaml"):
                     return yaml.full_load(f)  # type: ignore
-                else:
-                    return {}
+                return {}
         except FileNotFoundError:
             return {}
 
