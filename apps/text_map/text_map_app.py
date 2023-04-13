@@ -18,7 +18,7 @@ class TextMap:
         self.weapon: Dict[str, Dict[str, str]] = {}
         self.domain: Dict[str, Dict[str, str]] = {}
         self.item_name: Dict[str, str] = {}
-        
+
         self.load()
 
     def load(self):
@@ -31,7 +31,7 @@ class TextMap:
         self.domain = self._open_file("text_maps/dailyDungeon.json")
         self.item_name = self._open_file("text_maps/item_name.json")
         self.artifact = self._open_file("text_maps/reliquary.json")
-        
+
     def get(
         self,
         map_hash: int,
