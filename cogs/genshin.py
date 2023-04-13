@@ -23,8 +23,14 @@ import utils.general as general
 from ambr import AmbrTopAPI, Character, Material, Weapon
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
-from apps.genshin import (enka, get_character_emoji, get_uid,
-                          get_uid_region_hash, hoyolab, leaderboard)
+from apps.genshin import (
+    enka,
+    get_character_emoji,
+    get_uid,
+    get_uid_region_hash,
+    hoyolab,
+    leaderboard,
+)
 from apps.genshin_data import abyss
 from apps.text_map import convert_locale, text_map
 from data.cards.dice_element import get_dice_emoji
@@ -634,7 +640,9 @@ class GenshinCog(commands.Cog, name="genshin"):
             view=view,
         )
 
-        in_x_seconds = format_dt(general.get_dt_now() + timedelta(seconds=data.ttl), "R")
+        in_x_seconds = format_dt(
+            general.get_dt_now() + timedelta(seconds=data.ttl), "R"
+        )
         embed = models.DefaultEmbed(
             text_map.get(144, locale),
             f"""

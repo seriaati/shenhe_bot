@@ -22,6 +22,14 @@ from dev.base_ui import capture_exception
 from utils import (convert_dict_to_zipped_json, dm_embed,
                    get_discord_user_from_id, get_dt_now, log)
 from utils.fetch_card import fetch_cards
+<<<<<<< HEAD
+=======
+from utils.general import (
+    convert_dict_to_zipped_json,
+    get_discord_user_from_id,
+    get_dt_now,
+)
+>>>>>>> ff09d8a0e6cd4bbf87aa14d997569943d42158a4
 
 load_dotenv()
 
