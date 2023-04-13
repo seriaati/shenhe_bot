@@ -18,7 +18,7 @@ from apps.text_map import text_map
 from dev.base_ui import BaseView, EnkaView
 from dev.exceptions import CardNotReady, NoCharacterFound
 from dev.models import DrawInput, ErrorEmbed, Inter
-from utility.utils import divide_chunks
+from utility.general import divide_chunks
 from yelan.data.GO_modes import HIT_MODE_TEXTS
 
 

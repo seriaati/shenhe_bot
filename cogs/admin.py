@@ -8,7 +8,7 @@ from discord.ext import commands
 from diskcache import FanoutCache
 
 from dev.models import BotModel, DefaultEmbed
-from utility.utils import dm_embed
+from utility.general import dm_embed
 
 
 class AdminCog(commands.Cog, name="admin"):

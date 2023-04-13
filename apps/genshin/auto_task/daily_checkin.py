@@ -14,7 +14,7 @@ from apps.text_map import text_map
 from apps.text_map.convert_locale import to_genshin_py
 from dev.enum import CheckInAPI
 from dev.exceptions import CheckInAPIError
-from utility.utils import get_dt_now, log
+from utility.general import get_dt_now, log
 
 load_dotenv()
 

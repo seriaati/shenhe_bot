@@ -22,7 +22,7 @@ from apps.genshin.utils import get_shenhe_account, get_uid, update_talents_json
 from apps.text_map import text_map
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, DrawInput, ErrorEmbed, Inter
-from utility.utils import get_dt_now
+from utility.general import get_dt_now
 
 
 class View(BaseView):

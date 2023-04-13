@@ -15,7 +15,7 @@ from dev.exceptions import FeatureDisabled
 from ui.genshin import EnkaDamageCalc, ProfileSettings
 from ui.others.settings import CustomImage
 from utility import divide_chunks
-from utility.utils import get_dt_now
+from utility.general import get_dt_now
 from yelan.damage_calculator import return_current_status
 
 

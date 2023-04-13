@@ -21,7 +21,7 @@ from apps.text_map import text_map, to_ambr_top
 from dev.base_ui import capture_exception
 from utility import dm_embed, log
 from utility.fetch_card import fetch_cards
-from utility.utils import (
+from utility.general import (
     convert_dict_to_zipped_json,
     get_discord_user_from_id,
     get_dt_now,

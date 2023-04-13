@@ -19,7 +19,7 @@ import dev.asset as asset
 import dev.exceptions as exceptions
 import dev.models as models
 import ui
-import utility.utils as utils
+import utility.general as general
 from ambr import AmbrTopAPI, Character, Material, Weapon
 from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
@@ -640,7 +640,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             view=view,
         )
 
-        in_x_seconds = format_dt(utils.get_dt_now() + timedelta(seconds=data.ttl), "R")
+        in_x_seconds = format_dt(general.get_dt_now() + timedelta(seconds=data.ttl), "R")
         embed = models.DefaultEmbed(
             text_map.get(144, locale),
             f"""
@@ -941,7 +941,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         zh_tw_annoucements = await client.get_genshin_announcements(lang="zh-tw")
         annoucements = await client.get_genshin_announcements(lang=lang)
-        now = utils.get_dt_now(True)
+        now = general.get_dt_now(True)
         banner_ids = [
             a.id for a in zh_tw_annoucements if "祈願" in a.title and a.end_time > now
         ]
@@ -997,7 +997,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 )
                 embed.add_field(
                     name=text_map.get(706, locale),
-                    value=utils.add_bullet_points(
+                    value=general.add_bullet_points(
                         ley_line_disorders.get(floor.num, [])
                     ),
                     inline=False,
@@ -1113,7 +1113,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 )
                 embed.add_field(
                     name=skill["name"],
-                    value=utils.parse_html(skill["description"]) + "\n" + cost_str,
+                    value=general.parse_html(skill["description"]) + "\n" + cost_str,
                     inline=False,
                 )
         elif card_type == "tcgactioncards":
