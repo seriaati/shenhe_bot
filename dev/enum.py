@@ -22,3 +22,24 @@ class CheckInAPI(Enum):
     RENDER = "render"
     DETA = "deta"
     RAILWAY = "railway"
+
+
+class TextMapType(Enum):
+    LANG = "langs"
+
+    ARTIFACT = "reliquary"
+    CHARACTER = "avatar"
+    MATERIAL = "material"
+    WEAPON = "weapon"
+    DOMAIN = "dailyDungeon"
+    ITEM_NAME = "item_name"
+
+
+class LangType(Enum):
+    EN_US = "en-US"
+    JA_JP = "ja-JP"
+    TH_TH = "th-TH"
+    ZH_CN = "zh-CN"
+    ZH_TW = "zh-TW"
+    ID_ID = "id-ID"
+    UK_UA = "uk-UA"
