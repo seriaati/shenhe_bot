@@ -8,15 +8,13 @@ from genshin.models import LineupPreview, LineupScenario
 import dev.asset as asset
 import dev.config as config
 from ambr import Character
-from utils import get_user_theme
 from apps.draw import main_funcs
-from apps.draw.utils import image_gen_transition
 from apps.genshin import get_character_emoji
 from apps.text_map import text_map, to_genshin_py
 from data.game.elements import get_element_emoji, get_element_list
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, DrawInput, Inter
-from utils import disable_view_items
+from utils import disable_view_items, get_user_theme, image_gen_transition
 
 
 class View(BaseView):

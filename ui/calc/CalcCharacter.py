@@ -9,23 +9,19 @@ import dev.asset as asset
 import dev.config as config
 import dev.models as models
 from ambr import AmbrTopAPI
-from utils import get_user_lang, get_user_theme
 from apps.draw import main_funcs
-from apps.draw.utils import image_gen_transition
 from apps.enka.api_docs import get_character_skill_order
-from apps.genshin import (
-    check_cookie_predicate,
-    get_character_emoji,
-    get_character_suggested_talent_levels,
-    get_shenhe_account,
-    level_to_ascension_phase,
-)
+from apps.genshin import (check_cookie_predicate, get_character_emoji,
+                          get_character_suggested_talent_levels,
+                          get_shenhe_account, level_to_ascension_phase)
 from apps.text_map import text_map, to_ambr_top
-from data.game.elements import get_element_color, get_element_emoji, get_element_list
+from data.game.elements import (get_element_color, get_element_emoji,
+                                get_element_list)
 from data.game.upgrade_exp import get_exp_table
 from dev.base_ui import BaseModal, BaseView
 from dev.exceptions import InvalidWeaponCalcInput
 from ui.calc.AddToTodo import AddButton
+from utils import get_user_lang, get_user_theme, image_gen_transition
 
 
 class View(BaseView):

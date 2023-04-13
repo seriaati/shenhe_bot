@@ -5,13 +5,11 @@ from discord import ui
 
 import dev.config as config
 from ambr import AmbrTopAPI, Material, Monster
-from utils import get_user_theme
 from apps.draw import main_funcs
-from apps.draw.utils import image_gen_transition
 from apps.text_map import text_map, to_ambr_top
 from dev.base_ui import BaseView
 from dev.models import AbyssHalf, DefaultEmbed, DrawInput, Inter
-from utils import divide_chunks
+from utils import divide_chunks, get_user_theme, image_gen_transition
 
 
 class View(BaseView):

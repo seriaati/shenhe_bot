@@ -4,9 +4,9 @@ from typing import List
 from discord import Locale
 from PIL import Image, ImageDraw
 
-from apps.draw.utils import get_cache, get_font
 from apps.genshin.utils import get_domain_title
 from dev.models import FarmData
+from utils import get_cache, get_font
 
 
 def draw_domain_card(

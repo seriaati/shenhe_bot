@@ -5,8 +5,8 @@ import genshin
 from PIL import Image, ImageDraw
 
 import dev.asset as asset
-from apps.draw.utils import draw_dynamic_background, get_cache, get_font
 from dev.models import DynamicBackgroundInput
+from utils import draw_dynamic_background, get_cache, get_font
 
 
 def character_card(

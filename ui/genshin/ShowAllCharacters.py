@@ -14,15 +14,13 @@ import ambr
 import data.game.elements as game_elements
 import dev.asset as asset
 import dev.config as config
-from utils import get_user_theme
 from apps.db.json import read_json
 from apps.draw import main_funcs
-from apps.draw.utils import image_gen_transition
 from apps.genshin.utils import get_shenhe_account, get_uid, update_talents_json
 from apps.text_map import text_map
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, DrawInput, ErrorEmbed, Inter
-from utils import get_dt_now
+from utils import get_dt_now, get_user_theme, image_gen_transition
 
 
 class View(BaseView):

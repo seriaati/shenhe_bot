@@ -6,8 +6,8 @@ from genshin.models import LineupPreview
 from PIL import Image, ImageDraw
 
 import dev.asset as asset
-from apps.draw.utils import get_cache, get_font
 from apps.text_map import text_map
+from utils import get_cache, get_font
 
 
 def card(

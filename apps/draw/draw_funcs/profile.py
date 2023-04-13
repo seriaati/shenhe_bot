@@ -5,7 +5,7 @@ import discord
 import enkanetwork
 from PIL import Image, ImageChops, ImageDraw
 
-import apps.draw.utils as draw_utility
+import utils.draw as draw_utility
 import dev.asset as asset
 from apps.text_map import text_map
 from dev.models import DynamicBackgroundInput, TopPadding

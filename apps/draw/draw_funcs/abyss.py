@@ -7,21 +7,12 @@ from PIL import Image, ImageDraw
 
 import dev.asset as asset
 from apps.draw.draw_funcs import leaderboard
-from apps.draw.utils import (
-    draw_dynamic_background,
-    dynamic_font_size,
-    get_cache,
-    get_font,
-)
 from apps.text_map import text_map
-from dev.models import (
-    CharacterUsageResult,
-    DynamicBackgroundInput,
-    RunLeaderboardUser,
-    SingleStrikeLeaderboardUser,
-    TopPadding,
-    UsageCharacter,
-)
+from dev.models import (CharacterUsageResult, DynamicBackgroundInput,
+                        RunLeaderboardUser, SingleStrikeLeaderboardUser,
+                        TopPadding, UsageCharacter)
+from utils import (draw_dynamic_background, dynamic_font_size, get_cache,
+                   get_font)
 
 
 def one_page(
