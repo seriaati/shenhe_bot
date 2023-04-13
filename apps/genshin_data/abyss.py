@@ -5,9 +5,8 @@ import aiofiles
 from dateutil import parser
 from discord import Locale
 
-from apps.genshin_data.utils import get_text
 from dev.models import AbyssChamber, AbyssFloor, AbyssHalf
-from utils import get_dt_now, parse_html, time_in_range
+from utils import get_dt_now, get_text, parse_html, time_in_range
 
 TOWER_SCHEDULE = "GenshinData/ExcelBinOutput/TowerScheduleExcelConfigData.json"
 
