@@ -4,10 +4,10 @@ import discord
 from discord import ui
 
 import dev.config as config
-from utils import get_user_lang
 from apps.text_map import text_map
 from dev.base_ui import BaseView
 from dev.models import Inter
+from utils import get_user_lang
 
 
 class GeneralPaginatorView(BaseView):

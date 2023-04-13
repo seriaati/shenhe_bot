@@ -7,6 +7,7 @@ from discord.ui import Button, Select
 from ambr import Material
 from apps.draw import main_funcs
 from dev.models import DrawInput, Inter, TodoItem
+
 from .paginator import GeneralPaginator, GeneralPaginatorView
 
 
