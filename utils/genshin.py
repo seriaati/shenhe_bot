@@ -25,7 +25,10 @@ from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
 from dev.exceptions import ShenheAccountNotFound
-from utils import get_dt_now, get_user_lang, translate_main_stat
+
+from .db import get_user_lang
+from .general import get_dt_now
+from .text_map import translate_main_stat
 
 
 def calculate_artifact_score(substats: dict):

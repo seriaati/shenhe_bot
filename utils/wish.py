@@ -6,13 +6,10 @@ import dev.asset as asset
 from apps.text_map import text_map
 from apps.wish.models import WishHistory, WishInfo
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
-from utils import (
-    divide_chunks,
-    get_character_emoji,
-    get_uid,
-    get_user_lang,
-    get_weapon_emoji,
-)
+
+from .db import get_user_lang
+from .general import divide_chunks
+from .genshin import get_character_emoji, get_uid, get_weapon_emoji
 
 
 async def get_wish_history_embeds(
