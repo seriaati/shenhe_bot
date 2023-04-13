@@ -81,7 +81,9 @@ class WishCog(commands.GroupCog, name="wish"):
             view = set_auth_key.View(locale, True, True)
             view.clear_items()
             view.add_item(
-                set_auth_key.ConfirmWishimport(locale, wish_history, from_text_file=True)
+                set_auth_key.ConfirmWishimport(
+                    locale, wish_history, from_text_file=True
+                )
             )
             view.add_item(set_auth_key.CancelWishimport(locale))
             view.author = i.user
