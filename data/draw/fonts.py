@@ -22,7 +22,7 @@ def get_font(
         "Bold", "Light", "Thin", "Black", "Medium", "Regular"
     ] = "Regular",
 ) -> str:
-    path = "resources/fonts/"
+    path = "data/draw/resources/fonts/"
     return (
         path
         + FONTS.get(str(locale), {"extension": "ttf", "name": "NotoSans"})["name"]

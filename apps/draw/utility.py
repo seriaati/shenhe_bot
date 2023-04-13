@@ -142,7 +142,7 @@ def get_font_name(
     ] = "Regular",
 ) -> str:
     """Get a font name from the font folder."""
-    path = "resources/fonts/"
+    path = "data/draw/resources/fonts/"
     default = {"extension": "ttf", "name": "NotoSans"}
     return (
         path
@@ -239,7 +239,7 @@ def global_write(
     # load fonts
     fonts: typing.Dict[str, TTFont] = {}
     for val in FONTS.values():
-        path = f"resources/fonts/{val['name']}-{variation}.{val['extension']}"
+        path = f"data/draw/resources/fonts/{val['name']}-{variation}.{val['extension']}"
         fonts[path] = TTFont(file=path)
 
     # prior font is the font that was used for the previous glyph
