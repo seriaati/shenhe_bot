@@ -1,5 +1,5 @@
 import json
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 import discord
 import yaml
@@ -9,44 +9,28 @@ from .convert_locale import CROWDIN_FILE_PATHS, to_ambr_top, to_paths
 
 class TextMap:
     def __init__(self):
-        langs = CROWDIN_FILE_PATHS.values()
-        self.text_maps = {}
-        for lang in langs:
-            try:
-                with open(f"text_maps/langs/{lang}.yaml", "r", encoding="utf-8") as f:
-                    self.text_maps[str(lang)] = yaml.full_load(f)
-            except FileNotFoundError:
-                self.text_maps[str(lang)] = {}
-        try:
-            with open("text_maps/avatar.json", "r", encoding="utf-8") as f:
-                self.avatar = json.load(f)
-        except FileNotFoundError:
-            self.avatar = {}
-        try:
-            with open("text_maps/material.json", "r", encoding="utf-8") as f:
-                self.material = json.load(f)
-        except FileNotFoundError:
-            self.material = {}
-        try:
-            with open("text_maps/weapon.json", "r", encoding="utf-8") as f:
-                self.weapon = json.load(f)
-        except FileNotFoundError:
-            self.weapon = {}
-        try:
-            with open("text_maps/dailyDungeon.json", "r", encoding="utf-8") as f:
-                self.daily_dungeon = json.load(f)
-        except FileNotFoundError:
-            self.daily_dungeon = {}
-        try:
-            with open("text_maps/item_name.json", "r", encoding="utf-8") as f:
-                self.item_name_text_map = json.load(f)
-        except FileNotFoundError:
-            self.item_name_text_map = {}
-        try:
-            with open("text_maps/reliquary.json", "r", encoding="utf-8") as f:
-                self.artifact = json.load(f)
-        except FileNotFoundError:
-            self.artifact = {}
+        self.langs = CROWDIN_FILE_PATHS.values()
+        self.lang_maps: Dict[str, Dict[str, str]] = {}
+
+        self.artifact: Dict[str, Dict[str, str]] = {}
+        self.character: Dict[str, Dict[str, str]] = {}
+        self.material: Dict[str, Dict[str, str]] = {}
+        self.weapon: Dict[str, Dict[str, str]] = {}
+        self.domain: Dict[str, Dict[str, str]] = {}
+        self.item_name: Dict[str, str] = {}
+
+        self.load()
+
+    def load(self):
+        for lang in self.langs:
+            self.lang_maps[lang] = self._open_file(f"text_maps/langs/{lang}.yaml")
+
+        self.character = self._open_file("text_maps/avatar.json")
+        self.material = self._open_file("text_maps/material.json")
+        self.weapon = self._open_file("text_maps/weapon.json")
+        self.domain = self._open_file("text_maps/dailyDungeon.json")
+        self.item_name = self._open_file("text_maps/item_name.json")
+        self.artifact = self._open_file("text_maps/reliquary.json")
 
     def get(
         self,
@@ -56,15 +40,15 @@ class TextMap:
     ) -> str:
         locale = user_locale or locale
         path = to_paths(locale)
-        lang_text_map: Dict[str, str] = self.text_maps[path]
+        lang_text_map = self.lang_maps[path]
         text = lang_text_map.get(str(map_hash), "")
         if not text:
-            lang_text_map = self.text_maps["en-US"]
+            lang_text_map = self.lang_maps["en-US"]
             text = lang_text_map.get(str(map_hash), "")
         return text
 
     def get_id_from_name(self, name: str) -> Optional[int]:
-        result = self.item_name_text_map.get(name)
+        result = self.item_name.get(name)
         if result is None:
             return None
         return int(result)
@@ -75,7 +59,7 @@ class TextMap:
         locale: discord.Locale | str,
         user_locale: Optional[str] = None,
     ) -> Optional[str]:
-        avatar_text = self.avatar.get(str(character_id))
+        avatar_text = self.character.get(str(character_id))
         if avatar_text is None:
             return None
         locale = user_locale or locale
@@ -114,7 +98,7 @@ class TextMap:
         locale: discord.Locale | str,
         user_locale: Optional[str] = None,
     ) -> str:
-        dungeon_text = self.daily_dungeon.get(str(dungeon_id))
+        dungeon_text = self.domain.get(str(dungeon_id))
         if dungeon_text is None:
             return str(dungeon_id)
         locale = user_locale or locale
@@ -133,6 +117,18 @@ class TextMap:
         locale = user_locale or locale
         ambr_locale = to_ambr_top(str(locale))
         return artifact_text[str(ambr_locale)]
+
+    @staticmethod
+    def _open_file(path: str) -> Dict[str, Any]:
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                if path.endswith(".json"):
+                    return json.load(f)
+                if path.endswith(".yaml"):
+                    return yaml.full_load(f)  # type: ignore
+                return {}
+        except FileNotFoundError:
+            return {}
 
 
 # initialize the class first to load the text maps
