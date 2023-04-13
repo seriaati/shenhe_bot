@@ -11,7 +11,7 @@ from apps.text_map import text_map, to_ambr_top
 from data.game.weapon_types import get_weapon_type_emoji
 from dev.base_ui import BaseView
 from ui.genshin import ReminderMenu
-from utility import divide_chunks
+from utils import divide_chunks
 
 
 class View(BaseView):

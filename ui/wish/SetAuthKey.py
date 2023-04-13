@@ -18,7 +18,7 @@ from apps.wish.utils import get_wish_info_embed
 from dev.base_ui import BaseModal, BaseView
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
 from ui.wish import ChoosePlatform
-from utility import log
+from utils import log
 
 
 class View(BaseView):

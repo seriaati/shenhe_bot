@@ -15,7 +15,7 @@ from apps.text_map import text_map, to_hutao_login_lang
 from cogs.login import register_user
 from dev.base_ui import BaseModal, BaseView
 from dev.models import BotModel, DefaultEmbed, Inter
-from utility import log
+from utils import log
 
 
 class View(BaseView):

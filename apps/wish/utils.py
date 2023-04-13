@@ -7,7 +7,7 @@ from apps.db.utils import get_user_lang
 from apps.genshin.utils import get_character_emoji, get_uid, get_weapon_emoji
 from apps.text_map import text_map
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
-from utility.general import divide_chunks
+from utils.general import divide_chunks
 
 from .models import WishHistory, WishInfo
 

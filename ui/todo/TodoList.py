@@ -13,7 +13,7 @@ from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
 from dev.base_ui import BaseModal, BaseView
 from dev.enum import TodoAction
-from utility.paginators.todo_paginator import TodoPaginator, TodoPaginatorView
+from utils.paginators.todo_paginator import TodoPaginator, TodoPaginatorView
 
 
 class View(BaseView):

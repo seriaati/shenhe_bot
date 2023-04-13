@@ -4,7 +4,7 @@ import topgg
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 
-from utility import log
+from utils import log
 
 load_dotenv()
 

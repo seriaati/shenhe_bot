@@ -6,7 +6,7 @@ import dev.asset as asset
 from apps.text_map import text_map
 from apps.wish.utils import get_wish_history_embeds
 from dev.models import Inter
-from utility.paginators.wish_history_paginator import WishHistoryPaginatorView
+from utils.paginators.wish_history_paginator import WishHistoryPaginatorView
 
 
 class SelectBanner(discord.ui.Select):

@@ -13,7 +13,7 @@ from data.game.elements import get_element_emoji, get_element_list
 from dev.base_ui import BaseModal, BaseView, EnkaView
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
 from ui.genshin import EnkaDamageCalc
-from utility import divide_chunks
+from utils import divide_chunks
 
 
 class View(BaseView):

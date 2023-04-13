@@ -11,7 +11,7 @@ from apps.draw.utils import image_gen_transition
 from apps.text_map import text_map, to_ambr_top
 from dev.base_ui import BaseView
 from dev.models import AbyssHalf, DefaultEmbed, DrawInput, Inter
-from utility import divide_chunks
+from utils import divide_chunks
 
 
 class View(BaseView):

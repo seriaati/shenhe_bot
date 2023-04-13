@@ -5,7 +5,7 @@ from typing import Dict, List, Optional, Tuple
 from pydantic import BaseModel, Field, validator
 
 from data.game.elements import convert_element, convert_elements
-from utility import format_number, parse_html
+from utils import format_number, parse_html
 
 
 class City(BaseModel):

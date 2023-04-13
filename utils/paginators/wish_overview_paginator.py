@@ -8,7 +8,7 @@ from apps.draw import main_funcs
 from apps.text_map import text_map
 from apps.wish.models import RecentWish, WishData
 from dev.models import DrawInput, Inter
-from utility.paginators.paginator import GeneralPaginator, GeneralPaginatorView
+from utils.paginators.paginator import GeneralPaginator, GeneralPaginatorView
 
 
 class WishOverviewPaginatorView(GeneralPaginatorView):

@@ -17,7 +17,7 @@ from data.game.weapon_types import get_weapon_type_emoji
 from dev.base_ui import BaseModal, BaseView
 from dev.exceptions import InvalidAscensionInput, InvalidWeaponCalcInput
 from ui.calc.AddToTodo import AddButton
-from utility import divide_chunks
+from utils import divide_chunks
 
 
 class View(BaseView):

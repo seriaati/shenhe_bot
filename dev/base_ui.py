@@ -11,7 +11,7 @@ import dev.exceptions as exceptions
 from apps.db import get_user_lang
 from apps.text_map import text_map
 from dev.models import ErrorEmbed, Inter, OriginalInfo
-from utility import log
+from utils import log
 
 
 async def global_error_handler(

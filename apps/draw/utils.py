@@ -14,7 +14,7 @@ import dev.asset as asset
 from apps.text_map import text_map
 from data.draw.fonts import FONTS
 from dev.models import DefaultEmbed, DynamicBackgroundInput
-from utility import log
+from utils import log
 
 
 def extract_file_name(url: str):

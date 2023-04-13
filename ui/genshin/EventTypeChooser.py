@@ -14,8 +14,8 @@ from apps.hoyolab_rss_feeds.create_feed import create_feed
 from apps.text_map import text_map, to_genshin_py
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, Inter
-from utility import parse_html
-from utility.paginators.paginator import GeneralPaginator, GeneralPaginatorView
+from utils import parse_html
+from utils.paginators.paginator import GeneralPaginator, GeneralPaginatorView
 
 
 class View(BaseView):

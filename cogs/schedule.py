@@ -19,13 +19,10 @@ from apps.draw import main_funcs
 from apps.genshin import auto_task
 from apps.text_map import text_map, to_ambr_top
 from dev.base_ui import capture_exception
-from utility import dm_embed, log
-from utility.fetch_card import fetch_cards
-from utility.general import (
-    convert_dict_to_zipped_json,
-    get_discord_user_from_id,
-    get_dt_now,
-)
+from utils import dm_embed, log
+from utils.fetch_card import fetch_cards
+from utils.general import (convert_dict_to_zipped_json,
+                           get_discord_user_from_id, get_dt_now)
 
 load_dotenv()
 

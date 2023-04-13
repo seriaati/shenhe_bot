@@ -12,7 +12,7 @@ from apps.genshin import GenshinApp
 from apps.text_map import text_map
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
-from utility import divide_chunks
+from utils import divide_chunks
 
 
 class View(BaseView):
