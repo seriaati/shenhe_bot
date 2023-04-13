@@ -21,20 +21,13 @@ import dev.models as models
 import ui
 import utils.general as general
 from ambr import AmbrTopAPI, Character, Material, Weapon
-from utils import get_user_lang, get_user_theme
 from apps.draw import main_funcs
-from apps.genshin import (
-    enka,
-    get_character_emoji,
-    get_uid,
-    get_uid_region_hash,
-    hoyolab,
-    leaderboard,
-)
+from apps.genshin import enka, hoyolab, leaderboard
 from apps.genshin_data import abyss
 from apps.text_map import convert_locale, text_map
 from data.cards.dice_element import get_dice_emoji
-from utils import disable_view_items, log
+from utils import (disable_view_items, get_character_emoji, get_uid,
+                   get_uid_region_hash, get_user_lang, get_user_theme, log)
 from utils.paginators import GeneralPaginator
 
 load_dotenv()

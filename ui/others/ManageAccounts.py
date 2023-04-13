@@ -9,13 +9,12 @@ from logingateway.exception import UserTokenNotFound
 
 import dev.asset as asset
 import dev.config as config
-from utils import get_user_lang
-from apps.genshin import get_account_select_options, get_uid_region_hash
 from apps.text_map import text_map, to_hutao_login_lang
 from cogs.login import register_user
 from dev.base_ui import BaseModal, BaseView
 from dev.models import BotModel, DefaultEmbed, Inter
-from utils import log
+from utils import (get_account_select_options, get_uid_region_hash,
+                   get_user_lang, log)
 
 
 class View(BaseView):

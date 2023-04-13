@@ -8,14 +8,14 @@ import dev.config as config
 import dev.models as models
 from ambr import AmbrTopAPI, Material, WeaponDetail
 from apps.draw import main_funcs
-from apps.genshin import get_weapon_emoji, level_to_ascension_phase
 from apps.text_map import text_map, to_ambr_top
 from data.game.weapon_exp import get_weapon_exp_table
 from data.game.weapon_types import get_weapon_type_emoji
 from dev.base_ui import BaseModal, BaseView
 from dev.exceptions import InvalidAscensionInput, InvalidWeaponCalcInput
 from ui.calc.AddToTodo import AddButton
-from utils import divide_chunks, get_user_theme, image_gen_transition
+from utils import (divide_chunks, get_user_theme, get_weapon_emoji,
+                   image_gen_transition, level_to_ascension_phase)
 
 
 class View(BaseView):

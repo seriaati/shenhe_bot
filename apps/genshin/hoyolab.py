@@ -16,11 +16,11 @@ from dev.base_ui import get_error_handle_embed
 from dev.exceptions import UIDNotFound
 from dev.models import (BotModel, DefaultEmbed, DrawInput, ErrorEmbed,
                         ShenheAccount)
-from utils import get_dt_now, get_user_lang, get_user_theme, log
+from utils import (get_character_emoji, get_dt_now, get_shenhe_account,
+                   get_uid, get_uid_tz, get_user_lang, get_user_theme, log,
+                   update_talents_json)
 
 from .models import *
-from .utils import (get_character_emoji, get_shenhe_account, get_uid,
-                    get_uid_tz, update_talents_json)
 
 
 def genshin_error_handler(func):

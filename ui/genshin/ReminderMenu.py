@@ -5,18 +5,13 @@ from discord import ui
 import dev.asset as asset
 import dev.config as config
 from ambr import AmbrTopAPI
-from apps.genshin import (
-    check_cookie_predicate,
-    get_character_emoji,
-    get_uid,
-    get_weapon_emoji,
-)
+from apps.genshin.checks import check_cookie_predicate
 from apps.text_map import text_map, to_ambr_top
 from dev.base_ui import BaseModal, BaseView
 from dev.exceptions import NumbersOnly
 from dev.models import DefaultEmbed
 from ui.genshin import TalentNotificationMenu, WeaponNotificationMenu
-from utils import divide_chunks
+from utils import divide_chunks, get_character_emoji, get_uid, get_weapon_emoji
 
 
 class View(BaseView):

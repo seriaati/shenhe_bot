@@ -10,15 +10,15 @@ from pyppeteer import browser
 import dev.asset as asset
 import dev.config as config
 import yelan.damage_calculator as damage_calc
-from utils import get_profile_ver, get_user_theme
 from apps.db.custom_image import get_user_custom_image
 from apps.draw import main_funcs
-from apps.genshin import get_browser, get_character_fanarts
+from apps.genshin import get_browser
 from apps.text_map import text_map
 from dev.base_ui import BaseView, EnkaView
 from dev.exceptions import CardNotReady, NoCharacterFound
 from dev.models import DrawInput, ErrorEmbed, Inter
-from utils import divide_chunks
+from utils import (divide_chunks, get_character_fanarts, get_profile_ver,
+                   get_user_theme)
 from yelan.data.GO_modes import HIT_MODE_TEXTS
 
 
