@@ -9,23 +9,26 @@ from dateutil.relativedelta import relativedelta
 from discord.utils import format_dt
 
 from ambr import AmbrTopAPI
-from apps.db import get_user_lang, get_user_theme
 from apps.db.json import read_json
 from apps.draw import main_funcs
-from apps.text_map import get_month_name, text_map
+from apps.text_map import text_map
 from dev.base_ui import get_error_handle_embed
 from dev.exceptions import UIDNotFound
 from dev.models import BotModel, DefaultEmbed, DrawInput, ErrorEmbed, ShenheAccount
-from utility import get_dt_now, log
-
-from .models import *
-from .utility import (
+from utils import (
     get_character_emoji,
+    get_dt_now,
+    get_month_name,
     get_shenhe_account,
     get_uid,
     get_uid_tz,
+    get_user_lang,
+    get_user_theme,
+    log,
     update_talents_json,
 )
+
+from .models import *
 
 
 def genshin_error_handler(func):

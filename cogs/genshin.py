@@ -19,23 +19,23 @@ import dev.asset as asset
 import dev.exceptions as exceptions
 import dev.models as models
 import ui
-import utility.utils as utils
+import utils.general as general
 from ambr import AmbrTopAPI, Character, Material, Weapon
-from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
-from apps.genshin import (
-    enka,
-    get_character_emoji,
-    get_uid,
-    get_uid_region_hash,
-    hoyolab,
-    leaderboard,
-)
+from apps.genshin import enka, hoyolab, leaderboard
 from apps.genshin_data import abyss
 from apps.text_map import convert_locale, text_map
 from data.cards.dice_element import get_dice_emoji
-from utility import disable_view_items, log
-from utility.paginator import GeneralPaginator
+from utils import (
+    disable_view_items,
+    get_character_emoji,
+    get_uid,
+    get_uid_region_hash,
+    get_user_lang,
+    get_user_theme,
+    log,
+)
+from utils.paginators import GeneralPaginator
 
 load_dotenv()
 
@@ -174,7 +174,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def slash_register(self, inter: discord.Interaction):
         i: models.Inter = inter  # type: ignore
         await i.response.defer(ephemeral=True)
-        await ui.ManageAccounts.return_accounts(i)
+        await ui.manage_accounts.return_accounts(i)
 
     @checks.check_cookie()
     @app_commands.command(
@@ -319,7 +319,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     async def claim(self, inter: discord.Interaction):
         i: models.Inter = inter  # type: ignore
-        await ui.DailyReward.return_claim_reward(i, self.genshin_app)
+        await ui.daily_reward.return_claim_reward(i, self.genshin_app)
 
     @checks.check_cookie()
     @app_commands.command(
@@ -370,7 +370,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         )
         if not isinstance(characters, list):
             raise TypeError("Characters is not a list")
-        view = ui.ShowAllCharacters.View(locale, result.characters, member, characters)
+        view = ui.show_all_characters.View(
+            locale, result.characters, member, characters
+        )
         await view.start(i)
 
     @checks.check_cookie()
@@ -397,7 +399,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         if isinstance(r.result, models.ErrorEmbed):
             return await i.followup.send(embed=r.result)
         result = r.result
-        view = ui.Diary.View(i.user, member, self.genshin_app, user_locale or i.locale)
+        view = ui.diary.View(i.user, member, self.genshin_app, user_locale or i.locale)
         fp = result.file
         fp.seek(0)
         await i.followup.send(
@@ -442,7 +444,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             return await i.followup.send(embed=result.result)
 
         abyss_result = result.result
-        view = ui.Abyss.View(i.user, abyss_result, user_locale or i.locale)
+        view = ui.abyss.View(i.user, abyss_result, user_locale or i.locale)
         fp = abyss_result.overview_file
         fp.seek(0)
         image = discord.File(fp, "overview_card.jpeg")
@@ -474,13 +476,15 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.command(name="remind", description=_("Set reminders", hash=438))
     async def remind(self, i: discord.Interaction):
         user_locale = await get_user_lang(i.user.id, self.bot.pool)
-        await ui.ReminderMenu.return_notification_menu(i, user_locale or i.locale, True)
+        await ui.reminder_menu.return_notification_menu(
+            i, user_locale or i.locale, True
+        )
 
     @app_commands.command(
         name="farm", description=_("View today's farmable items", hash=446)
     )
     async def farm(self, i: discord.Interaction):
-        await ui.Domain.return_farm_interaction(i)
+        await ui.domain.return_farm_interaction(i)
 
     @app_commands.command(
         name="build",
@@ -489,7 +493,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         ),
     )
     async def build(self, i: discord.Interaction):
-        view = ui.Build.View()
+        view = ui.build.View()
         view.author = i.user
         await i.response.send_message(view=view)
         view.message = await i.original_response()
@@ -550,7 +554,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         )
         embed.set_thumbnail(url=player.display_avatar.url)
 
-        view = ui.UIDCommand.View(locale, uid)
+        view = ui.uid_command.View(locale, uid)
         await i.response.send_message(embed=embed, ephemeral=ephemeral, view=view)
         view.message = await i.original_response()
 
@@ -631,7 +635,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 )
             )
 
-        view = ui.EnkaProfile.View([], locale)
+        view = ui.enka_profile.View([], locale)
         disable_view_items(view)
 
         await i.edit_original_response(
@@ -640,7 +644,9 @@ class GenshinCog(commands.Cog, name="genshin"):
             view=view,
         )
 
-        in_x_seconds = format_dt(utils.get_dt_now() + timedelta(seconds=data.ttl), "R")
+        in_x_seconds = format_dt(
+            general.get_dt_now() + timedelta(seconds=data.ttl), "R"
+        )
         embed = models.DefaultEmbed(
             text_map.get(144, locale),
             f"""
@@ -666,7 +672,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         fp.seek(0)
         fp_two.seek(0)
 
-        view = ui.EnkaProfile.View(options, locale)
+        view = ui.enka_profile.View(options, locale)
         view.overview_embeds = [embed, embed_two]
         view.overview_fps = [fp, fp_two]
         view.data = data
@@ -693,7 +699,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         r = await self.genshin_app.redeem_code(i.user.id, i.user.id, code, i.locale)
         locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
 
-        view = ui.MeToo.View(code, self.genshin_app, locale)
+        view = ui.me_too.View(code, self.genshin_app, locale)
         btn = None
         if isinstance(r.result, models.ErrorEmbed):
             btn = discord.ui.Button(
@@ -733,7 +739,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     async def events(self, inter: discord.Interaction):
         i: models.Inter = inter  # type: ignore
-        await ui.EventTypeChooser.return_events(i)
+        await ui.event_type_chooser.return_events(i)
 
     @checks.check_account()
     @app_commands.command(
@@ -746,7 +752,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             raise exceptions.UIDNotFound
         embed = models.DefaultEmbed(description=text_map.get(253, locale))
         embed.set_author(name=f"👑 {text_map.get(252, locale)}")
-        view = ui.Leaderboard.View(locale, uid)
+        view = ui.leaderboard.View(locale, uid)
         view.author = i.user
         await i.response.send_message(embed=embed, view=view)
         view.message = await i.original_response()
@@ -781,7 +787,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             character = await client.get_character_detail(query)
             if character is None:
                 raise exceptions.ItemNotFound
-            await ui.Search.parse_character_wiki(
+            await ui.search.parse_character_wiki(
                 character, i, locale, client, dark_mode
             )
 
@@ -789,37 +795,37 @@ class GenshinCog(commands.Cog, name="genshin"):
             weapon = await client.get_weapon_detail(int(query))
             if weapon is None:
                 raise exceptions.ItemNotFound
-            await ui.Search.parse_weapon_wiki(weapon, i, locale, client, dark_mode)
+            await ui.search.parse_weapon_wiki(weapon, i, locale, client, dark_mode)
 
         elif item_type == 2:  # material
             material = await client.get_material_detail(int(query))
             if material is None:
                 raise exceptions.ItemNotFound
-            await ui.Search.parse_material_wiki(material, i, locale, client, dark_mode)
+            await ui.search.parse_material_wiki(material, i, locale, client, dark_mode)
 
         elif item_type == 3:  # artifact
             artifact = await client.get_artifact_detail(int(query))
             if artifact is None:
                 raise exceptions.ItemNotFound
-            await ui.Search.parse_artifact_wiki(artifact, i, locale)
+            await ui.search.parse_artifact_wiki(artifact, i, locale)
 
         elif item_type == 4:  # monster
             monster = await client.get_monster_detail(int(query))
             if monster is None:
                 raise exceptions.ItemNotFound
-            await ui.Search.parse_monster_wiki(monster, i, locale, client, dark_mode)
+            await ui.search.parse_monster_wiki(monster, i, locale, client, dark_mode)
 
         elif item_type == 5:  # food
             food = await client.get_food_detail(int(query))
             if food is None:
                 raise exceptions.ItemNotFound
-            await ui.Search.parse_food_wiki(food, i, locale, client, dark_mode)
+            await ui.search.parse_food_wiki(food, i, locale, client, dark_mode)
 
         elif item_type == 6:  # furniture
             furniture = await client.get_furniture_detail(int(query))
             if furniture is None:
                 raise exceptions.ItemNotFound
-            await ui.Search.parse_furniture_wiki(
+            await ui.search.parse_furniture_wiki(
                 furniture, i, locale, client, dark_mode
             )
 
@@ -827,13 +833,13 @@ class GenshinCog(commands.Cog, name="genshin"):
             namecard = await client.get_name_card_detail(int(query))
             if namecard is None:
                 raise exceptions.ItemNotFound
-            await ui.Search.parse_namecard_wiki(namecard, i, locale)
+            await ui.search.parse_namecard_wiki(namecard, i, locale)
 
         elif item_type == 8:  # book
             book = await client.get_book_detail(int(query))
             if book is None:
                 raise exceptions.ItemNotFound
-            await ui.Search.parse_book_wiki(book, i, locale, client)
+            await ui.search.parse_book_wiki(book, i, locale, client)
 
     @search.autocomplete("query")
     async def query_autocomplete(
@@ -941,7 +947,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         zh_tw_annoucements = await client.get_genshin_announcements(lang="zh-tw")
         annoucements = await client.get_genshin_announcements(lang=lang)
-        now = utils.get_dt_now(True)
+        now = general.get_dt_now(True)
         banner_ids = [
             a.id for a in zh_tw_annoucements if "祈願" in a.title and a.end_time > now
         ]
@@ -997,7 +1003,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 )
                 embed.add_field(
                     name=text_map.get(706, locale),
-                    value=utils.add_bullet_points(
+                    value=general.add_bullet_points(
                         ley_line_disorders.get(floor.num, [])
                     ),
                     inline=False,
@@ -1027,7 +1033,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             value=buff_desc,
         )
 
-        view = ui.AbyssEnemy.View(locale, enemies, embeds, buff_embed)
+        view = ui.abyss_enemy.View(locale, enemies, embeds, buff_embed)
         view.author = i.user
         await i.followup.send(embed=embed, view=view)
         view.message = await i.original_response()
@@ -1065,9 +1071,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         characters = await ambr.get_character(include_beta=False)
 
         if isinstance(characters, List):
-            view = ui.Lineup.View(locale, options, scenario_dict, characters)
+            view = ui.lineup.View(locale, options, scenario_dict, characters)
             view.author = i.user
-            await ui.Lineup.search_lineup(i, view)
+            await ui.lineup.search_lineup(i, view)
             view.message = await i.original_response()
 
     @app_commands.command(
@@ -1113,7 +1119,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 )
                 embed.add_field(
                     name=skill["name"],
-                    value=utils.parse_html(skill["description"]) + "\n" + cost_str,
+                    value=general.parse_html(skill["description"]) + "\n" + cost_str,
                     inline=False,
                 )
         elif card_type == "tcgactioncards":

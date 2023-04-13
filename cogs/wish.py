@@ -8,17 +8,20 @@ from discord.ext import commands
 
 import ambr
 import dev.models as models
-from apps.db import get_user_lang, get_user_theme
 from apps.draw import main_funcs
 from apps.genshin import check_account, check_wish_history, get_uid
 from apps.text_map import text_map, to_ambr_top
 from apps.wish.models import RecentWish, WishData, WishHistory, WishInfo, WishItem
-from apps.wish.utils import get_wish_history_embeds, get_wish_info_embed
 from dev.base_ui import capture_exception
-from ui.wish import SetAuthKey, WishFilter
-from ui.wish.SetAuthKey import wish_import_command
-from utility.wish_history_paginator import WishHistoryPaginator
-from utility.wish_overview_paginator import WishOverviewPaginator
+from ui.wish import set_auth_key, wish_filter
+from ui.wish.set_auth_key import wish_import_command
+from utils import (
+    get_user_lang,
+    get_user_theme,
+    get_wish_history_embeds,
+    get_wish_info_embed,
+)
+from utils.paginators import WishHistoryPaginator, WishOverviewPaginator
 
 
 class WishCog(commands.GroupCog, name="wish"):
@@ -75,12 +78,14 @@ class WishCog(commands.GroupCog, name="wish"):
                 novice_banner_num=novice_banner,
             )
             embed = await get_wish_info_embed(i, str(locale), wish_info)
-            view = SetAuthKey.View(locale, True, True)
+            view = set_auth_key.View(locale, True, True)
             view.clear_items()
             view.add_item(
-                SetAuthKey.ConfirmWishimport(locale, wish_history, from_text_file=True)
+                set_auth_key.ConfirmWishimport(
+                    locale, wish_history, from_text_file=True
+                )
             )
-            view.add_item(SetAuthKey.CancelWishimport(locale))
+            view.add_item(set_auth_key.CancelWishimport(locale))
             view.author = i.user
             await i.response.send_message(embed=embed, view=view)
             view.message = await i.original_response()
@@ -108,8 +113,8 @@ class WishCog(commands.GroupCog, name="wish"):
             i,
             embeds,
             [
-                select_banner := WishFilter.SelectBanner(locale),
-                WishFilter.SelectRarity(text_map.get(661, locale), select_banner),
+                select_banner := wish_filter.SelectBanner(locale),
+                wish_filter.SelectRarity(text_map.get(661, locale), select_banner),
             ],
         ).start()
 

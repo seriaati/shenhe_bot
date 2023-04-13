@@ -1,3 +1,3 @@
-from .Feedback import *
-from .ManageAccounts import *
-from .SettingsMenu import *
+from .feedback import *
+from .manage_accounts import *
+from .settings_menu import *

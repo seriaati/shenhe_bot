@@ -28,7 +28,7 @@ from dev.base_ui import (
 )
 from dev.exceptions import FeatureDisabled, Maintenance
 from dev.models import BotModel
-from utility import log, sentry_logging
+from utils import log, sentry_logging
 
 load_dotenv()
 log.getLogger().addHandler(PrometheusLoggingHandler())

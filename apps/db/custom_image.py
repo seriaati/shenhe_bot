@@ -4,9 +4,9 @@ import aiohttp
 import asyncpg
 import discord
 
-from apps.genshin import get_character_fanarts
 from apps.text_map import text_map
 from dev.models import DefaultEmbed, Inter, UserCustomImage
+from utils import get_character_fanarts
 
 
 async def get_user_custom_image_options(

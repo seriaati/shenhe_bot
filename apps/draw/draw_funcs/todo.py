@@ -6,7 +6,8 @@ from PIL import Image, ImageDraw
 
 import dev.asset as asset
 from ambr import Material
-from apps.draw.utility import (
+from dev.models import DynamicBackgroundInput, TopPadding
+from utils import (
     circular_crop,
     draw_dynamic_background,
     dynamic_font_size,
@@ -14,7 +15,6 @@ from apps.draw.utility import (
     get_font,
     human_format,
 )
-from dev.models import DynamicBackgroundInput, TopPadding
 
 
 def material_card(

@@ -2,7 +2,7 @@ from discord import Interaction, app_commands
 from discord.ext import commands
 from discord.ui import Button, View
 
-from apps.db import get_user_lang
+from utils import get_user_lang
 from dev.models import BotModel, DefaultEmbed, Inter
 
 

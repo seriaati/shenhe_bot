@@ -8,10 +8,10 @@ import sentry_sdk
 
 import dev.asset as asset
 import dev.exceptions as exceptions
-from apps.db import get_user_lang
+from utils import get_user_lang, log
 from apps.text_map import text_map
-from dev.models import ErrorEmbed, Inter, OriginalInfo
-from utility import log
+
+from .models import ErrorEmbed, Inter, OriginalInfo
 
 
 async def global_error_handler(

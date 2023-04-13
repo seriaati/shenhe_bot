@@ -7,16 +7,16 @@ import dev.asset as asset
 import dev.config as config
 import dev.models as models
 from ambr import AmbrTopAPI, Character
-from apps.db import get_user_theme
 from apps.draw import main_funcs
-from apps.draw.utility import image_gen_transition
-from apps.genshin import (
+from apps.text_map import text_map, to_ambr_top
+from dev.base_ui import BaseView
+from utils import (
     get_abyss_season_date_range,
     get_character_emoji,
     get_current_abyss_season,
+    get_user_theme,
+    image_gen_transition,
 )
-from apps.text_map import text_map, to_ambr_top
-from dev.base_ui import BaseView
 
 
 class EmptyLeaderboard(Exception):

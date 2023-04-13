@@ -8,13 +8,17 @@ import dev.asset as asset
 import dev.config as config
 from ambr import AmbrTopAPI
 from apps.draw import main_funcs
-from apps.genshin import get_fight_prop
-from apps.text_map import get_weekday_name, text_map
+from apps.text_map import text_map
 from data.game.elements import get_element_emoji
 from data.game.fight_prop import percentage_fight_props
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, DrawInput, Inter
-from utility import divide_chunks, get_weekday_int_with_name
+from utils import (
+    divide_chunks,
+    get_fight_prop,
+    get_weekday_int_with_name,
+    get_weekday_name,
+)
 
 
 class View(BaseView):

@@ -5,7 +5,7 @@ import discord
 import enkanetwork
 from PIL import Image, ImageChops, ImageDraw
 
-import apps.draw.utility as draw_utility
+import utils.draw as draw_utility
 import dev.asset as asset
 from apps.text_map import text_map
 from dev.models import DynamicBackgroundInput, TopPadding
@@ -25,11 +25,11 @@ def character_card(
     # get the template
     if dark_mode:
         path = f"yelan/templates/build_cards/[dark] {character_id}.png"
-        fight_prop_path = "resources/images/fight_props/[dark] "
+        fight_prop_path = "data/draw/resources/images/fight_props/[dark] "
         color = asset.white
     else:
         path = f"yelan/templates/build_cards/[light] {character_id}.png"
-        fight_prop_path = "resources/images/fight_props/[light] "
+        fight_prop_path = "data/draw/resources/images/fight_props/[light] "
         color = asset.primary_text
     try:
         card: Image.Image = Image.open(path)

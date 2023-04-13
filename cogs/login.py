@@ -16,7 +16,7 @@ from logingateway.model import (
 
 from apps.text_map import text_map
 from dev.models import BotModel, DefaultEmbed
-from utility import log
+from utils import log
 
 load_dotenv()
 
