@@ -10,15 +10,13 @@ from discord import ui
 
 import dev.asset as asset
 import dev.config as config
-from utils import get_user_lang
 from apps.genshin import get_account_select_options, get_uid
 from apps.text_map import text_map, to_genshin_py
 from apps.wish.models import WishHistory, WishInfo
-from apps.wish.utils import get_wish_info_embed
 from dev.base_ui import BaseModal, BaseView
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
 from ui.wish import ChoosePlatform
-from utils import log
+from utils import get_user_lang, get_wish_info_embed, log
 
 
 class View(BaseView):

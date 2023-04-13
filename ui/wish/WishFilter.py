@@ -4,8 +4,8 @@ import discord
 
 import dev.asset as asset
 from apps.text_map import text_map
-from apps.wish.utils import get_wish_history_embeds
 from dev.models import Inter
+from utils import get_wish_history_embeds
 from utils.paginators import WishHistoryPaginatorView
 
 
