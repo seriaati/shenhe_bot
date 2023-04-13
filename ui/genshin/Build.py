@@ -15,7 +15,7 @@ from apps.text_map import cond_text, text_map, to_genshin_py
 from data.game.elements import get_element_emoji, get_element_list
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, DrawInput, Inter
-from utils.general import disable_view_items
+from utils import disable_view_items
 
 
 class View(BaseView):

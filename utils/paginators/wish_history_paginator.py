@@ -2,7 +2,7 @@ from typing import List
 
 import discord
 
-from utils.paginators.paginator import GeneralPaginator, GeneralPaginatorView
+from .paginator import GeneralPaginator, GeneralPaginatorView
 
 
 class WishHistoryPaginatorView(GeneralPaginatorView):

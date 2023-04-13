@@ -18,8 +18,7 @@ from apps.wish.utils import get_wish_history_embeds, get_wish_info_embed
 from dev.base_ui import capture_exception
 from ui.wish import SetAuthKey, WishFilter
 from ui.wish.SetAuthKey import wish_import_command
-from utils.paginators.wish_history_paginator import WishHistoryPaginator
-from utils.paginators.wish_overview_paginator import WishOverviewPaginator
+from utils import WishHistoryPaginator, WishOverviewPaginator
 
 
 class WishCog(commands.GroupCog, name="wish"):
