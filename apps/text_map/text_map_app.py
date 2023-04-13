@@ -4,6 +4,8 @@ import typing
 import yaml
 from discord import Locale
 
+from dev.enum import LangType, TextMapType
+
 from .convert_locale import CROWDIN_FILE_PATHS, to_ambr_top, to_paths
 
 
@@ -22,15 +24,15 @@ class TextMap:
         self.load()
 
     def load(self):
-        for lang in self.langs:
-            self.lang_maps[str(lang)] = self._open_yaml(f"langs/{lang}")
+        for lang in LangType:
+            self.lang_maps[str(lang)] = self._open_file(TextMapType.LANG, lang)
 
-        self.avatar = self._open_json("avatar")
-        self.material = self._open_json("material")
-        self.weapon = self._open_json("weapon")
-        self.domain = self._open_json("dailyDungeon")
-        self.item_name = self._open_json("item_name")
-        self.artifact = self._open_json("reliquary")
+        self.avatar = self._open_file(TextMapType.CHARACTER)
+        self.material = self._open_file(TextMapType.MATERIAL)
+        self.weapon = self._open_file(TextMapType.WEAPON)
+        self.domain = self._open_file(TextMapType.DOMAIN)
+        self.item_name = self._open_file(TextMapType.ITEM_NAME)
+        self.artifact = self._open_file(TextMapType.ARTIFACT)
 
     def get(
         self,
@@ -118,16 +120,21 @@ class TextMap:
         ambr_locale = to_ambr_top(str(locale))
         return artifact_text[str(ambr_locale)]
 
-    def _open_yaml(self, file_name: str) -> typing.Dict[str, typing.Any]:
-        try:
-            with open(f"text_maps/{file_name}.yaml", "r", encoding="utf-8") as f:
-                return yaml.full_load(f)  # type: ignore
-        except FileNotFoundError:
-            return {}
+    def _open_file(self, map_type: TextMapType, lang_type: LangType = LangType.EN_US) -> typing.Dict[str, typing.Any]:
+        is_yaml = True if map_type is TextMapType.LANG else False
+        ext = ".yaml" if is_yaml else ".json"
+        
+        path = "text_maps/"
+        if map_type is TextMapType.LANG:
+            path += f"{map_type.value}/{lang_type.value}"
+        else:
+            path += map_type.value
+        path += ext
 
-    def _open_json(self, file_name: str) -> typing.Dict[str, typing.Any]:
         try:
-            with open(f"text_maps/{file_name}.json", "r", encoding="utf-8") as f:
+            with open(path, "r", encoding="utf-8") as f:
+                if is_yaml:
+                    return yaml.safe_load(f)  # type: ignore
                 return json.load(f)
         except FileNotFoundError:
             return {}
