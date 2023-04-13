@@ -17,22 +17,15 @@ import dev.enum as enum
 import dev.models as models
 from ambr import AmbrTopAPI, Character, Domain, Material, Weapon
 from ambr.models import CharacterDetail
-from utils import get_user_lang
 from apps.db.json import read_json, write_json
 from apps.enka.api_docs import get_character_skill_order
-from apps.text_map import (
-    cond_text,
-    text_map,
-    to_ambr_top,
-    to_genshin_py,
-    translate_main_stat,
-)
+from apps.text_map import cond_text, text_map, to_ambr_top, to_genshin_py
 from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
 from dev.exceptions import ShenheAccountNotFound
-from utils import get_dt_now
+from utils import get_dt_now, get_user_lang, translate_main_stat
 
 
 def calculate_artifact_score(substats: dict):

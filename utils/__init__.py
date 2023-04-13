@@ -3,4 +3,5 @@ from .draw import *
 from .fetch_card import *
 from .general import *
 from .genshin import *
+from .text_map import *
 from .wish import *

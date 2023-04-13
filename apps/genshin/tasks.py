@@ -9,8 +9,9 @@ import genshin
 
 import dev.asset as asset
 import dev.models as models
-from apps.text_map import AMBR_LANGS, get_element_name
+from apps.text_map import AMBR_LANGS
 from data.game.elements import convert_element
+from utils import get_element_name
 
 # abyss.json
 
