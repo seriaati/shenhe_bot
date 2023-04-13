@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw
 
 import dev.asset as asset
 from apps.draw.utils import get_font, human_format
-from apps.genshin.utility import convert_ar_to_wl, convert_wl_to_mora
+from apps.genshin.utils import convert_ar_to_wl, convert_wl_to_mora
 from apps.text_map import get_month_name, text_map
 
 

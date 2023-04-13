@@ -4,7 +4,7 @@ import asyncpg
 import genshin
 from discord import utils
 
-from .utility import get_current_abyss_season
+from .utils import get_current_abyss_season
 
 
 async def update_user_abyss_leaderboard(

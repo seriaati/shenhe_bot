@@ -19,7 +19,7 @@ from dev.models import BotModel, DefaultEmbed, DrawInput, ErrorEmbed, ShenheAcco
 from utility import get_dt_now, log
 
 from .models import *
-from .utility import (
+from .utils import (
     get_character_emoji,
     get_shenhe_account,
     get_uid,

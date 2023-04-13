@@ -5,7 +5,7 @@ from discord import Interaction, Member, User, app_commands
 
 from dev.exceptions import NoCookie, NoUID, NoWishHistory
 
-from .utility import get_uid
+from .utils import get_uid
 
 
 def check_account():
