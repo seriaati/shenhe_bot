@@ -16,16 +16,14 @@ from discord import app_commands
 from discord.ext import commands
 from discord.ext.prometheus import PrometheusLoggingHandler
 from dotenv import load_dotenv
+from sqlmodel import create_engine
 
 import dev.models as models
 from apps.genshin import launch_browsers, launch_debug_browser
 from apps.genshin_data.text_maps import load_text_maps
 from apps.text_map import text_map
-from dev.base_ui import (
-    get_error_handle_embed,
-    global_error_handler,
-    support_server_view,
-)
+from dev.base_ui import (get_error_handle_embed, global_error_handler,
+                         support_server_view)
 from dev.exceptions import FeatureDisabled, Maintenance
 from dev.models import BotModel
 from utils import log, sentry_logging
@@ -37,12 +35,12 @@ if platform.system() == "Windows":
     token = os.getenv("YAE_TOKEN")
     debug = True
     application_id = os.getenv("YAE_APP_ID")
-    databse_url = os.getenv("YAE_DATABASE_URL")
+    database_url = os.getenv("YAE_DATABASE_URL")
 else:
     token = os.getenv("SHENHE_BOT_TOKEN")
     debug = False
     application_id = os.getenv("SHENHE_BOT_APP_ID")
-    databse_url = os.getenv("SHENHE_BOT_DATABASE_URL")
+    database_url = os.getenv("SHENHE_BOT_DATABASE_URL")
 
 
 class Translator(app_commands.Translator):
@@ -145,6 +143,8 @@ class Shenhe(BotModel):
         self.session = session
         self.pool = pool
         self.debug = debug
+        if database_url:
+            self.engine = create_engine(database_url)
 
     async def setup_hook(self) -> None:
         # load jishaku
@@ -216,7 +216,7 @@ async def main() -> None:
         raise AssertionError
 
     try:
-        pool = await asyncpg.create_pool(databse_url)
+        pool = await asyncpg.create_pool(database_url)
     except Exception as e:  # skipcq: PYL-W0703
         log.error("Failed to connect to database", exc_info=e)
         return

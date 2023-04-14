@@ -13,6 +13,7 @@ from discord.ext import commands
 from enkanetwork.model.base import EnkaNetworkResponse
 from logingateway import HuTaoLoginAPI
 from pyppeteer.browser import Browser
+from sqlalchemy import future
 
 import ambr.models as ambr
 from apps.text_map import text_map
@@ -92,9 +93,8 @@ class NotificationUser:
 class DrawInput:
     loop: asyncio.AbstractEventLoop
     session: aiohttp.ClientSession
-    locale: discord.Locale | str = "en-US"
+    locale: typing.Union[discord.Locale, str] = "en-US"
     dark_mode: bool = False
-
 
 class BotModel(commands.AutoShardedBot):
     genshin_client: genshin.Client
@@ -104,13 +104,14 @@ class BotModel(commands.AutoShardedBot):
     pool: asyncpg.Pool
     debug: bool
     user: discord.ClientUser
+    gd_text_map: typing.Dict[str, typing.Dict[str, str]]
+    engine: future.Engine
+    
     owner_id: int = 410036441129943050
-
     launch_browser_in_debug: bool = False
     maintenance: bool = False
     maintenance_time: str = ""
     launch_time = datetime.utcnow()
-    gd_text_map: typing.Dict[str, typing.Dict[str, str]]
     stats_card_cache = cachetools.TTLCache(maxsize=512, ttl=120)
     area_card_cache = cachetools.TTLCache(maxsize=512, ttl=120)
     abyss_overview_card_cache = cachetools.TTLCache(maxsize=512, ttl=120)
