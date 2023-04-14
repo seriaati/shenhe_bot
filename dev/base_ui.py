@@ -18,9 +18,11 @@ async def global_error_handler(
     i: Inter,
     e: typing.Union[Exception, discord.app_commands.AppCommandError],
 ):
+    if not i.command:
+        return
+
     locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
     embed = get_error_handle_embed(i.user, e, locale)
-
     view = support_server_view(locale)
 
     try:
