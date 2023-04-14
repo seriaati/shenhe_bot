@@ -5,8 +5,8 @@ import asyncio
 import json
 import os
 import platform
-from pathlib import Path
 import sys
+from pathlib import Path
 from typing import Dict, List, Optional
 
 import aiofiles
@@ -23,11 +23,8 @@ import dev.models as models
 from apps.genshin import launch_browsers, launch_debug_browser
 from apps.genshin_data.text_maps import load_text_maps
 from apps.text_map import text_map
-from dev.base_ui import (
-    get_error_handle_embed,
-    global_error_handler,
-    support_server_view,
-)
+from dev.base_ui import (get_error_handle_embed, global_error_handler,
+                         support_server_view)
 from dev.exceptions import FeatureDisabled, Maintenance
 from dev.models import BotModel
 from utils import log, sentry_logging
@@ -48,7 +45,7 @@ if args.env == "production":
     token = os.getenv("SHENHE_BOT_TOKEN")
     debug = False
     databse_url = os.getenv("SHENHE_BOT_DATABASE_URL")
-elif args.env == "test":
+elif args.env == "testing":
     token = os.getenv("SHENHE_TEST_TOKEN")
     debug = False
     databse_url = os.getenv("SHENHE_BOT_DATABASE_URL")
