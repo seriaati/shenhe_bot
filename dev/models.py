@@ -96,6 +96,7 @@ class DrawInput:
     locale: typing.Union[discord.Locale, str] = "en-US"
     dark_mode: bool = False
 
+
 class BotModel(commands.AutoShardedBot):
     genshin_client: genshin.Client
     session: aiohttp.ClientSession
@@ -106,7 +107,7 @@ class BotModel(commands.AutoShardedBot):
     user: discord.ClientUser
     gd_text_map: typing.Dict[str, typing.Dict[str, str]]
     engine: future.Engine
-    
+
     owner_id: int = 410036441129943050
     launch_browser_in_debug: bool = False
     maintenance: bool = False
