@@ -1,3 +1,5 @@
+# type: ignore
+
 def wait_and_click(image):
     wait(image)
     click(image)

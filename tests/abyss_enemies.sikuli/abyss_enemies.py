@@ -1,3 +1,5 @@
+# type: ignore
+
 type(Key.ESC)
 type("/abyss-enemies")
 wait("1681432525636.png")
