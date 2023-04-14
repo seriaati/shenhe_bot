@@ -6,6 +6,7 @@ import json
 import os
 import platform
 from pathlib import Path
+import sys
 from typing import Dict, List, Optional
 
 import aiofiles
@@ -57,7 +58,7 @@ elif args.env == "development":
     databse_url = os.getenv("YAE_DATABASE_URL")
 else:
     print("Invalid environment specified")
-    exit(1)
+    sys.exit(1)
 
 
 class Translator(app_commands.Translator):
