@@ -42,11 +42,14 @@ async def get_user_custom_image_options(
             current_image_url = row["image_url"]
         if row["image_url"] in c_fanarts:
             continue
+        if any(option.value == row["image_url"] for option in options):
+            continue
+
         options.append(
             discord.SelectOption(
                 label=row["nickname"][:100],
                 description=row["image_url"][:100],
-                value=row["image_url"],
+                value=row["image_url"][:100],
                 default=row["current"],
             )
         )
@@ -55,6 +58,7 @@ async def get_user_custom_image_options(
     for url in c_fanarts:
         if any(option.value == url for option in options):
             continue
+
         label = f"{text_map.get(748, locale)} ({index})"
         options.append(
             discord.SelectOption(
