@@ -22,8 +22,11 @@ import dev.models as models
 from apps.genshin import launch_browsers, launch_debug_browser
 from apps.genshin_data.text_maps import load_text_maps
 from apps.text_map import text_map
-from dev.base_ui import (get_error_handle_embed, global_error_handler,
-                         support_server_view)
+from dev.base_ui import (
+    get_error_handle_embed,
+    global_error_handler,
+    support_server_view,
+)
 from dev.exceptions import FeatureDisabled, Maintenance
 from dev.models import BotModel
 from utils import log, sentry_logging
@@ -40,20 +43,20 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-if args.env == 'production':
+if args.env == "production":
     token = os.getenv("SHENHE_BOT_TOKEN")
     debug = False
     databse_url = os.getenv("SHENHE_BOT_DATABASE_URL")
-elif args.env == 'test':
+elif args.env == "test":
     token = os.getenv("SHENHE_TEST_TOKEN")
     debug = False
     databse_url = os.getenv("SHENHE_BOT_DATABASE_URL")
-elif args.env == 'development':
+elif args.env == "development":
     token = os.getenv("YAE_TOKEN")
     debug = True
     databse_url = os.getenv("YAE_DATABASE_URL")
 else:
-    print('Invalid environment specified')
+    print("Invalid environment specified")
     exit(1)
 
 
