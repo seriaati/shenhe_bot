@@ -1,10 +1,12 @@
 # shenhe-bot by seria
 
+import argparse
 import asyncio
 import json
 import os
 import platform
 from pathlib import Path
+import sys
 from typing import Dict, List, Optional
 
 import aiofiles
@@ -33,16 +35,30 @@ from utils import log, sentry_logging
 load_dotenv()
 log.getLogger().addHandler(PrometheusLoggingHandler())
 
-if platform.system() == "Windows":
-    token = os.getenv("YAE_TOKEN")
-    debug = True
-    application_id = os.getenv("YAE_APP_ID")
-    databse_url = os.getenv("YAE_DATABASE_URL")
-else:
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--env",
+    choices=("production", "testing", "development"),
+    required=True,
+    help="The environment to run the application in",
+)
+args = parser.parse_args()
+
+if args.env == "production":
     token = os.getenv("SHENHE_BOT_TOKEN")
     debug = False
-    application_id = os.getenv("SHENHE_BOT_APP_ID")
     databse_url = os.getenv("SHENHE_BOT_DATABASE_URL")
+elif args.env == "test":
+    token = os.getenv("SHENHE_TEST_TOKEN")
+    debug = False
+    databse_url = os.getenv("SHENHE_BOT_DATABASE_URL")
+elif args.env == "development":
+    token = os.getenv("YAE_TOKEN")
+    debug = True
+    databse_url = os.getenv("YAE_DATABASE_URL")
+else:
+    print("Invalid environment specified")
+    sys.exit(1)
 
 
 class Translator(app_commands.Translator):
@@ -136,7 +152,6 @@ class Shenhe(BotModel):
         super().__init__(
             command_prefix=commands.when_mentioned,
             intents=intents,
-            application_id=application_id,
             chunk_guilds_at_startup=False,
             activity=discord.Game(name="/help | shenhe.bot.nu"),
             tree_cls=ShenheCommandTree,

@@ -1,0 +1,13 @@
+{
+    "apps": [
+        {
+            "name": "shenhe_testing",
+            "script": "./run.py",
+            "interpreter": "python3.10",
+            "args": [
+                "--env",
+                "testing"
+            ]
+        }
+    ]
+}
