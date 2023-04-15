@@ -171,6 +171,8 @@ class Shenhe(BotModel):
         # load cogs
         for filepath in Path("./cogs").glob("**/*.py"):
             cog_name = Path(filepath).stem
+            if self.debug and cog_name == "grafana":
+                continue
             try:
                 await self.load_extension(f"cogs.{cog_name}")
             except Exception as e:  # skipcq: PYL-W0703
