@@ -8,8 +8,8 @@ import sentry_sdk
 
 import dev.asset as asset
 import dev.exceptions as exceptions
-from utils import get_user_lang, log
 from apps.text_map import text_map
+from utils import get_user_lang, log
 
 from .models import ErrorEmbed, Inter, OriginalInfo
 
@@ -18,9 +18,11 @@ async def global_error_handler(
     i: Inter,
     e: typing.Union[Exception, discord.app_commands.AppCommandError],
 ):
+    if not i.command:
+        return
+
     locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
     embed = get_error_handle_embed(i.user, e, locale)
-
     view = support_server_view(locale)
 
     try:
@@ -29,13 +31,13 @@ async def global_error_handler(
             ephemeral=True,
             view=view,
         )
-    except discord.errors.InteractionResponded:
+    except discord.InteractionResponded:
         await i.followup.send(
             embed=embed,
             ephemeral=True,
             view=view,
         )
-    except discord.errors.NotFound:
+    except (discord.NotFound, discord.HTTPException):
         pass
 
 

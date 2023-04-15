@@ -1,8 +1,10 @@
+import asyncio
 import typing
 
 import aiohttp
 import asyncpg
 import discord
+import sentry_sdk
 
 from apps.text_map import text_map
 from dev.models import DefaultEmbed, Inter, UserCustomImage
@@ -40,11 +42,14 @@ async def get_user_custom_image_options(
             current_image_url = row["image_url"]
         if row["image_url"] in c_fanarts:
             continue
+        if any(option.value == row["image_url"] for option in options):
+            continue
+
         options.append(
             discord.SelectOption(
                 label=row["nickname"][:100],
                 description=row["image_url"][:100],
-                value=row["image_url"],
+                value=row["image_url"][:100],
                 default=row["current"],
             )
         )
@@ -53,6 +58,7 @@ async def get_user_custom_image_options(
     for url in c_fanarts:
         if any(option.value == url for option in options):
             continue
+
         label = f"{text_map.get(748, locale)} ({index})"
         options.append(
             discord.SelectOption(
@@ -98,14 +104,17 @@ async def get_user_custom_image_embed(
 
 
 async def validate_image_url(url: str, session: aiohttp.ClientSession) -> bool:
-    if "jpg" not in url and "png" not in url and "jpeg" not in url:
+    image_extensions = ["jpg", "png", "jpeg", "gif", "webp"]
+    if not any(url.endswith(ext) for ext in image_extensions):
         return False
+
     try:
         async with session.get(url=url) as response:
             return response.status == 200
-    except aiohttp.InvalidURL:
+    except (aiohttp.InvalidURL, aiohttp.ClientConnectorError, asyncio.TimeoutError):
         return False
-    except TimeoutError:
+    except Exception as e:  # skipcq: PYL-W0703
+        sentry_sdk.capture_exception(e)
         return False
 
 

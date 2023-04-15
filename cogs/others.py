@@ -22,7 +22,7 @@ from apps.draw.main_funcs import compress_image
 from apps.text_map import text_map, to_ambr_top
 from dev.exceptions import AutocompleteError
 from dev.models import BotModel, DefaultEmbed, ErrorEmbed, Inter
-from ui.others import feedback, manage_accounts, settings, settings_menu
+from ui.others import feedback_menu, manage_accounts, settings, settings_menu
 from utils import create_user_settings, get_user_lang
 
 load_dotenv()
@@ -277,7 +277,7 @@ class OthersCog(commands.Cog, name="others"):
     )
     async def feedback(self, i: discord.Interaction):
         await i.response.send_modal(
-            feedback.FeedbackModal(
+            feedback_menu.FeedbackModal(
                 await get_user_lang(i.user.id, self.bot.pool) or i.locale
             )
         )

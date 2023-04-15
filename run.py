@@ -1,9 +1,11 @@
 # shenhe-bot by seria
 
+import argparse
 import asyncio
 import json
 import os
 import platform
+import sys
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -22,11 +24,8 @@ import dev.models as models
 from apps.genshin import launch_browsers, launch_debug_browser
 from apps.genshin_data.text_maps import load_text_maps
 from apps.text_map import text_map
-from dev.base_ui import (
-    get_error_handle_embed,
-    global_error_handler,
-    support_server_view,
-)
+from dev.base_ui import (get_error_handle_embed, global_error_handler,
+                         support_server_view)
 from dev.exceptions import FeatureDisabled, Maintenance
 from dev.models import BotModel
 from utils import log, sentry_logging
@@ -34,16 +33,30 @@ from utils import log, sentry_logging
 load_dotenv()
 log.getLogger().addHandler(PrometheusLoggingHandler())
 
-if platform.system() == "Windows":
-    token = os.getenv("YAE_TOKEN")
-    debug = True
-    application_id = os.getenv("YAE_APP_ID")
-    database_url = os.getenv("YAE_DATABASE_URL")
-else:
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--env",
+    choices=("production", "testing", "development"),
+    required=True,
+    help="The environment to run the application in",
+)
+args = parser.parse_args()
+
+if args.env == "production":
     token = os.getenv("SHENHE_BOT_TOKEN")
     debug = False
-    application_id = os.getenv("SHENHE_BOT_APP_ID")
-    database_url = os.getenv("SHENHE_BOT_DATABASE_URL")
+    databse_url = os.getenv("SHENHE_BOT_DATABASE_URL")
+elif args.env == "testing":
+    token = os.getenv("SHENHE_TEST_TOKEN")
+    debug = False
+    databse_url = os.getenv("SHENHE_BOT_DATABASE_URL")
+elif args.env == "development":
+    token = os.getenv("YAE_TOKEN")
+    debug = True
+    databse_url = os.getenv("YAE_DATABASE_URL")
+else:
+    print("Invalid environment specified")
+    sys.exit(1)
 
 
 class Translator(app_commands.Translator):
@@ -137,7 +150,6 @@ class Shenhe(BotModel):
         super().__init__(
             command_prefix=commands.when_mentioned,
             intents=intents,
-            application_id=application_id,
             chunk_guilds_at_startup=False,
             activity=discord.Game(name="/help | shenhe.bot.nu"),
             tree_cls=ShenheCommandTree,
