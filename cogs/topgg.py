@@ -4,20 +4,23 @@ import topgg
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 
+from dev.models import BotModel
 from utils import log
 
 load_dotenv()
 
 
 class TopggStats(commands.Cog):
-    def __init__(self, bot: commands.Bot) -> None:
-        self.bot = bot
+    def __init__(self, bot) -> None:
+        self.bot: BotModel = bot
 
     async def cog_load(self) -> None:
-        self.update_stats.start()
+        if not self.bot.debug:
+            self.update_stats.start()
 
     async def cog_unload(self) -> None:
-        self.update_stats.cancel()
+        if not self.bot.debug:
+            self.update_stats.cancel()
 
     @tasks.loop(minutes=30)
     async def update_stats(self) -> None:
