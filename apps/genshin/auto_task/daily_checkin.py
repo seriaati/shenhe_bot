@@ -142,7 +142,7 @@ class DailyCheckin:
                 )
 
     async def _do_daily_checkin(
-        self, api: CheckInAPI, user: model.User
+        self, api: CheckInAPI, user: model.User, retry_count: int = 0
     ) -> model.ShenheEmbed:
         if api is CheckInAPI.LOCAL:
             result = await self.genshin_app.claim_daily_reward(
@@ -153,6 +153,7 @@ class DailyCheckin:
         if api_link is None:
             raise CheckInAPIError(api, 404)
 
+        MAX_RETRY = 3
         user_lang = (await get_user_lang(user.user_id, self.bot.pool)) or "en-US"
         payload = {
             "cookie": {
@@ -167,6 +168,14 @@ class DailyCheckin:
         ) as resp:
             if resp.status == 200:
                 data = await resp.json()
+                if "Too many requests" in data["msg"]:
+                    if retry_count >= MAX_RETRY:
+                        sentry_sdk.capture_message(
+                            f"[DailyCheckin] {api.name} retry limit reached"
+                        )
+                    await asyncio.sleep(5 * (retry_count + 1))
+                    return await self._do_daily_checkin(api, user, retry_count + 1)
+
                 embed = self._create_embed(user_lang, data)
                 return embed
             raise CheckInAPIError(api, resp.status)
