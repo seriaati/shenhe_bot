@@ -134,12 +134,13 @@ class DailyCheckin:
                 continue
             else:
                 self.total[api] += 1
-                await self.bot.pool.execute(
-                    "UPDATE user_accounts SET last_checkin_date = $1 WHERE user_id = $2 AND uid = $3",
-                    get_dt_now(),
-                    user.user_id,
-                    user.uid,
-                )
+                if isinstance(embed, model.DefaultEmbed):
+                    await self.bot.pool.execute(
+                        "UPDATE user_accounts SET last_checkin_date = $1 WHERE user_id = $2 AND uid = $3",
+                        get_dt_now(),
+                        user.user_id,
+                        user.uid,
+                    )
 
     async def _do_daily_checkin(
         self, api: CheckInAPI, user: model.User, retry_count: int = 0
@@ -198,13 +199,14 @@ class DailyCheckin:
             )
             embed.set_thumbnail(url=data["reward"]["icon"])
         else:
-            embed = model.ErrorEmbed()
             retcode = data["code"]
             message = data["msg"]
             if retcode == -5003:  # Already claimed
+                embed = model.DefaultEmbed()
                 embed.title = text_map.get(40, user_lang)
                 embed.description = f"*{text_map.get(211, user_lang)}*"
             elif retcode == -100:  # Invalid cookie
+                embed = model.ErrorEmbed()
                 embed.title = text_map.get(36, user_lang)
                 embed.description = f"""
                 {text_map.get(767, user_lang)}
@@ -212,6 +214,7 @@ class DailyCheckin:
                 *{text_map.get(211, user_lang)}*
                 """
             else:
+                embed = model.ErrorEmbed()
                 embed.title = text_map.get(135, user_lang)
                 embed.description = f"""
                 ```
