@@ -168,6 +168,7 @@ class DailyCheckin:
         ) as resp:
             if resp.status == 200:
                 data = await resp.json()
+                log.info(f"[DailyCheckin] {api.name} response: {data}, user: {user}")
                 if "msg" in data and "Too many requests" in data["msg"]:
                     if retry_count >= MAX_RETRY:
                         sentry_sdk.capture_message(
