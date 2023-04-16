@@ -125,6 +125,13 @@ GENSHIN_DB_LANGS = {
 }
 
 
+def ambr_top_to_locale(ambr_top: str):
+    for locale, lang in AMBR_LANGS.items():
+        if lang == ambr_top:
+            return locale
+    return "en-US"
+
+
 def to_enka(locale: Locale | str):
     return ENKA_LANGS.get(str(locale)) or "en"
 

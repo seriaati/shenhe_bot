@@ -3,7 +3,24 @@ from typing import Optional
 from discord import Locale
 
 from apps.text_map import text_map
+from apps.text_map.convert_locale import ambr_top_to_locale
 from text_maps.artifact_main_stat import ARTIFACT_MAIN_STAT_TRANSLATION
+
+CITY_HASHES = {
+    1: 129,
+    2: 130,
+    3: 131,
+    4: 510,
+    0: 700,
+}
+
+
+def get_city_name(
+    city_id: int,
+    ambr_lang: str,
+) -> str:
+    locale = ambr_top_to_locale(ambr_lang)
+    return text_map.get(CITY_HASHES.get(city_id, 0), locale, locale)
 
 
 def get_weekday_name(
