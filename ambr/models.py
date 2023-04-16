@@ -11,7 +11,6 @@ from .utils import format_number, parse_html
 
 class City(BaseModel):
     id: int
-    name: str
 
 
 class PartialMaterial(BaseModel):
