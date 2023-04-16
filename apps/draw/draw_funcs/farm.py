@@ -23,7 +23,9 @@ def draw_domain_card(
     basic_cards: List[Image.Image] = []
 
     for data in farm_data:
-        basic_card: Image.Image = Image.open(f"yelan/templates/farm/[{app_mode}] basic_card.png")
+        basic_card: Image.Image = Image.open(
+            f"yelan/templates/farm/[{app_mode}] basic_card.png"
+        )
 
         item_per_row = 9
         height_per_row = 199
