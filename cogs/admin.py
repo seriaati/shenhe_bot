@@ -42,6 +42,8 @@ class AdminCog(commands.Cog, name="admin"):
                 if any(module_name.startswith(name) for name in modules_to_reload):
                     try:
                         importlib.reload(module)
+                    except ImportError:
+                        continue
                     except Exception:  # skipcq: PYL-W0703
                         await ctx.send(
                             f"""
