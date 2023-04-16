@@ -13,7 +13,7 @@ from discord.ext import commands
 from enkanetwork.model.base import EnkaNetworkResponse
 from logingateway import HuTaoLoginAPI
 from pyppeteer.browser import Browser
-from sqlalchemy import future
+from sqlalchemy.ext.asyncio import AsyncEngine
 
 import ambr.models as ambr
 from apps.text_map import text_map
@@ -106,7 +106,7 @@ class BotModel(commands.AutoShardedBot):
     debug: bool
     user: discord.ClientUser
     gd_text_map: typing.Dict[str, typing.Dict[str, str]]
-    engine: future.Engine
+    engine: AsyncEngine
 
     owner_id: int = 410036441129943050
     launch_browser_in_debug: bool = False

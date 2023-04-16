@@ -18,7 +18,7 @@ from discord import app_commands
 from discord.ext import commands
 from discord.ext.prometheus import PrometheusLoggingHandler
 from dotenv import load_dotenv
-from sqlmodel import create_engine
+from sqlalchemy.ext.asyncio import create_async_engine
 
 import dev.models as models
 from apps.genshin import launch_browsers, launch_debug_browser
@@ -162,7 +162,7 @@ class Shenhe(BotModel):
         self.pool = pool
         self.debug = debug
         if database_url:
-            self.engine = create_engine(database_url)
+            self.engine = create_async_engine(database_url)
 
     async def setup_hook(self) -> None:
         # load jishaku
