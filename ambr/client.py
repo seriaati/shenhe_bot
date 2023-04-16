@@ -5,8 +5,9 @@ from typing import Dict, List, Optional
 import aiohttp
 
 import ambr.models as models
+from utils.text_map import get_city_name
 
-from .constants import CITIES, EVENTS_URL, LANGS, WEEKDAYS, get_city_name
+from .constants import EVENTS_URL, LANGS, WEEKDAYS
 from .endpoints import BASE, ENDPOINTS, STATIC_ENDPOINTS
 
 
