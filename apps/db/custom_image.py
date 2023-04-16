@@ -37,12 +37,9 @@ async def get_user_custom_image_options(
 
     async with AsyncSession(engine) as s, s.begin():
         statement = select(CustomImage).where(
-            CustomImage.user_id == user_id
-            and CustomImage.character_id == character_id
+            CustomImage.user_id == user_id and CustomImage.character_id == character_id
         )
-        rows = [
-            CustomImage.from_orm(row) async for row in await s.stream(statement)
-        ]
+        rows = [CustomImage.from_orm(row) async for row in await s.stream(statement)]
 
     options = [
         discord.SelectOption(
@@ -172,8 +169,7 @@ async def change_user_custom_image(
     """
     async with AsyncSession(engine) as s, s.begin():
         statement = select(CustomImage).where(
-            CustomImage.user_id == user_id
-            and CustomImage.character_id == character_id
+            CustomImage.user_id == user_id and CustomImage.character_id == character_id
         )
 
         found = False
