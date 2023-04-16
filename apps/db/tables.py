@@ -1,14 +1,29 @@
 import datetime
 import typing
 
-from sqlmodel import Field, SQLModel
+from sqlalchemy.orm import declared_attr
+from sqlmodel import Field
+from sqlmodel import SQLModel as _SQLModel
+
+from utils import snake_case
 
 
-class AbyssCharacterLeaderboard(SQLModel):
+class SQLModel(_SQLModel):
+    """SQLModel base class"""
+
+    @declared_attr
+    def __tablename__(cls) -> str:
+        return snake_case(cls.__name__)
+
+
+class AbyssCharacterLeaderboard(SQLModel, table=True):
     """Abyss character usage leaderboard"""
 
+    id: typing.Optional[int] = Field(default=None, primary_key=True)
+    """Database ID"""
     user_id: int
     """Discord user ID"""
+
     uid: int = Field(unique=True)
     """Genshin Impact UID"""
     season: int = Field(unique=True)
@@ -17,9 +32,11 @@ class AbyssCharacterLeaderboard(SQLModel):
     """Character ID list"""
 
 
-class AbyssLeaderboard(SQLModel):
+class AbyssLeaderboard(SQLModel, table=True):
     """Single strike damage leaderboard"""
 
+    id: typing.Optional[int] = Field(default=None, primary_key=True)
+    """Database ID"""
     user_id: int
     """Discord user ID"""
 
@@ -55,11 +72,14 @@ class AbyssLeaderboard(SQLModel):
     """Weapon refinement level"""
 
 
-class CustomImage(SQLModel):
+class CustomImage(SQLModel, table=True):
     """Custom image for /profile command"""
 
+    id: typing.Optional[int] = Field(default=None, primary_key=True)
+    """Database ID"""
     user_id: int
     """Discord user ID"""
+
     character_id: int
     """Genshin Impact Character ID"""
     image_url: str
@@ -72,7 +92,7 @@ class CustomImage(SQLModel):
     """Whether this image is provided by Shenhe"""
 
 
-class EnkaCache(SQLModel):
+class EnkaCache(SQLModel, table=True):
     """Enka cache"""
 
     uid: int = Field(primary_key=True)
@@ -83,25 +103,31 @@ class EnkaCache(SQLModel):
     """English Enka data"""
 
 
-class GenshinCodes(SQLModel):
+class GenshinCodes(SQLModel, table=True):
     """Genshin Impact redeem codes"""
 
+    id: typing.Optional[int] = Field(default=None, primary_key=True)
+    """Database ID"""
     code: str
     """Redeem code"""
 
 
-class Json(SQLModel):
+class Json(SQLModel, table=True):
     """JSON cache"""
 
+    id: typing.Optional[int] = Field(default=None, primary_key=True)
+    """Database ID"""
     file_name: str = Field(primary_key=True)
     """JSON file name"""
     file: str
     """JSON file"""
 
 
-class NotifBase(SQLModel):
+class NotifBase(SQLModel, table=True):
     """Notification base table"""
 
+    id: typing.Optional[int] = Field(default=None, primary_key=True)
+    """Database ID"""
     uid: int = Field(unique=True)
     """Genshin Impact UID"""
     user_id: int = Field(unique=True)
@@ -130,14 +156,18 @@ class ResinNotification(NotifBase):
     threshold: int = Field(default=130)
 
 
-class RedeemCodes(SQLModel):
+class RedeemCodes(SQLModel, table=True):
     """Auto redeem code feature"""
 
+    id: typing.Optional[int] = Field(default=None, primary_key=True)
+    """Database ID"""
     uid: int = Field(primary_key=True)
+    """Genshin Impact UID"""
     code: str
+    """Redeem code"""
 
 
-class WeaponTalentBase(SQLModel):
+class WeaponTalentBase(SQLModel, table=True):
     """Weapon talent base table"""
 
     user_id: int = Field(primary_key=True)
@@ -164,9 +194,11 @@ class WeaponNotification(WeaponTalentBase):
     """Weapon list"""
 
 
-class Todo(SQLModel):
+class Todo(SQLModel, table=True):
     """Todo list"""
 
+    id: typing.Optional[int] = Field(default=None, primary_key=True)
+    """Database ID"""
     user_id: int
     """Discord user ID"""
     item: str
@@ -177,9 +209,11 @@ class Todo(SQLModel):
     """Todo item max count"""
 
 
-class UserAccounts(SQLModel):
+class UserAccounts(SQLModel, table=True):
     """User accounts"""
 
+    id: typing.Optional[int] = Field(default=None, primary_key=True)
+    """Database ID"""
     uid: int = Field(unique=True)
     """Genshin Impact UID"""
     user_id: int = Field(unique=True)
@@ -205,7 +239,7 @@ class UserAccounts(SQLModel):
     """Last daily check-in date"""
 
 
-class UserSettings(SQLModel):
+class UserSettings(SQLModel, table=True):
     """User settings"""
 
     user_id: int = Field(primary_key=True)
@@ -222,7 +256,7 @@ class UserSettings(SQLModel):
     """Profile card version"""
 
 
-class WishHistory(SQLModel):
+class WishHistory(SQLModel, table=True):
     """Wish history"""
 
     id: int = Field(primary_key=True, alias="wish_id")

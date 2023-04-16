@@ -243,7 +243,7 @@ class OthersCog(commands.Cog, name="others"):
             converted_character_id,
             image["link"],
             image_name,
-            self.bot.pool,
+            self.bot.engine,
         )
         view = settings.custom_image.View(locale)
         view.author = i.user

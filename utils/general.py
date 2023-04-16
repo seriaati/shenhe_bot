@@ -3,6 +3,7 @@ import logging
 import re
 import zipfile
 from datetime import datetime
+from functools import partial
 from io import BytesIO
 from itertools import islice
 from typing import Dict, Generator, List, TypeVar, Union
@@ -170,3 +171,11 @@ def convert_dict_to_zipped_json(data_dict: Dict[str, str]) -> BytesIO:
 async def get_discord_user_from_id(bot: discord.Client, user_id: int) -> discord.User:
     """Get a discord user from their id. If the user is not cached, fetch them from the discord API"""
     return bot.get_user(user_id) or await bot.fetch_user(user_id)
+
+
+_snake_1 = partial(re.compile(r"(.)((?<![^A-Za-z])[A-Z][a-z]+)").sub, r"\1_\2")
+_snake_2 = partial(re.compile(r"([a-z0-9])([A-Z])").sub, r"\1_\2")
+
+
+def snake_case(string: str) -> str:
+    return _snake_2(_snake_1(string)).casefold()

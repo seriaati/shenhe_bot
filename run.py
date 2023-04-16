@@ -162,7 +162,13 @@ class Shenhe(BotModel):
         self.pool = pool
         self.debug = debug
         if database_url:
-            self.engine = create_async_engine(database_url)
+            self.engine = create_async_engine(
+                database_url,
+                echo=debug,
+                future=True,
+                pool_pre_ping=True,
+                dialect="postgresql+asyncpg",
+            )
 
     async def setup_hook(self) -> None:
         # load jishaku
@@ -233,8 +239,9 @@ async def main() -> None:
     if not token:
         raise AssertionError
 
+    assert database_url
     try:
-        pool = await asyncpg.create_pool(database_url)
+        pool = await asyncpg.create_pool(database_url.replace("+asyncpg", ""))
     except Exception as e:  # skipcq: PYL-W0703
         log.error("Failed to connect to database", exc_info=e)
         return

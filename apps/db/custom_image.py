@@ -35,10 +35,16 @@ async def get_user_custom_image_options(
     """
     c_fanarts = await get_character_fanarts(str(character_id))
 
-    async with AsyncSession(engine) as s, s.begin():
-        statement = select(CustomImage).where(
-            CustomImage.user_id == user_id and CustomImage.character_id == character_id
+    async with AsyncSession(engine) as s:
+        statement = (
+            select(CustomImage)
+            .where(CustomImage.user_id == user_id)
+            .where(CustomImage.character_id == character_id)
         )
+        print(await s.stream(statement))
+        async for row in await s.stream(statement):
+            print(row)
+            print(CustomImage.from_orm(row))
         rows = [CustomImage.from_orm(row) async for row in await s.stream(statement)]
 
     options = [

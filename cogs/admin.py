@@ -40,6 +40,8 @@ class AdminCog(commands.Cog, name="admin"):
         for _ in range(2):
             for module_name, module in copy_.items():
                 if any(module_name.startswith(name) for name in modules_to_reload):
+                    if module_name == "apps.db.tables":
+                        continue
                     try:
                         importlib.reload(module)
                     except Exception:  # skipcq: PYL-W0703

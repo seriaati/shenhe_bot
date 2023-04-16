@@ -155,7 +155,7 @@ async def go_back_callback(i: Inter, enka_view: EnkaView):
     version = await get_profile_ver(i.user.id, i.client.pool)
     try:
         custom_image = await get_user_custom_image(
-            i.user.id, int(enka_view.character_id), i.client.pool
+            i.user.id, int(enka_view.character_id), i.client.engine
         )
         if version == 2:
             if custom_image is None:
@@ -164,7 +164,7 @@ async def go_back_callback(i: Inter, enka_view: EnkaView):
                     raise CardNotReady
                 url = random.choice(urls)
             else:
-                url = custom_image.url
+                url = custom_image.image_url
 
             card = await main_funcs.draw_profile_card_v2(
                 DrawInput(
@@ -185,7 +185,7 @@ async def go_back_callback(i: Inter, enka_view: EnkaView):
                     dark_mode=dark_mode,
                 ),
                 character,
-                custom_image.url if custom_image else None,
+                custom_image.image_url if custom_image else None,
             )
             if card is None:
                 raise CardNotReady

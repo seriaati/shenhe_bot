@@ -79,7 +79,7 @@ async def element_button_callback(i: Inter, view: View, element: str):
         if character.element == element:
             character_id = character.id.split("-")[0]
             image_options = await image.get_user_custom_image_options(
-                int(character_id), i.client.pool, i.user.id, view.locale
+                int(character_id), i.client.engine, i.user.id, view.locale
             )
             options.append(
                 discord.SelectOption(
@@ -162,7 +162,7 @@ class AddImageModal(BaseModal):
             self.character_id,
             self.url.value,
             self.nickname.value,
-            i.client.pool,
+            i.client.engine,
         )
 
         await return_custom_image_interaction(
@@ -190,13 +190,16 @@ class RemoveImage(ui.Button):
 
     async def callback(self, i: Inter):
         custom_image = await image.get_user_custom_image(
-            i.user.id, self.character_id, i.client.pool
+            i.user.id, self.character_id, i.client.engine
         )
         if custom_image is None:
             raise AssertionError
 
         await image.remove_user_custom_image(
-            i.user.id, custom_image.url, custom_image.character_id, i.client.pool
+            i.user.id,
+            custom_image.image_url,
+            custom_image.character_id,
+            i.client.engine,
         )
         await return_custom_image_interaction(
             self.view, i, self.character_id, self.element
@@ -224,7 +227,7 @@ class ImageSelect(ui.Select):
 
     async def callback(self, i: Inter):
         await image.change_user_custom_image(
-            i.user.id, self.character_id, self.values[0], i.client.pool
+            i.user.id, self.character_id, self.values[0], i.client.engine
         )
         await return_custom_image_interaction(
             self.view, i, self.character_id, self.element
@@ -269,7 +272,7 @@ async def return_custom_image_interaction(
         view.add_item(enka_damage_calc.GoBack())
 
     options = await image.get_user_custom_image_options(
-        character_id, i.client.pool, i.user.id, view.locale
+        character_id, i.client.engine, i.user.id, view.locale
     )
     view.add_item(AddImage(view.locale, character_id, element, len(options) == 125))
     view.add_item(
@@ -282,7 +285,7 @@ async def return_custom_image_interaction(
         view.add_item(ImageSelect(view.locale, d_options, character_id, element))
 
     custom_image = await image.get_user_custom_image(
-        i.user.id, character_id, i.client.pool
+        i.user.id, character_id, i.client.engine
     )
     if custom_image is None or (custom_image and custom_image.from_shenhe):
         remove_image.disabled = True  # skipcq: PYL-W0201
