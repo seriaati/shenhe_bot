@@ -62,7 +62,7 @@ class CustomImage(SQLModel):
     """Discord user ID"""
     character_id: int
     """Genshin Impact Character ID"""
-    image_url: typing.Optional[str]
+    image_url: str
     """Image URL"""
     nickname: str
     """Image nickname"""
