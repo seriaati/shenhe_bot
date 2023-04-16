@@ -2,55 +2,69 @@ import asyncio
 import typing
 
 import aiohttp
-import asyncpg
 import discord
 import sentry_sdk
+from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlmodel import select
+from sqlmodel.ext.asyncio.session import AsyncSession
 
+from apps.db.tables import CustomImage
 from apps.text_map import text_map
-from dev.models import DefaultEmbed, Inter, UserCustomImage
+from dev.models import DefaultEmbed, Inter
 from utils import get_character_fanarts
 
 
 async def get_user_custom_image_options(
     character_id: int,
-    pool: asyncpg.Pool,
+    engine: AsyncEngine,
     user_id: int,
     locale: typing.Union[discord.Locale, str],
 ) -> typing.List[discord.SelectOption]:
+    """
+    Given a character_id, AsyncEngine, user_id, and locale, returns a list of discord.SelectOption objects that
+    represent the custom image options available to the user for the character.
+
+    Args:
+        character_id (int): The ID of the character.
+        engine (AsyncEngine): AsyncEngine instance for making asynchronous SQLAlchemy queries.
+        user_id (int): The ID of the user.
+        locale (Union[discord.Locale, str]): A discord.Locale object or a string representing the locale.
+
+    Returns:
+        List[discord.SelectOption]: A list of discord.SelectOption objects.
+    """
     c_fanarts = await get_character_fanarts(str(character_id))
 
-    rows = await pool.fetch(
-        """
-        SELECT
-            nickname, image_url, current
-        FROM
-            custom_image
-        WHERE
-            user_id = $1 AND character_id = $2
-        """,
-        user_id,
-        character_id,
-    )
-    options: typing.List[discord.SelectOption] = [
+    async with AsyncSession(engine) as s:
+        async with s.begin():
+            statement = select(CustomImage).where(
+                CustomImage.user_id == user_id
+                and CustomImage.character_id == character_id
+            )
+            rows = [
+                CustomImage.from_orm(row) async for row in await s.stream(statement)
+            ]
+
+    options = [
         discord.SelectOption(
             label=text_map.get(124, locale), value="default", default=bool(not rows)
         )
     ]
     current_image_url = None
     for row in rows:
-        if row["current"]:
-            current_image_url = row["image_url"]
-        if row["image_url"] in c_fanarts:
+        if row.current:
+            current_image_url = row.image_url
+        if row.image_url in c_fanarts:
             continue
-        if any(option.value == row["image_url"] for option in options):
+        if any(option.value == row.image_url for option in options):
             continue
 
         options.append(
             discord.SelectOption(
-                label=row["nickname"][:100],
-                description=row["image_url"][:100],
-                value=row["image_url"][:100],
-                default=row["current"],
+                label=row.nickname[:100],
+                description=row.image_url[:100],
+                value=row.image_url[:100],
+                default=row.current,
             )
         )
 
@@ -77,9 +91,22 @@ async def get_user_custom_image_embed(
     i: Inter,
     locale: discord.Locale | str,
     character_id: str,
-    custom_image: typing.Optional[UserCustomImage] = None,
+    image: typing.Optional[CustomImage] = None,
     from_settings: bool = True,
 ) -> discord.Embed:
+    """
+    Returns a Discord Embed object containing information about a user's custom image.
+
+    Args:
+        i (Inter): The Inter object representing the interaction context.
+        locale (discord.Locale | str): The locale to use when formatting text.
+        character_id (str): The ID of the character the custom image belongs to.
+        image (typing.Optional[CustomImage]): The CustomImage object containing the custom image information.
+        from_settings (bool): Whether the embed is being generated from the user's settings or not.
+
+    Returns:
+        discord.Embed: The Discord Embed object containing information about the user's custom image.
+    """
     embed = DefaultEmbed(
         description=text_map.get(412, locale) if not from_settings else ""
     )
@@ -89,14 +116,14 @@ async def get_user_custom_image_embed(
         ),
         icon_url=i.user.display_avatar.url,
     )
-    if custom_image is not None:
+    if image is not None:
         embed.add_field(
-            name=f"{text_map.get(277, locale)}: {custom_image.nickname}",
-            value=custom_image.url,
+            name=f"{text_map.get(277, locale)}: {image.nickname}",
+            value=image.image_url,
         )
-        embed.set_image(url=custom_image.url)
-    if custom_image is not None and not (
-        await validate_image_url(custom_image.url, i.client.session)
+        embed.set_image(url=image.image_url)
+    if image is not None and not (
+        await validate_image_url(image.image_url, i.client.session)
     ):
         embed.set_image(url=None)
         embed.set_footer(text=text_map.get(274, locale))
@@ -104,7 +131,18 @@ async def get_user_custom_image_embed(
 
 
 async def validate_image_url(url: str, session: aiohttp.ClientSession) -> bool:
-    image_extensions = ["jpg", "png", "jpeg", "gif", "webp"]
+    """
+    Validates whether the given URL points to a valid image by checking the URL's file extension and making an
+    HTTP request to the URL.
+
+    Args:
+        url (str): The URL to validate.
+        session (aiohttp.ClientSession): The aiohttp ClientSession object used to make the HTTP request.
+
+    Returns:
+        bool: True if the URL points to a valid image, False otherwise.
+    """
+    image_extensions = ("jpg", "png", "jpeg", "gif", "webp")
     if not any(url.endswith(ext) for ext in image_extensions):
         return False
 
@@ -119,94 +157,82 @@ async def validate_image_url(url: str, session: aiohttp.ClientSession) -> bool:
 
 
 async def change_user_custom_image(
-    user_id: int, character_id: int, image_url: str, pool: asyncpg.Pool
+    user_id: int, character_id: int, image_url: str, engine: AsyncEngine
 ) -> None:
-    await pool.execute(
-        """
-        UPDATE
-            custom_image
-        SET
-            current = false
-        WHERE
-            user_id = $1 AND character_id = $2
-        """,
-        user_id,
-        character_id,
-    )
-    result = await pool.execute(
-        """
-        UPDATE
-            custom_image
-        SET
-            current = true
-        WHERE
-            user_id = $1 AND character_id = $2 AND image_url = $3
-        """,
-        user_id,
-        character_id,
-        image_url,
-    )
-    if result == "UPDATE 0" and image_url != "default":
-        await pool.execute(
-            """
-            INSERT INTO
-                custom_image (user_id, character_id, image_url, nickname, from_shenhe)
-            VALUES
-                ($1, $2, $3, $4, true)
-            """,
-            user_id,
-            character_id,
-            image_url,
-            image_url.split("/")[-1],
-        )
+    """
+    Updates the custom image for a user and character in the database with the given image URL.
+
+    Args:
+        user_id (int): The ID of the user whose custom image will be updated.
+        character_id (int): The ID of the character whose custom image will be updated.
+        image_url (str): The URL of the new custom image.
+        engine (AsyncEngine): The SQLAlchemy AsyncEngine object used to connect to the database.
+
+    Returns:
+        None
+    """
+    async with AsyncSession(engine) as s:
+        async with s.begin():
+            statement = select(CustomImage).where(
+                CustomImage.user_id == user_id
+                and CustomImage.character_id == character_id
+            )
+
+            found = False
+            async for row in await s.stream(statement):
+                row = CustomImage.from_orm(row)
+                if row.image_url == image_url:
+                    row.current = True
+                    found = True
+                else:
+                    row.current = False
+                s.add(row)
+
+            if not found and image_url != "default":
+                s.add(
+                    CustomImage(
+                        user_id=user_id,
+                        character_id=character_id,
+                        image_url=image_url,
+                        nickname=image_url.split("/")[-1],
+                        current=True,
+                        from_shenhe=True,
+                    )
+                )
+            await s.commit()
 
 
 async def get_user_custom_image(
-    user_id: int, character_id: int, pool: asyncpg.Pool
-) -> typing.Optional[UserCustomImage]:
-    image: typing.Optional[asyncpg.Record] = await pool.fetchrow(
-        """
-        SELECT
-            user_id, character_id, image_url, nickname, from_shenhe
-        FROM
-            custom_image
-        WHERE
-            user_id = $1 AND character_id = $2 AND current = true
-        """,
-        user_id,
-        character_id,
-    )
-    if image is None:
-        return None
+    user_id: int, character_id: int, engine: AsyncEngine
+) -> typing.Optional[CustomImage]:
+    """Retrieve the custom image for a user's character from the database, and returns the CustomImage object.
 
-    from_shenhe = image["from_shenhe"]
-    if from_shenhe is None:
-        fanarts = await get_character_fanarts(str(character_id))
-        if image["image_url"] in fanarts:
-            from_shenhe = True
-            await pool.execute(
-                """
-                UPDATE
-                    custom_image
-                SET
-                    from_shenhe = true
-                WHERE
-                    user_id = $1 AND character_id = $2 AND image_url = $3
-                """,
-                user_id,
-                character_id,
-                image["image_url"],
+    Args:
+        user_id (int): The ID of the user whose custom image to retrieve.
+        character_id (int): The ID of the character for whom the custom image was created.
+        engine (AsyncEngine): The SQLAlchemy AsyncEngine instance used to connect to the database.
+
+    Returns:
+        Optional[CustomImage]: The CustomImage object representing the retrieved image, or None if no image is found.
+    """
+    async with AsyncSession(engine) as s:
+        async with s.begin():
+            statement = select(CustomImage).where(
+                CustomImage.user_id == user_id
+                and CustomImage.character_id == character_id
+                and CustomImage.current == True
             )
-        else:
-            from_shenhe = False
-
-    return UserCustomImage(
-        user_id=image["user_id"],
-        character_id=image["character_id"],
-        url=image["image_url"],
-        nickname=image["nickname"],
-        from_shenhe=from_shenhe,
-    )
+            result = await s.execute(statement)
+            image = CustomImage.from_orm(result.scalars().first())
+            if image.from_shenhe is None:
+                fanarts = await get_character_fanarts(str(character_id))
+                if image.image_url in fanarts:
+                    image.from_shenhe = True
+                else:
+                    image.from_shenhe = False
+                s.add(image)
+                await s.commit()
+            return image
 
 
 async def add_user_custom_image(
@@ -214,72 +240,73 @@ async def add_user_custom_image(
     character_id: int,
     image_url: str,
     nickname: str,
-    pool: asyncpg.Pool,
+    engine: AsyncEngine,
 ) -> None:
-    await pool.execute(
-        """
-            UPDATE
-                custom_image
-            SET
-                current = false
-            WHERE
-                user_id = $1 AND character_id = $2
-            """,
-        user_id,
-        character_id,
-    )
-    await pool.execute(
-        """
-        INSERT INTO
-            custom_image (user_id, character_id, image_url, nickname, current)
-        VALUES
-            ($1, $2, $3, $4, true)
-        """,
-        user_id,
-        character_id,
-        image_url,
-        nickname,
-    )
+    """Add a custom image for a user's character to the database.
+
+    Args:
+        user_id (int): The ID of the user who created the custom image.
+        character_id (int): The ID of the character for whom the custom image was created.
+        image_url (str): The URL of the image to add.
+        nickname (str): The nickname for the custom image.
+        engine (AsyncEngine): The SQLAlchemy AsyncEngine instance used to connect to the database.
+
+    Returns:
+        None.
+    """
+    async with AsyncSession(engine) as s:
+        async with s.begin():
+            statement = select(CustomImage).where(
+                CustomImage.user_id == user_id
+                and CustomImage.character_id == character_id
+            )
+            async for row in await s.stream(statement):
+                row = CustomImage.from_orm(row)
+                row.current = False
+                s.add(row)
+        async with s.begin():
+            s.add(
+                CustomImage(
+                    user_id=user_id,
+                    character_id=character_id,
+                    image_url=image_url,
+                    nickname=nickname,
+                    current=True,
+                )
+            )
+        await s.commit()
 
 
 async def remove_user_custom_image(
-    user_id: int, image_url: str, character_id: int, pool: asyncpg.Pool
+    user_id: int, image_url: str, character_id: int, engine: AsyncEngine
 ) -> None:
-    await pool.execute(
-        """
-        DELETE FROM
-            custom_image
-        WHERE
-            user_id = $1 AND image_url = $2 AND character_id = $3
-        """,
-        user_id,
-        image_url,
-        character_id,
-    )
-    image: typing.Optional[asyncpg.Record] = await pool.fetchrow(
-        """
-        SELECT
-            user_id, character_id, image_url, nickname
-        FROM
-            custom_image
-        WHERE
-            user_id = $1 AND character_id = $2
-        LIMIT 1
-        """,
-        user_id,
-        character_id,
-    )
-    if image is not None:
-        await pool.execute(
-            """
-            UPDATE
-                custom_image
-            SET
-                current = true
-            WHERE
-                user_id = $1 AND character_id = $2 AND image_url = $3
-            """,
-            user_id,
-            character_id,
-            image["image_url"],
-        )
+    """Remove a custom image for a user's character from the database.
+
+    Args:
+        user_id (int): The ID of the user who created the custom image.
+        image_url (str): The URL of the image to remove.
+        character_id (int): The ID of the character for whom the custom image was created.
+        engine (AsyncEngine): The SQLAlchemy AsyncEngine instance used to connect to the database.
+
+    Returns:
+        None.
+    """
+    async with AsyncSession(engine) as s:
+        async with s.begin():
+            statement = select(CustomImage).where(
+                CustomImage.user_id == user_id
+                and CustomImage.image_url == image_url
+                and CustomImage.character_id == character_id
+            )
+            async for row in await s.stream(statement):
+                row = CustomImage.from_orm(row)
+                await s.delete(row)
+        async with s.begin():
+            statement = select(CustomImage).where(
+                CustomImage.user_id == user_id
+                and CustomImage.character_id == character_id
+            )
+            image = CustomImage.from_orm((await s.execute(statement)).scalars().first())
+            image.current = True
+            s.add(image)
+        await s.commit()
