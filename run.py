@@ -48,17 +48,17 @@ if args.env == "production":
     token = os.getenv("SHENHE_BOT_TOKEN")
     debug = False
     launch_browser_in_debug = False
-    databse_url = os.getenv("SHENHE_BOT_DATABASE_URL")
+    database_url = os.getenv("SHENHE_BOT_DATABASE_URL")
 elif args.env == "testing":
     token = os.getenv("SHENHE_TEST_TOKEN")
     debug = True
     launch_browser_in_debug = True
-    databse_url = os.getenv("SHENHE_BOT_DATABASE_URL")
+    database_url = os.getenv("SHENHE_BOT_DATABASE_URL")
 elif args.env == "development":
     token = os.getenv("YAE_TOKEN")
     debug = True
     launch_browser_in_debug = False
-    databse_url = os.getenv("YAE_DATABASE_URL")
+    database_url = os.getenv("YAE_DATABASE_URL")
 else:
     print("Invalid environment specified")
     sys.exit(1)
@@ -236,7 +236,7 @@ async def main() -> None:
         raise AssertionError
 
     try:
-        pool = await asyncpg.create_pool(databse_url)
+        pool = await asyncpg.create_pool(database_url)
     except Exception as e:  # skipcq: PYL-W0703
         log.error("Failed to connect to database", exc_info=e)
         return
