@@ -35,15 +35,14 @@ async def get_user_custom_image_options(
     """
     c_fanarts = await get_character_fanarts(str(character_id))
 
-    async with AsyncSession(engine) as s:
-        async with s.begin():
-            statement = select(CustomImage).where(
-                CustomImage.user_id == user_id
-                and CustomImage.character_id == character_id
-            )
-            rows = [
-                CustomImage.from_orm(row) async for row in await s.stream(statement)
-            ]
+    async with AsyncSession(engine) as s, s.begin():
+        statement = select(CustomImage).where(
+            CustomImage.user_id == user_id
+            and CustomImage.character_id == character_id
+        )
+        rows = [
+            CustomImage.from_orm(row) async for row in await s.stream(statement)
+        ]
 
     options = [
         discord.SelectOption(
@@ -171,35 +170,34 @@ async def change_user_custom_image(
     Returns:
         None
     """
-    async with AsyncSession(engine) as s:
-        async with s.begin():
-            statement = select(CustomImage).where(
-                CustomImage.user_id == user_id
-                and CustomImage.character_id == character_id
-            )
+    async with AsyncSession(engine) as s, s.begin():
+        statement = select(CustomImage).where(
+            CustomImage.user_id == user_id
+            and CustomImage.character_id == character_id
+        )
 
-            found = False
-            async for row in await s.stream(statement):
-                row = CustomImage.from_orm(row)
-                if row.image_url == image_url:
-                    row.current = True
-                    found = True
-                else:
-                    row.current = False
-                s.add(row)
+        found = False
+        async for row in await s.stream(statement):
+            row = CustomImage.from_orm(row)
+            if row.image_url == image_url:
+                row.current = True
+                found = True
+            else:
+                row.current = False
+            s.add(row)
 
-            if not found and image_url != "default":
-                s.add(
-                    CustomImage(
-                        user_id=user_id,
-                        character_id=character_id,
-                        image_url=image_url,
-                        nickname=image_url.split("/")[-1],
-                        current=True,
-                        from_shenhe=True,
-                    )
+        if not found and image_url != "default":
+            s.add(
+                CustomImage(
+                    user_id=user_id,
+                    character_id=character_id,
+                    image_url=image_url,
+                    nickname=image_url.split("/")[-1],
+                    current=True,
+                    from_shenhe=True,
                 )
-            await s.commit()
+            )
+        await s.commit()
 
 
 async def get_user_custom_image(
@@ -215,24 +213,23 @@ async def get_user_custom_image(
     Returns:
         Optional[CustomImage]: The CustomImage object representing the retrieved image, or None if no image is found.
     """
-    async with AsyncSession(engine) as s:
-        async with s.begin():
-            statement = select(CustomImage).where(
-                CustomImage.user_id == user_id
-                and CustomImage.character_id == character_id
-                and CustomImage.current == True
-            )
-            result = await s.execute(statement)
-            image = CustomImage.from_orm(result.scalars().first())
-            if image.from_shenhe is None:
-                fanarts = await get_character_fanarts(str(character_id))
-                if image.image_url in fanarts:
-                    image.from_shenhe = True
-                else:
-                    image.from_shenhe = False
-                s.add(image)
-                await s.commit()
-            return image
+    async with AsyncSession(engine) as s, s.begin():
+        statement = select(CustomImage).where(
+            CustomImage.user_id == user_id
+            and CustomImage.character_id == character_id
+            and CustomImage.current == True
+        )
+        result = await s.execute(statement)
+        image = CustomImage.from_orm(result.scalars().first())
+        if image.from_shenhe is None:
+            fanarts = await get_character_fanarts(str(character_id))
+            if image.image_url in fanarts:
+                image.from_shenhe = True
+            else:
+                image.from_shenhe = False
+            s.add(image)
+            await s.commit()
+        return image
 
 
 async def add_user_custom_image(
