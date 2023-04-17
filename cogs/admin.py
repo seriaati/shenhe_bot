@@ -15,7 +15,7 @@ from utils import dm_embed
 class AdminCog(commands.Cog, name="admin"):
     def __init__(self, bot):
         self.bot: BotModel = bot
-        if platform.system() == "linux":
+        if platform.system() == "Linux":
             import pm2py
 
             self.pm2 = pm2py.PM2()
