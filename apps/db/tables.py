@@ -17,6 +17,7 @@ class AbyssCharacterLeaderboard:
     characters: typing.Optional[typing.List[int]] = field(default=None)
     """Character ID list"""
 
+
 @define
 class AbyssLeaderboard:
     """Single strike damage leaderboard"""
