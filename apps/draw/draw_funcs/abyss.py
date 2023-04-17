@@ -8,15 +8,11 @@ from PIL import Image, ImageDraw
 import dev.asset as asset
 from apps.draw.draw_funcs import leaderboard
 from apps.text_map import text_map
-from dev.models import (
-    CharacterUsageResult,
-    DynamicBackgroundInput,
-    RunLeaderboardUser,
-    SingleStrikeLeaderboardUser,
-    TopPadding,
-    UsageCharacter,
-)
-from utils import draw_dynamic_background, dynamic_font_size, get_cache, get_font
+from dev.models import (CharacterUsageResult, DynamicBackgroundInput,
+                        RunLeaderboardUser, SingleStrikeLeaderboardUser,
+                        TopPadding, UsageCharacter)
+from utils import (draw_dynamic_background, dynamic_font_size, get_cache,
+                   get_font)
 
 
 def one_page(
@@ -204,7 +200,7 @@ def strike_leaderboard(
 ) -> io.BytesIO:
     """Draw the "Strongest Single Strike" leaderboard."""
     im = leaderboard.board(
-        dark_mode, users, current_uid, 80, [89, 198, 199, 201, 610], locale
+        dark_mode, users, current_uid, 80, [89, 198, 199, 201, 430], locale
     )
     fp = io.BytesIO()
     im = im.convert("RGB")

@@ -275,6 +275,7 @@ class SingleStrikeLeaderboardUser:
     stars_collected: int
     uid: int
     rank: int
+    season: int
 
 
 @define

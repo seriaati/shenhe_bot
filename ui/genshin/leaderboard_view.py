@@ -227,6 +227,7 @@ async def return_single_strike(
                 single_strike=d.single_strike,
                 floor=d.floor,
                 stars_collected=d.stars_collected,
+                season=d.season,
             )
         )
         uids.append(d.uid)

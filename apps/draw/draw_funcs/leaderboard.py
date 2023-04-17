@@ -7,7 +7,8 @@ import dev.asset as asset
 from ambr import Character
 from apps.text_map import text_map
 from dev.models import RunLeaderboardUser, SingleStrikeLeaderboardUser
-from utils import circular_crop, get_cache, get_font, global_write, shorten_text
+from utils import (circular_crop, get_cache, get_font, global_write,
+                   shorten_text)
 
 
 def board(
@@ -53,7 +54,7 @@ def board(
 
     if l_type == 2:
         offset = (63, 1958)
-        users_to_draw = [user_above, current_user, user_below]
+        users_to_draw = (user_above, current_user, user_below)
         for u in users_to_draw:
             if u is not None:
                 current = u == current_user
@@ -72,7 +73,7 @@ def board(
     # write column titles
     fill = asset.secondary_text if not dark_mode else asset.white
     font = get_font(locale, 36, "Bold")
-    col_pos = [125, 460, 865, 1123, 1380]
+    col_pos = (128, 460, 865, 1123, 1380)
     for index, c_hash in enumerate(column_hashes):
         draw.text(
             (col_pos[index], 220),
@@ -129,7 +130,7 @@ def run_user_card(
     # write rank text
     font = get_font("en-US", 80, "Bold")
     fill = asset.primary_text if not dark_mode else asset.white
-    draw.text((63, 84), str(user_data.rank), font=font, fill=fill, anchor="mm")
+    draw.text((66, 84), str(user_data.rank), font=font, fill=fill, anchor="mm")
 
     # draw character icon
     character_icon = get_cache(user_data.icon_url)
@@ -181,7 +182,7 @@ def ss_user_card(
     # write rank text
     font = get_font("en-US", 80, "Bold")
     fill = asset.primary_text if not dark_mode else asset.white
-    draw.text((63, 84), str(user_data.rank), font=font, fill=fill, anchor="mm")
+    draw.text((66, 84), str(user_data.rank), font=font, fill=fill, anchor="mm")
 
     # draw character icon
     character_icon = get_cache(user_data.character.icon)
@@ -214,9 +215,9 @@ def ss_user_card(
     # write floor
     draw.text((1061, 84), user_data.floor, font=font, fill=fill, anchor="mm")
 
-    # write stars collected
+    # write abyss phase
     draw.text(
-        (1317, 84), str(user_data.stars_collected), font=font, fill=fill, anchor="mm"
+        (1317, 84), str(user_data.season), font=font, fill=fill, anchor="mm"
     )
 
     return im

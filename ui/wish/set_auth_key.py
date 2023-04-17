@@ -15,13 +15,8 @@ from apps.wish.models import WishHistory, WishInfo
 from dev.base_ui import BaseModal, BaseView
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
 from ui.wish import choose_platform
-from utils import (
-    get_account_select_options,
-    get_uid,
-    get_user_lang,
-    get_wish_info_embed,
-    log,
-)
+from utils import (get_account_select_options, get_uid, get_user_lang,
+                   get_wish_info_embed, log)
 
 
 class View(BaseView):
@@ -311,7 +306,6 @@ class ConfirmWishimport(ui.Button):
                     wish.name,
                     wish.rarity,
                     wish.time.replace(tzinfo=None),
-                    wish.type,
                     wish.banner,
                     wish.item_id,
                     wish.pity,
