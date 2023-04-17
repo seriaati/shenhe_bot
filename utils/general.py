@@ -22,7 +22,7 @@ logging.basicConfig(
 )
 log = logging
 
-sentry_logging = LoggingIntegration(level=logging.INFO)
+sentry_logging = LoggingIntegration(level=logging.INFO, event_level=logging.ERROR)
 
 
 def time_in_range(start, end, x):
