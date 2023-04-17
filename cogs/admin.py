@@ -1,5 +1,6 @@
 import importlib
 import pickle
+import platform
 import sys
 import traceback
 from pathlib import Path
@@ -14,6 +15,32 @@ from utils import dm_embed
 class AdminCog(commands.Cog, name="admin"):
     def __init__(self, bot):
         self.bot: BotModel = bot
+        if platform.system() == "linux":
+            import pm2py
+
+            self.pm2 = pm2py.PM2()
+    
+    @commands.is_owner()
+    @commands.command(name="pm2")
+    async def pm2_command(self, ctx: commands.Context, *, action: str):
+        process_name = "shenhe_testing" if self.bot.debug else "shenhe_bot"
+        if action == "list":
+            process_list = self.pm2.list()
+            await ctx.send(f"```{process_list}```")
+        elif action == "restart":
+            await ctx.send(f"Applied action: restart on {process_name}")
+            self.pm2.restart(process_name)
+        elif action == "stop":
+            await ctx.send(f"Applied action: stop on {process_name}")
+            self.pm2.stop(process_name)
+        elif action == "start":
+            await ctx.send(f"Applied action: start on {process_name}")
+            self.pm2.start(process_name)
+        elif action == "delete":
+            await ctx.send(f"Applied action: delete on {process_name}")
+            self.pm2.delete(process_name)
+        else:
+            await ctx.send(f"Invalid action: {action}")
 
     @commands.is_owner()
     @commands.command(name="maintenance")
