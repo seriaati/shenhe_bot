@@ -14,7 +14,6 @@ class WishHistory(BaseModel):
     name: str
     rarity: int
     time: datetime
-    type: str
     banner: int
 
     item_id: typing.Optional[int] = None
@@ -29,7 +28,6 @@ class WishHistory(BaseModel):
             name=row["wish_name"],
             rarity=row["wish_rarity"],
             time=row["wish_time"],
-            type=row["wish_type"],
             banner=row["wish_banner_type"],
             item_id=row["item_id"],
             pity=row["pity_pull"],
