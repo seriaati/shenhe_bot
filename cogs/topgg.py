@@ -39,7 +39,7 @@ class TopggStats(commands.Cog):
             )
             log.info(f"[Top.gg] Posted server count ({len(self.bot.guilds)})")
         except Exception as e:  # skipcq: PYL-W0703
-            log.error(f"[Top.gg] Failed to post server count ({e})")
+            log.warning(f"[Top.gg] Failed to post server count ({e})")
 
 
 async def setup(bot) -> None:

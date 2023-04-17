@@ -238,7 +238,7 @@ async def main() -> None:
     try:
         pool = await asyncpg.create_pool(database_url)
     except Exception as e:  # skipcq: PYL-W0703
-        log.error("Failed to connect to database", exc_info=e)
+        log.warning("Failed to connect to database", exc_info=e)
         return
     if not pool:
         raise AssertionError
@@ -283,7 +283,7 @@ async def main() -> None:
         except KeyboardInterrupt:
             return
         except Exception as e:  # skipcq: PYL-W0703
-            log.error("Failed to start bot", exc_info=e)
+            log.warning("Failed to start bot", exc_info=e)
             return
 
 
