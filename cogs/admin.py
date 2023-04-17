@@ -19,7 +19,7 @@ class AdminCog(commands.Cog, name="admin"):
             import pm2py
 
             self.pm2 = pm2py.PM2()
-    
+
     @commands.is_owner()
     @commands.command(name="pm2")
     async def pm2_command(self, ctx: commands.Context, *, action: str):
