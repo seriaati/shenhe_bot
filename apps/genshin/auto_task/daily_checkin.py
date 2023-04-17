@@ -22,6 +22,7 @@ class DailyCheckin:
     def __init__(self, bot: model.BotModel) -> None:
         self.bot = bot
 
+        self.success: Dict[CheckInAPI, int] = {}
         self.total: Dict[CheckInAPI, int] = {}
 
         self.start_time: datetime.datetime
@@ -110,6 +111,7 @@ class DailyCheckin:
                     return
 
         self.total[api] = 0
+        self.success[api] = 0
         MAX_API_ERROR = 5
         api_error_count = 0
 
@@ -122,16 +124,15 @@ class DailyCheckin:
                     await self._notify_user(user, embed)
             except Exception as e:  # skipcq: PYL-W0703
                 api_error_count += 1
+                log.warning(f"[DailyCheckin] {api.name} error: {e}")
+                sentry_sdk.capture_exception(e)
+                await queue.put(user)
+
                 if api_error_count >= MAX_API_ERROR:
                     log.warning(
                         f"[DailyCheckin] {api.name} has reached {MAX_API_ERROR} API errors"
                     )
                     return
-
-                log.warning(f"[DailyCheckin] {api.name} error: {e}")
-                sentry_sdk.capture_exception(e)
-                await queue.put(user)
-                continue
             else:
                 self.total[api] += 1
                 if isinstance(embed, model.DefaultEmbed):
@@ -141,6 +142,9 @@ class DailyCheckin:
                         user.user_id,
                         user.uid,
                     )
+                    self.success[api] += 1
+            finally:
+                await asyncio.sleep(1.5)
 
     async def _do_daily_checkin(
         self, api: CheckInAPI, user: model.User, retry_count: int = 0
@@ -173,8 +177,9 @@ class DailyCheckin:
                 if "msg" in data and "Too many requests" in data["msg"]:
                     if retry_count >= MAX_RETRY:
                         sentry_sdk.capture_message(
-                            f"[DailyCheckin] {api.name} retry limit reached"
+                            f"[DailyCheckin] {api.name} retry limit reached, user: {user}"
                         )
+                        raise CheckInAPIError(api, 429)
                     await asyncio.sleep(5 * (retry_count + 1))
                     return await self._do_daily_checkin(api, user, retry_count + 1)
 
@@ -243,12 +248,14 @@ class DailyCheckin:
             self.bot.owner_id
         )
 
-        each_api = "\n".join(f"{api.name}: {self.total[api]}" for api in CheckInAPI)
+        each_api = "\n".join(
+            f"{api.name}: {self.success[api]}/{self.total[api]}" for api in CheckInAPI
+        )
         embed = model.DefaultEmbed(
             "Daily Checkin Report",
             f"""
             {each_api}
-            Total: {sum(self.total.values())}
+            Total: {sum(self.success.values())}/{sum(self.total.values())}
             
             Start time: {self.start_time}
             End time: {self.end_time}
