@@ -174,7 +174,7 @@ async def return_single_strike(
 
     if view.season != 0:
         rows = await pool.fetch(
-            f"""
+            """
             SELECT *
             FROM
                 abyss_leaderboard
@@ -187,7 +187,7 @@ async def return_single_strike(
         )
     else:
         rows = await pool.fetch(
-            f"""
+            """
             SELECT *
             FROM
                 abyss_leaderboard
@@ -273,7 +273,7 @@ async def return_usage_rate(
 ):
     if view.season != 0:
         rows = await pool.fetch(
-            f"""
+            """
             SELECT *
             FROM abyss_character_leaderboard
             WHERE season = $1
@@ -282,7 +282,7 @@ async def return_usage_rate(
         )
     else:
         rows = await pool.fetch(
-            f"""
+            """
             SELECT *
             FROM abyss_character_leaderboard
             """,
@@ -351,7 +351,7 @@ async def return_full_clear(
 
     if view.season != 0:
         rows = await pool.fetch(
-            f"""
+            """
             SELECT *
             FROM abyss_leaderboard
             WHERE season = $1
@@ -362,7 +362,7 @@ async def return_full_clear(
         )
     else:
         rows = await pool.fetch(
-            f"""
+            """
             SELECT *
             FROM abyss_leaderboard
             WHERE stars_collected = 36
