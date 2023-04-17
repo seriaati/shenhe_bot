@@ -42,7 +42,6 @@ class WishHistory(BaseModel):
             name=wish.name,
             rarity=wish.rarity,
             time=wish.time,
-            type=wish.type,
             banner=wish.banner_type.value,
         )
 
@@ -54,7 +53,6 @@ class WishHistory(BaseModel):
             "wish_name": self.name,
             "wish_rarity": self.rarity,
             "wish_time": self.time,
-            "wish_type": self.type,
             "wish_banner_type": self.banner,
             "item_id": self.item_id,
             "pity_pull": self.pity,
