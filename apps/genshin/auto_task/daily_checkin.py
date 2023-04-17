@@ -22,6 +22,7 @@ class DailyCheckin:
     def __init__(self, bot: model.BotModel) -> None:
         self.bot = bot
 
+        self.success: Dict[CheckInAPI, int] = {}
         self.total: Dict[CheckInAPI, int] = {}
 
         self.start_time: datetime.datetime
@@ -110,6 +111,7 @@ class DailyCheckin:
                     return
 
         self.total[api] = 0
+        self.success[api] = 0
         MAX_API_ERROR = 5
         api_error_count = 0
 
@@ -141,6 +143,8 @@ class DailyCheckin:
                         user.user_id,
                         user.uid,
                     )
+                else:
+                    self.success[api] += 1
 
     async def _do_daily_checkin(
         self, api: CheckInAPI, user: model.User, retry_count: int = 0
@@ -243,12 +247,12 @@ class DailyCheckin:
             self.bot.owner_id
         )
 
-        each_api = "\n".join(f"{api.name}: {self.total[api]}" for api in CheckInAPI)
+        each_api = "\n".join(f"{api.name}: {self.success[api]}/{self.total[api]}" for api in CheckInAPI)
         embed = model.DefaultEmbed(
             "Daily Checkin Report",
             f"""
             {each_api}
-            Total: {sum(self.total.values())}
+            Total: {sum(self.success.values())}/{sum(self.total.values())}
             
             Start time: {self.start_time}
             End time: {self.end_time}
