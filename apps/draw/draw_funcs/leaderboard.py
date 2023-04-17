@@ -7,8 +7,7 @@ import dev.asset as asset
 from ambr import Character
 from apps.text_map import text_map
 from dev.models import RunLeaderboardUser, SingleStrikeLeaderboardUser
-from utils import (circular_crop, get_cache, get_font, global_write,
-                   shorten_text)
+from utils import circular_crop, get_cache, get_font, global_write, shorten_text
 
 
 def board(
@@ -216,9 +215,7 @@ def ss_user_card(
     draw.text((1061, 84), user_data.floor, font=font, fill=fill, anchor="mm")
 
     # write abyss phase
-    draw.text(
-        (1317, 84), str(user_data.season), font=font, fill=fill, anchor="mm"
-    )
+    draw.text((1317, 84), str(user_data.season), font=font, fill=fill, anchor="mm")
 
     return im
 
