@@ -24,6 +24,7 @@ from utils import (
     get_user_theme,
     log,
 )
+from utils.text_map import get_city_name
 from apps.draw import main_funcs
 from apps.genshin import auto_task
 from apps.text_map import text_map, to_ambr_top
@@ -636,7 +637,7 @@ class Schedule(commands.Cog):
                 embed = models.DefaultEmbed()
                 embed.add_field(
                     name=text_map.get(609, locale),
-                    value=f"{domain.name} ({domain.city.name})",
+                    value=f"{domain.name} ({get_city_name(domain.city.id, locale)})",
                 )
                 embed.set_author(
                     name=text_map.get(312, locale).format(name=item.name),

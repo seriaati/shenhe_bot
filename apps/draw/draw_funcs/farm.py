@@ -23,7 +23,9 @@ def draw_domain_card(
     basic_cards: List[Image.Image] = []
 
     for data in farm_data:
-        basic_card = Image.open(f"yelan/templates/farm/[{app_mode}] basic_card.png")
+        basic_card: Image.Image = Image.open(
+            f"yelan/templates/farm/[{app_mode}] basic_card.png"
+        )
 
         item_per_row = 9
         height_per_row = 199
@@ -46,11 +48,14 @@ def draw_domain_card(
             fill="#FFFFFF",
         )
 
-        for index, reward in enumerate(data.domain.rewards):
-            if len(str(reward.id)) == 6:
-                icon = get_cache(reward.icon)
-                icon = icon.resize((82, 82))
-                basic_card.paste(icon, (1286 + (-85) * index, 17), icon)
+        index = 0
+        for reward in data.domain.rewards:
+            if len(str(reward.id)) != 6:
+                continue
+            icon = get_cache(reward.icon)
+            icon = icon.resize((82, 82))
+            basic_card.paste(icon, (1286 + (-85) * index, 17), icon)
+            index += 1
 
         starting_pos = (50, 154)
         dist_between_items = 148

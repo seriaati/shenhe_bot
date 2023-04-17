@@ -28,7 +28,7 @@ from dev.exceptions import ShenheAccountNotFound
 
 from .db import get_user_lang
 from .general import get_dt_now
-from .text_map import translate_main_stat
+from .text_map import get_city_name, translate_main_stat
 
 
 def calculate_artifact_score(substats: dict):
@@ -316,8 +316,9 @@ async def get_farm_data(
     if not isinstance(w_upgrades, list):
         raise AssertionError
 
-    domains = [d for d in domains if d.weekday == weekday]
     for domain in domains:
+        if domain.weekday != weekday:
+            continue
         farm_data = models.FarmData(domain=domain)
         if len([r for r in domain.rewards if len(str(r.id)) == 6]) == 4:
             for w_upgrade in w_upgrades:
@@ -354,8 +355,10 @@ async def get_farm_data(
 
 def get_domain_title(domain: Domain, locale: discord.Locale | str) -> str:
     if "Forgery" in text_map.get_domain_name(domain.id, "en-US"):
-        return f"{domain.city.name} - {text_map.get(91, locale)}"
-    return f"{domain.city.name} - {text_map.get(105, locale).title()}"
+        return (
+            f"{get_city_name(domain.city.id, str(locale))} - {text_map.get(91, locale)}"
+        )
+    return f"{get_city_name(domain.city.id, str(locale))} - {text_map.get(105, locale).title()}"
 
 
 def convert_ar_to_wl(ar: int) -> int:

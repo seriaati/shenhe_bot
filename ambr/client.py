@@ -5,7 +5,6 @@ from typing import Dict, List, Optional
 import aiohttp
 
 import ambr.models as models
-from utils.text_map import get_city_name
 
 from .constants import EVENTS_URL, LANGS, WEEKDAYS
 from .endpoints import BASE, ENDPOINTS, STATIC_ENDPOINTS
@@ -577,10 +576,7 @@ class AmbrTopAPI:
             weekday_int = WEEKDAYS.get(weekday, 0)
             for domain_info in domain_dict.values():
                 city_id = domain_info["city"]
-                city = models.City(
-                    id=city_id,
-                    name=get_city_name(city_id, self.lang),
-                )
+                city = models.City(id=city_id)
                 rewards: List[models.Material] = []
                 for reward in domain_info["reward"]:
                     material = await self.get_material(id=reward)
