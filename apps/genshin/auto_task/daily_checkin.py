@@ -127,7 +127,7 @@ class DailyCheckin:
                 log.warning(f"[DailyCheckin] {api.name} error: {e}")
                 sentry_sdk.capture_exception(e)
                 await queue.put(user)
-                
+
                 if api_error_count >= MAX_API_ERROR:
                     log.warning(
                         f"[DailyCheckin] {api.name} has reached {MAX_API_ERROR} API errors"
@@ -248,7 +248,9 @@ class DailyCheckin:
             self.bot.owner_id
         )
 
-        each_api = "\n".join(f"{api.name}: {self.success[api]}/{self.total[api]}" for api in CheckInAPI)
+        each_api = "\n".join(
+            f"{api.name}: {self.success[api]}/{self.total[api]}" for api in CheckInAPI
+        )
         embed = model.DefaultEmbed(
             "Daily Checkin Report",
             f"""
