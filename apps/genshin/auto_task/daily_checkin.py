@@ -69,7 +69,7 @@ class DailyCheckin:
             log.info("[DailyCheckin] Finished")
         except Exception as e:  # skipcq: PYL-W0703
             sentry_sdk.capture_exception(e)
-            log.error(f"[DailyCheckin] {e}")
+            log.warning(f"[DailyCheckin] {e}")
 
     async def _add_user_to_queue(self, queue: asyncio.Queue[model.User]) -> None:
         log.info("[DailyCheckin] Adding users to queue...")
@@ -100,11 +100,11 @@ class DailyCheckin:
         if api is not CheckInAPI.LOCAL:
             link = self.api_links[api]
             if link is None:
-                return log.error(f"[DailyCheckin] {api.name} link is not set")
+                return log.warning(f"[DailyCheckin] {api.name} link is not set")
 
             async with self.bot.session.get(link) as resp:
                 if resp.status != 200:
-                    log.error(
+                    log.warning(
                         f"[DailyCheckin] {api.name} returned {resp.status} status code"
                     )
                     return
@@ -123,12 +123,12 @@ class DailyCheckin:
             except Exception as e:  # skipcq: PYL-W0703
                 api_error_count += 1
                 if api_error_count >= MAX_API_ERROR:
-                    log.error(
+                    log.warning(
                         f"[DailyCheckin] {api.name} has reached {MAX_API_ERROR} API errors"
                     )
                     return
 
-                log.error(f"[DailyCheckin] {api.name} error: {e}")
+                log.warning(f"[DailyCheckin] {api.name} error: {e}")
                 sentry_sdk.capture_exception(e)
                 await queue.put(user)
                 continue

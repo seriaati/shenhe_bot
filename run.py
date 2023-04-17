@@ -23,11 +23,8 @@ import dev.models as models
 from apps.genshin import launch_browsers, launch_debug_browser
 from apps.genshin_data.text_maps import load_text_maps
 from apps.text_map import text_map
-from dev.base_ui import (
-    get_error_handle_embed,
-    global_error_handler,
-    support_server_view,
-)
+from dev.base_ui import (get_error_handle_embed, global_error_handler,
+                         support_server_view)
 from dev.exceptions import FeatureDisabled, Maintenance
 from dev.models import BotModel
 from utils import log, sentry_logging
@@ -238,7 +235,7 @@ async def main() -> None:
     try:
         pool = await asyncpg.create_pool(database_url)
     except Exception as e:  # skipcq: PYL-W0703
-        log.error("Failed to connect to database", exc_info=e)
+        log.warning("Failed to connect to database", exc_info=e)
         return
     if not pool:
         raise AssertionError
@@ -283,7 +280,7 @@ async def main() -> None:
         except KeyboardInterrupt:
             return
         except Exception as e:  # skipcq: PYL-W0703
-            log.error("Failed to start bot", exc_info=e)
+            log.warning("Failed to start bot", exc_info=e)
             return
 
 

@@ -9,7 +9,7 @@ import sentry_sdk
 import dev.asset as asset
 import dev.exceptions as exceptions
 from apps.text_map import text_map
-from utils import get_user_lang
+from utils import get_user_lang, log
 
 from .models import ErrorEmbed, Inter, OriginalInfo
 
@@ -141,6 +141,7 @@ def get_error_handle_embed(
 
 def capture_exception(e: Exception):
     """Log the error and traceback then capture exception to sentry."""
+    log.warning(f"Error: {type(e)}: {e}", exc_info=e)
     sentry_sdk.capture_exception(e)
 
 
@@ -174,7 +175,6 @@ class BaseView(discord.ui.View):
         return self.author.id == i.user.id
 
     async def on_error(self, i: Inter, e: Exception, _, /) -> None:
-        print(f"Error: {type(e)}: {e}")
         await global_error_handler(i, e)
 
     async def on_timeout(self) -> None:
