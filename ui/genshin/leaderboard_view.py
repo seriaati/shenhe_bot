@@ -7,16 +7,13 @@ import dev.asset as asset
 import dev.config as config
 import dev.models as models
 from ambr import AmbrTopAPI, Character
+from apps.db.tables import AbyssCharacterLeaderboard, AbyssLeaderboard
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
 from dev.base_ui import BaseView
-from utils import (
-    get_abyss_season_date_range,
-    get_character_emoji,
-    get_current_abyss_season,
-    get_user_theme,
-    image_gen_transition,
-)
+from utils import (get_abyss_season_date_range, get_character_emoji,
+                   get_current_abyss_season, get_user_theme,
+                   image_gen_transition)
 
 
 class EmptyLeaderboard(Exception):
@@ -91,7 +88,6 @@ async def select_callback(view: View, i: models.Inter, leaderboard: str):
     session = i.client.session
     abyss_command = "/abyss"
 
-    query_str = "" if view.season == 0 else f"WHERE season = {view.season}"
     uid = view.uid
     locale = view.locale
     dark_mode = await get_user_theme(i.user.id, pool)
@@ -109,6 +105,10 @@ async def select_callback(view: View, i: models.Inter, leaderboard: str):
         server.style = discord.ButtonStyle.primary
         glob.style = discord.ButtonStyle.secondary
 
+        # also chunk the guild if it hasn't been chunked yet
+        if i.guild and not i.guild.chunked:
+            await i.guild.chunk(cache=True)
+
     # remove or add abyss season select based on current leaderboard type
     abyss_season_select = utils.get(view.children, custom_id="abyss_season_select")
     if (
@@ -122,17 +122,6 @@ async def select_callback(view: View, i: models.Inter, leaderboard: str):
         if isinstance(item, (ui.Button, ui.Select)):
             item.disabled = False
 
-    # server member ids
-    if view.area == "server":
-        if i.guild is not None:
-            if not i.guild.chunked:
-                await i.guild.chunk()
-            guild_member_ids = [member.id for member in i.guild.members]
-        else:
-            guild_member_ids = [i.user.id]
-    else:
-        guild_member_ids = []
-
     # leaderbaord title
     title = ""
     if leaderboard == "single_strike_damage":
@@ -145,242 +134,22 @@ async def select_callback(view: View, i: models.Inter, leaderboard: str):
     # draw the leaderboard
     try:
         if leaderboard == "single_strike_damage":
-            single_strike_users: List[models.SingleStrikeLeaderboardUser] = []
-            uids: List[int] = []
-
-            rows = await pool.fetch(
-                f"""
-                SELECT
-                    uid, single_strike, floor,
-                    stars_collected, user_name, user_id,
-                    const, refine, c_level, c_icon
-                FROM
-                    abyss_leaderboard {query_str}
-                ORDER BY
-                    single_strike DESC
-                """
-            )
-
-            current_user = None
-            rank = 1
-            for row in rows:
-                if view.area == "server" and row[6] not in guild_member_ids:
-                    continue
-                if row["uid"] in uids:
-                    continue
-
-                single_strike_users.append(
-                    user := models.SingleStrikeLeaderboardUser(
-                        uid=row["uid"],
-                        user_name=row["user_name"],
-                        rank=rank,
-                        character=models.SingleStrikeLeaderboardCharacter(
-                            constellation=row["const"],
-                            refinement=row["refine"],
-                            level=row["c_level"],
-                            icon=row["c_icon"],
-                        ),
-                        single_strike=row["single_strike"],
-                        floor=row["floor"],
-                        stars_collected=row["stars_collected"],
-                    )
-                )
-                uids.append(row["uid"])
-
-                if row["uid"] == uid:
-                    current_user = user
-                rank += 1
-
-            if not single_strike_users:
-                raise EmptyLeaderboard
-
-            fp = await main_funcs.draw_single_strike_leaderboard(
-                models.DrawInput(
-                    loop=i.client.loop,
-                    session=session,
-                    locale=locale,
-                    dark_mode=dark_mode,
-                ),
-                uid,
-                single_strike_users,
-            )
-            fp.seek(0)
-
-            embed = models.DefaultEmbed(
-                title,
-                f"""
-                {text_map.get(457, locale) if current_user is None else text_map.get(614, locale).format(rank=current_user.rank)}
-                {text_map.get(615, locale).format(num=len(single_strike_users))}
-                """,
-            )
-            embed.set_author(
-                name=get_al_title(view.season, locale),
-                icon_url=i.user.display_avatar.url,
-            )
-            embed.set_footer(
-                text=text_map.get(619, locale).format(command=abyss_command)
-            )
-            embed.set_image(url="attachment://leaderboard.jpeg")
-
-            await i.edit_original_response(
-                embed=embed,
-                attachments=[discord.File(fp, filename="leaderboard.jpeg")],
-                view=view,
+            await return_single_strike(
+                view, i, pool, session, abyss_command, uid, locale, dark_mode, title
             )
 
         elif leaderboard == "character_usage_rate":
-            data = await pool.fetch(
-                f"SELECT user_id, characters FROM abyss_character_leaderboard {query_str}"
-            )
-            if view.area == "server":
-                data = [item for item in data if item["user_id"] in guild_member_ids]
-            if not data:
-                raise EmptyLeaderboard
-
-            uc_list: List[models.UsageCharacter] = []
-            temp_dict: Dict[int, int] = {}
-            for d in data:
-                for c in d["characters"]:
-                    c: int
-                    if c in temp_dict:
-                        temp_dict[c] += 1
-                    else:
-                        temp_dict[c] = 1
-
-            client = AmbrTopAPI(session, to_ambr_top(locale))
-            for key, value in temp_dict.items():
-                if key in asset.traveler_ids:
-                    key = f"{key}-anemo"
-                character = await client.get_character(str(key))
-                if not isinstance(character, Character):
-                    raise AssertionError
-                uc_list.append(
-                    models.UsageCharacter(character=character, usage_num=value)
-                )
-
-            result = await main_funcs.abyss_character_usage_card(
-                models.DrawInput(
-                    loop=i.client.loop,
-                    session=session,
-                    locale=locale,
-                    dark_mode=dark_mode,
-                ),
-                uc_list,
-            )
-            result.fp.seek(0)
-
-            character_emoji = get_character_emoji(result.first_character.id)
-            character_name = f"{character_emoji} {result.first_character.name}"
-            embed = models.DefaultEmbed(
-                title,
-                f"{text_map.get(618, locale).format(name=character_name, num=result.uses, percent=round(result.percentage, 1))}\n"
-                f"{text_map.get(615, locale).format(num=len(data))}",
-            )
-            embed.set_author(
-                name=get_al_title(view.season, locale),
-                icon_url=i.user.display_avatar.url,
-            )
-            embed.set_footer(
-                text=text_map.get(619, locale).format(command=abyss_command)
-            )
-            embed.set_image(url="attachment://character_usage.jpeg")
-
-            await i.edit_original_response(
-                embed=embed,
-                attachments=[discord.File(result.fp, filename="character_usage.jpeg")],
-                view=view,
+            await return_usage_rate(
+                view, i, pool, session, abyss_command, locale, dark_mode, title
             )
 
         elif leaderboard == "full_clear":
-            run_users: List[models.RunLeaderboardUser] = []
-            uids: List[int] = []
-
-            if query_str:
-                query_str += " AND stars_collected = 36"
-            else:
-                query_str += " WHERE stars_collected = 36"
-
-            rows = await pool.fetch(
-                f"""
-                SELECT
-                uid, wins, runs, level, icon_url,
-                user_id, user_name
-                FROM abyss_leaderboard {query_str}
-                ORDER BY runs ASC
-                """
-            )
-
-            current_user = None
-            rank = 1
-            for row in rows:
-                if view.area == "server" and row["user_id"] not in guild_member_ids:
-                    continue
-                if row["uid"] in uids:
-                    continue
-
-                if row["runs"] == 0:
-                    win_percentage = 0
-                else:
-                    win_percentage = round(row["wins"] / row["runs"] * 100, 1)
-
-                run_users.append(
-                    user := models.RunLeaderboardUser(
-                        icon_url=row["icon_url"],
-                        user_name=row["user_name"],
-                        level=row["level"],
-                        wins_slash_runs=f"{row['wins']}/{row['runs']}",
-                        win_percentage=str(win_percentage),
-                        stars_collected=36,
-                        uid=row["uid"],
-                        rank=rank,
-                    )
-                )
-                if row["uid"] == uid:
-                    current_user = user
-                uids.append(row["uid"])
-                rank += 1
-
-            if not run_users:
-                raise EmptyLeaderboard
-
-            fp = await main_funcs.draw_run_leaderboard(
-                models.DrawInput(
-                    loop=i.client.loop,
-                    session=session,
-                    locale=locale,
-                    dark_mode=dark_mode,
-                ),
-                uid,
-                run_users,
-            )
-            fp.seek(0)
-
-            embed = models.DefaultEmbed(
-                title,
-                f"""
-                {text_map.get(457, locale) if current_user is None else text_map.get(614, locale).format(rank=current_user.rank)}
-                {text_map.get(615, locale).format(num=len(run_users))}
-                """,
-            )
-            embed.set_author(
-                name=get_al_title(view.season, locale),
-                icon_url=i.user.display_avatar.url,
-            )
-            embed.set_footer(
-                text=text_map.get(619, locale).format(command=abyss_command)
-            )
-            embed.set_image(url="attachment://leaderboard.jpeg")
-
-            await i.edit_original_response(
-                embed=embed,
-                attachments=[discord.File(fp, filename="leaderboard.jpeg")],
-                view=view,
+            await return_full_clear(
+                view, i, pool, session, abyss_command, uid, locale, dark_mode, title
             )
 
     except EmptyLeaderboard:
-        for item in view.children:
-            if isinstance(item, ui.Select):
-                item.disabled = False
+        view.disable_items()
         glob.disabled = True
         server.disabled = True
 
@@ -391,6 +160,283 @@ async def select_callback(view: View, i: models.Inter, leaderboard: str):
             view=view,
             attachments=[],
         )
+
+
+async def return_single_strike(
+    view, i, pool, session, abyss_command, uid, locale, dark_mode, title
+):
+    single_strike_users: List[models.SingleStrikeLeaderboardUser] = []
+    uids: List[int] = []
+
+    if view.season != 0:
+        rows = await pool.fetch(
+            f"""
+            SELECT *
+            FROM
+                abyss_leaderboard
+            WHERE
+                season = $1
+            ORDER BY
+                single_strike DESC
+            """,
+            view.season,
+        )
+    else:
+        rows = await pool.fetch(
+            f"""
+            SELECT *
+            FROM
+                abyss_leaderboard
+            ORDER BY
+                single_strike DESC
+            """
+        )
+    if not rows:
+        raise EmptyLeaderboard
+
+    data = [AbyssLeaderboard(**row) for row in rows]
+
+    current_user = None
+    rank = 1
+    for d in data:
+        # filter out users that are not in the server
+        if i.guild and view.area == "server":
+            member = i.guild.get_member(d.user_id)
+            if member is None:
+                continue
+
+                # filter out users with UID that are already in the list
+        if d.uid in uids:
+            continue
+
+        single_strike_users.append(
+            user := models.SingleStrikeLeaderboardUser(
+                uid=d.uid,
+                user_name=d.user_name,
+                rank=rank,
+                character=models.SingleStrikeLeaderboardCharacter(
+                    constellation=d.constellation,
+                    refinement=d.refinemenet,
+                    level=d.character_level,
+                    icon=d.character_icon,
+                ),
+                single_strike=d.single_strike,
+                floor=d.floor,
+                stars_collected=d.stars_collected,
+            )
+        )
+        uids.append(d.uid)
+
+        if d.uid == uid:
+            current_user = user
+        rank += 1
+
+    fp = await main_funcs.draw_single_strike_leaderboard(
+        models.DrawInput(
+            loop=i.client.loop,
+            session=session,
+            locale=locale,
+            dark_mode=dark_mode,
+        ),
+        uid,
+        single_strike_users,
+    )
+    fp.seek(0)
+
+    embed = models.DefaultEmbed(
+        title,
+        f"""
+        {text_map.get(457, locale) if current_user is None else text_map.get(614, locale).format(rank=current_user.rank)}
+        {text_map.get(615, locale).format(num=len(single_strike_users))}
+        """,
+    )
+    embed.set_author(
+        name=get_al_title(view.season, locale),
+        icon_url=i.user.display_avatar.url,
+    )
+    embed.set_footer(text=text_map.get(619, locale).format(command=abyss_command))
+    embed.set_image(url="attachment://leaderboard.jpeg")
+
+    await i.edit_original_response(
+        embed=embed,
+        attachments=[discord.File(fp, filename="leaderboard.jpeg")],
+        view=view,
+    )
+
+
+async def return_usage_rate(
+    view, i, pool, session, abyss_command, locale, dark_mode, title
+):
+    if view.season != 0:
+        rows = await pool.fetch(
+            f"""
+            SELECT *
+            FROM abyss_character_leaderboard
+            WHERE season = $1
+            """,
+            view.season,
+        )
+    else:
+        rows = await pool.fetch(
+            f"""
+            SELECT *
+            FROM abyss_character_leaderboard
+            """,
+        )
+    if not rows:
+        raise EmptyLeaderboard
+
+    data = [AbyssCharacterLeaderboard(**row) for row in rows]
+    uc_list: List[models.UsageCharacter] = []
+    temp_dict: Dict[int, int] = {}
+    for d in data:
+        if d.characters is None:
+            continue
+        for c in d.characters:
+            if c in temp_dict:
+                temp_dict[c] += 1
+            else:
+                temp_dict[c] = 1
+
+    client = AmbrTopAPI(session, to_ambr_top(locale))
+    for key, value in temp_dict.items():
+        if key in asset.traveler_ids:
+            key = f"{key}-anemo"
+        character = await client.get_character(str(key))
+        if not isinstance(character, Character):
+            raise AssertionError
+        uc_list.append(models.UsageCharacter(character=character, usage_num=value))
+
+    result = await main_funcs.abyss_character_usage_card(
+        models.DrawInput(
+            loop=i.client.loop,
+            session=session,
+            locale=locale,
+            dark_mode=dark_mode,
+        ),
+        uc_list,
+    )
+    result.fp.seek(0)
+
+    character_emoji = get_character_emoji(result.first_character.id)
+    character_name = f"{character_emoji} {result.first_character.name}"
+    embed = models.DefaultEmbed(
+        title,
+        f"{text_map.get(618, locale).format(name=character_name, num=result.uses, percent=round(result.percentage, 1))}\n"
+        f"{text_map.get(615, locale).format(num=len(data))}",
+    )
+    embed.set_author(
+        name=get_al_title(view.season, locale),
+        icon_url=i.user.display_avatar.url,
+    )
+    embed.set_footer(text=text_map.get(619, locale).format(command=abyss_command))
+    embed.set_image(url="attachment://character_usage.jpeg")
+
+    await i.edit_original_response(
+        embed=embed,
+        attachments=[discord.File(result.fp, filename="character_usage.jpeg")],
+        view=view,
+    )
+
+
+async def return_full_clear(
+    view, i, pool, session, abyss_command, uid, locale, dark_mode, title
+):
+    run_users: List[models.RunLeaderboardUser] = []
+    uids: List[int] = []
+
+    if view.season != 0:
+        rows = await pool.fetch(
+            f"""
+            SELECT *
+            FROM abyss_leaderboard
+            WHERE season = $1
+            AND stars_collected = 36
+            ORDER BY runs ASC
+            """,
+            view.season,
+        )
+    else:
+        rows = await pool.fetch(
+            f"""
+            SELECT *
+            FROM abyss_leaderboard
+            WHERE stars_collected = 36
+            ORDER BY runs ASC
+            """
+        )
+    if not rows:
+        raise EmptyLeaderboard
+
+    data = [AbyssLeaderboard(**row) for row in rows]
+
+    current_user = None
+    rank = 1
+    for d in data:
+        if i.guild and view.area == "server":
+            member = i.guild.get_member(d.user_id)
+            if not member:
+                continue
+
+        if d.uid in uids:
+            continue
+
+        if d.runs == 0:
+            win_percentage = 0
+        else:
+            win_percentage = round(d.wins / d.runs * 100, 1)
+
+        run_users.append(
+            user := models.RunLeaderboardUser(
+                icon_url=d.icon_url,
+                user_name=d.user_name,
+                level=d.level,
+                wins_slash_runs=f"{d.wins}/{d.runs}",
+                win_percentage=str(win_percentage),
+                stars_collected=36,
+                uid=d.uid,
+                rank=rank,
+            )
+        )
+        if d.uid == uid:
+            current_user = user
+        uids.append(d.uid)
+        rank += 1
+
+    if not run_users:
+        raise EmptyLeaderboard
+
+    fp = await main_funcs.draw_run_leaderboard(
+        models.DrawInput(
+            loop=i.client.loop,
+            session=session,
+            locale=locale,
+            dark_mode=dark_mode,
+        ),
+        uid,
+        run_users,
+    )
+    fp.seek(0)
+
+    embed = models.DefaultEmbed(
+        title,
+        f"""
+        {text_map.get(457, locale) if current_user is None else text_map.get(614, locale).format(rank=current_user.rank)}
+        {text_map.get(615, locale).format(num=len(run_users))}
+        """,
+    )
+    embed.set_author(
+        name=get_al_title(view.season, locale),
+        icon_url=i.user.display_avatar.url,
+    )
+    embed.set_footer(text=text_map.get(619, locale).format(command=abyss_command))
+    embed.set_image(url="attachment://leaderboard.jpeg")
+
+    await i.edit_original_response(
+        embed=embed,
+        attachments=[discord.File(fp, filename="leaderboard.jpeg")],
+        view=view,
+    )
 
 
 class Global(ui.Button):

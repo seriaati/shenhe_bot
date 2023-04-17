@@ -18,9 +18,6 @@ async def global_error_handler(
     i: Inter,
     e: typing.Union[Exception, discord.app_commands.AppCommandError],
 ):
-    if not i.command:
-        return
-
     locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
     embed = get_error_handle_embed(i.user, e, locale)
     view = support_server_view(locale)
@@ -37,7 +34,7 @@ async def global_error_handler(
             ephemeral=True,
             view=view,
         )
-    except (discord.NotFound, discord.HTTPException):
+    except discord.HTTPException:
         pass
 
 
@@ -144,7 +141,6 @@ def get_error_handle_embed(
 
 def capture_exception(e: Exception):
     """Log the error and traceback then capture exception to sentry."""
-    log.warning(f"Error: {type(e)}: {e}", exc_info=e)
     sentry_sdk.capture_exception(e)
 
 
@@ -177,7 +173,8 @@ class BaseView(discord.ui.View):
             )
         return self.author.id == i.user.id
 
-    async def on_error(self, i: Inter, e: Exception, item) -> None:
+    async def on_error(self, i: Inter, e: Exception, _, /) -> None:
+        print(f"Error: {type(e)}: {e}")
         await global_error_handler(i, e)
 
     async def on_timeout(self) -> None:
