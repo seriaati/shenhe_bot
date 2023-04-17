@@ -72,7 +72,7 @@ def board(
     # write column titles
     fill = asset.secondary_text if not dark_mode else asset.white
     font = get_font(locale, 36, "Bold")
-    col_pos = (128, 460, 865, 1123, 1380)
+    col_pos = (172, 460, 865, 1123, 1380)
     for index, c_hash in enumerate(column_hashes):
         draw.text(
             (col_pos[index], 220),
@@ -129,7 +129,7 @@ def run_user_card(
     # write rank text
     font = get_font("en-US", 80, "Bold")
     fill = asset.primary_text if not dark_mode else asset.white
-    draw.text((66, 84), str(user_data.rank), font=font, fill=fill, anchor="mm")
+    draw.text((110, 84), str(user_data.rank), font=font, fill=fill, anchor="mm")
 
     # draw character icon
     character_icon = get_cache(user_data.icon_url)
@@ -181,7 +181,7 @@ def ss_user_card(
     # write rank text
     font = get_font("en-US", 80, "Bold")
     fill = asset.primary_text if not dark_mode else asset.white
-    draw.text((66, 84), str(user_data.rank), font=font, fill=fill, anchor="mm")
+    draw.text((110, 84), str(user_data.rank), font=font, fill=fill, anchor="mm")
 
     # draw character icon
     character_icon = get_cache(user_data.character.icon)
