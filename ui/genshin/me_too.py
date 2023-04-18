@@ -35,4 +35,7 @@ class MeTooButton(ui.Button):
         else:
             locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
             view = View(self.view.code, self.view.genshin_app, locale)
-        await i.edit_original_response(embed=result.result, view=view)
+        if view is None:
+            await i.followup.send(embed=result.result)
+        else:
+            await i.followup.send(embed=result.result, view=view)
