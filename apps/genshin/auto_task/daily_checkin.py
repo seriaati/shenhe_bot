@@ -244,9 +244,9 @@ class DailyCheckin:
             sentry_sdk.capture_exception(e)
 
     async def _send_report(self) -> None:
-        owner = self.bot.get_user(self.bot.owner_id) or await self.bot.fetch_user(
-            self.bot.owner_id
-        )
+        owner = self.bot.get_user(410036441129943050)
+        if owner is None:
+            owner = self.bot.fetch_user(410036441129943050)
 
         each_api = "\n".join(
             f"{api.name}: {self.success[api]}/{self.total[api]}" for api in CheckInAPI
