@@ -10,8 +10,8 @@ class EnkaPlayerInfo(BaseModel):
     world_level: int = Field(alias="worldLevel")
     name_card_id: int = Field(alias="nameCardId")
     achievement_num: int = Field(alias="finishAchievementNum")
-    abyss_floor: int = Field(alias="towerFloorIndex")
-    abyss_chamber: int = Field(alias="towerLevelIndex")
+    abyss_floor: typing.Optional[int] = Field(alias="towerFloorIndex", default=None)
+    abyss_chamber: typing.Optional[int] = Field(alias="towerLevelIndex", default=None)
 
 
 class EnkaInfoResponse(BaseModel):
