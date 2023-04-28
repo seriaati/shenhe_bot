@@ -182,8 +182,9 @@ class RealtimeNotes:
                 # Wait for 1.5 seconds before processing the next notification
                 await asyncio.sleep(1.5)
 
+    @staticmethod
     async def _create_error_embed(
-        self, notif_type: NotificationType, locale: str, e: Exception
+        notif_type: NotificationType, locale: str, e: Exception
     ) -> Optional[ErrorEmbed]:
         """
         Create and return an ErrorEmbed based on the given notification type, locale,
@@ -221,9 +222,8 @@ class RealtimeNotes:
         elif isinstance(e, genshin.GenshinException):
             if e.retcode == 1009:
                 return None
-            else:
-                title_hash = 10
-                embed.description = f"```\n{e.msg}\n```"
+            title_hash = 10
+            embed.description = f"```\n{e.msg}\n```"
         elif isinstance(e, (genshin.errors.InternalDatabaseError, OSError)):
             return None
         else:
@@ -258,12 +258,12 @@ class RealtimeNotes:
             and notes.current_resin < notif_user.threshold
         ):
             return False
-        elif (
+        if (
             isinstance(notif_user, tables.PotNotification)
             and notes.current_realm_currency < notif_user.threshold
         ):
             return False
-        elif isinstance(notif_user, tables.PtNotification) and (
+        if isinstance(notif_user, tables.PtNotification) and (
             notes.remaining_transformer_recovery_time is None
             or notes.remaining_transformer_recovery_time.total_seconds() > 0
         ):
@@ -271,8 +271,8 @@ class RealtimeNotes:
 
         return True
 
+    @staticmethod
     def _create_notif_embed(
-        self,
         notif_type: NotificationType,
         uid: int,
         notes: genshin.models.Notes,
@@ -331,8 +331,9 @@ class RealtimeNotes:
         embed.set_footer(text=text_map.get(305, locale))
         return embed
 
+    @staticmethod
     async def _send_notif(
-        self, user: User, embed: Union[DefaultEmbed, ErrorEmbed]
+        user: User, embed: Union[DefaultEmbed, ErrorEmbed]
     ) -> None:
         """
         Sends the notification to the user's DM.
@@ -348,7 +349,8 @@ class RealtimeNotes:
             # catch the error and do nothing.
             pass
 
-    def _get_table_name(self, notif_type: NotificationType):
+    @staticmethod
+    def _get_table_name(notif_type: NotificationType):
         if notif_type is NotificationType.RESIN:
             table_name = "resin_notification"
         elif notif_type is NotificationType.POT:
