@@ -52,9 +52,15 @@ def character_card(
 
     # character stats
     texts = {
-        text_map.get(292, locale): format(character.stats.FIGHT_PROP_MAX_HP.to_rounded(), ","),
-        text_map.get(262, locale): format(character.stats.FIGHT_PROP_CUR_DEFENSE.to_rounded(), ","),
-        text_map.get(260, locale): format(character.stats.FIGHT_PROP_CUR_ATTACK.to_rounded(), ","),
+        text_map.get(292, locale): format(
+            character.stats.FIGHT_PROP_MAX_HP.to_rounded(), ","
+        ),
+        text_map.get(262, locale): format(
+            character.stats.FIGHT_PROP_CUR_DEFENSE.to_rounded(), ","
+        ),
+        text_map.get(260, locale): format(
+            character.stats.FIGHT_PROP_CUR_ATTACK.to_rounded(), ","
+        ),
         text_map.get(
             264, locale
         ): character.stats.FIGHT_PROP_CRITICAL.to_percentage_symbol(),
@@ -64,9 +70,9 @@ def character_card(
         text_map.get(
             267, locale
         ): character.stats.FIGHT_PROP_CHARGE_EFFICIENCY.to_percentage_symbol(),
-        text_map.get(
-            266, locale
-        ): format(character.stats.FIGHT_PROP_ELEMENT_MASTERY.to_rounded(), ","),
+        text_map.get(266, locale): format(
+            character.stats.FIGHT_PROP_ELEMENT_MASTERY.to_rounded(), ","
+        ),
         text_map.get(273, locale): add_hurt_text,
     }
 
