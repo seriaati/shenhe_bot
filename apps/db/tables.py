@@ -98,7 +98,7 @@ class PotNotification(NotifBase):
 @define
 class PtNotification(NotifBase):
     """Parametric transformer notification"""
-    
+
     type: NotificationType = field(default=NotificationType.PT)
     """Notification type"""
 

@@ -23,6 +23,7 @@ class CheckInAPI(Enum):
     DETA = "deta"
     RAILWAY = "railway"
 
+
 class NotificationType(Enum):
     RESIN = "resin"
     POT = "pot"
