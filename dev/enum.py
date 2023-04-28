@@ -22,3 +22,8 @@ class CheckInAPI(Enum):
     RENDER = "render"
     DETA = "deta"
     RAILWAY = "railway"
+
+class NotificationType(Enum):
+    RESIN = "resin"
+    POT = "pot"
+    PT = "pt"
