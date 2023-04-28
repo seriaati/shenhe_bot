@@ -5,8 +5,8 @@ import discord
 import enkanetwork
 from PIL import Image, ImageChops, ImageDraw
 
-import utils.draw as draw_utility
 import dev.asset as asset
+import utils.draw as draw_utility
 from apps.text_map import text_map
 from dev.models import DynamicBackgroundInput, TopPadding
 
@@ -52,9 +52,15 @@ def character_card(
 
     # character stats
     texts = {
-        text_map.get(292, locale): character.stats.FIGHT_PROP_MAX_HP.to_rounded(),
-        text_map.get(262, locale): character.stats.FIGHT_PROP_CUR_DEFENSE.to_rounded(),
-        text_map.get(260, locale): character.stats.FIGHT_PROP_CUR_ATTACK.to_rounded(),
+        text_map.get(292, locale): format(
+            character.stats.FIGHT_PROP_MAX_HP.to_rounded(), ","
+        ),
+        text_map.get(262, locale): format(
+            character.stats.FIGHT_PROP_CUR_DEFENSE.to_rounded(), ","
+        ),
+        text_map.get(260, locale): format(
+            character.stats.FIGHT_PROP_CUR_ATTACK.to_rounded(), ","
+        ),
         text_map.get(
             264, locale
         ): character.stats.FIGHT_PROP_CRITICAL.to_percentage_symbol(),
@@ -64,9 +70,9 @@ def character_card(
         text_map.get(
             267, locale
         ): character.stats.FIGHT_PROP_CHARGE_EFFICIENCY.to_percentage_symbol(),
-        text_map.get(
-            266, locale
-        ): character.stats.FIGHT_PROP_ELEMENT_MASTERY.to_rounded(),
+        text_map.get(266, locale): format(
+            character.stats.FIGHT_PROP_ELEMENT_MASTERY.to_rounded(), ","
+        ),
         text_map.get(273, locale): add_hurt_text,
     }
 
@@ -426,13 +432,13 @@ def card_v2(
     # stats
     stats = character.stats
     stats_list = [
-        stats.FIGHT_PROP_MAX_HP.to_rounded(),
-        stats.FIGHT_PROP_CUR_DEFENSE.to_rounded(),
-        stats.FIGHT_PROP_CUR_ATTACK.to_rounded(),
+        format(stats.FIGHT_PROP_MAX_HP.to_rounded(), ","),
+        format(stats.FIGHT_PROP_CUR_DEFENSE.to_rounded(), ","),
+        format(stats.FIGHT_PROP_CUR_ATTACK.to_rounded(), ","),
         stats.FIGHT_PROP_CRITICAL.to_percentage_symbol(),
         stats.FIGHT_PROP_CRITICAL_HURT.to_percentage_symbol(),
         stats.FIGHT_PROP_CHARGE_EFFICIENCY.to_percentage_symbol(),
-        stats.FIGHT_PROP_ELEMENT_MASTERY.to_rounded(),
+        format(stats.FIGHT_PROP_ELEMENT_MASTERY.to_rounded(), ","),
     ]
     add_hurt_dict = {
         "Cryo": stats.FIGHT_PROP_ICE_ADD_HURT,
