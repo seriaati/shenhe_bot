@@ -332,9 +332,7 @@ class RealtimeNotes:
         return embed
 
     @staticmethod
-    async def _send_notif(
-        user: User, embed: Union[DefaultEmbed, ErrorEmbed]
-    ) -> None:
+    async def _send_notif(user: User, embed: Union[DefaultEmbed, ErrorEmbed]) -> None:
         """
         Sends the notification to the user's DM.
 
