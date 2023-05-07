@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+import io
 import os
 from typing import Any, Dict, List, Union
 
@@ -24,6 +25,7 @@ class DailyCheckin:
 
         self.success: Dict[CheckInAPI, int] = {}
         self.total: Dict[CheckInAPI, int] = {}
+        self.errors: Dict[str, int] = {}
 
         self.start_time: datetime.datetime
         self.end_time: datetime.datetime
@@ -184,6 +186,11 @@ class DailyCheckin:
                     return await self._do_daily_checkin(api, user, retry_count + 1)
 
                 embed = self._create_embed(user_lang, data)
+                if isinstance(embed, model.ErrorEmbed):
+                    error_id = f"{data['code']} {data['msg']}"
+                    if error_id not in self.errors:
+                        self.errors[error_id] = 0
+                    self.errors[error_id] += 1
                 return embed
             raise CheckInAPIError(api, resp.status)
 
@@ -263,4 +270,10 @@ class DailyCheckin:
             """,
         )
         embed.timestamp = get_dt_now()
-        await owner.send(embed=embed)
+        
+        bytes_io = io.BytesIO()
+        string = "\n".join(f"{k}: {v}" for k, v in self.errors.items())
+        bytes_io.write(string.encode("utf-8"))
+        bytes_io.seek(0)
+        
+        await owner.send(embed=embed, file=discord.File(bytes_io, "errors.txt"))
