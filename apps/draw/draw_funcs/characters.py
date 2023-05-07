@@ -45,14 +45,11 @@ def character_card(
             ) + db_input.top_padding
         background.paste(card, (x, y), card)
         character_id = list(c_cards.keys())[index]
-        icon = get_cache(
-            pc_icon.get(
-                character_id,
-                "https://i.imgur.com/MWbYrHk.png",
-            )
-        )
-        icon = icon.resize((214, 214))
-        background.paste(icon, (x, y - 29), icon)
+        pc_icon_url = pc_icon.get(character_id)
+        if pc_icon_url:
+            icon = get_cache(pc_icon_url)
+            icon = icon.resize((214, 214))
+            background.paste(icon, (x, y - 29), icon)
 
     fp = io.BytesIO()
     background = background.convert("RGB")
