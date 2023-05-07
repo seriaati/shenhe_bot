@@ -68,7 +68,7 @@ class AmbrTopAPI:
         endpoint: str,
         lang: Optional[str] = "",
         static: bool = False,
-        id: Optional[str | int] = "",
+        id: Optional[str | int] = None,
     ) -> Dict:
         """Request data from a specific endpoint.
 
@@ -88,7 +88,9 @@ class AmbrTopAPI:
         if static:
             endpoint_url = f"{BASE}static/{STATIC_ENDPOINTS.get(endpoint)}"
         else:
-            endpoint_url = f"{BASE}{lang}/{ENDPOINTS.get(endpoint)}/{id}"
+            endpoint_url = f"{BASE}{lang}/{ENDPOINTS.get(endpoint)}"
+            if id:
+                endpoint_url += f"/{id}"
         async with self.session.get(endpoint_url) as r:
             endpoint_data = await r.json()
         if "code" in endpoint_data:

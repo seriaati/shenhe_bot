@@ -360,7 +360,11 @@ async def character_summary_card(
     urls = [c.weapon.icon for c in character_list]
     pc_icons = await read_json(pool, "genshin/pc_icons.json")
 
-    if not pc_icons or any(str(c.id) not in pc_icons for c in character_list):
+    if (
+        not pc_icons
+        or any(str(c.id) not in pc_icons for c in character_list)
+        or any(not pc_icons[str(c.id)] for c in character_list)
+    ):
         client = genshin.Client()
         fields = await client.get_lineup_fields()
         pc_icons = {
