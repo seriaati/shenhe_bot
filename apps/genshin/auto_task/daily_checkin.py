@@ -270,10 +270,10 @@ class DailyCheckin:
             """,
         )
         embed.timestamp = get_dt_now()
-        
+
         bytes_io = io.BytesIO()
         string = "\n".join(f"{k}: {v}" for k, v in self.errors.items())
         bytes_io.write(string.encode("utf-8"))
         bytes_io.seek(0)
-        
+
         await owner.send(embed=embed, file=discord.File(bytes_io, "errors.txt"))
