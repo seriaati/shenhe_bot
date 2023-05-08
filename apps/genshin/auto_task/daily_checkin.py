@@ -176,7 +176,7 @@ class DailyCheckin:
             if resp.status == 200:
                 data = await resp.json()
                 log.info(f"[DailyCheckin] {api.name} response: {data}, user: {user}")
-                if "msg" in data and "Too many requests" in data["msg"]:
+                if "msg" in data and "Too many" in data["msg"]:
                     if retry_count >= MAX_RETRY:
                         sentry_sdk.capture_message(
                             f"[DailyCheckin] {api.name} retry limit reached, user: {user}"
@@ -187,10 +187,12 @@ class DailyCheckin:
 
                 embed = self._create_embed(user_lang, data)
                 if isinstance(embed, model.ErrorEmbed):
+                    await self._disable_daily_checkin(user)
                     error_id = f"{data['code']} {data['msg']}"
                     if error_id not in self.errors:
                         self.errors[error_id] = 0
                     self.errors[error_id] += 1
+
                 return embed
             raise CheckInAPIError(api, resp.status)
 
@@ -205,8 +207,6 @@ class DailyCheckin:
                 {text_map.get(41, user_lang).format(
                     reward=f'{data["reward"]["name"]} x{data["reward"]["amount"]}'
                 )}
-                
-                *{text_map.get(211, user_lang)}*
                 """,
             )
             embed.set_thumbnail(url=data["reward"]["icon"])
@@ -222,9 +222,8 @@ class DailyCheckin:
                 embed.title = text_map.get(36, user_lang)
                 embed.description = f"""
                 {text_map.get(767, user_lang)}
-                
-                *{text_map.get(211, user_lang)}*
                 """
+                embed.set_footer(text=text_map.get(630, user_lang))
             else:
                 embed = model.ErrorEmbed()
                 embed.title = text_map.get(135, user_lang)
@@ -232,11 +231,24 @@ class DailyCheckin:
                 ```
                 {message}
                 ```
-                
-                *{text_map.get(211, user_lang)}*
                 """
+                embed.set_footer(text=text_map.get(630, user_lang))
+
+        t = text_map.get(211, user_lang)
+        t = t.replace("\n", "\n> ")
+        if embed.description is None:
+            embed.description = ""
+        embed.description += f"> {t}"
         embed.set_author(name=text_map.get(370, user_lang))
+
         return embed
+
+    async def _disable_daily_checkin(self, user: model.User) -> None:
+        await self.bot.pool.execute(
+            "UPDATE user_accounts SET daily_checkin = false WHERE user_id = $1 AND uid = $2",
+            user.user_id,
+            user.uid,
+        )
 
     async def _notify_user(self, user: model.User, embed: model.ShenheEmbed) -> None:
         discord_user = self.bot.get_user(user.user_id) or await self.bot.fetch_user(
