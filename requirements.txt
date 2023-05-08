@@ -25,5 +25,5 @@ pyppeteer==1.0.2
 python-dotenv==1.0.0
 python_dateutil==2.8.2
 PyYAML==6.0
-sentry_sdk==1.21.1
+sentry_sdk==1.22.2
 topggpy==1.4.0
