@@ -234,11 +234,9 @@ class DailyCheckin:
                 """
                 embed.set_footer(text=text_map.get(630, user_lang))
 
-        t = text_map.get(211, user_lang)
-        t = t.replace("\n", "\n> ")
         if embed.description is None:
             embed.description = ""
-        embed.description += f"> {t}"
+        embed.description += f"\n{text_map.get(211, user_lang)}"
         embed.set_author(name=text_map.get(370, user_lang))
 
         return embed
