@@ -26,15 +26,9 @@ from apps.genshin import enka, hoyolab, leaderboard
 from apps.genshin_data import abyss
 from apps.text_map import convert_locale, text_map
 from data.cards.dice_element import get_dice_emoji
-from utils import (
-    disable_view_items,
-    get_character_emoji,
-    get_uid,
-    get_uid_region_hash,
-    get_user_lang,
-    get_user_theme,
-    log,
-)
+from utils import (disable_view_items, get_character_emoji, get_uid,
+                   get_uid_region_hash, get_user_lang, get_user_theme, log)
+from utils.db import get_user_daily_checkin
 from utils.paginators import GeneralPaginator
 
 load_dotenv()
@@ -319,7 +313,14 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     async def claim(self, inter: discord.Interaction):
         i: models.Inter = inter  # type: ignore
-        await ui.daily_reward.return_claim_reward(i, self.genshin_app)
+        lang = await get_user_lang(i.user.id, self.bot.pool) or i.locale
+        uid = await get_uid(i.user.id, self.bot.pool)
+        daily_checkin = await get_user_daily_checkin(i.user.id, self.bot.pool)
+        if uid is None:
+            raise exceptions.UIDNotFound
+        
+        view = ui.daily_reward.View(lang, self.genshin_app, uid, daily_checkin)
+        await view.start(i)
 
     @checks.check_cookie()
     @app_commands.command(
