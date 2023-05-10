@@ -8,11 +8,11 @@ from discord.ui import Button
 
 import dev.asset as asset
 import dev.config as config
-from utils import divide_chunks, get_dt_now, get_user_lang
 from apps.genshin import GenshinApp
 from apps.text_map import text_map
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
+from utils import divide_chunks, get_dt_now, get_user_lang
 
 
 class View(BaseView):
@@ -114,12 +114,6 @@ async def return_claim_reward(i: Inter, genshin_app: GenshinApp):
         )
         return await i.followup.send(embed=embed)
 
-    daily_checkin: bool = await i.client.pool.fetchval(
-        "SELECT daily_checkin FROM user_accounts WHERE user_id = $1 AND uid = $2",
-        i.user.id,
-        shenhe_user.uid,
-    )
-
     embed = DefaultEmbed(
         description=f"{text_map.get(606, locale)}: {claimed_rewards}/{day_in_month}\n"
     )
@@ -139,7 +133,7 @@ async def return_claim_reward(i: Inter, genshin_app: GenshinApp):
         r = "".join(val)
         embed.add_field(name=f"{text_map.get(605, locale)} ({index+1})", value=r)
 
-    view = View(locale, genshin_app, shenhe_user.uid, daily_checkin)
+    view = View(locale, genshin_app, shenhe_user.uid, shenhe_user.daily_checkin)
     try:
         await i.response.send_message(embed=embed, view=view)
     except InteractionResponded:
