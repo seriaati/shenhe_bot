@@ -8,7 +8,7 @@ class UIDNotFound(Exception):
         return "UID not found"
 
 
-class ShenheAccountNotFound(Exception):
+class AccountNotFound(Exception):
     def __str__(self):
         return "Shenhe account not found"
 

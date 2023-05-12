@@ -24,7 +24,7 @@ from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
-from dev.exceptions import ShenheAccountNotFound
+from dev.exceptions import AccountNotFound
 
 from .db import get_user_lang
 from .general import get_dt_now
@@ -250,7 +250,7 @@ async def get_shenhe_account(
         )
 
     if not user_data:
-        raise ShenheAccountNotFound
+        raise AccountNotFound
 
     if custom_cookie:
         client = genshin.Client()
