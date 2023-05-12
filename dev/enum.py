@@ -28,3 +28,8 @@ class NotificationType(Enum):
     RESIN = "resin"
     POT = "pot"
     PT = "pt"
+
+class GameType(Enum):
+    GENSHIN = "genshin"
+    HSR = "hsr"
+    HONKAI = "honkai"

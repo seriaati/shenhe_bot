@@ -9,6 +9,7 @@ import sentry_sdk
 import dev.asset as asset
 import dev.exceptions as exceptions
 from apps.text_map import text_map
+from dev.enum import GameType
 from utils import get_user_lang, log
 
 from .models import ErrorEmbed, Inter, OriginalInfo
@@ -72,7 +73,7 @@ def get_error_handle_embed(
     elif isinstance(e, exceptions.UIDNotFound):
         embed.description = text_map.get(35, locale)
         embed.set_author(name=text_map.get(672, locale))
-    elif isinstance(e, exceptions.ShenheAccountNotFound):
+    elif isinstance(e, exceptions.AccountNotFound):
         embed.description = text_map.get(35, locale)
         embed.set_author(name=text_map.get(545, locale))
     elif isinstance(e, exceptions.NoPlayerFound):
@@ -111,11 +112,6 @@ def get_error_handle_embed(
         embed.set_author(name=text_map.get(542, locale))
     elif isinstance(e, exceptions.NumbersOnly):
         embed.set_author(name=text_map.get(187, locale))
-    elif isinstance(e, genshin.GenshinException):
-        embed.description = f"```[{e.retcode}]: {e.msg}```"
-        if e.original:
-            embed.description += f"```{e.original}```"
-        embed.set_author(name=text_map.get(10, locale))
     elif isinstance(e, exceptions.AutocompleteError):
         embed.set_author(name=text_map.get(310, locale))
         embed.set_image(url="https://i.imgur.com/TRcvXCG.gif")
@@ -127,6 +123,22 @@ def get_error_handle_embed(
     elif isinstance(e, exceptions.Maintenance):
         embed.set_author(name=text_map.get(760, locale))
         embed.description = text_map.get(759, locale)
+    elif isinstance(e, genshin.errors.GenshinException):
+        if isinstance(e, genshin.errors.DataNotPublic):
+            embed.set_author(name=text_map.get(22, locale))
+            embed.description = f"{text_map.get(21, locale)}"
+        elif isinstance(e, genshin.errors.InvalidCookies):
+            embed.set_author(name=text_map.get(36, locale))
+            embed.description = text_map.get(767, locale)
+        elif isinstance(e, genshin.errors.AlreadyClaimed):
+            embed.set_author(name=text_map.get(40, locale))
+        elif e.retcode == -10002:
+            embed.set_author(name=text_map.get(772, locale))
+        else:
+            embed.description = f"```\n[{e.retcode}]: {e.msg}\n```"
+            if e.original:
+                embed.description += f"```\n{e.original}\n```"
+            embed.set_author(name=text_map.get(10, locale))
     else:
         capture_exception(e)
 
@@ -155,9 +167,16 @@ class BaseView(discord.ui.View):
         self.original_info: typing.Optional[OriginalInfo] = None
 
     def disable_items(self):
+        """Disable all items in the view."""
         for item in self.children:
             if isinstance(item, (discord.ui.Button, discord.ui.Select)):
                 item.disabled = True
+
+    def enable_items(self):
+        """Enable all items in the view."""
+        for item in self.children:
+            if isinstance(item, (discord.ui.Button, discord.ui.Select)):
+                item.disabled = False
 
     async def interaction_check(self, i: Inter) -> bool:
         if self.author is None:
@@ -242,3 +261,57 @@ class EnkaView(BaseView):
 
     class Config:
         arbitrary_types_allowed = True
+
+
+class LoadingSelector(discord.ui.Select):
+    def __init__(self, locale: typing.Union[discord.Locale, str]):
+        super().__init__(
+            options=[
+                discord.SelectOption(
+                    label=text_map.get(773, locale),
+                    emoji=asset.loading_emoji,
+                    default=True,
+                )
+            ],
+        )
+
+
+class BaseGameSelector(discord.ui.Select):
+    def __init__(
+        self,
+        locale: typing.Union[discord.Locale, str],
+        default: GameType,
+        *,
+        honkai: bool = False,
+    ):
+        super().__init__(
+            options=[
+                discord.SelectOption(
+                    label=text_map.get(313, locale),
+                    emoji=asset.genshin_emoji,
+                    value="genshin",
+                    default=default == GameType.GENSHIN,
+                ),
+                discord.SelectOption(
+                    label=text_map.get(770, locale),
+                    emoji=asset.hsr_emoji,
+                    value="hsr",
+                    default=default == GameType.HSR,
+                ),
+            ],
+        )
+        if honkai:
+            self.add_option(
+                label=text_map.get(771, locale),
+                emoji=asset.honkai_emoji,
+                value="honkai",
+                default=default == GameType.HONKAI,
+            )
+
+        self.locale = locale
+        self.view: BaseView
+
+    async def loading(self, i: Inter):
+        self.view.remove_item(self)
+        self.view.add_item(LoadingSelector(self.locale))
+        await i.response.edit_message(view=self.view)
