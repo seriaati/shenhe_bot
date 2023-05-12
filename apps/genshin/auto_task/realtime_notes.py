@@ -52,7 +52,9 @@ class RealtimeNotes:
         self,
         queue: asyncio.Queue[
             Union[
-                table_models.ResinNotification, table_models.PotNotification, table_models.PtNotification
+                table_models.ResinNotification,
+                table_models.PotNotification,
+                table_models.PtNotification,
             ]
         ],
     ) -> None:
@@ -96,7 +98,9 @@ class RealtimeNotes:
         self,
         queue: asyncio.Queue[
             Union[
-                table_models.ResinNotification, table_models.PotNotification, table_models.PtNotification
+                table_models.ResinNotification,
+                table_models.PotNotification,
+                table_models.PtNotification,
             ]
         ],
     ) -> None:
@@ -391,7 +395,9 @@ class RealtimeNotes:
     async def _update_current(
         self,
         notif_user: Union[
-            table_models.ResinNotification, table_models.PotNotification, table_models.PtNotification
+            table_models.ResinNotification,
+            table_models.PotNotification,
+            table_models.PtNotification,
         ],
     ) -> None:
         table_name = self._get_table_name(notif_user.type)

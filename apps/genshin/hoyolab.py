@@ -14,11 +14,19 @@ from apps.draw import main_funcs
 from apps.text_map import text_map
 from dev.base_ui import get_error_handle_embed
 from dev.exceptions import UIDNotFound
-from dev.models import (BotModel, DefaultEmbed, DrawInput, ErrorEmbed,
-                        ShenheAccount)
-from utils import (get_character_emoji, get_dt_now, get_month_name,
-                   get_shenhe_account, get_uid, get_uid_tz, get_user_lang,
-                   get_user_theme, log, update_talents_json)
+from dev.models import BotModel, DefaultEmbed, DrawInput, ErrorEmbed, ShenheAccount
+from utils import (
+    get_character_emoji,
+    get_dt_now,
+    get_month_name,
+    get_shenhe_account,
+    get_uid,
+    get_uid_tz,
+    get_user_lang,
+    get_user_theme,
+    log,
+    update_talents_json,
+)
 
 from .models import *
 

@@ -29,6 +29,7 @@ class NotificationType(Enum):
     POT = "pot"
     PT = "pt"
 
+
 class GameType(Enum):
     GENSHIN = "genshin"
     HSR = "hsr"
