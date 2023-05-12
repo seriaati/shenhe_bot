@@ -1,0 +1,13 @@
+{
+    "apps": [
+        {
+            "name": "shenhe_development",
+            "script": "./run.py",
+            "interpreter": "python",
+            "args": [
+                "--env",
+                "development"
+            ]
+        }
+    ]
+}

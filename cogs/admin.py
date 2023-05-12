@@ -23,7 +23,10 @@ class AdminCog(commands.Cog, name="admin"):
     @commands.is_owner()
     @commands.command(name="pm2")
     async def pm2_command(self, ctx: commands.Context, *, action: str):
-        process_name = "shenhe_testing" if self.bot.debug else "shenhe_bot"
+        if platform.system() != "Linux":
+            process_name = "shenhe_development"
+        else:
+            process_name = "shenhe_testing" if self.bot.debug else "shenhe_bot"
         if action == "list":
             process_list = self.pm2.list()
             await ctx.send(f"```{process_list}```")
