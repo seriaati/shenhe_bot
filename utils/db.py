@@ -51,11 +51,3 @@ async def get_user_auto_redeem(user_id: int, pool: asyncpg.Pool) -> bool:
     if auto_redeem is None:
         return False
     return auto_redeem
-
-async def get_user_daily_checkin(user_id: int, pool: asyncpg.Pool) -> bool:
-    daily_checkin: typing.Optional[bool] = await pool.fetchval(
-        "SELECT daily_checkin FROM user_settings WHERE user_id = $1", user_id
-    )
-    if daily_checkin is None:
-        return False
-    return daily_checkin
