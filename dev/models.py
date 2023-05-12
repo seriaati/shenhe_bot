@@ -15,6 +15,7 @@ from logingateway import HuTaoLoginAPI
 from pyppeteer.browser import Browser
 
 import ambr.models as ambr
+from apps.db.main import Database
 from apps.text_map import text_map
 
 
@@ -105,6 +106,7 @@ class BotModel(commands.AutoShardedBot):
     debug: bool
     user: discord.ClientUser
     owner_id: int = 410036441129943050
+    db: Database
 
     launch_browser_in_debug: bool = False
     maintenance: bool = False
