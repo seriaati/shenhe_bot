@@ -73,7 +73,7 @@ class View(BaseView):
         uid = self.user.uid if self.game is GameType.GENSHIN else self.user.hsr_uid
         try:
             await client.redeem_code(code, uid, game=convert_game_type(self.game))
-        except Exception as e: # skipcq: PYL-W0703
+        except Exception as e:  # skipcq: PYL-W0703
             embed = get_error_handle_embed(user, e, self.lang)
         else:
             embed = DefaultEmbed(
