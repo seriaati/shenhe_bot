@@ -8,8 +8,7 @@ from apps.db.tables.user_account import UserAccount, convert_game_type
 from apps.db.tables.user_settings import Settings
 from apps.text_map import text_map
 from dev.asset import gift_open_outline, peko_yahoo
-from dev.base_ui import (BaseGameSelector, BaseModal, BaseView,
-                         get_error_handle_embed)
+from dev.base_ui import BaseGameSelector, BaseModal, BaseView, get_error_handle_embed
 from dev.config import mid_timeout
 from dev.enum import GameType
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
