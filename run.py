@@ -20,6 +20,7 @@ from discord.ext.prometheus import PrometheusLoggingHandler
 from dotenv import load_dotenv
 
 import dev.models as models
+from apps.db.main import Database
 from apps.genshin import launch_browsers, launch_debug_browser
 from apps.genshin_data.text_maps import load_text_maps
 from apps.text_map import text_map
@@ -163,6 +164,7 @@ class Shenhe(BotModel):
         self.session = session
         self.pool = pool
         self.debug = debug
+        self.db = Database(self.pool)
 
     async def setup_hook(self) -> None:
         # load jishaku

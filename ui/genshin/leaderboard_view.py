@@ -7,7 +7,7 @@ import dev.asset as asset
 import dev.config as config
 import dev.models as models
 from ambr import AmbrTopAPI, Character
-from apps.db.tables import AbyssCharacterLeaderboard, AbyssLeaderboard
+from apps.db.table_models import AbyssCharacterLeaderboard, AbyssLeaderboard
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
 from dev.base_ui import BaseView

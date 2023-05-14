@@ -7,8 +7,9 @@ import sentry_sdk
 from discord import Forbidden, User
 from discord.utils import format_dt
 
-import apps.db.tables as tables
+import apps.db.table_models as table_models
 import dev.asset as asset
+from apps.db.tables.user_account import UserAccount
 from apps.text_map import text_map
 from dev.enum import NotificationType
 from dev.models import BotModel, DefaultEmbed, ErrorEmbed
@@ -31,9 +32,9 @@ class RealtimeNotes:
             # Create the queue of notifications
             queue: asyncio.Queue[
                 Union[
-                    tables.ResinNotification,
-                    tables.PotNotification,
-                    tables.PtNotification,
+                    table_models.ResinNotification,
+                    table_models.PotNotification,
+                    table_models.PtNotification,
                 ]
             ] = asyncio.Queue()
 
@@ -51,7 +52,9 @@ class RealtimeNotes:
         self,
         queue: asyncio.Queue[
             Union[
-                tables.ResinNotification, tables.PotNotification, tables.PtNotification
+                table_models.ResinNotification,
+                table_models.PotNotification,
+                table_models.PtNotification,
             ]
         ],
     ) -> None:
@@ -78,9 +81,9 @@ class RealtimeNotes:
         )
 
         # Create notification objects
-        resin = [tables.ResinNotification(**r) for r in resin]
-        pot = [tables.PotNotification(**p) for p in pot]
-        pt = [tables.PtNotification(**p) for p in pt]
+        resin = [table_models.ResinNotification(**r) for r in resin]
+        pot = [table_models.PotNotification(**p) for p in pot]
+        pt = [table_models.PtNotification(**p) for p in pt]
 
         # Add notification objects to the queue
         users = resin + pot + pt
@@ -95,7 +98,9 @@ class RealtimeNotes:
         self,
         queue: asyncio.Queue[
             Union[
-                tables.ResinNotification, tables.PotNotification, tables.PtNotification
+                table_models.ResinNotification,
+                table_models.PotNotification,
+                table_models.PtNotification,
             ]
         ],
     ) -> None:
@@ -136,7 +141,7 @@ class RealtimeNotes:
                 continue
 
             # Create a user account object
-            user = tables.UserAccount(**user)
+            user = UserAccount(**user)
 
             # Fetch user's language preference
             locale = await user.fetch_lang(self.bot.pool)
@@ -240,7 +245,7 @@ class RealtimeNotes:
 
     async def _check_notes(
         self,
-        notif_user: tables.NotifBase,
+        notif_user: table_models.NotifBase,
     ) -> bool:
         """
         Check whether a notification should be triggered based on the notes for the
@@ -254,16 +259,16 @@ class RealtimeNotes:
         """
         notes = self._notes_dict[notif_user.uid]
         if (
-            isinstance(notif_user, tables.ResinNotification)
+            isinstance(notif_user, table_models.ResinNotification)
             and notes.current_resin < notif_user.threshold
         ):
             return False
         if (
-            isinstance(notif_user, tables.PotNotification)
+            isinstance(notif_user, table_models.PotNotification)
             and notes.current_realm_currency < notif_user.threshold
         ):
             return False
-        if isinstance(notif_user, tables.PtNotification) and (
+        if isinstance(notif_user, table_models.PtNotification) and (
             notes.remaining_transformer_recovery_time is None
             or notes.remaining_transformer_recovery_time.total_seconds() > 0
         ):
@@ -359,7 +364,7 @@ class RealtimeNotes:
 
     async def _disable_notif(
         self,
-        notif_user: tables.NotifBase,
+        notif_user: table_models.NotifBase,
     ) -> None:
         table_name = self._get_table_name(notif_user.type)
         await self.bot.pool.execute(
@@ -374,7 +379,7 @@ class RealtimeNotes:
 
     async def _reset_current(
         self,
-        notif_user: tables.NotifBase,
+        notif_user: table_models.NotifBase,
     ) -> None:
         table_name = self._get_table_name(notif_user.type)
         await self.bot.pool.execute(
@@ -390,7 +395,9 @@ class RealtimeNotes:
     async def _update_current(
         self,
         notif_user: Union[
-            tables.ResinNotification, tables.PotNotification, tables.PtNotification
+            table_models.ResinNotification,
+            table_models.PotNotification,
+            table_models.PtNotification,
         ],
     ) -> None:
         table_name = self._get_table_name(notif_user.type)
@@ -404,7 +411,7 @@ class RealtimeNotes:
             notif_user.user_id,
         )
 
-    async def _update_last_notif(self, notif_user: tables.NotifBase) -> None:
+    async def _update_last_notif(self, notif_user: table_models.NotifBase) -> None:
         now = get_dt_now()
 
         table_name = self._get_table_name(notif_user.type)
