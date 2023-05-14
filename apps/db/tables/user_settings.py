@@ -53,7 +53,7 @@ class UserSettingsTable:
         )
         if val is None:
             await self.insert(user_id)
-        
+
         if settings is Settings.DEFAULT_GAME:
             return GameType(val)
         return val

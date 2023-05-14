@@ -13,8 +13,7 @@ from apps.text_map import text_map, to_hutao_login_lang
 from cogs.login import register_user
 from dev.base_ui import BaseModal, BaseView
 from dev.models import BotModel, DefaultEmbed, Inter
-from utils import (get_account_select_options, get_uid_region_hash,
-                   get_user_lang, log)
+from utils import get_account_select_options, get_uid_region_hash, get_user_lang, log
 
 
 class View(BaseView):
@@ -53,7 +52,8 @@ async def add_account_callback(view: View, i: Inter):
     embed.set_author(name=text_map.get(556, locale), icon_url=i.user.display_avatar.url)
     embed.set_image(url="https://i.imgur.com/r31nQMN.png")
     await i.edit_original_response(embed=embed, view=view)
-        
+
+
 class GenerateLink(ui.Button):
     def __init__(self, locale: discord.Locale | str):
         super().__init__(

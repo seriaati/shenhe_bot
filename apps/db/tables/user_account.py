@@ -14,10 +14,9 @@ from dev.exceptions import AccountNotFound, UIDNotFound
 def convert_game_type(game_type: GameType) -> genshin.Game:
     if game_type is GameType.HSR:
         return genshin.Game.STARRAIL
-    elif game_type is GameType.HONKAI:
+    if game_type is GameType.HONKAI:
         return genshin.Game.HONKAI
-    else:
-        return genshin.Game.GENSHIN
+    return genshin.Game.GENSHIN
 
 
 class UserAccount(BaseModel):
@@ -121,7 +120,7 @@ class UserAccountTable:
         await self.pool.execute(
             "UPDATE user_accounts SET "
             + ", ".join(f"{key} = ${i}" for i, key in enumerate(kwargs, 3))
-            + f" WHERE user_id = $1 AND uid = $2",
+            + " WHERE user_id = $1 AND uid = $2",
             user_id,
             uid or await self.get_uid(user_id),
             *kwargs.values(),
