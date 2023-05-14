@@ -4,7 +4,7 @@ import typing
 import asyncpg
 import discord
 import genshin
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 
 from apps.text_map.convert_locale import to_genshin_py
 from dev.enum import GameType
@@ -25,6 +25,8 @@ class UserAccount(BaseModel):
 
     uid: int
     """Genshin Impact UID"""
+    hsr_uid: typing.Optional[int]
+    """Honkai Star Rail UID"""
     user_id: int
     """Discord user ID"""
 
@@ -46,8 +48,6 @@ class UserAccount(BaseModel):
 
     last_checkin_date: typing.Optional[datetime.date] = Field(default=None)
     """Last daily check-in date"""
-    default_game: GameType
-    """Default game type"""
 
     lang: typing.Optional[str] = Field(default=None)
     """User language"""
@@ -66,14 +66,16 @@ class UserAccount(BaseModel):
     def __init__(self, **data: typing.Any):
         client = genshin.Client(
             uid=data["uid"],
-            game=convert_game_type(data["default_game"]),
             region=genshin.Region.CHINESE if data["china"] else genshin.Region.OVERSEAS,
         )
+        if data["uid"]:
+            client.uid = data["uid"]
         if data["ltuid"] and data["ltoken"] and data["cookie_token"]:
             cookies = {
                 "ltuid": data["ltuid"],
                 "ltoken": data["ltoken"],
                 "cookie_token": data["cookie_token"],
+                "account_id": data["ltuid"],
             }
             client.set_cookies(cookies)
 
@@ -125,11 +127,11 @@ class UserAccountTable:
             *kwargs.values(),
         )
 
-    async def remove(self, user_id: int, uid: int) -> None:
+    async def delete(self, user_id: int, uid: typing.Optional[int] = None) -> None:
         await self.pool.execute(
-            "UPDATE user_accounts SET current = False WHERE user_id = $1 AND uid = $2",
+            "DELETE FROM user_accounts WHERE user_id = $1 AND uid = $2",
             user_id,
-            uid,
+            uid or await self.get_uid(user_id),
         )
 
     async def get(

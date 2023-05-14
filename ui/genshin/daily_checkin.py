@@ -8,6 +8,7 @@ from discord.errors import InteractionResponded
 import dev.asset as asset
 import dev.config as config
 from apps.db.tables.user_account import UserAccount, convert_game_type
+from apps.db.tables.user_settings import Settings
 from apps.text_map import text_map
 from dev.base_ui import BaseGameSelector, BaseView
 from dev.enum import GameType
@@ -31,7 +32,7 @@ class View(BaseView):
             pass
 
         self.user = await i.client.db.users.get(i.user.id)
-        self.game = self.user.default_game
+        self.game = await i.client.db.settings.get(i.user.id, Settings.DEFAULT_GAME)
         self._recognize_daily_checkin()
 
         self.locale = await self.user.fetch_lang(i.client.pool) or i.locale
