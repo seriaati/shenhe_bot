@@ -132,8 +132,16 @@ def get_error_handle_embed(
             embed.description = text_map.get(767, locale)
         elif isinstance(e, genshin.errors.AlreadyClaimed):
             embed.set_author(name=text_map.get(40, locale))
+        elif isinstance(e, genshin.errors.RedemptionClaimed):
+            embed.set_author(name=text_map.get(106, locale))
+        elif isinstance(e, genshin.errors.RedemptionInvalid):
+            embed.set_author(name=text_map.get(107, locale))
+        elif isinstance(e, genshin.errors.RedemptionCooldown):
+            embed.set_author(name=text_map.get(133, locale))
         elif e.retcode == -10002:
             embed.set_author(name=text_map.get(772, locale))
+        elif e.retcode == -10001:
+            embed.set_author(name=text_map.get(778, locale))
         else:
             embed.description = f"```\n[{e.retcode}]: {e.msg}\n```"
             if e.original:
@@ -165,6 +173,15 @@ class BaseView(discord.ui.View):
         ] = None
         self.author: typing.Optional[discord.Member | discord.User] = None
         self.original_info: typing.Optional[OriginalInfo] = None
+
+    def get_item(self, custom_id: str) -> typing.Any:
+        """Get an item from the view by its custom ID."""
+        for item in self.children:
+            if (
+                isinstance(item, (discord.ui.Button, discord.ui.Select))
+                and item.custom_id == custom_id
+            ):
+                return item
 
     def disable_items(self):
         """Disable all items in the view."""
@@ -283,6 +300,7 @@ class BaseGameSelector(discord.ui.Select):
         default: GameType,
         *,
         honkai: bool = False,
+        **kwargs,
     ):
         super().__init__(
             options=[
@@ -299,6 +317,7 @@ class BaseGameSelector(discord.ui.Select):
                     default=default == GameType.HSR,
                 ),
             ],
+            **kwargs,
         )
         if honkai:
             self.add_option(
