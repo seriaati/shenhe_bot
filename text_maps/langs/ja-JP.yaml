@@ -800,16 +800,16 @@
   あなたのCookieは無効か期限切れです。</register:1044926380242120744>コマンドを使用してCookieを手動追加してください。この問題の対策にはメールアドレスとパスワードによるログイン方法を使用してください。自動的にCookieが更新されます。
 '768': ウェブサイトで交換
 '769': 下のトグルを押して自動チェックインを設定
-'770': "Honkai: Star Rail"
-'771': "Honkai Impact 3rd"
-'772': You don't have any accounts in this game
-'773': Loading...
-'774': Select a code to redeem
-'775': Enter code
-'776': Redeem code
+'770': "崩壊：スターレイル"
+'771': "崩壊3rd"
+'772': このゲームのアカウントは登録されていません
+'773': 読み込み中...
+'774': 引き換えるコードを選択してください
+'775': コードを入力
+'776': 交換コード
 '777': |-
-  • If anything is not working, you can redeem on the website:
-  • [Genshin Impact](https://genshin.hoyoverse.com/en/gift) | [Honkai Star Rail](https://hsr.hoyoverse.com/gift)
-  • The code selector gathers currently available Genshin codes from [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes), select to redeem
-  • The code input method allows you to enter up to 3 codes (at least 1) manually
-'778': Code redemption service is currently busy, please try again later
+  • もしうまくいかない場合はウェブサイトからお試し下さい
+  • [原神](https://genshin.hoyoverse.com/en/gift)　| 　[崩壊：スターレイル](https://hsr.hoyoverse.com/gift)
+  • コードセレクターは、[Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)から現在入手可能な引き換えコードをもとに表示されています。
+  • コードは最大３つ同時に入力できます
+'778': コード引き換えサービスは現在ビジー状態です。後でもう一度お試しください
