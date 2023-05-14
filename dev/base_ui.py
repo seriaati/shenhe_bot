@@ -182,6 +182,7 @@ class BaseView(discord.ui.View):
                 and item.custom_id == custom_id
             ):
                 return item
+        return None
 
     def disable_items(self):
         """Disable all items in the view."""
