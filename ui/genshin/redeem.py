@@ -40,7 +40,8 @@ class View(BaseView):
         await i.followup.send(embed=embed, view=self)
         self.message = await i.original_response()
 
-    async def _get_codes(self, session: aiohttp.ClientSession) -> List[str]:
+    @staticmethod
+    async def _get_codes(session: aiohttp.ClientSession) -> List[str]:
         try:
             async with session.get(
                 "https://genshin-redeem-code.vercel.app/codes"
