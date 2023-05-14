@@ -813,3 +813,12 @@
 '771': "Honkai Impact 3rd"
 '772': You don't have any accounts in this game
 '773': Loading...
+'774': Select a code to redeem
+'775': Enter code
+'776': Redeem code
+'777': |-
+  • If anything is not working, you can redeem on the website:
+  • [Genshin Impact](https://genshin.hoyoverse.com/en/gift) | [Honkai Star Rail](https://hsr.hoyoverse.com/gift)
+  • The code selector gathers currently available Genshin codes from [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes), select to redeem
+  • The code input method allows you to enter up to 3 codes (at least 1) manually
+'778': Code redemption service is currently busy, please try again later
