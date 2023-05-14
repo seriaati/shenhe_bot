@@ -33,17 +33,17 @@ class View(BaseView):
 
         self.user = await i.client.db.users.get(i.user.id)
         self.game = await i.client.db.settings.get(i.user.id, Settings.DEFAULT_GAME)
-        self._recognize_daily_checkin()
+        self.recognize_daily_checkin()
 
         self.locale = await self.user.fetch_lang(i.client.pool) or i.locale
 
-        self._add_items()
-        await self._update(i)
+        self.add_items()
+        await self.update(i)
 
         self.author = i.user
         self.message = await i.original_response()
 
-    def _recognize_daily_checkin(self) -> None:
+    def recognize_daily_checkin(self) -> None:
         if self.game is GameType.HONKAI:
             self.daily_checkin = self.user.honkai_daily
         elif self.game is GameType.HSR:
@@ -51,14 +51,14 @@ class View(BaseView):
         else:
             self.daily_checkin = self.user.daily_checkin
 
-    def _add_items(self) -> None:
+    def add_items(self) -> None:
         self.clear_items()
         self.add_item(ClaimRewardOn(self.locale, self.daily_checkin))
         self.add_item(ClaimRewardOff(self.locale, self.daily_checkin))
         self.add_item(ClaimReward(self.locale))
         self.add_item(GameSelector(self.locale, self.game))
 
-    async def _update(self, i: Inter) -> None:
+    async def update(self, i: Inter) -> None:
         now = get_dt_now()
         day_in_month = calendar.monthrange(now.year, now.month)[1]
 
@@ -91,7 +91,7 @@ class View(BaseView):
 
         await i.edit_original_response(embed=embed, view=self)
 
-    def _create_kwargs(self, toggle: bool) -> Dict[str, bool]:
+    def create_kwargs(self, toggle: bool) -> Dict[str, bool]:
         kwargs = {}
         if self.game is GameType.HSR:
             kwargs["hsr_daily"] = toggle
@@ -128,7 +128,7 @@ class ClaimReward(ui.Button):
         await i.edit_original_response(embed=embed, view=self.view)
         self.view.enable_items()
         await asyncio.sleep(1.5)
-        await self.view._update(i)
+        await self.view.update(i)
 
 
 class ClaimToggle(ui.Button):
@@ -139,9 +139,9 @@ class ClaimToggle(ui.Button):
 
     async def callback(self, i: Inter):
         self.view.daily_checkin = self.toggle
-        kwargs = self.view._create_kwargs(self.toggle)
+        kwargs = self.view.create_kwargs(self.toggle)
         await i.client.db.users.update(i.user.id, **kwargs)
-        self.view._add_items()
+        self.view.add_items()
 
         await i.response.edit_message(view=self.view)
 
@@ -175,6 +175,6 @@ class GameSelector(BaseGameSelector):
         await self.loading(i)
         self.view.game = GameType(self.values[0])
         self.view.user = await i.client.db.users.get(i.user.id)
-        self.view._recognize_daily_checkin()
-        self.view._add_items()
-        await self.view._update(i)
+        self.view.recognize_daily_checkin()
+        self.view.add_items()
+        await self.view.update(i)

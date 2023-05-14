@@ -23,7 +23,7 @@ class View(BaseView):
         self.game: GameType
         self.user: UserAccount
 
-    async def _init(self, i: Inter):
+    async def init(self, i: Inter):
         lang = await i.client.db.settings.get(i.user.id, Settings.LANG)
         self.lang = lang or str(i.locale)
         self.game = await i.client.db.settings.get(i.user.id, Settings.DEFAULT_GAME)
@@ -31,17 +31,17 @@ class View(BaseView):
 
     async def start(self, i: Inter):
         await i.response.defer()
-        await self._init(i)
+        await self.init(i)
 
-        codes = await self._get_codes(i.client.session)
-        self._add_components(codes)
+        codes = await self.get_codes(i.client.session)
+        self.add_components(codes)
         embed = self._make_start_embed(i.user)
 
         self.author = i.user
         await i.followup.send(embed=embed, view=self)
         self.message = await i.original_response()
 
-    async def _get_codes(self, session: aiohttp.ClientSession) -> List[str]:
+    async def get_codes(self, session: aiohttp.ClientSession) -> List[str]:
         try:
             async with session.get(
                 "https://genshin-redeem-code.vercel.app/codes"
@@ -53,7 +53,7 @@ class View(BaseView):
             codes = [code["code"] for code in data]
         return codes
 
-    def _add_components(self, codes: List[str]) -> None:
+    def add_components(self, codes: List[str]) -> None:
         self.clear_items()
         self.add_item(RedeemCode(text_map.get(776, self.lang)))
         self.add_item(CodeSelector(codes, text_map.get(774, self.lang)))
@@ -66,7 +66,7 @@ class View(BaseView):
         embed.set_user_footer(user, self.user.uid)
         return embed
 
-    async def _redeem_code(
+    async def redeem_code(
         self, code: str, user: Union[discord.User, discord.Member]
     ) -> discord.Embed:
         client = self.user.client
@@ -85,8 +85,8 @@ class View(BaseView):
         embed.set_user_footer(user, self.user.uid)
         return embed
 
-    async def _redeem_response(self, i: Inter, code: str) -> None:
-        embed = await self._redeem_code(code, i.user)
+    async def redeem_response(self, i: Inter, code: str) -> None:
+        embed = await self.redeem_code(code, i.user)
         success = not isinstance(embed, ErrorEmbed)
         view = View()
         if success:
@@ -115,7 +115,7 @@ class RedeemCode(ui.Button):
         codes = (modal.code_1.value, modal.code_2.value, modal.code_3.value)
         for code in codes:
             if code:
-                await self.view._redeem_response(i, code)
+                await self.view.redeem_response(i, code)
 
 
 class CodeModal(BaseModal):
@@ -171,7 +171,7 @@ class CodeSelector(ui.Select):
 
     async def callback(self, i: Inter):
         await i.response.defer()
-        await self.view._redeem_response(i, self.values[0])
+        await self.view.redeem_response(i, self.values[0])
 
 
 class GameSelector(BaseGameSelector):
@@ -183,10 +183,10 @@ class GameSelector(BaseGameSelector):
         await self.loading(i)
         self.view.game = GameType(self.values[0])
         if self.values[0] == GameType.GENSHIN.value:
-            codes = await self.view._get_codes(i.client.session)
+            codes = await self.view.get_codes(i.client.session)
         else:
             codes = []
-        self.view._add_components(codes)
+        self.view.add_components(codes)
         await i.edit_original_response(view=self.view)
 
 
@@ -204,8 +204,8 @@ class MeToo(ui.Button):
 
     async def callback(self, i: Inter):
         await i.response.defer()
-        await self.view._init(i)
-        await self.view._redeem_response(i, self.code)
+        await self.view.init(i)
+        await self.view.redeem_response(i, self.code)
 
 
 class WebsiteRedeem(ui.Button):
