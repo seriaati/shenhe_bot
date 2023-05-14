@@ -9,8 +9,8 @@ from .enka_profile import *
 from .event_type_chooser import *
 from .leaderboard_view import *
 from .lineup_view import *
-from .me_too import *
 from .profile_settings import *
+from .redeem import *
 from .reminder_menu import *
 from .search_nav import *
 from .show_all_characters import *
