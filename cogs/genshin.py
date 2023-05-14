@@ -26,15 +26,8 @@ from apps.genshin import enka, hoyolab, leaderboard
 from apps.genshin_data import abyss
 from apps.text_map import convert_locale, text_map
 from data.cards.dice_element import get_dice_emoji
-from utils import (
-    disable_view_items,
-    get_character_emoji,
-    get_uid,
-    get_uid_region_hash,
-    get_user_lang,
-    get_user_theme,
-    log,
-)
+from utils import (disable_view_items, get_character_emoji, get_uid,
+                   get_uid_region_hash, get_user_lang, get_user_theme, log)
 from utils.paginators import GeneralPaginator
 
 load_dotenv()
@@ -696,46 +689,10 @@ class GenshinCog(commands.Cog, name="genshin"):
 
     @checks.check_cookie()
     @app_commands.command(name="redeem", description=_("Redeem a gift code", hash=450))
-    @app_commands.rename(code=_("code", hash=451))
-    async def redeem(self, i: discord.Interaction, code: str):
-        await i.response.defer()
-        r = await self.genshin_app.redeem_code(i.user.id, i.user.id, code, i.locale)
-        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
-
-        view = ui.me_too.View(code, self.genshin_app, locale)
-        btn = None
-        if isinstance(r.result, models.ErrorEmbed):
-            btn = discord.ui.Button(
-                label=text_map.get(768, locale),
-                url=f"https://genshin.hoyoverse.com/en/gift?code={code}",
-            )
-            view.add_item(btn)
-
-        try:
-            await i.followup.send(
-                embed=r.result,
-                view=view,
-            )
-        except discord.HTTPException:
-            if btn is not None:
-                view.remove_item(btn)
-            await i.followup.send(embed=r.result, view=view)
-        view.message = await i.original_response()
-
-    @redeem.autocomplete("code")
-    async def code_autocomplete(
-        self, _: discord.Interaction, current: str
-    ) -> List[app_commands.Choice]:
-        choices: List[app_commands.Choice] = []
-        codes: List[str] = [
-            c["code"]
-            for c in (await self.bot.pool.fetch("SELECT code FROM genshin_codes"))
-        ]
-        for code in codes:
-            if current.lower() in code.lower():
-                choices.append(app_commands.Choice(name=code, value=code))
-
-        return choices[:25]
+    async def redeem(self, inter: discord.Interaction):
+        i: models.Inter = inter  # type: ignore
+        view = ui.redeem.View()
+        await view.start(i)
 
     @app_commands.command(
         name="events", description=_("View ongoing genshin events", hash=452)
