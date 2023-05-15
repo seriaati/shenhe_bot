@@ -258,26 +258,12 @@ class DynamicBackgroundInput:
     max_card_num: typing.Optional[int] = None
     draw_title: bool = True
 
+T = typing.TypeVar("T")
 
 @define
-class SingleStrikeLeaderboardCharacter:
-    constellation: int
-    refinement: int
-    level: int
-    icon: str
-
-
-@define
-class SingleStrikeLeaderboardUser:
-    user_name: str
+class BoardUser(typing.Generic[T]):
     rank: int
-    character: SingleStrikeLeaderboardCharacter
-    single_strike: int
-    floor: str
-    stars_collected: int
-    uid: int
-    rank: int
-    season: int
+    entry: T
 
 
 @define
@@ -292,25 +278,6 @@ class CharacterUsageResult:
 class UsageCharacter:
     character: ambr.Character
     usage_num: int
-
-
-@define
-class RunLeaderboardUser:
-    icon_url: str
-    user_name: str
-    level: int
-    wins_slash_runs: str
-    win_percentage: str
-    stars_collected: int
-    uid: int
-    rank: int
-
-
-@define
-class LeaderboardResult:
-    fp: io.BytesIO
-    current_user: typing.Union[RunLeaderboardUser, SingleStrikeLeaderboardUser]
-
 
 @define
 class TodoItem:

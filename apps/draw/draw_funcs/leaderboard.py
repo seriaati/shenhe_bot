@@ -5,18 +5,22 @@ from PIL import Image, ImageDraw
 
 import dev.asset as asset
 from ambr import Character
+from apps.db.tables.abyss_board import AbyssBoardEntry
 from apps.text_map import text_map
-from dev.models import RunLeaderboardUser, SingleStrikeLeaderboardUser
-from utils import circular_crop, get_cache, get_font, global_write, shorten_text
+from dev.enum import Category
+from dev.models import BoardUser
+from utils import (circular_crop, get_cache, get_font, global_write,
+                   shorten_text)
 
 
 def board(
     dark_mode: bool,
-    users: Union[List[SingleStrikeLeaderboardUser], List[RunLeaderboardUser]],
+    users: List[BoardUser[AbyssBoardEntry]],
     current_uid: int,
     title_hash: int,
     column_hashes: List[int],
     locale: discord.Locale | str,
+    category: Category,
 ) -> Image.Image:
     current_user = None
     user_above = None
@@ -24,7 +28,7 @@ def board(
     for index, u in enumerate(users):
         user_above = users[index - 1] if index > 0 else None
         user_below = users[index + 1] if index < len(users) - 1 else None
-        if u.uid == current_uid:
+        if u.entry.uid == current_uid:
             current_user = u
             break
 
@@ -44,7 +48,7 @@ def board(
             break
 
         current = u == current_user
-        if isinstance(u, SingleStrikeLeaderboardUser):
+        if category is Category.SINGLE_STRIKE:
             user_card = ss_user_card(dark_mode, u, current)
         else:
             user_card = run_user_card(dark_mode, u, current)
@@ -57,7 +61,7 @@ def board(
         for u in users_to_draw:
             if u is not None:
                 current = u == current_user
-                if isinstance(u, SingleStrikeLeaderboardUser):
+                if category is Category.SINGLE_STRIKE:
                     user_card = ss_user_card(dark_mode, u, current)
                 else:
                     user_card = run_user_card(dark_mode, u, current)
@@ -119,26 +123,26 @@ def default_user_card(dark_mode: bool, rank: int, current: bool) -> Image.Image:
 
 def run_user_card(
     dark_mode: bool,
-    user_data: RunLeaderboardUser,
+    user: BoardUser[AbyssBoardEntry],
     current: bool,
 ) -> Image.Image:
     """Draw runs taken leaderboard user card."""
-    im = default_user_card(dark_mode, user_data.rank, current)
+    im = default_user_card(dark_mode, user.rank, current)
     draw = ImageDraw.Draw(im)
 
     # write rank text
     font = get_font("en-US", 80, "Bold")
     fill = asset.primary_text if not dark_mode else asset.white
-    draw.text((110, 84), str(user_data.rank), font=font, fill=fill, anchor="mm")
+    draw.text((110, 84), str(user.rank), font=font, fill=fill, anchor="mm")
 
     # draw character icon
-    character_icon = get_cache(user_data.icon_url)
+    character_icon = get_cache(user.entry.character.icon)
     character_icon = character_icon.resize((115, 115))
     character_icon = circular_crop(character_icon)
     im.paste(character_icon, (216, 27), character_icon)
 
     # write user name
-    text = shorten_text(user_data.user_name, 580, font)
+    text = shorten_text(user.entry.name, 580, font)
     global_write(draw, (350, 27), text, 48, fill, "Bold")
 
     # write player info
@@ -146,7 +150,7 @@ def run_user_card(
     fill = asset.secondary_text if not dark_mode else asset.white
     draw.text(
         (350, 92),
-        f"AR {user_data.level}",
+        f"AR {user.entry.ar}",
         font=font,
         fill=fill,
     )
@@ -155,48 +159,49 @@ def run_user_card(
     font = get_font("en-US", 48, "Medium")
     fill = asset.primary_text if not dark_mode else asset.white
     draw.text(
-        (800, 84), f"{user_data.wins_slash_runs}", font=font, fill=fill, anchor="mm"
+        (800, 84),
+        f"{user.entry.wins}/{user.entry.runs}",
+        font=font,
+        fill=fill,
+        anchor="mm",
     )
 
     # write win percentage
-    draw.text(
-        (1061, 84), user_data.win_percentage + "%", font=font, fill=fill, anchor="mm"
-    )
+    win_percent = round(user.entry.wins / user.entry.runs * 100, 2)
+    draw.text((1061, 84), f"{win_percent}%", font=font, fill=fill, anchor="mm")
 
     # write stars collected
-    draw.text(
-        (1317, 84), str(user_data.stars_collected), font=font, fill=fill, anchor="mm"
-    )
+    draw.text((1317, 84), str(user.entry.stars), font=font, fill=fill, anchor="mm")
 
     return im
 
 
 def ss_user_card(
-    dark_mode: bool, user_data: SingleStrikeLeaderboardUser, current: bool
+    dark_mode: bool, user: BoardUser[AbyssBoardEntry], current: bool
 ) -> Image.Image:
     """Draw single strike leaderboard user card."""
-    im = default_user_card(dark_mode, user_data.rank, current)
+    im = default_user_card(dark_mode, user.rank, current)
     draw = ImageDraw.Draw(im)
 
     # write rank text
     font = get_font("en-US", 80, "Bold")
     fill = asset.primary_text if not dark_mode else asset.white
-    draw.text((110, 84), str(user_data.rank), font=font, fill=fill, anchor="mm")
+    draw.text((110, 84), str(user.rank), font=font, fill=fill, anchor="mm")
 
     # draw character icon
-    character_icon = get_cache(user_data.character.icon)
+    character_icon = get_cache(user.entry.character.icon)
     character_icon = character_icon.resize((115, 115))
     character_icon = circular_crop(character_icon)
     im.paste(character_icon, (216, 27), character_icon)
 
     # write user name
-    text = shorten_text(user_data.user_name, 580, font)
+    text = shorten_text(user.entry.name, 580, font)
     global_write(draw, (350, 27), text, 48, fill, "Bold")
 
     # write character info
     font = get_font("en-US", 36)
     fill = asset.secondary_text if not dark_mode else asset.white
-    character = user_data.character
+    character = user.entry.character
     draw.text(
         (350, 92),
         f"C{character.constellation}R{character.refinement} Lv.{character.level}",
@@ -208,14 +213,14 @@ def ss_user_card(
     font = get_font("en-US", 48, "Medium")
     fill = asset.primary_text if not dark_mode else asset.white
     draw.text(
-        (800, 84), f"{user_data.single_strike:,}", font=font, fill=fill, anchor="mm"
+        (800, 84), f"{user.entry.single_strike:,}", font=font, fill=fill, anchor="mm"
     )
 
     # write floor
-    draw.text((1061, 84), user_data.floor, font=font, fill=fill, anchor="mm")
+    draw.text((1061, 84), user.entry.floor, font=font, fill=fill, anchor="mm")
 
     # write abyss phase
-    draw.text((1317, 84), str(user_data.season), font=font, fill=fill, anchor="mm")
+    draw.text((1317, 84), str(user.entry.season), font=font, fill=fill, anchor="mm")
 
     return im
 

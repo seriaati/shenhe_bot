@@ -6,17 +6,14 @@ import genshin
 from PIL import Image, ImageDraw
 
 import dev.asset as asset
+from apps.db.tables.abyss_board import AbyssBoardEntry
 from apps.draw.draw_funcs import leaderboard
 from apps.text_map import text_map
-from dev.models import (
-    CharacterUsageResult,
-    DynamicBackgroundInput,
-    RunLeaderboardUser,
-    SingleStrikeLeaderboardUser,
-    TopPadding,
-    UsageCharacter,
-)
-from utils import draw_dynamic_background, dynamic_font_size, get_cache, get_font
+from dev.enum import Category
+from dev.models import (BoardUser, CharacterUsageResult,
+                        DynamicBackgroundInput, TopPadding, UsageCharacter)
+from utils import (draw_dynamic_background, dynamic_font_size, get_cache,
+                   get_font)
 
 
 def one_page(
@@ -196,15 +193,21 @@ def one_page(
     return fp
 
 
-def strike_leaderboard(
+def strike_board(
     locale: discord.Locale | str,
     dark_mode: bool,
-    users: List[SingleStrikeLeaderboardUser],
+    users: List[BoardUser[AbyssBoardEntry]],
     current_uid: int,
 ) -> io.BytesIO:
     """Draw the "Strongest Single Strike" leaderboard."""
     im = leaderboard.board(
-        dark_mode, users, current_uid, 80, [89, 198, 199, 201, 430], locale
+        dark_mode,
+        users,
+        current_uid,
+        80,
+        [89, 198, 199, 201, 430],
+        locale,
+        Category.SINGLE_STRIKE,
     )
     fp = io.BytesIO()
     im = im.convert("RGB")
@@ -212,15 +215,21 @@ def strike_leaderboard(
     return fp
 
 
-def run_leaderboard(
+def full_clear_board(
     locale: discord.Locale | str,
     dark_mode: bool,
-    users: List[RunLeaderboardUser],
+    users: List[BoardUser[AbyssBoardEntry]],
     current_uid: int,
 ) -> io.BytesIO:
     """Draw the "Runs Taken to Full Clear" leaderboard."""
     im = leaderboard.board(
-        dark_mode, users, current_uid, 160, [89, 198, 186, 293, 610], locale
+        dark_mode,
+        users,
+        current_uid,
+        160,
+        [89, 198, 186, 293, 610],
+        locale,
+        Category.FULL_CLEAR,
     )
     fp = io.BytesIO()
     im = im.convert("RGB")

@@ -13,8 +13,10 @@ import apps.draw.draw_funcs as funcs
 import dev.models as models
 from ambr import Material
 from apps.db.json import read_json, write_json
+from apps.db.tables.abyss_board import AbyssBoardEntry
 from apps.wish.models import RecentWish, WishData
-from utils import calculate_time, compress_image_util, download_images, extract_urls
+from utils import (calculate_time, compress_image_util, download_images,
+                   extract_urls)
 
 
 @calculate_time
@@ -41,13 +43,12 @@ async def draw_abyss_one_page(
 async def draw_single_strike_leaderboard(
     draw_input: models.DrawInput,
     current_uid: int,
-    users: List[models.SingleStrikeLeaderboardUser],
+    users: List[models.BoardUser[AbyssBoardEntry]],
 ) -> io.BytesIO:
-    characters = [u.character for u in users]
-    urls = extract_urls(characters)
+    urls = [u.entry.character.icon for u in users]
     await download_images(urls, draw_input.session)
     func = functools.partial(
-        funcs.abyss.strike_leaderboard,
+        funcs.abyss.strike_board,
         draw_input.locale,
         draw_input.dark_mode,
         users,
@@ -60,12 +61,12 @@ async def draw_single_strike_leaderboard(
 async def draw_run_leaderboard(
     draw_input: models.DrawInput,
     current_uid: int,
-    users: List[models.RunLeaderboardUser],
+    users: List[models.BoardUser[AbyssBoardEntry]],
 ) -> io.BytesIO:
-    urls = [u.icon_url for u in users]
+    urls = [u.entry.icon for u in users]
     await download_images(urls, draw_input.session)
     func = functools.partial(
-        funcs.abyss.run_leaderboard,
+        funcs.abyss.full_clear_board,
         draw_input.locale,
         draw_input.dark_mode,
         users,
