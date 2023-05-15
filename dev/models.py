@@ -258,7 +258,9 @@ class DynamicBackgroundInput:
     max_card_num: typing.Optional[int] = None
     draw_title: bool = True
 
+
 T = typing.TypeVar("T")
+
 
 @define
 class BoardUser(typing.Generic[T]):
@@ -278,6 +280,7 @@ class CharacterUsageResult:
 class UsageCharacter:
     character: ambr.Character
     usage_num: int
+
 
 @define
 class TodoItem:

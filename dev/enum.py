@@ -35,6 +35,7 @@ class GameType(Enum):
     HSR = "hsr"
     HONKAI = "honkai"
 
+
 class Category(Enum):
     SINGLE_STRIKE = "single_strike_damage"
     CHARACTER_USAGE_RATE = "character_usage_rate"

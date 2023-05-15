@@ -10,10 +10,14 @@ from apps.db.tables.abyss_board import AbyssBoardEntry
 from apps.draw.draw_funcs import leaderboard
 from apps.text_map import text_map
 from dev.enum import Category
-from dev.models import (BoardUser, CharacterUsageResult,
-                        DynamicBackgroundInput, TopPadding, UsageCharacter)
-from utils import (draw_dynamic_background, dynamic_font_size, get_cache,
-                   get_font)
+from dev.models import (
+    BoardUser,
+    CharacterUsageResult,
+    DynamicBackgroundInput,
+    TopPadding,
+    UsageCharacter,
+)
+from utils import draw_dynamic_background, dynamic_font_size, get_cache, get_font
 
 
 def one_page(

@@ -66,7 +66,7 @@ class AbyssLeaderboard:
         runs: int,
         single_strike: int,
         floor: str,
-        character: SingleStrikeCharacter
+        character: SingleStrikeCharacter,
     ) -> None:
         """Insert abyss leaderboard entry"""
         await self.pool.execute(
@@ -92,15 +92,20 @@ class AbyssLeaderboard:
         self, category: Category, season: Optional[int] = None
     ) -> List[AbyssBoardEntry]:
         """Get abyss leaderboard entries"""
-        order = "single_strike DESC" if category == Category.SINGLE_STRIKE else "runs ASC"
+        order = (
+            "single_strike DESC" if category == Category.SINGLE_STRIKE else "runs ASC"
+        )
         if season is None:
             return [
                 AbyssBoardEntry(**i)
-                for i in await self.pool.fetch(f"SELECT * FROM abyss_leaderboard ORDER BY {order}")
+                for i in await self.pool.fetch(
+                    f"SELECT * FROM abyss_leaderboard ORDER BY {order}"
+                )
             ]
         return [
             AbyssBoardEntry(**i)
             for i in await self.pool.fetch(
-                f"SELECT * FROM abyss_leaderboard WHERE season = $1 ORDER BY {order}", season
+                f"SELECT * FROM abyss_leaderboard WHERE season = $1 ORDER BY {order}",
+                season,
             )
         ]
