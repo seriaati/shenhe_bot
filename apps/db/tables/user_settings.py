@@ -51,7 +51,7 @@ class UserSettingsTable:
         val = await self.pool.fetchval(
             f"SELECT {settings.value} FROM user_settings WHERE user_id = $1", user_id
         )
-        if val is None:
+        if val is None and settings is not Settings.LANG:
             await self.insert(user_id)
             val = await self.get(user_id, settings)
 
