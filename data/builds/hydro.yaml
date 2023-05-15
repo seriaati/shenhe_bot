@@ -92,35 +92,35 @@
   icon: Tartaglia
   builds:
     - weapon: 冬極白星
-      artifacts: 沉淪角鬥2件套
+      artifacts: 水仙4件套
       main_stats: 攻水暴
       talents: 2/9/10
       stats:
-        攻擊力: 2080
+        攻擊力: 1916
         暴率/暴傷: 76/153
         元素精通: 80
       move: 近戰Q蒸發
-      dmg: 107638
+      dmg: 116149
     - weapon: 天空之翼
-      artifacts: 沉淪角鬥2件套
+      artifacts: 水仙4件套
       main_stats: 攻水暴
       talents: 2/9/10
       stats:
-        攻擊力: 2208
+        攻擊力: 2033
         暴率/暴傷: 76/152
         元素精通: 80
       move: 近戰Q蒸發
-      dmg: 91833
+      dmg: 96456
     - weapon: 弓藏
-      artifacts: 沉淪角鬥2件套
+      artifacts: 水仙4件套
       main_stats: 攻水暴
       talents: 2/9/10
       stats:
-        攻擊力: 2224
-        暴率/暴傷: 60/120
+        攻擊力: 1743
+        暴率/暴傷: 74/148
         元素精通: 80
       move: 近戰Q蒸發
-      dmg: 80737
+      dmg: 80979
   thoughts:
     - 公子在蒸發中屬於強勢元素，要持續蒸發是極其困難的，圖中精通是為核爆做參考，相當於蒸發覆蓋率100%。 雖然公子自己不會主動堆精通，但在萬達國際中，有時一刀的爆發的傷害佔比會很高，這時候萬葉二命的提升就會非常大。
     - 聖遺物思路推薦： 攻擊沙、水傷杯、暴擊（暴傷）頭 副詞條優先順序： 雙暴（自適應）>百分比攻擊>元素精通=元素充能效率
@@ -323,46 +323,35 @@
   element: 水
   builds:
     - weapon: 聖顯之鑰
-      artifacts: 千岩樂團2件套
+      artifacts: 千岩花海2件套
       main_stats: 生生生
       talents: 2/8/9
       stats:
-        生命值: 66740
-        暴率/暴傷: 任意
-        充能效率: 170.00%
-        元素精通: 120
-      move: 豐壤之核
-      dmg: 22608
-    - weapon: 聖顯之鑰
-      artifacts: 千岩樂團2件套
-      main_stats: 生生生
-      talents: 2/8/9
-      stats:
-        生命值: 66740
+        生命值: 69777
         暴率/暴傷: 任意
         充能效率: 120.00%
-        元素精通: 360
+        元素精通: 280
       move: 豐壤之核
-      dmg: 25176
+      dmg: 25255
     - weapon: 磐岩結綠
-      artifacts: 千岩樂團2件套
+      artifacts: 千岩花海2件套
+      main_stats: 生生生
+      talents: 2/8/9
+      stats:
+        生命值: 59724
+        暴率/暴傷: 任意
+        充能效率: 120.00%
+        元素精通: 280
+      move: 豐壤之核
+      dmg: 18255
+    - weapon: 西福斯的月光
+      artifacts: 千岩花海2件套
       main_stats: 生生生
       talents: 2/8/9
       stats:
         生命值: 56687
         暴率/暴傷: 任意
-        充能效率: 120.00%
-        元素精通: 360
+        充能效率: 152.04%
+        元素精通: 445
       move: 豐壤之核
-      dmg: 18610
-    - weapon: 西福斯的月光
-      artifacts: 千岩樂團2件套
-      main_stats: 生生生
-      talents: 2/8/9
-      stats:
-        生命值: 53650
-        暴率/暴傷: 任意
-        充能效率: 157.80%
-        元素精通: 525
-      move: 豐壤之核
-      dmg: 19900
+      dmg: 19673

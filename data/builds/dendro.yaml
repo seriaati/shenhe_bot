@@ -213,20 +213,20 @@
       talents: 9/10/8
       stats:
         攻擊力: 1166
-        暴率/暴傷: 80/177.2
-        元素精通: 347
+        暴率/暴傷: 70/197
+        元素精通: 387
       move: E光幕激化傷害
-      dmg: 20018
+      dmg: 23188
     - weapon: 磐岩結綠
       artifacts: 飾金4件套
       main_stats: 精草暴
       talents: 9/10/8
       stats:
-        攻擊力: 1416
-        暴率/暴傷: 80/169.2
-        元素精通: 347
+        攻擊力: 1166
+        暴率/暴傷: 80/169
+        元素精通: 387
       move: E光幕激化傷害
-      dmg: 18815
+      dmg: 20236
     - weapon: 黑劍
       artifacts: 飾金4件套
       main_stats: 精草暴
@@ -234,9 +234,9 @@
       stats:
         攻擊力: 1134
         暴率/暴傷: 74/148
-        元素精通: 347
+        元素精通: 387
       move: E光幕激化傷害
-      dmg: 16500
+      dmg: 17782
 瑤瑤:
   element: 草
   builds:
@@ -260,3 +260,73 @@
         生命值: 47069
       move: E白玉蘿蔔治療
       dmg: 2766
+白朮:
+  builds:
+    - weapon: 碧落之瓏
+      artifacts: 深林4件套
+      main_stats: 充生治
+      talents: 2/9/10
+      stats:
+        攻擊力: 1112
+        暴率/暴傷: 任意
+        生命值: 40152
+        充能效率: 171.80%
+      move: E治療
+      dmg: 9544
+    - weapon: 碧落之瓏
+      artifacts: 海染4件套
+      main_stats: 充生治
+      talents: 2/9/10
+      stats:
+        攻擊力: 1112
+        暴率/暴傷: 任意
+        生命值: 40152
+        充能效率: 171.80%
+      move: E治療
+      dmg: 10598
+    - weapon: 試作金珀
+      artifacts: 深林4件套
+      main_stats: 充生治
+      talents: 2/9/10
+      stats:
+        攻擊力: 1014
+        暴率/暴傷: 任意
+        生命值: 39058
+        充能效率: 171.80%
+      move: E治療
+      dmg: 9341
+卡維:
+  builds:
+    - weapon: 祭禮大劍
+      artifacts: 深林4件套
+      main_stats: 充精精
+      talents: 9/11/13
+      stats:
+        攻擊力: 1110
+        暴率/暴傷: 任意
+        元素精通: 550
+        充能效率: 202.40%
+      move: 開Q原綻放
+      dmg: 17939
+    - weapon: 祭禮大劍
+      artifacts: 花神4件套
+      main_stats: 充精精
+      talents: 9/11/13
+      stats:
+        攻擊力: 1360
+        暴率/暴傷: 任意
+        元素精通: 630
+        充能效率: 202.40%
+      move: 開Q原綻放
+      dmg: 17755
+    - weapon: 瑪海菈的水色
+      artifacts: 深林4件套
+      main_stats: 充精精
+      talents: 9/11/13
+      stats:
+        攻擊力: 1227
+        暴率/暴傷: 任意
+        元素精通: 715
+        充能效率: 171.80%
+      move: 開Q原綻放
+      dmg: 20367
