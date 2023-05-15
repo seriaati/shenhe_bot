@@ -116,6 +116,9 @@ async def update_item_text_map(things_to_update) -> None:
             )
         for item_id, item_info in text_map_.items():
             for name in item_info.values():
+                if name in huge_text_map:
+                    continue
+
                 if "10000005" in item_id:
                     huge_text_map[name] = "10000005"
                 elif "10000007" in item_id:
