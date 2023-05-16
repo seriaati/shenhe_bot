@@ -15,7 +15,7 @@ from utils import circular_crop, get_cache, get_font, global_write, shorten_text
 def board(
     dark_mode: bool,
     users: List[BoardUser[AbyssBoardEntry]],
-    current_uid: int,
+    user_uid: int,
     title_hash: int,
     column_hashes: List[int],
     locale: discord.Locale | str,
@@ -27,7 +27,7 @@ def board(
     for index, u in enumerate(users):
         user_above = users[index - 1] if index > 0 else None
         user_below = users[index + 1] if index < len(users) - 1 else None
-        if u.entry.uid == current_uid:
+        if u.entry.uid == user_uid:
             current_user = u
             break
 

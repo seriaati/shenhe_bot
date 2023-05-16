@@ -41,7 +41,7 @@ async def draw_abyss_one_page(
 @calculate_time
 async def draw_single_strike_leaderboard(
     draw_input: models.DrawInput,
-    current_uid: int,
+    user_uid: int,
     users: List[models.BoardUser[AbyssBoardEntry]],
 ) -> io.BytesIO:
     urls = [u.entry.character.icon for u in users]
@@ -51,7 +51,7 @@ async def draw_single_strike_leaderboard(
         draw_input.locale,
         draw_input.dark_mode,
         users,
-        current_uid,
+        user_uid,
     )
     return await draw_input.loop.run_in_executor(None, func)
 
@@ -59,7 +59,7 @@ async def draw_single_strike_leaderboard(
 @calculate_time
 async def draw_run_leaderboard(
     draw_input: models.DrawInput,
-    current_uid: int,
+    user_uid: int,
     users: List[models.BoardUser[AbyssBoardEntry]],
 ) -> io.BytesIO:
     urls = [u.entry.icon for u in users]
@@ -69,7 +69,7 @@ async def draw_run_leaderboard(
         draw_input.locale,
         draw_input.dark_mode,
         users,
-        current_uid,
+        user_uid,
     )
     return await draw_input.loop.run_in_executor(None, func)
 

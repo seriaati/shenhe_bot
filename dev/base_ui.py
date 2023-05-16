@@ -8,6 +8,7 @@ import sentry_sdk
 
 import dev.asset as asset
 import dev.exceptions as exceptions
+from apps.db.tables.user_settings import Settings
 from apps.text_map import text_map
 from dev.enum import GameType
 from utils import get_user_lang, log
@@ -281,20 +282,31 @@ class EnkaView(BaseView):
         arbitrary_types_allowed = True
 
 
-class LoadingSelector(discord.ui.Select):
-    def __init__(self, locale: typing.Union[discord.Locale, str]):
-        super().__init__(
-            options=[
-                discord.SelectOption(
-                    label=text_map.get(773, locale),
-                    emoji=asset.loading_emoji,
-                    default=True,
-                )
-            ],
-        )
+class BaseSelect(discord.ui.Select):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.original_options: typing.List[discord.SelectOption] = self.options.copy()
+        self.view: BaseView
+
+    async def loading(self, i: Inter):
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG)
+        lang = lang or str(i.locale)
+
+        self.options = [
+            discord.SelectOption(
+                label=text_map.get(773, lang),
+                emoji=asset.loading_emoji,
+                default=True,
+            )
+        ]
+        await i.response.edit_message(view=self.view)
+
+    async def recover(self, i: Inter):
+        self.options = self.original_options
+        await i.edit_original_response(view=self.view)
 
 
-class BaseGameSelector(discord.ui.Select):
+class BaseGameSelector(BaseSelect):
     def __init__(
         self,
         locale: typing.Union[discord.Locale, str],
@@ -331,7 +343,28 @@ class BaseGameSelector(discord.ui.Select):
         self.locale = locale
         self.view: BaseView
 
+class BaseButton(discord.ui.Button):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.view: BaseView
+        self.original_label = self.label
+        self.original_emoji = self.emoji
+        self.original_disabled: bool = self.disabled
+        self.original_style: discord.ButtonStyle = self.style
+
     async def loading(self, i: Inter):
-        self.view.remove_item(self)
-        self.view.add_item(LoadingSelector(self.locale))
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG)
+        lang = lang or str(i.locale)
+        self.emoji = asset.loading_emoji
+        self.label = text_map.get(773, lang)
+        self.disabled = True
+        self.style = discord.ButtonStyle.grey
         await i.response.edit_message(view=self.view)
+
+    async def restore(self, i: Inter):
+        self.label = self.original_label
+        self.emoji = self.original_emoji
+        self.disabled = self.original_disabled
+        self.style = self.original_style
+
+        await i.edit_original_response(view=self.view)

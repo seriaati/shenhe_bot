@@ -201,13 +201,13 @@ def strike_board(
     locale: discord.Locale | str,
     dark_mode: bool,
     users: List[BoardUser[AbyssBoardEntry]],
-    current_uid: int,
+    user_uid: int,
 ) -> io.BytesIO:
     """Draw the "Strongest Single Strike" leaderboard."""
     im = leaderboard.board(
         dark_mode,
         users,
-        current_uid,
+        user_uid,
         80,
         [89, 198, 199, 201, 430],
         locale,
@@ -223,13 +223,13 @@ def full_clear_board(
     locale: discord.Locale | str,
     dark_mode: bool,
     users: List[BoardUser[AbyssBoardEntry]],
-    current_uid: int,
+    user_uid: int,
 ) -> io.BytesIO:
     """Draw the "Runs Taken to Full Clear" leaderboard."""
     im = leaderboard.board(
         dark_mode,
         users,
-        current_uid,
+        user_uid,
         160,
         [89, 198, 186, 293, 610],
         locale,

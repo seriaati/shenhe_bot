@@ -5,33 +5,19 @@ from typing import Dict, List, Optional, Tuple, Union
 
 import aiohttp
 import discord
-from discord import ui
 
 import dev.asset as asset
 import dev.config as config
 import dev.models as models
 from ambr import AmbrTopAPI, Character
-from apps.db.table_models import AbyssLeaderboard
 from apps.db.tables.abyss_board import AbyssBoardEntry
 from apps.db.tables.abyss_chara_board import AbyssCharaBoardEntry
 from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
-from dev.base_ui import BaseView
+from dev.base_ui import BaseButton, BaseSelect, BaseView
 from dev.enum import Category
-from utils import (
-    get_abyss_season_date_range,
-    get_character_emoji,
-    get_current_abyss_season,
-    image_gen_transition,
-)
-
-
-class EmptyLeaderboard(Exception):
-    pass
-
-
-T = Union[List[AbyssBoardEntry], List[AbyssCharaBoardEntry]]
+from utils import (get_abyss_season_date_range, get_character_emoji,
 
 
 class Area(Enum):
@@ -54,6 +40,7 @@ class View(BaseView):
     async def _init(self, i: models.Inter) -> None:
         """Init"""
         self.lang = await i.client.db.settings.get(i.user.id, Settings.LANG)
+        self.lang = self.lang or str(i.locale)
         self.uid = await i.client.db.users.get_uid(i.user.id)
         self.dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
 
@@ -96,8 +83,12 @@ class View(BaseView):
         await i.followup.send(embed=embed, view=self)
         self.message = await i.original_response()
 
-    def filter_guild_members(self, entries: T, guild: discord.Guild) -> T:
-        """Filter guild members"""
+    def _filter_guild_members(
+        self,
+        entries: Union[List[AbyssBoardEntry], List[AbyssCharaBoardEntry]],
+        guild: discord.Guild,
+    ):
+        """Filter out leaderboard entries that are not in the guild member list"""
         for e in entries:
             if guild.get_member(e.user_id) is None:
                 entries.remove(e)  # type: ignore
@@ -105,36 +96,54 @@ class View(BaseView):
         return entries
 
     async def return_leaderboard(self, i: models.Inter):
-        # disable all the items and set the loading state
-        await image_gen_transition(i, self, self.lang)
+        """Draw the leaderboard image and return leaderboard interaction"""
         if i.guild and not i.guild.chunked:
             await i.guild.chunk()
-
-        # enable all the items
-        self.enable_items()
 
         # get leaderboard entries
         season = None if self.season == 0 else self.season
         if self.category is Category.SINGLE_STRIKE:
-            entries = await i.client.db.leaderboard.abyss.get_all(season)
+            entries = await i.client.db.leaderboard.abyss.get_all(self.category, season)
         elif self.category is Category.CHARACTER_USAGE_RATE:
             entries = await i.client.db.leaderboard.abyss_character.get_all(season)
         else:  # self.category is Category.FULL_CLEAR:
-            entries = await i.client.db.leaderboard.abyss.get_all(season)
+            entries = await i.client.db.leaderboard.abyss.get_all(self.category, season)
 
         # filter out users that are not in the guild
         if i.guild and self.area is Area.SERVER:
-            entries = self.filter_guild_members(entries, i.guild)
+            entries = self._filter_guild_members(entries, i.guild)
 
         if not entries:
             embed = models.ErrorEmbed()
             embed.set_author(
                 name=text_map.get(620, self.lang), icon_url=asset.error_icon
             )
-            await i.followup.send(embed=embed, ephemeral=True)
+            return await i.followup.send(embed=embed, ephemeral=True)
+
+        # draw leaderboards
+        if isinstance(entries[0], AbyssBoardEntry):
+            current_user, users = self.get_board_users(entries)  # type: ignore
+            if self.category is Category.SINGLE_STRIKE:
+                embed, fp = await self.draw_single_strike(
+                    current_user, users, i.client.session, i.client.loop
+                )
+            else:  # self.category is Category.FULL_CLEAR
+                embed, fp = await self.draw_full_clear(
+                    current_user, users, i.client.session, i.client.loop
+                )
+        else:
+            embed, fp = await self.draw_character_usage(
+                entries, i.client.session, i.client.loop  # type: ignore
+            )
+
+        # send leaderboard
+        fp.seek(0)
+        await i.edit_original_response(
+            embed=embed, attachments=[discord.File(fp, "board.jpeg")]
+        )
 
     def get_board_users(
-        self, uid: int, entries: List[AbyssBoardEntry]
+        self, entries: List[AbyssBoardEntry]
     ) -> Tuple[
         Optional[models.BoardUser[AbyssBoardEntry]],
         List[models.BoardUser[AbyssBoardEntry]],
@@ -151,7 +160,7 @@ class View(BaseView):
             users.append(user)
             uids.append(e.uid)
 
-            if e.uid == uid:
+            if e.uid == self.uid:
                 current_user = user
             rank += 1
 
@@ -171,10 +180,9 @@ class View(BaseView):
                 locale=self.lang,
                 dark_mode=self.dark_mode,
             ),
-            uid,
+            self.uid,
             users,
         )
-        fp.seek(0)
 
         embed = models.DefaultEmbed(
             text_map.get(80, self.lang),
@@ -188,14 +196,14 @@ class View(BaseView):
             icon_url=self.author.display_avatar.url,
         )
         embed.set_footer(text=text_map.get(619, self.lang).format(command="abyss"))
-        embed.set_image(url="attachment://leaderboard.jpeg")
+        embed.set_image(url="attachment://board.jpeg")
 
         return embed, fp
 
-    async def draw_single_strike(
+    async def draw_full_clear(
         self,
-        uid: int,
-        entries: List[AbyssBoardEntry],
+        current_user: Optional[models.BoardUser[AbyssBoardEntry]],
+        users: List[models.BoardUser[AbyssBoardEntry]],
         session: aiohttp.ClientSession,
         loop: asyncio.AbstractEventLoop,
     ) -> Tuple[discord.Embed, io.BytesIO]:
@@ -206,24 +214,25 @@ class View(BaseView):
                 locale=self.lang,
                 dark_mode=self.dark_mode,
             ),
-            uid,
-            entries,
+            self.uid,
+            users,
         )
-        fp.seek(0)
 
         embed = models.DefaultEmbed(
-            title,
+            text_map.get(160, self.lang),
             f"""
-            {text_map.get(457, locale) if current_user is None else text_map.get(614, locale).format(rank=current_user.rank)}
-            {text_map.get(615, locale).format(num=len(run_users))}
+            {text_map.get(457, self.lang) if current_user is None else text_map.get(614, self.lang).format(rank=current_user.rank)}
+            {text_map.get(615, self.lang).format(num=len(users))}
             """,
         )
         embed.set_author(
-            name=get_al_title(view.season, locale),
-            icon_url=i.user.display_avatar.url,
+            name=get_al_title(self.season, self.lang),
+            icon_url=self.author.display_avatar.url,
         )
-        embed.set_footer(text=text_map.get(619, locale).format(command=abyss_command))
-        embed.set_image(url="attachment://leaderboard.jpeg")
+        embed.set_footer(text=text_map.get(619, self.lang).format(command="/abyss"))
+        embed.set_image(url="attachment://board.jpeg")
+
+        return embed, fp
 
     async def draw_character_usage(
         self,
@@ -231,9 +240,6 @@ class View(BaseView):
         session: aiohttp.ClientSession,
         loop: asyncio.AbstractEventLoop,
     ) -> Tuple[discord.Embed, io.BytesIO]:
-        if not entries:
-            raise EmptyLeaderboard
-
         uc_list: List[models.UsageCharacter] = []
         temp_dict: Dict[int, int] = {}
         for e in entries:
@@ -263,7 +269,6 @@ class View(BaseView):
             ),
             uc_list,
         )
-        result.fp.seek(0)
 
         character_emoji = get_character_emoji(result.first_character.id)
         character_name = f"{character_emoji} {result.first_character.name}"
@@ -277,25 +282,25 @@ class View(BaseView):
             icon_url=self.author.display_avatar.url,
         )
         embed.set_footer(text=text_map.get(619, self.lang).format(command="/abyss"))
-        embed.set_image(url="attachment://leaderboard.jpeg")
+        embed.set_image(url="attachment://board.jpeg")
 
         return embed, result.fp
 
 
-class LeaderboardSelect(ui.Select):
+class LeaderboardSelect(BaseSelect):
     def __init__(self, placeholder: str, options: List[discord.SelectOption]):
         super().__init__(placeholder=placeholder, options=options)
         self.view: View
 
     async def callback(self, i: models.Inter):
         self.view.category = Category(self.values[0])
-        await select_callback(self.view, i, self.values[0])
+        await self.loading(i)
 
 
-class AbyssSeasonSelect(ui.Select):
+class AbyssSeasonSelect(BaseSelect):
     def __init__(self, locale: discord.Locale | str):
         current_season = get_current_abyss_season()
-        hashes = [435, 436, 151]
+        hashes = (435, 436, 151)
         options = [
             discord.SelectOption(
                 label=text_map.get(hashes[index], locale)
@@ -317,110 +322,10 @@ class AbyssSeasonSelect(ui.Select):
 
     async def callback(self, i: models.Inter):
         self.view.season = int(self.values[0])
-        await select_callback(self.view, i, self.view.type)
+        await self.loading(i)
 
 
-async def return_full_clear(
-    view, i, pool, session, abyss_command, uid, locale, dark_mode, title
-):
-    run_users: List[models.RunLeaderboardUser] = []
-    uids: List[int] = []
-
-    if view.season != 0:
-        rows = await pool.fetch(
-            """
-            SELECT *
-            FROM abyss_leaderboard
-            WHERE season = $1
-            AND stars_collected = 36
-            ORDER BY runs ASC
-            """,
-            view.season,
-        )
-    else:
-        rows = await pool.fetch(
-            """
-            SELECT *
-            FROM abyss_leaderboard
-            WHERE stars_collected = 36
-            ORDER BY runs ASC
-            """
-        )
-    if not rows:
-        raise EmptyLeaderboard
-
-    data = [AbyssLeaderboard(**row) for row in rows]
-
-    current_user = None
-    rank = 1
-    for d in data:
-        if i.guild and view.area == "server":
-            member = i.guild.get_member(d.user_id)
-            if not member:
-                continue
-
-        if d.uid in uids:
-            continue
-
-        if d.runs == 0:
-            win_percentage = 0
-        else:
-            win_percentage = round(d.wins / d.runs * 100, 1)
-
-        run_users.append(
-            user := models.RunLeaderboardUser(
-                icon_url=d.icon_url,
-                user_name=d.user_name,
-                level=d.level,
-                wins_slash_runs=f"{d.wins}/{d.runs}",
-                win_percentage=str(win_percentage),
-                stars_collected=36,
-                uid=d.uid,
-                rank=rank,
-            )
-        )
-        if d.uid == uid:
-            current_user = user
-        uids.append(d.uid)
-        rank += 1
-
-    if not run_users:
-        raise EmptyLeaderboard
-
-    fp = await main_funcs.draw_run_leaderboard(
-        models.DrawInput(
-            loop=i.client.loop,
-            session=session,
-            locale=locale,
-            dark_mode=dark_mode,
-        ),
-        uid,
-        run_users,
-    )
-    fp.seek(0)
-
-    embed = models.DefaultEmbed(
-        title,
-        f"""
-        {text_map.get(457, locale) if current_user is None else text_map.get(614, locale).format(rank=current_user.rank)}
-        {text_map.get(615, locale).format(num=len(run_users))}
-        """,
-    )
-    embed.set_author(
-        name=get_al_title(view.season, locale),
-        icon_url=i.user.display_avatar.url,
-    )
-    embed.set_footer(text=text_map.get(619, locale).format(command=abyss_command))
-    embed.set_image(url="attachment://leaderboard.jpeg")
-
-    await i.edit_original_response(
-        embed=embed,
-        attachments=[discord.File(fp, filename="leaderboard.jpeg")],
-        view=view,
-    )
-
-
-class Global(ui.Button):
+class Global(BaseButton):
     def __init__(self, label: str, area: Area):
         super().__init__(
             label=label,
@@ -436,10 +341,10 @@ class Global(ui.Button):
 
     async def callback(self, i: models.Inter):
         self.view.area = Area.GLOBAL
-        await select_callback(self.view, i, self.view.type)
+        await self.loading(i)
 
 
-class Server(ui.Button):
+class Server(BaseButton):
     def __init__(self, label: str, area: Area):
         super().__init__(
             label=label,
@@ -455,7 +360,7 @@ class Server(ui.Button):
 
     async def callback(self, i: models.Inter):
         self.view.area = Area.SERVER
-        await select_callback(self.view, i, self.view.type)
+        await self.loading(i)
 
 
 def get_al_title(season: int, locale: discord.Locale | str):

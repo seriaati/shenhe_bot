@@ -26,15 +26,8 @@ from apps.genshin import enka, hoyolab, leaderboard
 from apps.genshin_data import abyss
 from apps.text_map import convert_locale, text_map
 from data.cards.dice_element import get_dice_emoji
-from utils import (
-    disable_view_items,
-    get_character_emoji,
-    get_uid,
-    get_uid_region_hash,
-    get_user_lang,
-    get_user_theme,
-    log,
-)
+from utils import (disable_view_items, get_character_emoji, get_uid,
+                   get_uid_region_hash, get_user_lang, get_user_theme, log)
 from utils.paginators import GeneralPaginator
 
 load_dotenv()
@@ -712,17 +705,10 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.command(
         name="leaderboard", description=_("The Shenhe leaderboard", hash=252)
     )
-    async def leaderboard(self, i: discord.Interaction):
-        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
-        uid = await get_uid(i.user.id, self.bot.pool)
-        if uid is None:
-            raise exceptions.UIDNotFound
-        embed = models.DefaultEmbed(description=text_map.get(253, locale))
-        embed.set_author(name=f"👑 {text_map.get(252, locale)}")
-        view = ui.leaderboard_view.View(locale, uid)
-        view.author = i.user
-        await i.response.send_message(embed=embed, view=view)
-        view.message = await i.original_response()
+    async def leaderboard(self, inter: discord.Interaction):
+        i: models.Inter = inter  # type: ignore
+        view = ui.leaderboard_view.View()
+        await view.start(i)
 
     @app_commands.command(
         name="search", description=_("Search anything related to genshin", hash=508)
