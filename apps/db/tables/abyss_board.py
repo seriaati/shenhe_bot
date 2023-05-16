@@ -18,6 +18,15 @@ class SingleStrikeCharacter(BaseModel):
 
 
 class AbyssBoardEntry(BaseModel):
+    def __init__(self, **data):
+        character = SingleStrikeCharacter(
+            const=data["const"],
+            refine=data["refine"],
+            c_level=data["c_level"],
+            c_icon=data["c_icon"],
+        )
+        super().__init__(**data, character=character)
+
     """Abyss leaderboard entry"""
 
     uid: int

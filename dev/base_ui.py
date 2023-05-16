@@ -285,10 +285,12 @@ class EnkaView(BaseView):
 class BaseSelect(discord.ui.Select):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.original_options: typing.List[discord.SelectOption] = self.options.copy()
+        self.original_options: typing.List[discord.SelectOption]
         self.view: BaseView
 
     async def loading(self, i: Inter):
+        self.original_options = self.options
+
         lang = await i.client.db.settings.get(i.user.id, Settings.LANG)
         lang = lang or str(i.locale)
 
@@ -301,7 +303,7 @@ class BaseSelect(discord.ui.Select):
         ]
         await i.response.edit_message(view=self.view)
 
-    async def recover(self, i: Inter):
+    async def restore(self, i: Inter):
         self.options = self.original_options
         await i.edit_original_response(view=self.view)
 
@@ -343,28 +345,31 @@ class BaseGameSelector(BaseSelect):
         self.locale = locale
         self.view: BaseView
 
+
 class BaseButton(discord.ui.Button):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.view: BaseView
-        self.original_label = self.label
-        self.original_emoji = self.emoji
-        self.original_disabled: bool = self.disabled
-        self.original_style: discord.ButtonStyle = self.style
+        self.original_label: typing.Optional[str]
+        self.original_emoji: typing.Optional[typing.Union[str, discord.PartialEmoji]]
+        self.original_disabled: bool
 
     async def loading(self, i: Inter):
+        self.original_label = self.label
+        self.original_emoji = self.emoji
+        self.original_disabled = self.disabled
+
         lang = await i.client.db.settings.get(i.user.id, Settings.LANG)
         lang = lang or str(i.locale)
+
         self.emoji = asset.loading_emoji
         self.label = text_map.get(773, lang)
         self.disabled = True
-        self.style = discord.ButtonStyle.grey
         await i.response.edit_message(view=self.view)
 
     async def restore(self, i: Inter):
         self.label = self.original_label
         self.emoji = self.original_emoji
         self.disabled = self.original_disabled
-        self.style = self.original_style
 
         await i.edit_original_response(view=self.view)

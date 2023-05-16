@@ -1,5 +1,6 @@
 import asyncio
 import io
+import typing
 from enum import Enum
 from typing import Dict, List, Optional, Tuple, Union
 
@@ -17,7 +18,8 @@ from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
 from dev.base_ui import BaseButton, BaseSelect, BaseView
 from dev.enum import Category
-from utils import (get_abyss_season_date_range, get_character_emoji,
+from utils import get_abyss_season_date_range, get_character_emoji
+from utils.genshin import get_current_abyss_season
 
 
 class Area(Enum):
@@ -33,7 +35,7 @@ class View(BaseView):
         self.dark_mode: bool
         self.author: Union[discord.User, discord.Member]
 
-        self.category: Category = Category.SINGLE_STRIKE
+        self.category: typing.Optional[Category] = None
         self.area: Area = Area.GLOBAL
         self.season: int = 0
 
@@ -67,8 +69,8 @@ class View(BaseView):
                 text_map.get(616, self.lang), self._get_leaderboard_options()
             )
         )
-        self.add_item(Global(text_map.get(453, self.lang), self.area))
-        self.add_item(Server(text_map.get(455, self.lang), self.area))
+        self.add_item(Global(text_map.get(453, self.lang)))
+        self.add_item(Server(text_map.get(455, self.lang)))
 
     async def start(self, i: models.Inter):
         """Start the view"""
@@ -106,8 +108,10 @@ class View(BaseView):
             entries = await i.client.db.leaderboard.abyss.get_all(self.category, season)
         elif self.category is Category.CHARACTER_USAGE_RATE:
             entries = await i.client.db.leaderboard.abyss_character.get_all(season)
-        else:  # self.category is Category.FULL_CLEAR:
+        elif self.category is Category.FULL_CLEAR:
             entries = await i.client.db.leaderboard.abyss.get_all(self.category, season)
+        else:
+            entries = []
 
         # filter out users that are not in the guild
         if i.guild and self.area is Area.SERVER:
@@ -116,7 +120,7 @@ class View(BaseView):
         if not entries:
             embed = models.ErrorEmbed()
             embed.set_author(
-                name=text_map.get(620, self.lang), icon_url=asset.error_icon
+                name=text_map.get(620, self.lang), icon_url=i.user.display_avatar.url
             )
             return await i.followup.send(embed=embed, ephemeral=True)
 
@@ -136,10 +140,28 @@ class View(BaseView):
                 entries, i.client.session, i.client.loop  # type: ignore
             )
 
+        # enable the global and server buttons
+        glob: Global = self.get_item("global")
+        server: Server = self.get_item("server")
+        glob.disabled = False
+        server.disabled = False
+
+        # set the global and server button styles to primary if they are selected
+        glob.style = (
+            discord.ButtonStyle.primary
+            if self.area is Area.GLOBAL
+            else discord.ButtonStyle.secondary
+        )
+        server.style = (
+            discord.ButtonStyle.primary
+            if self.area is Area.SERVER
+            else discord.ButtonStyle.secondary
+        )
+
         # send leaderboard
         fp.seek(0)
         await i.edit_original_response(
-            embed=embed, attachments=[discord.File(fp, "board.jpeg")]
+            embed=embed, attachments=[discord.File(fp, "board.jpeg")], view=self
         )
 
     def get_board_users(
@@ -295,6 +317,8 @@ class LeaderboardSelect(BaseSelect):
     async def callback(self, i: models.Inter):
         self.view.category = Category(self.values[0])
         await self.loading(i)
+        await self.view.return_leaderboard(i)
+        await self.restore(i)
 
 
 class AbyssSeasonSelect(BaseSelect):
@@ -323,17 +347,17 @@ class AbyssSeasonSelect(BaseSelect):
     async def callback(self, i: models.Inter):
         self.view.season = int(self.values[0])
         await self.loading(i)
+        await self.view.return_leaderboard(i)
+        await self.restore(i)
 
 
 class Global(BaseButton):
-    def __init__(self, label: str, area: Area):
+    def __init__(self, label: str):
         super().__init__(
             label=label,
             emoji="🌎",
             custom_id="global",
-            style=discord.ButtonStyle.primary
-            if area is Area.GLOBAL
-            else discord.ButtonStyle.secondary,
+            style=discord.ButtonStyle.primary,
             row=4,
             disabled=True,
         )
@@ -342,17 +366,17 @@ class Global(BaseButton):
     async def callback(self, i: models.Inter):
         self.view.area = Area.GLOBAL
         await self.loading(i)
+        await self.view.return_leaderboard(i)
+        await self.restore(i)
 
 
 class Server(BaseButton):
-    def __init__(self, label: str, area: Area):
+    def __init__(self, label: str):
         super().__init__(
             label=label,
             emoji="🏠",
             custom_id="server",
-            style=discord.ButtonStyle.primary
-            if area is Area.GLOBAL
-            else discord.ButtonStyle.secondary,
+            style=discord.ButtonStyle.secondary,
             row=4,
             disabled=True,
         )
@@ -361,6 +385,8 @@ class Server(BaseButton):
     async def callback(self, i: models.Inter):
         self.view.area = Area.SERVER
         await self.loading(i)
+        await self.view.return_leaderboard(i)
+        await self.restore(i)
 
 
 def get_al_title(season: int, locale: discord.Locale | str):
