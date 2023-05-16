@@ -57,7 +57,7 @@ class AbyssBoardEntry(BaseModel):
     """Character used for single strike"""
 
 
-class AbyssLeaderboard:
+class AbyssBoard:
     def __init__(self, pool: asyncpg.Pool):
         self.pool = pool
 

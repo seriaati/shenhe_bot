@@ -18,7 +18,7 @@ class AbyssCharaBoardEntry(BaseModel):
     """Discord user ID"""
 
 
-class AbyssCharacterLeaderboard:
+class AbyssCharaBoard:
     """Abyss character usage leaderboard"""
 
     def __init__(self, pool: asyncpg.Pool):

@@ -7,9 +7,9 @@ class Leaderboard:
     """Leaderboard"""
 
     def __init__(self, pool: asyncpg.Pool):
-        self.abyss_character = tables.AbyssCharacterLeaderboard(pool)
+        self.abyss_character = tables.AbyssCharaBoard(pool)
         """Abyss character usage leaderboard"""
-        self.abyss = tables.AbyssLeaderboard(pool)
+        self.abyss = tables.AbyssBoard(pool)
         """Abyss leaderboard"""
 
 
