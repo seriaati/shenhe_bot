@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-import asyncpg
+from asyncpg import Pool
 from pydantic import BaseModel, Field
 
 from dev.enum import Category
@@ -58,7 +58,7 @@ class AbyssBoardEntry(BaseModel):
 
 
 class AbyssBoard:
-    def __init__(self, pool: asyncpg.Pool):
+    def __init__(self, pool: Pool):
         self.pool = pool
 
     async def get_all(

@@ -13,6 +13,22 @@ class Leaderboard:
         """Abyss leaderboard"""
 
 
+class Notif:
+    """Notifications"""
+
+    def __init__(self, pool: asyncpg.Pool):
+        self.resin = tables.ResinNotifTable(pool)
+        """Resin notifications"""
+        self.pot = tables.PotNotifTable(pool)
+        """Pot notifications"""
+        self.pt = tables.PTNotifTable(pool)
+        """Parametric transformer notifications"""
+        self.talent = tables.TalentNotifTable(pool)
+        """Talent notifications"""
+        self.weapon = tables.WeaponNotifTable(pool)
+        """Weapon notifications"""
+
+
 class Database:
     """Database"""
 
@@ -23,3 +39,4 @@ class Database:
         """User settings"""
         self.leaderboard = Leaderboard(pool)
         """Leaderboard"""
+        self.notifs = Notif(pool)

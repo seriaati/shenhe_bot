@@ -171,7 +171,7 @@
 '169': Character {level_type}
 '170': 'For Example: {a}'
 '171': Auto attack target (A) {level_type}
-'172': Level needs to be between {a} and {b}
+'172': The number needs to be between {a} and {b}
 '173': Elemental skill (E) {level_type}
 '174': Elemental burst (Q) {level_type}
 '175': Add to todo list

@@ -7,11 +7,11 @@ import sentry_sdk
 from discord import Forbidden, User
 from discord.utils import format_dt
 
-import apps.db.table_models as table_models
 import dev.asset as asset
-from apps.db.tables.user_account import UserAccount
+from apps.db.tables.notes_notif import NotifBase, PotNotif, PTNotif, ResinNotif
 from apps.text_map import text_map
-from dev.enum import NotificationType
+from dev.enum import NotifType
+from dev.exceptions import AccountNotFound
 from dev.models import BotModel, DefaultEmbed, ErrorEmbed
 from utils import log
 from utils.general import get_dt_now
@@ -21,8 +21,8 @@ class RealtimeNotes:
     def __init__(self, bot: BotModel) -> None:
         self.bot = bot
 
-        self._total: Dict[NotificationType, int] = {}
-        self._success: Dict[NotificationType, int] = {}
+        self._total: Dict[NotifType, int] = {}
+        self._success: Dict[NotifType, int] = {}
         self._notes_dict: Dict[int, genshin.models.Notes] = Manager().dict()  # type: ignore
 
     async def start(self) -> None:
@@ -32,9 +32,9 @@ class RealtimeNotes:
             # Create the queue of notifications
             queue: asyncio.Queue[
                 Union[
-                    table_models.ResinNotification,
-                    table_models.PotNotification,
-                    table_models.PtNotification,
+                    ResinNotif,
+                    PotNotif,
+                    PTNotif,
                 ]
             ] = asyncio.Queue()
 
@@ -52,9 +52,9 @@ class RealtimeNotes:
         self,
         queue: asyncio.Queue[
             Union[
-                table_models.ResinNotification,
-                table_models.PotNotification,
-                table_models.PtNotification,
+                ResinNotif,
+                PotNotif,
+                PTNotif,
             ]
         ],
     ) -> None:
@@ -70,20 +70,9 @@ class RealtimeNotes:
             None.
         """
         # Retrieve users from the database
-        resin = await self.bot.pool.fetch(
-            "SELECT * FROM resin_notification WHERE toggle=true"
-        )
-        pot = await self.bot.pool.fetch(
-            "SELECT * FROM pot_notification WHERE toggle=true"
-        )
-        pt = await self.bot.pool.fetch(
-            "SELECT * FROM pt_notification WHERE toggle=true"
-        )
-
-        # Create notification objects
-        resin = [table_models.ResinNotification(**r) for r in resin]
-        pot = [table_models.PotNotification(**p) for p in pot]
-        pt = [table_models.PtNotification(**p) for p in pt]
+        resin = await self.bot.db.notifs.resin.get_all()
+        pot = await self.bot.db.notifs.pot.get_all()
+        pt = await self.bot.db.notifs.pt.get_all()
 
         # Add notification objects to the queue
         users = resin + pot + pt
@@ -98,9 +87,9 @@ class RealtimeNotes:
         self,
         queue: asyncio.Queue[
             Union[
-                table_models.ResinNotification,
-                table_models.PotNotification,
-                table_models.PtNotification,
+                ResinNotif,
+                PotNotif,
+                PTNotif,
             ]
         ],
     ) -> None:
@@ -123,32 +112,26 @@ class RealtimeNotes:
                 continue
 
             # Fetch user account details
-            user = await self.bot.pool.fetchrow(
-                """
-                SELECT * FROM user_accounts
-                WHERE uid = $1
-                AND user_id = $2
-                AND ltuid IS NOT NULL
-                AND ltoken IS NOT NULL
-                AND cookie_token IS NOT NULL
-                """,
-                notif_user.uid,
-                notif_user.user_id,
-            )
-
-            # Skip user if no account found
-            if user is None:
+            try:
+                user = await self.bot.db.users.get(notif_user.user_id, notif_user.uid)
+            except AccountNotFound:
                 continue
 
-            # Create a user account object
-            user = UserAccount(**user)
+            if notif_user.type is NotifType.RESIN:
+                db = self.bot.db.notifs.resin
+            elif notif_user.type is NotifType.POT:
+                db = self.bot.db.notifs.pot
+            elif notif_user.type is NotifType.PT:
+                db = self.bot.db.notifs.pt
+            else:
+                raise AssertionError("Invalid notification type")
 
             # Fetch user's language preference
-            locale = await user.fetch_lang(self.bot.pool)
+            lang = await user.fetch_lang(self.bot.pool)
 
-            # Set default locale to en-US if no preference found
-            if locale is None:
-                locale = "en-US"
+            # Set default lang to en-US if no preference found
+            if lang is None:
+                lang = "en-US"
 
             # Fetch Discord user object associated with the user account
             discord_user = await user.fetch_discord_user(self.bot)
@@ -158,9 +141,8 @@ class RealtimeNotes:
                 notes = await user.client.get_genshin_notes(user.uid)
             except Exception as e:  # skipcq: PYL-W0703
                 # Disable notifications and create error embed if API request fails
-                await self._disable_notif(notif_user)
-                await self._reset_current(notif_user)
-                embed = await self._create_error_embed(notif_user.type, locale, e)
+                await db.update(user.user_id, user.uid, toggle=False, current=0)
+                embed = await self._create_error_embed(notif_user.type, lang, e)
                 if embed:
                     await self._send_notif(discord_user, embed)
             else:
@@ -175,21 +157,25 @@ class RealtimeNotes:
                 if check and notif_user.current < notif_user.max:
                     # Send the notification and update the notification counter
                     embed = self._create_notif_embed(
-                        notif_user.type, notif_user.uid, notes, discord_user, locale
+                        notif_user.type, notif_user.uid, notes, discord_user, lang
                     )
                     await self._send_notif(discord_user, embed)
-                    await self._update_current(notif_user)
-                    await self._update_last_notif(notif_user)
+                    await db.update(
+                        user.user_id,
+                        user.uid,
+                        current=notif_user.current + 1,
+                        last_notif=get_dt_now(),
+                    )
                 elif not check and notif_user.current != 0:
                     # Reset the notification counter if the user's current amount is less than the threshold
-                    await self._reset_current(notif_user)
+                    await db.update(user.user_id, user.uid, current=0)
             finally:
                 # Wait for 1.5 seconds before processing the next notification
                 await asyncio.sleep(1.5)
 
     @staticmethod
     async def _create_error_embed(
-        notif_type: NotificationType, locale: str, e: Exception
+        notif_type: NotifType, locale: str, e: Exception
     ) -> Optional[ErrorEmbed]:
         """
         Create and return an ErrorEmbed based on the given notification type, locale,
@@ -209,12 +195,14 @@ class RealtimeNotes:
         embed = ErrorEmbed()
 
         # Get the map hash for the given notification type.
-        if notif_type is NotificationType.RESIN:
+        if notif_type is NotifType.RESIN:
             map_hash = 582
-        elif notif_type is NotificationType.POT:
+        elif notif_type is NotifType.POT:
             map_hash = 584
-        elif notif_type is NotificationType.PT:
+        elif notif_type is NotifType.PT:
             map_hash = 704
+        else:
+            raise AssertionError("Invalid notification type")
 
         # Set the author of the ErrorEmbed to the appropriate text based on the map hash
         # and locale.
@@ -245,7 +233,7 @@ class RealtimeNotes:
 
     async def _check_notes(
         self,
-        notif_user: table_models.NotifBase,
+        notif_user: NotifBase,
     ) -> bool:
         """
         Check whether a notification should be triggered based on the notes for the
@@ -259,16 +247,16 @@ class RealtimeNotes:
         """
         notes = self._notes_dict[notif_user.uid]
         if (
-            isinstance(notif_user, table_models.ResinNotification)
+            isinstance(notif_user, ResinNotif)
             and notes.current_resin < notif_user.threshold
         ):
             return False
         if (
-            isinstance(notif_user, table_models.PotNotification)
+            isinstance(notif_user, PotNotif)
             and notes.current_realm_currency < notif_user.threshold
         ):
             return False
-        if isinstance(notif_user, table_models.PtNotification) and (
+        if isinstance(notif_user, PTNotif) and (
             notes.remaining_transformer_recovery_time is None
             or notes.remaining_transformer_recovery_time.total_seconds() > 0
         ):
@@ -278,7 +266,7 @@ class RealtimeNotes:
 
     @staticmethod
     def _create_notif_embed(
-        notif_type: NotificationType,
+        notif_type: NotifType,
         uid: int,
         notes: genshin.models.Notes,
         user: User,
@@ -298,7 +286,7 @@ class RealtimeNotes:
             DefaultEmbed: The notification embed.
         """
 
-        if notif_type is NotificationType.RESIN:
+        if notif_type is NotifType.RESIN:
             if notes.current_resin == notes.max_resin:
                 remain_time = text_map.get(1, locale)  # "Full"
             else:
@@ -313,7 +301,7 @@ class RealtimeNotes:
             )
             embed.set_title(306, locale, user)
             embed.set_thumbnail(url=asset.resin_icon)
-        elif notif_type is NotificationType.POT:
+        elif notif_type is NotifType.POT:
             if notes.current_realm_currency == notes.max_realm_currency:
                 remain_time = text_map.get(1, locale)  # "Full"
             else:
@@ -328,10 +316,12 @@ class RealtimeNotes:
             )
             embed.set_title(518, locale, user)
             embed.set_thumbnail(url=asset.realm_currency_icon)
-        elif notif_type is NotificationType.PT:
+        elif notif_type is NotifType.PT:
             embed = DefaultEmbed(description=f"UID: {uid}")
             embed.set_title(366, locale, user)
             embed.set_thumbnail(url=asset.pt_icon)
+        else:
+            raise AssertionError("Invalid notification type")
 
         embed.set_footer(text=text_map.get(305, locale))
         return embed
@@ -351,77 +341,3 @@ class RealtimeNotes:
             # If the bot is not allowed to send messages to the user's DM,
             # catch the error and do nothing.
             pass
-
-    @staticmethod
-    def _get_table_name(notif_type: NotificationType):
-        if notif_type is NotificationType.RESIN:
-            table_name = "resin_notification"
-        elif notif_type is NotificationType.POT:
-            table_name = "pot_notification"
-        elif notif_type is NotificationType.PT:
-            table_name = "pt_notification"
-        return table_name
-
-    async def _disable_notif(
-        self,
-        notif_user: table_models.NotifBase,
-    ) -> None:
-        table_name = self._get_table_name(notif_user.type)
-        await self.bot.pool.execute(
-            f"""
-            UPDATE {table_name}
-            SET toggle = FALSE
-            WHERE uid = $1
-            AND user_id = $2""",
-            notif_user.uid,
-            notif_user.user_id,
-        )
-
-    async def _reset_current(
-        self,
-        notif_user: table_models.NotifBase,
-    ) -> None:
-        table_name = self._get_table_name(notif_user.type)
-        await self.bot.pool.execute(
-            f"""
-            UPDATE {table_name}
-            SET current = 0
-            WHERE uid = $1
-            AND user_id = $2""",
-            notif_user.uid,
-            notif_user.user_id,
-        )
-
-    async def _update_current(
-        self,
-        notif_user: Union[
-            table_models.ResinNotification,
-            table_models.PotNotification,
-            table_models.PtNotification,
-        ],
-    ) -> None:
-        table_name = self._get_table_name(notif_user.type)
-        await self.bot.pool.execute(
-            f"""
-            UPDATE {table_name}
-            SET current = current + 1
-            WHERE uid = $1
-            AND user_id = $2""",
-            notif_user.uid,
-            notif_user.user_id,
-        )
-
-    async def _update_last_notif(self, notif_user: table_models.NotifBase) -> None:
-        now = get_dt_now()
-
-        table_name = self._get_table_name(notif_user.type)
-        await self.bot.pool.execute(
-            f"""
-            UPDATE {table_name}
-            SET last_notif = $1
-            WHERE uid = $2
-            AND user_id = $3""",
-            now,
-            notif_user.uid,
-            notif_user.user_id,
-        )

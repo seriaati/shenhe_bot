@@ -1,6 +1,6 @@
 import typing
 
-import asyncpg
+from asyncpg import Pool
 from pydantic import BaseModel, Field
 
 
@@ -21,7 +21,7 @@ class AbyssCharaBoardEntry(BaseModel):
 class AbyssCharaBoard:
     """Abyss character usage leaderboard"""
 
-    def __init__(self, pool: asyncpg.Pool):
+    def __init__(self, pool: Pool):
         self.pool = pool
 
     async def get_all(

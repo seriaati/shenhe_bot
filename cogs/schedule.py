@@ -14,21 +14,14 @@ import ambr
 import apps.genshin as genshin_app
 import dev.asset as asset
 import dev.models as models
-from utils import (
-    convert_dict_to_zipped_json,
-    dm_embed,
-    fetch_cards,
-    get_discord_user_from_id,
-    get_dt_now,
-    get_user_lang,
-    get_user_theme,
-    log,
-)
-from utils.text_map import get_city_name
 from apps.draw import main_funcs
 from apps.genshin import auto_task
 from apps.text_map import text_map, to_ambr_top
 from dev.base_ui import capture_exception
+from utils import (convert_dict_to_zipped_json, dm_embed, fetch_cards,
+                   get_discord_user_from_id, get_dt_now, get_user_lang,
+                   get_user_theme, log)
+from utils.text_map import get_city_name
 
 load_dotenv()
 
@@ -66,9 +59,7 @@ class Schedule(commands.Cog):
         now = get_dt_now()
 
         if now.minute < self.loop_interval:  # every hour
-            check_tasks = ("resin_notification", "pot_notification", "pt_notification")
-            for task in check_tasks:
-                asyncio.create_task(self.check_notification(task))
+            asyncio.create_task(auto_task.RealtimeNotes(self.bot).start())
             asyncio.create_task(self.save_codes())
 
         if now.hour == 0 and now.minute < self.loop_interval:  # midnight
@@ -153,255 +144,6 @@ class Schedule(commands.Cog):
         await user.send(file=discord.File(fp, "abyss_json.zip"))
         log.info("[Schedule] Saved abyss.json")
 
-    @schedule_error_handler
-    async def check_notification(self, notification_type: str) -> None:
-        log.info(f"[Schedule][{notification_type}] Checking...")
-
-        n_users = await self.get_notification_users(notification_type)
-        now = get_dt_now()
-        sent_num = 0
-        for n_user in n_users:
-            if n_user.last_notif and now - n_user.last_notif < timedelta(hours=2):
-                continue
-
-            try:
-                s_user = await genshin_app.get_shenhe_account(
-                    n_user.user_id, self.bot, custom_uid=n_user.uid
-                )
-            except Exception:  # skipcq: PYL-W0703
-                continue
-
-            locale = s_user.user_locale or "en-US"
-
-            error = False
-            error_message = ""
-            try:
-                notes = await s_user.client.get_notes(s_user.uid)
-            except genshin.errors.InvalidCookies:
-                error = True
-                error_message = text_map.get(36, locale)
-                log.warning(
-                    f"[Schedule][{notification_type}][{n_user.user_id}] Invalid Cookies for {n_user.user_id}"
-                )
-                await self.disable_notification(
-                    n_user.user_id, n_user.uid, notification_type
-                )
-            except (genshin.errors.InternalDatabaseError, OSError):
-                pass
-            except genshin.errors.GenshinException as e:
-                if e.retcode != 1009:
-                    error = True
-                    error_message = f"```{e}```"
-                    if e.msg:
-                        error_message += f"\n```{e.msg}```"
-                    log.warning(
-                        f"[Schedule][{notification_type}][{n_user.user_id}] Error: {e}"
-                    )
-                    await self.disable_notification(
-                        n_user.user_id, n_user.uid, notification_type
-                    )
-            except Exception as e:  # skipcq: PYL-W0703
-                error = True
-                error_message = f"```{e}```"
-                log.warning(
-                    f"[Schedule][{notification_type}][{n_user.user_id}] Error: {e}"
-                )
-                await self.disable_notification(
-                    n_user.user_id, n_user.uid, notification_type
-                )
-            else:
-                # reset current
-                await self.reset_notif_current(notification_type, n_user, notes)
-
-                if error:
-                    await self.handle_notif_error(
-                        notification_type, n_user, locale, error_message
-                    )
-                else:
-                    if n_user.current >= n_user.max:
-                        continue
-
-                    # send notification
-                    success = False
-                    if (
-                        notification_type == "resin_notification"
-                        and notes.current_resin >= n_user.threshold
-                    ):
-                        success = await self.notify_resin(n_user, notes, locale)
-                    elif (
-                        notification_type == "pot_notification"
-                        and notes.current_realm_currency >= n_user.threshold
-                    ):
-                        success = await self.notify_pot(n_user, notes, locale)
-                    elif (
-                        notification_type == "pt_notification"
-                        and notes.remaining_transformer_recovery_time is not None
-                        and notes.remaining_transformer_recovery_time.total_seconds()
-                        == 0
-                    ):
-                        if (
-                            n_user.last_notif is not None
-                            and n_user.last_notif.day == now.day
-                        ):
-                            continue
-                        success = await self.notify_pt(n_user, locale)
-
-                    if success:
-                        log.info(
-                            f"[Schedule][{notification_type}][{n_user.user_id}] Notification sent"
-                        )
-                        sent_num += 1
-                        await self.update_current(
-                            notification_type, now, n_user, s_user
-                        )
-
-            await asyncio.sleep(2.5)
-
-        log.info(
-            f"[Schedule][{notification_type}] Sent {sent_num} notifications, total {len(n_users)} users"
-        )
-
-    async def reset_notif_current(
-        self,
-        notification_type: str,
-        n_user: models.NotificationUser,
-        notes: genshin.models.Notes,
-    ):
-        if (
-            notification_type == "resin_notification"
-            and notes.current_resin < n_user.threshold
-        ):
-            await self.reset_current(n_user.user_id, n_user.uid, "resin_notification")
-        elif (
-            notification_type == "pot_notification"
-            and notes.current_realm_currency < n_user.threshold
-        ):
-            await self.reset_current(n_user.user_id, n_user.uid, "pot_notification")
-
-    async def update_current(
-        self,
-        notification_type: str,
-        now: datetime,
-        n_user: models.NotificationUser,
-        s_user: models.ShenheAccount,
-    ):
-        await self.bot.pool.execute(
-            f"UPDATE {notification_type} SET current = current + 1, last_notif = $1 WHERE user_id = $2 AND uid = $3",
-            now,
-            n_user.user_id,
-            s_user.uid,
-        )
-
-    async def handle_notif_error(
-        self,
-        notification_type: str,
-        n_user: models.NotificationUser,
-        locale: str,
-        error_message: str,
-    ):
-        discord_user = self.bot.get_user(n_user.user_id) or await self.bot.fetch_user(
-            n_user.user_id
-        )
-        if notification_type == "pot_notification":
-            map_hash = 584
-        elif notification_type == "pt_notification":
-            map_hash = 704
-        else:  # resin_notification
-            map_hash = 582
-
-        embed = models.ErrorEmbed(
-            description=f"{error_message}\n\n{text_map.get(631, locale).format(feature=text_map.get(map_hash, locale))}"
-        )
-        embed.set_author(
-            name=text_map.get(505, locale),
-            icon_url=discord_user.display_avatar.url,
-        )
-        embed.set_footer(text=text_map.get(16, locale))
-        await dm_embed(discord_user, embed)
-
-    async def notify_resin(
-        self,
-        user: models.NotificationUser,
-        notes: genshin.models.Notes,
-        locale: str,
-    ) -> bool:
-        discord_user = self.bot.get_user(user.user_id) or await self.bot.fetch_user(
-            user.user_id
-        )
-        embed = models.DefaultEmbed(
-            description=f"{text_map.get(303, locale)}: {notes.current_resin}/{notes.max_resin}\n"
-            f"{text_map.get(15, locale)}: {text_map.get(1, locale) if notes.current_resin == notes.max_resin else utils.format_dt(notes.resin_recovery_time, 'R')}\n"
-            f"UID: {user.uid}\n",
-        ).set_title(306, locale, discord_user)
-        embed.set_thumbnail(url=asset.resin_icon)
-        embed.set_footer(text=text_map.get(305, locale))
-
-        success = await dm_embed(discord_user, embed)
-        if not success:
-            await self.disable_notification(
-                user.user_id, user.uid, "resin_notification"
-            )
-        return success
-
-    async def notify_pot(
-        self,
-        user: models.NotificationUser,
-        notes: genshin.models.Notes,
-        locale: str,
-    ) -> bool:
-        discord_user = self.bot.get_user(user.user_id) or await self.bot.fetch_user(
-            user.user_id
-        )
-        embed = models.DefaultEmbed(
-            description=f"{text_map.get(102, locale)}: {notes.current_realm_currency}/{notes.max_realm_currency}\n"
-            f"{text_map.get(15, locale)}: {text_map.get(1, locale) if notes.current_realm_currency == notes.max_realm_currency else utils.format_dt(notes.realm_currency_recovery_time, 'R')}\n"
-            f"UID: {user.uid}\n",
-        )
-        embed.set_author(
-            name=text_map.get(518, locale),
-            icon_url=discord_user.display_avatar.url,
-        )
-        embed.set_thumbnail(url=asset.realm_currency_icon)
-        embed.set_footer(text=text_map.get(305, locale))
-
-        success = await dm_embed(discord_user, embed)
-        if not success:
-            await self.disable_notification(user.user_id, user.uid, "pot_notification")
-        return success
-
-    async def notify_pt(self, user: models.NotificationUser, locale: str):
-        discord_user = self.bot.get_user(user.user_id) or await self.bot.fetch_user(
-            user.user_id
-        )
-        embed = models.DefaultEmbed(description=f"UID: {user.uid}")
-        embed.set_author(
-            name=text_map.get(366, locale),
-            icon_url=discord_user.display_avatar.url,
-        )
-        embed.set_thumbnail(url=asset.pt_icon)
-        embed.set_footer(text=text_map.get(305, locale))
-
-        success = await dm_embed(discord_user, embed)
-        if not success:
-            await self.disable_notification(user.user_id, user.uid, "pt_notification")
-        return success
-
-    async def disable_notification(
-        self, user_id: int, uid: int, notification_type: str
-    ) -> None:
-        await self.bot.pool.execute(
-            f"UPDATE {notification_type} SET toggle = false WHERE user_id = $1 AND uid = $2",
-            user_id,
-            uid,
-        )
-
-    async def reset_current(self, user_id: int, uid: int, notification_type: str):
-        await self.bot.pool.execute(
-            f"UPDATE {notification_type} SET current = 0 WHERE user_id = $1 AND uid = $2",
-            user_id,
-            uid,
-        )
-
     async def get_schedule_users(self) -> List[models.ShenheAccount]:
         """Gets a list of shenhe users that have Cookie registered (ltuid is not None)
 
@@ -430,26 +172,6 @@ class Schedule(commands.Cog):
             accounts.append(account)
 
         return accounts
-
-    async def get_notification_users(
-        self, table_name: str
-    ) -> List[models.NotificationUser]:
-        """Gets a list of notification users that has the reminder feature enabled
-
-        Args:
-            table_name (str): the table name in the database
-
-        Returns:
-            List[models.NotificationUser]: a list of notification users
-        """
-        select_query = "SELECT user_id, uid, max, last_notif, current"
-        if table_name in ("resin_notification", "pot_notification"):
-            select_query += ", threshold"
-        rows = await self.bot.pool.fetch(
-            f"{select_query} FROM {table_name} WHERE toggle = true"
-        )
-
-        return [models.NotificationUser(**row) for row in rows]
 
     @schedule_error_handler
     async def redeem_codes(self):

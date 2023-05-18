@@ -80,16 +80,6 @@ class DamageResult:
 
 
 @define
-class NotificationUser:
-    user_id: int
-    current: int
-    max: int
-    uid: int
-    threshold: int = 0
-    last_notif: typing.Optional[datetime] = None
-
-
-@define
 class DrawInput:
     loop: asyncio.AbstractEventLoop
     session: aiohttp.ClientSession

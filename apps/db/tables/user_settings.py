@@ -1,7 +1,7 @@
 import typing
 from enum import Enum
 
-import asyncpg
+from asyncpg import Pool
 from pydantic import BaseModel, Field
 
 from dev.enum import GameType
@@ -36,7 +36,7 @@ class UserSettings(BaseModel):
 
 
 class UserSettingsTable:
-    def __init__(self, pool: asyncpg.Pool):
+    def __init__(self, pool: Pool):
         self.pool = pool
 
     async def insert(self, user_id: int) -> None:

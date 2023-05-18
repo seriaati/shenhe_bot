@@ -26,15 +26,8 @@ from apps.genshin import enka, hoyolab, leaderboard
 from apps.genshin_data import abyss
 from apps.text_map import convert_locale, text_map
 from data.cards.dice_element import get_dice_emoji
-from utils import (
-    disable_view_items,
-    get_character_emoji,
-    get_uid,
-    get_uid_region_hash,
-    get_user_lang,
-    get_user_theme,
-    log,
-)
+from utils import (disable_view_items, get_character_emoji, get_uid,
+                   get_uid_region_hash, get_user_lang, get_user_theme, log)
 from utils.paginators import GeneralPaginator
 
 load_dotenv()
@@ -477,11 +470,10 @@ class GenshinCog(commands.Cog, name="genshin"):
         await i.response.send_message(embed=embed, ephemeral=True)
 
     @app_commands.command(name="remind", description=_("Set reminders", hash=438))
-    async def remind(self, i: discord.Interaction):
-        user_locale = await get_user_lang(i.user.id, self.bot.pool)
-        await ui.reminder_menu.return_notification_menu(
-            i, user_locale or i.locale, True
-        )
+    async def remind(self, inter: discord.Interaction):
+        i: models.Inter = inter # type: ignore
+        view = ui.reminder_menu.View()
+        await view.start(i)
 
     @app_commands.command(
         name="farm", description=_("View today's farmable items", hash=446)

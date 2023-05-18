@@ -94,3 +94,9 @@ class CheckInAPIError(Exception):
 
     def __str__(self) -> str:
         return f"{self.api} returned {self.status}"
+
+
+class InvalidInput(Exception):
+    def __init__(self, a: int, b: int) -> None:
+        self.a = a
+        self.b = b

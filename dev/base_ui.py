@@ -124,6 +124,9 @@ def get_error_handle_embed(
     elif isinstance(e, exceptions.Maintenance):
         embed.set_author(name=text_map.get(760, locale))
         embed.description = text_map.get(759, locale)
+    elif isinstance(e, exceptions.InvalidInput):
+        embed.set_author(name=text_map.get(190, locale))
+        embed.description = text_map.get(172, locale).format(a=e.a, b=e.b)
     elif isinstance(e, genshin.errors.GenshinException):
         if isinstance(e, genshin.errors.DataNotPublic):
             embed.set_author(name=text_map.get(22, locale))

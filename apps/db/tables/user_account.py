@@ -1,9 +1,9 @@
 import datetime
 import typing
 
-import asyncpg
 import discord
 import genshin
+from asyncpg import Pool
 from pydantic import BaseModel, Field
 
 from apps.text_map.convert_locale import to_genshin_py
@@ -12,6 +12,15 @@ from dev.exceptions import AccountNotFound, UIDNotFound
 
 
 def convert_game_type(game_type: GameType) -> genshin.Game:
+    """
+    Convert a GameType enum value to a genshin.Game enum value.
+
+    Args:
+        game_type (GameType): The GameType enum value to convert.
+
+    Returns:
+        genshin.Game: The corresponding genshin.Game enum value.
+    """
     if game_type is GameType.HSR:
         return genshin.Game.STARRAIL
     if game_type is GameType.HONKAI:
@@ -80,7 +89,7 @@ class UserAccount(BaseModel):
 
         super().__init__(client=client, **data)
 
-    async def fetch_lang(self, pool: asyncpg.Pool) -> typing.Optional[str]:
+    async def fetch_lang(self, pool: Pool) -> typing.Optional[str]:
         lang = await pool.fetchval(
             "SELECT lang FROM user_settings WHERE user_id = $1", self.user_id
         )
@@ -102,7 +111,7 @@ class UserAccount(BaseModel):
 
 
 class UserAccountTable:
-    def __init__(self, pool: asyncpg.Pool):
+    def __init__(self, pool: Pool):
         self.pool = pool
 
     async def get_uid(self, user_id: int) -> int:
@@ -149,9 +158,34 @@ class UserAccountTable:
         return UserAccount(**dict(data))
 
     async def get_all(self, **kwargs) -> typing.List[UserAccount]:
+        """
+        Retrieve all user accounts that match the given criteria.
+
+        Args:
+            **kwargs: Keyword arguments to filter the user accounts.
+
+        Returns:
+            A list of UserAccount objects that match the given criteria.
+        """
+        # Fetch user accounts that match the given criteria from the database
         data = await self.pool.fetch(
             "SELECT * FROM user_accounts WHERE "
             + " AND ".join(f"{key} = ${i}" for i, key in enumerate(kwargs, 1)),
             *kwargs.values(),
         )
+        # Create a list of UserAccount objects from the retrieved data
+        return [UserAccount(**dict(d)) for d in data]
+
+    async def get_all_with_cookie(self) -> typing.List[UserAccount]:
+        """
+        Retrieve all user accounts with a valid cookie.
+
+        Returns:
+            A list of UserAccount objects with a valid cookie.
+        """
+        # Fetch all user accounts with a valid cookie from the database
+        data = await self.pool.fetch(
+            "SELECT * FROM user_accounts WHERE ltuid IS NOT NULL AND ltoken IS NOT NULL"
+        )
+        # Create a list of UserAccount objects from the retrieved data
         return [UserAccount(**dict(d)) for d in data]
