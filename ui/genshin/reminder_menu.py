@@ -264,7 +264,7 @@ class View(BaseView):
                     name=text_map.get(159, self.lang) + f" (#{index+1})",
                     value="".join(value),
                 )
-        
+
         self._add_toggles(user.toggle)
         self.add_item(AddCharacter(self.lang))
         self.add_item(RemoveAllCharacter(self.lang))
@@ -346,7 +346,7 @@ class AddWeapon(ui.Button):
                 )
             )
             num += 1
-        
+
         await i.response.edit_message(view=self.view)
 
 
