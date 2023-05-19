@@ -43,13 +43,10 @@ class WTNotifTable:
         )
 
     async def update(self, user_id: int, **kwargs) -> None:
-        set_clause = ", ".join([f"{key} = ${i}" for i, key in enumerate(kwargs, 1)])
         await self.pool.execute(
-            f"""
-            UPDATE {self.type.value}
-            SET {set_clause}
-            WHERE user_id = $1
-            """,
+            f"UPDATE {self.type.value} SET "
+            + ", ".join(f"{key} = ${i}" for i, key in enumerate(kwargs, 2))
+            + " WHERE user_id = $1",
             user_id,
             *kwargs.values(),
         )

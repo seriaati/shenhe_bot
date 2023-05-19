@@ -60,7 +60,7 @@ class NotifTable:
     async def insert(self, user_id: int, uid: int) -> None:
         """Insert user notification data"""
         await self.pool.execute(
-            f"INSERT INTO {self.notif_type.value} (user_id, uid) VALUES ($1, $2)",
+            f"INSERT INTO {self.notif_type.value} (user_id, uid) VALUES ($1, $2) ON CONFLICT (user_id, uid) DO NOTHING",
             user_id,
             uid,
         )

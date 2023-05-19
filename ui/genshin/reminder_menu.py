@@ -1,4 +1,4 @@
-from typing import Union
+from typing import List, Union
 
 import discord
 from discord import ui
@@ -12,11 +12,12 @@ from apps.db.tables.talent_notif import WTNotifTable
 from apps.db.tables.user_account import UserAccount
 from apps.db.tables.user_settings import Settings
 from apps.text_map import text_map, to_ambr_top
+from data.game.elements import convert_elements, elements
+from data.game.weapon_types import get_weapon_type_emoji
 from dev.base_ui import BaseModal, BaseView
 from dev.enum import NotifType
 from dev.exceptions import InvalidInput, NumbersOnly
 from dev.models import DefaultEmbed, Inter
-from ui.genshin import talent_notification, weapon_notification
 from utils import divide_chunks, get_character_emoji, get_weapon_emoji
 
 
@@ -95,17 +96,12 @@ class View(BaseView):
 
         await i.edit_original_response(view=self)
 
-    def _recognize_toggle(self, toggle: bool) -> str:
-        return text_map.get(99 if toggle else 100, self.lang)
-
     def _add_toggles(self, toggle: bool) -> None:
         self.clear_items()
-        self.add_item(GOBack())
-        self.add_item(ChangeSettings(text_map.get(594, self.lang)))
         self.add_item(NotificationON(text_map.get(99, self.lang), toggle))
         self.add_item(NotificationOFF(text_map.get(100, self.lang), toggle))
 
-    async def resin_notif(self, i: Inter) -> None:
+    async def resin_notif(self, i: Inter, *, responded: bool = False) -> None:
         # Set the notification type to resin
         self.notif_type = NotifType.RESIN
 
@@ -118,7 +114,6 @@ class View(BaseView):
 
         # Create a string with the user's toggle, threshold, and max values
         value = f"""
-        {text_map.get(101, self.lang)}: {self._recognize_toggle(user.toggle)}
         {text_map.get(302, self.lang)}: {user.threshold}
         {text_map.get(103, self.lang)}: {user.max}
         """
@@ -131,12 +126,17 @@ class View(BaseView):
         )
 
         # Add the toggles to the view
+        self.add_item(ChangeSettings(text_map.get(594, self.lang)))
         self._add_toggles(user.toggle)
+        self.add_item(GOBack())
 
         # Edit the response message with the embed and the current view
-        await i.response.edit_message(embed=embed, view=self)
+        if not responded:
+            await i.response.edit_message(embed=embed, view=self)
+        else:
+            await i.edit_original_response(embed=embed, view=self)
 
-    async def pot_notif(self, i: Inter) -> None:
+    async def pot_notif(self, i: Inter, *, responded: bool = False) -> None:
         self.notif_type = NotifType.POT
 
         db = i.client.db.notifs.pot
@@ -144,7 +144,6 @@ class View(BaseView):
         user = await db.get(i.user.id, self.uid)
 
         value = f"""
-        {text_map.get(101, self.lang)}: {self._recognize_toggle(user.toggle)}
         {text_map.get(302, self.lang)}: {user.threshold}
         {text_map.get(103, self.lang)}: {user.max}
         """
@@ -154,11 +153,16 @@ class View(BaseView):
         )
         embed.add_field(name=text_map.get(591, self.lang), value=value)
 
+        self.add_item(ChangeSettings(text_map.get(594, self.lang)))
         self._add_toggles(user.toggle)
+        self.add_item(GOBack())
 
-        await i.response.edit_message(embed=embed, view=self)
+        if not responded:
+            await i.response.edit_message(embed=embed, view=self)
+        else:
+            await i.edit_original_response(embed=embed, view=self)
 
-    async def pt_notif(self, i: Inter) -> None:
+    async def pt_notif(self, i: Inter, *, responded: bool = False) -> None:
         self.notif_type = NotifType.PT
 
         db = i.client.db.notifs.pt
@@ -166,7 +170,6 @@ class View(BaseView):
         user = await db.get(i.user.id, self.uid)
 
         value = f"""
-        {text_map.get(101, self.lang)}: {self._recognize_toggle(user.toggle)}
         {text_map.get(103, self.lang)}: {user.max}
         """
         embed = DefaultEmbed(description=text_map.get(512, self.lang))
@@ -175,9 +178,14 @@ class View(BaseView):
             name=text_map.get(704, self.lang), icon_url=i.user.display_avatar.url
         )
 
+        self.add_item(ChangeSettings(text_map.get(594, self.lang)))
         self._add_toggles(user.toggle)
+        self.add_item(GOBack())
 
-        await i.response.edit_message(embed=embed, view=self)
+        if not responded:
+            await i.response.edit_message(embed=embed, view=self)
+        else:
+            await i.edit_original_response(embed=embed, view=self)
 
     async def weapon_notif(self, i: Inter) -> None:
         # Set the notification type to weapon
@@ -198,21 +206,26 @@ class View(BaseView):
 
         # If the user has no items, add a message to the embed
         if not user.item_list:
-            value = text_map.get(158, self.lang)
-            embed.add_field(name=text_map.get(159, self.lang), value=value)
+            value = text_map.get(637, self.lang)
+            embed.add_field(name=text_map.get(636, self.lang), value=value)
         else:
             # If the user has items, add them to the embed
             values = []
-            for character in user.item_list:
+            for weapon in user.item_list:
                 values.append(
-                    f"{get_character_emoji(character)} {text_map.get_character_name(character, self.lang)}\n"
+                    f"{get_weapon_emoji(int(weapon))} {text_map.get_weapon_name(int(weapon), self.lang)}\n"
                 )
             values = list(divide_chunks(values, 20))
             for index, value in enumerate(values):
                 embed.add_field(
-                    name=text_map.get(159, self.lang) + f" (#{index+1})",
+                    name=text_map.get(636, self.lang) + f" (#{index+1})",
                     value="".join(value),
                 )
+
+        self._add_toggles(user.toggle)
+        self.add_item(AddWeapon(self.lang))
+        self.add_item(RemoveAllWeapon(self.lang))
+        self.add_item(GOBack())
 
         # Edit the response message with the embed and the current view
         await i.response.edit_message(embed=embed, view=self)
@@ -236,21 +249,26 @@ class View(BaseView):
 
         # If the user has no items, add a message to the embed
         if not user.item_list:
-            value = text_map.get(637, self.lang)
-            embed.add_field(name=text_map.get(636, self.lang), value=value)
+            value = text_map.get(158, self.lang)
+            embed.add_field(name=text_map.get(159, self.lang), value=value)
         else:
             # If the user has items, add them to the embed
             values = []
-            for weapon in user.item_list:
+            for character in user.item_list:
                 values.append(
-                    f"{get_weapon_emoji(int(weapon))} {text_map.get_weapon_name(int(weapon), self.lang)}\n"
+                    f"{get_character_emoji(character)} {text_map.get_character_name(character, self.lang)}\n"
                 )
             values = list(divide_chunks(values, 20))
             for index, value in enumerate(values):
                 embed.add_field(
-                    name=text_map.get(636, self.lang) + f" (#{index+1})",
+                    name=text_map.get(159, self.lang) + f" (#{index+1})",
                     value="".join(value),
                 )
+        
+        self._add_toggles(user.toggle)
+        self.add_item(AddCharacter(self.lang))
+        self.add_item(RemoveAllCharacter(self.lang))
+        self.add_item(GOBack())
 
         # Edit the response message with the embed and the current view
         await i.response.edit_message(embed=embed, view=self)
@@ -302,7 +320,7 @@ class PTNotification(ui.Button):
 
 
 class AddWeapon(ui.Button):
-    def __init__(self, lang: discord.Locale | str):
+    def __init__(self, lang: str):
         super().__init__(
             emoji=asset.add_emoji,
             label=text_map.get(634, lang),
@@ -310,17 +328,30 @@ class AddWeapon(ui.Button):
             style=discord.ButtonStyle.green,
         )
         self.lang = lang
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
         ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.lang))  # type: ignore
-        view = weapon_notification.View(self.lang, await ambr.get_weapon_types())
-        await i.response.edit_message(view=view)
-        view.author = i.user
-        view.message = await i.original_response()
+        weapon_types = await ambr.get_weapon_types()
+
+        self.view.clear_items()
+        num = 1
+        for weapon_type_id, weapon_type in weapon_types.items():
+            self.view.add_item(
+                WeaponTypeButton(
+                    get_weapon_type_emoji(weapon_type_id),
+                    weapon_type,
+                    weapon_type_id,
+                    num // 3,
+                )
+            )
+            num += 1
+        
+        await i.response.edit_message(view=self.view)
 
 
 class RemoveAllWeapon(ui.Button):
-    def __init__(self, lang: discord.Locale | str):
+    def __init__(self, lang: str):
         super().__init__(
             emoji=asset.remove_emoji,
             label=text_map.get(635, lang),
@@ -336,7 +367,7 @@ class RemoveAllWeapon(ui.Button):
 
 
 class AddCharacter(ui.Button):
-    def __init__(self, lang: discord.Locale | str):
+    def __init__(self, lang: str):
         super().__init__(
             emoji=asset.add_emoji,
             label=text_map.get(598, lang),
@@ -344,16 +375,21 @@ class AddCharacter(ui.Button):
             style=discord.ButtonStyle.green,
         )
         self.lang = lang
+        self.view: View
 
     async def callback(self, i: discord.Interaction):
-        view = talent_notification.View(self.lang)
-        await i.response.edit_message(view=view)
-        view.author = i.user
-        view.message = await i.original_response()
+        self.view.clear_items()
+        element_names = list(convert_elements.values())
+        element_emojis = list(elements.values())
+        for index in range(0, 7):
+            self.view.add_item(
+                ElementButton(element_names[index], element_emojis[index], index // 4)
+            )
+        await i.response.edit_message(view=self.view)
 
 
 class RemoveAllCharacter(ui.Button):
-    def __init__(self, lang: discord.Locale | str):
+    def __init__(self, lang: str):
         super().__init__(
             emoji=asset.remove_emoji,
             label=text_map.get(599, lang),
@@ -389,7 +425,7 @@ class PrivacySettings(ui.Button):
 
 
 class TestItOut(ui.Button):
-    def __init__(self, lang: discord.Locale | str, embed: discord.Embed):
+    def __init__(self, lang: str, embed: discord.Embed):
         super().__init__(emoji="📨", label=text_map.get(596, lang))
         self.lang = lang
         self.embed = embed
@@ -461,7 +497,7 @@ class ChangeSettings(ui.Button):
                     raise InvalidInput(0, 10)
                 db = i.client.db.notifs.resin
                 await db.update(i.user.id, self.view.uid, threshold=int(t), max=int(m))
-                await self.view.resin_notif(i)
+                await self.view.resin_notif(i, responded=True)
 
         elif notif_type is NotifType.POT:
             modal = PotModal(lang)
@@ -478,7 +514,7 @@ class ChangeSettings(ui.Button):
                     raise InvalidInput(0, 10)
                 db = i.client.db.notifs.pot
                 await db.update(i.user.id, self.view.uid, threshold=int(t), max=int(m))
-                await self.view.pot_notif(i)
+                await self.view.pot_notif(i, responded=True)
 
         elif notif_type is NotifType.PT:
             modal = PTModal(lang)
@@ -492,7 +528,7 @@ class ChangeSettings(ui.Button):
                     raise InvalidInput(0, 10)
                 db = i.client.db.notifs.pt
                 await db.update(i.user.id, self.view.uid, max=int(m))
-                await self.view.pt_notif(i)
+                await self.view.pt_notif(i, responded=True)
 
 
 class GOBack(ui.Button):
@@ -530,9 +566,9 @@ class PotModal(BaseModal):
     threshold = ui.TextInput(label="CURRENCY_THRESHOLD", max_length=5)
     max_notif = ui.TextInput(label="MAX_NOTIF", max_length=2)
 
-    def __init__(self, lang: discord.Locale | str):
+    def __init__(self, lang: str):
         super().__init__(title=text_map.get(515, lang))
-        self.threshold.label = text_map.get(516, lang)
+        self.threshold.label = text_map.get(302, lang)
         self.threshold.placeholder = text_map.get(170, lang).format(a=2000)
         self.max_notif.label = text_map.get(103, lang)
         self.max_notif.placeholder = text_map.get(155, lang)
@@ -545,7 +581,7 @@ class PotModal(BaseModal):
 class PTModal(BaseModal):
     max_notif = ui.TextInput(label="MAX_NOTIF", max_length=2)
 
-    def __init__(self, lang: discord.Locale | str):
+    def __init__(self, lang: str):
         super().__init__(title=text_map.get(515, lang))
         self.max_notif.label = text_map.get(103, lang)
         self.max_notif.placeholder = text_map.get(155, lang)
@@ -553,3 +589,140 @@ class PTModal(BaseModal):
     async def on_submit(self, i: discord.Interaction) -> None:
         await i.response.defer()
         self.stop()
+
+
+class ElementButton(ui.Button):
+    def __init__(self, element: str, emoji: str, row: int):
+        super().__init__(emoji=emoji, row=row)
+        self.element = element
+        self.view: View
+
+    async def callback(self, i: Inter):
+        user = await i.client.db.notifs.talent.get(i.user.id)
+
+        client = AmbrTopAPI(i.client.session, to_ambr_top(self.view.lang))
+        characters = await client.get_character()
+        if not isinstance(characters, list):
+            raise AssertionError("Characters is not a list")
+
+        options: List[discord.SelectOption] = []
+        for character in characters:
+            if character.element == self.element:
+                description = (
+                    text_map.get(161, self.view.lang)
+                    if character.id in user.item_list
+                    else None
+                )
+                options.append(
+                    discord.SelectOption(
+                        label=character.name,
+                        emoji=get_character_emoji(str(character.id)),
+                        value=character.id,
+                        description=description,
+                    )
+                )
+
+        self.view.clear_items()
+        self.view.add_item(GOBack())
+        self.view.add_item(
+            CharacterSelect(options, text_map.get(157, self.view.lang), user.item_list)
+        )
+        await i.response.edit_message(view=self.view)
+
+
+class CharacterSelect(ui.Select):
+    def __init__(
+        self,
+        options: List[discord.SelectOption],
+        placeholder: str,
+        item_list: List[str],
+    ):
+        super().__init__(
+            options=options, placeholder=placeholder, max_values=len(options)
+        )
+        self.view: View
+        self.item_list = item_list
+
+    async def callback(self, i: Inter):
+        for character_id in self.values:
+            if character_id in self.item_list:
+                self.item_list.remove(character_id)
+            else:
+                self.item_list.append(character_id)
+        await i.client.db.notifs.talent.update(i.user.id, item_list=self.item_list)
+
+        await self.view.talent_notif(i)
+
+
+class WeaponTypeButton(ui.Button):
+    def __init__(self, emoji: str, label: str, weapon_type: str, row: int):
+        super().__init__(emoji=emoji, label=label, row=row)
+        self.weapon_type = weapon_type
+        self.view: View
+
+    async def callback(self, i: Inter):
+        user = await i.client.db.notifs.weapon.get(i.user.id)
+
+        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.view.lang))
+        weapons = await ambr.get_weapon()
+        if not isinstance(weapons, list):
+            raise AssertionError("Expected list of weapons, got something else")
+
+        select_options = []
+        for weapon in weapons:
+            if weapon.type == self.weapon_type:
+                description = (
+                    text_map.get(638, self.view.lang)
+                    if str(weapon.id) in user.item_list
+                    else None
+                )
+                select_options.append(
+                    discord.SelectOption(
+                        emoji=get_weapon_emoji(weapon.id),
+                        label=weapon.name,
+                        value=str(weapon.id),
+                        description=description,
+                    )
+                )
+
+        self.view.clear_items()
+        self.view.add_item(GOBack())
+
+        select_options = list(divide_chunks(select_options, 25))
+        count = 1
+        for options in select_options:
+            self.view.add_item(
+                WeaponSelect(
+                    options,
+                    f"{text_map.get(180, self.view.lang)} ({count}~{count+len(options)-1})",
+                    user.item_list,
+                )
+            )
+            count += len(options)
+        await i.response.edit_message(view=self.view)
+
+
+class WeaponSelect(ui.Select):
+    def __init__(
+        self,
+        options: List[discord.SelectOption],
+        placeholder: str,
+        item_list: List[str],
+    ):
+        super().__init__(
+            options=options, placeholder=placeholder, max_values=len(options)
+        )
+
+        self.item_list = item_list
+        self.view: View
+
+    async def callback(self, i: Inter):
+        for weapon_id in self.values:
+            if weapon_id in self.item_list:
+                self.item_list.remove(weapon_id)
+            else:
+                self.item_list.append(weapon_id)
+
+        await i.client.db.notifs.weapon.update(i.user.id, item_list=self.item_list)
+
+        await self.view.weapon_notif(i)
