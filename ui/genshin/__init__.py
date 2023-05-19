@@ -14,6 +14,4 @@ from .redeem import *
 from .reminder_menu import *
 from .search_nav import *
 from .show_all_characters import *
-from .talent_notification import *
 from .uid_command import *
-from .weapon_notification import *
