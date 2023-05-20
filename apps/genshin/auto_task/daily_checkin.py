@@ -44,7 +44,7 @@ class DailyCheckin:
             CheckInAPI.RENDER: os.getenv("RENDER_URL"),
             CheckInAPI.RAILWAY: os.getenv("RAILWAY_URL"),
         }
-        
+
         self.queue_ready = asyncio.Event()
 
     async def start(self) -> None:
