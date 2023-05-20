@@ -64,28 +64,19 @@ class View(BaseView):
         self.add_item(WeaponNotification(text_map.get(632, self.lang)))
         self.add_item(PrivacySettings(text_map.get(585, self.lang)))
 
-    def recognize_db(self, db: Database):
-        """Recognize database table"""
-        if self.notif_type is NotifType.RESIN:
-            return db.notifs.resin
-        elif self.notif_type is NotifType.POT:
-            return db.notifs.pot
-        elif self.notif_type is NotifType.PT:
-            return db.notifs.pt
-        elif self.notif_type is NotifType.TALENT:
-            return db.notifs.talent
-        elif self.notif_type is NotifType.WEAPON:
-            return db.notifs.weapon
-        else:
-            raise AssertionError("Invalid notif type")
-
     async def change_toggle(self, i: Inter, t: bool) -> None:
-        await i.response.defer()
-        db = self.recognize_db(i.client.db)
-        if isinstance(db, NotifTable):
-            await db.update(i.user.id, self.uid, toggle=t)
-        elif isinstance(db, WTNotifTable):
-            await db.update(i.user.id, toggle=t)
+        db = i.client.db
+
+        if self.notif_type is NotifType.RESIN:
+            await db.notifs.resin.update(i.user.id, self.uid, toggle=t)
+        elif self.notif_type is NotifType.POT:
+            await db.notifs.pot.update(i.user.id, self.uid, toggle=t)
+        elif self.notif_type is NotifType.PT:
+            await db.notifs.pt.update(i.user.id, self.uid, toggle=t)
+        elif self.notif_type is NotifType.TALENT:
+            await db.notifs.talent.update(i.user.id, toggle=t)
+        elif self.notif_type is NotifType.WEAPON:
+            await db.notifs.weapon.update(i.user.id, toggle=t)
 
         on_button: NotificationON = self.get_item("notification_on")
         on_button.style = discord.ButtonStyle.blurple if t else discord.ButtonStyle.gray
@@ -94,7 +85,7 @@ class View(BaseView):
             discord.ButtonStyle.gray if t else discord.ButtonStyle.blurple
         )
 
-        await i.edit_original_response(view=self)
+        await i.response.edit_message(view=self)
 
     def _add_toggles(self, toggle: bool) -> None:
         self.clear_items()

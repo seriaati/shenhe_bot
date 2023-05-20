@@ -44,6 +44,8 @@ class DailyCheckin:
             CheckInAPI.RENDER: os.getenv("RENDER_URL"),
             CheckInAPI.RAILWAY: os.getenv("RAILWAY_URL"),
         }
+        
+        self.queue_ready = asyncio.Event()
 
     async def start(self) -> None:
         try:
@@ -74,11 +76,15 @@ class DailyCheckin:
             self._end_time = get_dt_now()
 
             await self._send_report()
-
-            log.info("[DailyCheckin] Finished")
         except Exception as e:  # skipcq: PYL-W0703
             sentry_sdk.capture_exception(e)
             log.warning(f"[DailyCheckin] {e}")
+            owner = self.bot.get_user(self.bot.owner_id) or await self.bot.fetch_user(
+                self.bot.owner_id
+            )
+            await owner.send(f"An error occurred in DailyCheckin:\n```{e}```")
+        finally:
+            log.info("[DailyCheckin] Finished")
 
     async def _add_user_to_queue(self, queue: asyncio.Queue[UserAccount]) -> None:
         log.info("[DailyCheckin] Adding users to queue...")
@@ -111,6 +117,7 @@ class DailyCheckin:
                     user = user.copy(update={"checkin_game": GameType.HSR})
                     await queue.put(user)
 
+        self.queue_ready.set()
         log.info(f"[DailyCheckin] Added {queue.qsize()} users to queue")
 
     async def _daily_checkin_task(
@@ -135,6 +142,7 @@ class DailyCheckin:
         MAX_API_ERROR = 5
         api_error_count = 0
 
+        await self.queue_ready.wait()
         while not queue.empty():
             user = await queue.get()
             try:

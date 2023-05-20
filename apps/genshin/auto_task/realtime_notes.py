@@ -1,5 +1,5 @@
 import asyncio
-from multiprocessing import Manager
+from datetime import timedelta
 from typing import Dict, Optional, Union
 
 import genshin
@@ -23,7 +23,8 @@ class RealtimeNotes:
 
         self._total: Dict[NotifType, int] = {}
         self._success: Dict[NotifType, int] = {}
-        self._notes_dict: Dict[int, genshin.models.Notes] = Manager().dict()  # type: ignore
+        self._notes_dict: Dict[int, genshin.models.Notes] = {}
+        self._queue_ready = asyncio.Event()
 
     async def start(self) -> None:
         log.info("[RealtimeNotes] Starting...")
@@ -39,13 +40,22 @@ class RealtimeNotes:
             ] = asyncio.Queue()
 
             # Make the queue
-            tasks = [asyncio.create_task(self._make_queue(queue))]
-            tasks.append(asyncio.create_task(self._get_realtime_notes(queue)))
+            tasks = [
+                asyncio.create_task(self._make_queue(queue)),
+                asyncio.create_task(self._get_realtime_notes(queue)),
+            ]
             await asyncio.gather(*tasks)
         except Exception as e:  # skipcq: PYL-W0703
             log.warning(f"[RealtimeNotes] {e}", exc_info=True)
             sentry_sdk.capture_exception(e)
+            owner = self.bot.get_user(self.bot.owner_id) or await self.bot.fetch_user(
+                self.bot.owner_id
+            )
+            await owner.send(f"An error occurred in RealtimeNotes:\n```{e}```")
         finally:
+            for type, total in self._total.items():
+                success = self._success.get(type, 0)
+                log.info(f"[RealtimeNotes] {type.name} - {success}/{total} sent")
             log.info("[RealtimeNotes] Finished")
 
     async def _make_queue(
@@ -82,6 +92,7 @@ class RealtimeNotes:
 
         # Log the number of users added to the queue
         log.info(f"[RealtimeNotes] Queue made with {queue.qsize()} users")
+        self._queue_ready.set()
 
     async def _get_realtime_notes(
         self,
@@ -104,12 +115,9 @@ class RealtimeNotes:
         """
 
         # Process notifications in the queue
+        await self._queue_ready.wait()
         while not queue.empty():
             notif_user = await queue.get()
-
-            # Check if the notes have been cached
-            if notif_user.uid in self._notes_dict:
-                continue
 
             # Fetch user account details
             try:
@@ -138,7 +146,10 @@ class RealtimeNotes:
 
             try:
                 # Retrieve the latest notes from Genshin Impact API
-                notes = await user.client.get_genshin_notes(user.uid)
+                if user.uid in self._notes_dict:
+                    notes = self._notes_dict[user.uid]
+                else:
+                    notes = await user.client.get_genshin_notes(user.uid)
             except Exception as e:  # skipcq: PYL-W0703
                 # Disable notifications and create error embed if API request fails
                 await db.update(user.user_id, user.uid, toggle=False, current=0)
@@ -147,14 +158,22 @@ class RealtimeNotes:
                     await self._send_notif(discord_user, embed)
             else:
                 # Cache the latest notes
-                self._notes_dict[user.uid] = notes
+                if user.uid not in self._notes_dict:
+                    self._notes_dict[user.uid] = notes
                 self._success[notif_user.type] = (
                     self._success.get(notif_user.type, 0) + 1
                 )
 
                 # Check if the threshold is exceeded and reset the notification counter if necessary
                 check = await self._check_notes(notif_user)
+                now = get_dt_now()
                 if check and notif_user.current < notif_user.max:
+                    if (
+                        notif_user.last_notif is not None
+                        and now - notif_user.last_notif < timedelta(hours=2)
+                    ):
+                        continue
+
                     # Send the notification and update the notification counter
                     embed = self._create_notif_embed(
                         notif_user.type, notif_user.uid, notes, discord_user, lang
@@ -212,6 +231,7 @@ class RealtimeNotes:
         # exception that occurred.
         if isinstance(e, genshin.InvalidCookies):
             title_hash = 36
+            embed.description = text_map.get(767, locale)
         elif isinstance(e, genshin.GenshinException):
             if e.retcode == 1009:
                 return None
@@ -227,6 +247,9 @@ class RealtimeNotes:
         # Set the title of the ErrorEmbed to the appropriate text based on the title hash
         # and locale.
         embed.title = text_map.get(title_hash, locale)
+        if embed.description is None:
+            embed.description = ""
+        embed.description += f"\n\n{text_map.get(631, locale)}"
 
         # Return the ErrorEmbed object.
         return embed
@@ -294,8 +317,8 @@ class RealtimeNotes:
 
             embed = DefaultEmbed(
                 description=f"""
-                {text_map.get(303, locale)}: {notes.current_resin}/{notes.max_resin}  # "Current Resin"
-                {text_map.get(15, locale)}: {remain_time}  # "Recovery Time"
+                {text_map.get(303, locale)}: {notes.current_resin}/{notes.max_resin}
+                {text_map.get(15, locale)}: {remain_time}
                 UID: {uid}
                 """,
             )

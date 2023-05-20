@@ -658,7 +658,7 @@
 '626': Ingredients
 '627': Toggle daily check-in
 '630': Shenhe has automatically disabled the auto daily check-in feature for you, to enable it back, please use </claim:1020580644365021250>
-'631': Shenhe has automatically disabled the {feature} feature for you, to enable it back, please use </remind:1020580644365021255>
+'631': Shenhe has automatically disabled this remind feature for you, to enable it back, please use </remind:1020580644365021255>
 '632': Weapon notification
 '633': |-
   • Notify you when a weapon's domain is farmable
