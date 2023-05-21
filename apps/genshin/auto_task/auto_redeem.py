@@ -59,7 +59,9 @@ class AutoRedeem:
         Args:
             queue (asyncio.Queue[Optional[UserAccount]]): The queue of users.
         """
-        users = await self.bot.pool.fetch("SELECT user_id FROM user_settings WHERE auto_redeem = true")
+        users = await self.bot.pool.fetch(
+            "SELECT user_id FROM user_settings WHERE auto_redeem = true"
+        )
         for user in users:
             account = await self.bot.db.users.get(user["user_id"])
             auto_redeem = await self.bot.db.settings.get(
