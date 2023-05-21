@@ -119,7 +119,7 @@ class DailyCheckin:
         await queue.put(None)
 
     async def _daily_checkin_task(
-        self, api: CheckInAPI, queue: asyncio.Queue[UserAccount]
+        self, api: CheckInAPI, queue: asyncio.Queue[Optional[UserAccount]]
     ) -> None:
         log.info(f"[DailyCheckin] Starting {api.name} task...")
 
