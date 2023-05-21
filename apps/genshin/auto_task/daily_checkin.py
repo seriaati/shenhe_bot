@@ -84,7 +84,9 @@ class DailyCheckin:
         finally:
             log.info("[DailyCheckin] Finished")
 
-    async def _add_users_to_queue(self, queue: asyncio.Queue[Optional[UserAccount]]) -> None:
+    async def _add_users_to_queue(
+        self, queue: asyncio.Queue[Optional[UserAccount]]
+    ) -> None:
         log.info("[DailyCheckin] Adding users to queue...")
 
         rows = await self.bot.pool.fetch(
