@@ -17,16 +17,9 @@ from apps.draw import main_funcs
 from apps.genshin import auto_task
 from apps.text_map import text_map, to_ambr_top
 from dev.base_ui import capture_exception
-from utils import (
-    convert_dict_to_zipped_json,
-    dm_embed,
-    fetch_cards,
-    get_discord_user_from_id,
-    get_dt_now,
-    get_user_lang,
-    get_user_theme,
-    log,
-)
+from utils import (convert_dict_to_zipped_json, dm_embed, fetch_cards,
+                   get_discord_user_from_id, get_dt_now, get_user_lang,
+                   get_user_theme, log)
 from utils.text_map import get_city_name
 
 load_dotenv()
@@ -87,7 +80,7 @@ class Schedule(commands.Cog):
             )
 
         if now.hour == 10 and now.minute < self.loop_interval:  # 10am
-            asyncio.create_task(self.redeem_codes())
+            asyncio.create_task(auto_task.AutoRedeem(self.bot).exec())
 
     @schedule_error_handler
     async def update_shenhe_cache_and_data(self) -> None:
@@ -98,15 +91,8 @@ class Schedule(commands.Cog):
 
     @schedule_error_handler
     async def save_codes(self) -> None:
-        log.info("[Schedule] Saving codes...")
-        await self.bot.pool.execute(
-            "CREATE TABLE IF NOT EXISTS genshin_codes (code text)"
-        )
-        await self.bot.pool.execute("DELETE FROM genshin_codes")
         codes = await genshin_app.find_codes(self.bot.session)
-        for code in codes:
-            await self.bot.pool.execute("INSERT INTO genshin_codes VALUES ($1)", code)
-        log.info(f"[Schedule] Codes saved: {codes}.")
+        await self.bot.db.codes.update_codes(codes)
 
     @schedule_error_handler
     async def generate_abyss_json(self) -> None:
@@ -117,7 +103,7 @@ class Schedule(commands.Cog):
         result["size"] = 0
         result["data"] = []
 
-        accounts = await self.get_schedule_users()
+        accounts = await self.bot.db.users.get_all_with_cookie()
 
         for account in accounts:
             if str(account.uid)[0] in (1, 2, 5):
@@ -142,119 +128,6 @@ class Schedule(commands.Cog):
         fp = convert_dict_to_zipped_json(result)
         await user.send(file=discord.File(fp, "abyss_json.zip"))
         log.info("[Schedule] Saved abyss.json")
-
-    async def get_schedule_users(self) -> List[models.ShenheAccount]:
-        """Gets a list of shenhe users that have Cookie registered (ltuid is not None)
-
-        Returns:
-            List[models.ShenheAccount]: List of shenhe users
-        """
-        accounts: List[models.ShenheAccount] = []
-        rows = await self.bot.pool.fetch(
-            "SELECT user_id, ltuid, ltoken, cookie_token, uid FROM user_accounts WHERE ltuid IS NOT NULL"
-        )
-        for row in rows:
-            custom_cookie = {
-                "ltuid": row["ltuid"],
-                "ltoken": row["ltoken"],
-                "cookie_token": row["cookie_token"],
-            }
-            try:
-                account = await genshin_app.get_shenhe_account(
-                    row["user_id"],
-                    self.bot,
-                    custom_cookie=custom_cookie,
-                    custom_uid=row["uid"],
-                )
-            except Exception:  # skipcq: PYL-W0703
-                continue
-            accounts.append(account)
-
-        return accounts
-
-    @schedule_error_handler
-    async def redeem_codes(self):
-        """Auto-redeems codes for all Shenhe users that have Cookie registered"""
-        log.info("[Schedule][Redeem Codes] Start")
-
-        codes = await genshin_app.find_codes(self.bot.session)
-        log.info(f"[Schedule][Redeem Codes] Found codes {codes}")
-
-        users = await self.get_redeem_code_users()
-        for index, user in enumerate(users):
-            locale = user.user_locale or "en-US"
-            embed = models.DefaultEmbed(text_map.get(126, locale))
-
-            for code in codes:
-                c = await self.bot.pool.fetchval(
-                    "SELECT code FROM redeem_codes WHERE code = $1 AND uid = $2",
-                    code,
-                    user.uid,
-                )
-                if c:
-                    continue
-                value, success = await self.redeem_code(user, locale, code)
-
-                embed.add_field(
-                    name=f"{'✅' if success else '⛔'} {code}",
-                    value=value,
-                )
-                await self.bot.pool.execute(
-                    "INSERT INTO redeem_codes (code, uid) VALUES ($1, $2)",
-                    code,
-                    user.uid,
-                )
-                await asyncio.sleep(5)
-
-            if embed.fields:
-                await dm_embed(user.discord_user, embed)
-            await asyncio.sleep(10)
-            if index % 100 == 0:
-                await asyncio.sleep(30)
-
-        log.info("[Schedule][Redeem Codes] Done")
-
-    async def get_redeem_code_users(self):
-        users: List[models.ShenheAccount] = []
-        rows = await self.bot.pool.fetch(
-            "SELECT user_id FROM user_settings WHERE auto_redeem = true"
-        )
-        for row in rows:
-            try:
-                acc = await genshin_app.get_shenhe_account(row["user_id"], self.bot)
-            except Exception:  # skipcq: PYL-W0703
-                pass
-            else:
-                users.append(acc)
-        return users
-
-    @staticmethod
-    async def redeem_code(user, locale, code) -> tuple[str, bool]:
-        success = False
-        value = "default_value"
-        try:
-            await user.client.redeem_code(code, user.uid)
-        except genshin.errors.InvalidCookies:
-            value = text_map.get(36, locale)
-        except genshin.errors.RedemptionClaimed:
-            value = text_map.get(106, locale)
-        except genshin.errors.RedemptionCooldown:
-            await asyncio.sleep(10)
-            try:
-                await user.client.redeem_code(code, user.uid)
-            except Exception:  # skipcq: PYL-W0703
-                value = text_map.get(127, locale)
-        except genshin.errors.RedemptionException as e:
-            value = e.msg
-        except Exception as e:  # skipcq: PYL-W0703
-            value = f"{type(e)} {e}"
-        else:
-            log.info(
-                f"[Schedule][Redeem Codes] Redeemed {code} for ({user.discord_user.id}, {user.uid})"
-            )
-            success = True
-            value = text_map.get(109, locale)
-        return value, success
 
     @schedule_error_handler
     async def update_game_data(self):

@@ -46,24 +46,23 @@ class UserSettingsTable:
             user_id,
         )
 
+    async def update(self, user_id: int, settings: Settings, value: typing.Any) -> None:
+        """Update user settings"""
+        await self.pool.execute(
+            f"UPDATE user_settings SET {settings.value} = $1 WHERE user_id = $2",
+            value,
+            user_id,
+        )
+
     async def get(self, user_id: int, settings: Settings) -> typing.Any:
         """Get user settings"""
         val = await self.pool.fetchval(
             f"SELECT {settings.value} FROM user_settings WHERE user_id = $1", user_id
         )
-        if val is None:
+        if val is None and settings is not Settings.LANG:
             await self.insert(user_id)
             val = await self.get(user_id, settings)
 
         if settings is Settings.DEFAULT_GAME:
             return GameType(val)
         return val
-
-    async def get_all(self, user_id: int) -> UserSettings:
-        """Get all user settings"""
-        row = await self.pool.fetchrow(
-            "SELECT * FROM user_settings WHERE user_id = $1", user_id
-        )
-        if row is None:
-            await self.insert(user_id)
-        return UserSettings(**row)

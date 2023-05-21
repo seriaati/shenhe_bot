@@ -8,7 +8,8 @@ from apps.db.tables.user_account import UserAccount, convert_game_type
 from apps.db.tables.user_settings import Settings
 from apps.text_map import text_map
 from dev.asset import gift_open_outline, peko_yahoo
-from dev.base_ui import BaseGameSelector, BaseModal, BaseView, get_error_handle_embed
+from dev.base_ui import (BaseGameSelector, BaseModal, BaseView,
+                         get_error_handle_embed)
 from dev.config import mid_timeout
 from dev.enum import GameType
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
@@ -32,26 +33,13 @@ class View(BaseView):
         await i.response.defer()
         await self.init(i)
 
-        codes = await self.get_codes(i.client.session)
+        codes = await i.client.db.codes.get_all()
         self.add_components(codes)
         embed = self._make_start_embed(i.user)
 
         self.author = i.user
         await i.followup.send(embed=embed, view=self)
         self.message = await i.original_response()
-
-    @staticmethod
-    async def get_codes(session: aiohttp.ClientSession) -> List[str]:
-        try:
-            async with session.get(
-                "https://genshin-redeem-code.vercel.app/codes"
-            ) as resp:
-                data: List[Dict[str, str]] = await resp.json()
-        except Exception:  # skipcq: PYL-W0703
-            codes = []
-        else:
-            codes = [code["code"] for code in data]
-        return codes
 
     def add_components(self, codes: List[str]) -> None:
         self.clear_items()
@@ -82,7 +70,6 @@ class View(BaseView):
         if embed.description is None:
             embed.description = ""
         embed.description += f"\n\n{text_map.get(108, self.lang)}: **{code}**"
-        embed.set_user_footer(user, self.user.uid)
         return embed
 
     async def redeem_response(self, i: Inter, code: str) -> None:
@@ -93,7 +80,6 @@ class View(BaseView):
             view.add_item(MeToo(text_map.get(132, self.lang), code))
         else:
             view.add_item(WebsiteRedeem(code, self.game, text_map.get(768, self.lang)))
-        view.author = i.user
         await i.followup.send(embed=embed, ephemeral=not success, view=view)
         view.message = await i.original_response()
 

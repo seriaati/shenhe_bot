@@ -40,3 +40,7 @@ class Database:
         self.leaderboard = Leaderboard(pool)
         """Leaderboard"""
         self.notifs = Notif(pool)
+        """Notifications"""
+        self.codes = tables.GenshinCodes(pool)
+        """Genshin codes"""
+        self.redeemed = tables.RedeemedCodeTable(pool)

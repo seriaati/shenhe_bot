@@ -115,7 +115,6 @@ class DailyCheckin:
                     user = user.copy(update={"checkin_game": GameType.HSR})
                     await queue.put(user)
 
-        log.info(f"[DailyCheckin] Added {queue.qsize()} users to queue")
         await queue.put(None)
 
     async def _daily_checkin_task(

@@ -5,7 +5,7 @@ from discord import ui
 
 import dev.asset as asset
 import dev.config as config
-from utils import get_user_auto_redeem, get_user_lang, get_user_theme
+from apps.db.tables.user_settings import Settings
 from apps.text_map import text_map
 from data.others.language_options import lang_options
 from dev.base_ui import BaseView, GoBackButton
@@ -34,7 +34,7 @@ class Appearance(ui.Button):
     async def callback(self, i: Inter) -> Any:
         locale = self.view.locale
 
-        dark_mode = await get_user_theme(i.user.id, i.client.pool)  # type: ignore
+        dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
         embed = get_appearance_embed(i.user.display_avatar.url, locale, dark_mode)
 
         view = get_appearance_view(self.view, dark_mode, locale)
@@ -54,12 +54,8 @@ class ModeButton(ui.Button):
         self.view: View
 
     async def callback(self, i: Inter) -> Any:
-        await i.client.pool.execute(
-            "UPDATE user_settings SET dark_mode = $1 WHERE user_id = $2",
-            self.toggle,
-            i.user.id,
-        )
-        dark_mode = await get_user_theme(i.user.id, i.client.pool)  # type: ignore
+        await i.client.db.settings.update(i.user.id, Settings.DARK_MODE, self.toggle)
+        dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
         embed = get_appearance_embed(
             i.user.display_avatar.url, self.view.locale, dark_mode
         )
@@ -74,7 +70,7 @@ class Langauge(ui.Button):
         self.view: View
 
     async def callback(self, i: Inter):
-        locale = await get_user_lang(i.user.id, i.client.pool) or i.locale  # type: ignore
+        locale = await i.client.db.settings.get(i.user.id, Settings.LANG)
 
         embed = get_language_embed(i.user.display_avatar.url, locale)
         view = get_language_view(self.view, locale)
@@ -109,11 +105,7 @@ class LangSelect(ui.Select):
         self.view: View
 
         converted_locale = self.values[0] if self.values[0] != "none" else None
-        await i.client.pool.execute(
-            "UPDATE user_settings SET lang = $1 WHERE user_id = $2",
-            converted_locale,
-            i.user.id,
-        )
+        await i.client.db.settings.update(i.user.id, Settings.LANG, converted_locale)
         locale = converted_locale or i.locale
 
         embed = get_language_embed(i.user.display_avatar.url, locale)
@@ -159,7 +151,7 @@ class AutoRedeem(ui.Button):
         self.view: View
 
     async def callback(self, i: Inter):
-        auto_redeem = await get_user_auto_redeem(i.user.id, i.client.pool)  # type: ignore
+        auto_redeem = await i.client.db.settings.get(i.user.id, Settings.AUTO_REDEEM)
 
         embed = get_redeem_embed(i.user.display_avatar.url, self.locale)
         view = get_redeem_view(self.view, auto_redeem, self.locale)
@@ -180,11 +172,7 @@ class RedeemButton(ui.Button):
         self.view: View
 
     async def callback(self, i: Inter) -> Any:
-        await i.client.pool.execute(
-            "UPDATE user_settings SET auto_redeem = $1 WHERE user_id = $2",
-            self.toggle,
-            i.user.id,
-        )
+        await i.client.db.settings.update(i.user.id, Settings.AUTO_REDEEM, self.toggle)
 
         embed = get_redeem_embed(i.user.display_avatar.url, self.locale)
         view = get_redeem_view(self.view, self.toggle, self.locale)
@@ -192,12 +180,13 @@ class RedeemButton(ui.Button):
 
 
 async def return_settings(i: Inter, edit: bool = False):
-    locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
+    lang = await i.client.db.settings.get(i.user.id, Settings.LANG)
+    lang = lang or i.locale
 
     embed = DefaultEmbed(
-        description=f"**{asset.settings_emoji} {text_map.get(539, locale)}**\n\n{text_map.get(534, locale)}"
+        description=f"**{asset.settings_emoji} {text_map.get(539, lang)}**\n\n{text_map.get(534, lang)}"
     )
-    view = View(locale)
+    view = View(lang)
 
     if edit:
         await i.response.edit_message(embed=embed, view=view)

@@ -93,8 +93,6 @@ class RealtimeNotes:
             self._total[user.type] = self._total.get(user.type, 0) + 1
             await queue.put(user)
 
-        # Log the number of users added to the queue
-        log.info(f"[RealtimeNotes] Queue made with {queue.qsize()} users")
         await queue.put(None)
 
     async def _get_realtime_notes(

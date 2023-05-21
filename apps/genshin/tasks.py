@@ -9,6 +9,7 @@ import genshin
 
 import dev.asset as asset
 import dev.models as models
+from apps.db.tables.user_account import UserAccount
 from apps.text_map import AMBR_LANGS
 from data.game.elements import convert_element
 from utils import get_element_name
@@ -18,7 +19,7 @@ from utils import get_element_name
 
 def add_abyss_entry(
     result: typing.Dict[str, typing.Any],
-    account: models.ShenheAccount,
+    account: UserAccount,
     abyss: genshin.models.SpiralAbyss,
     characters: typing.List[genshin.models.Character],
 ) -> None:

@@ -101,8 +101,6 @@ class WTNotifs:
             await queue.put(user)
             self._total[user.type] = self._total.get(user.type, 0) + len(user.item_list)
 
-        log.info(f"[WTNotifs] Added {len(users)} users to the queue")
-
         # Add a None value to the queue to signal the end of the notifications
         await queue.put(None)
 

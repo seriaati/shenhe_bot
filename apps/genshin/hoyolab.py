@@ -14,19 +14,11 @@ from apps.draw import main_funcs
 from apps.text_map import text_map
 from dev.base_ui import get_error_handle_embed
 from dev.exceptions import UIDNotFound
-from dev.models import BotModel, DefaultEmbed, DrawInput, ErrorEmbed, ShenheAccount
-from utils import (
-    get_character_emoji,
-    get_dt_now,
-    get_month_name,
-    get_shenhe_account,
-    get_uid,
-    get_uid_tz,
-    get_user_lang,
-    get_user_theme,
-    log,
-    update_talents_json,
-)
+from dev.models import (BotModel, DefaultEmbed, DrawInput, ErrorEmbed,
+                        ShenheAccount)
+from utils import (get_character_emoji, get_dt_now, get_month_name,
+                   get_shenhe_account, get_uid, get_uid_tz, get_user_lang,
+                   get_user_theme, log, update_talents_json)
 
 from .models import *
 
@@ -405,54 +397,6 @@ class GenshinApp:
         return GenshinAppResult(
             success=True, result=CharacterResult(characters=characters)
         )
-
-    @genshin_error_handler
-    async def redeem_code(
-        self, user_id: int, author_id: int, code: str, locale: discord.Locale
-    ) -> GenshinAppResult[discord.Embed]:
-        shenhe_user = await self.get_user_cookie(user_id, author_id, locale)
-        try:
-            await shenhe_user.client.redeem_code(code)
-        except genshin.errors.RedemptionClaimed:
-            return GenshinAppResult(
-                result=ErrorEmbed(
-                    description=f"{text_map.get(108, locale, shenhe_user.user_locale)}: {code}"
-                ).set_author(
-                    name=text_map.get(106, locale, shenhe_user.user_locale),
-                    icon_url=shenhe_user.discord_user.display_avatar.url,
-                ),
-                success=False,
-            )
-        except genshin.errors.RedemptionInvalid:
-            return GenshinAppResult(
-                result=ErrorEmbed(
-                    description=f"{text_map.get(108, locale, shenhe_user.user_locale)}: {code}"
-                ).set_author(
-                    name=text_map.get(107, locale, shenhe_user.user_locale),
-                    icon_url=shenhe_user.discord_user.display_avatar.url,
-                ),
-                success=False,
-            )
-        except genshin.errors.RedemptionCooldown:
-            return GenshinAppResult(
-                result=ErrorEmbed(
-                    description=f"{text_map.get(108, locale, shenhe_user.user_locale)}: {code}"
-                ).set_author(
-                    name=text_map.get(133, locale, shenhe_user.user_locale),
-                    icon_url=shenhe_user.discord_user.display_avatar.url,
-                ),
-                success=False,
-            )
-        else:
-            return GenshinAppResult(
-                result=DefaultEmbed(
-                    description=f"{text_map.get(108, locale, shenhe_user.user_locale)}: {code}"
-                ).set_author(
-                    name=text_map.get(109, locale, shenhe_user.user_locale),
-                    icon_url=shenhe_user.discord_user.display_avatar.url,
-                ),
-                success=True,
-            )
 
     @genshin_error_handler
     async def get_activities(
