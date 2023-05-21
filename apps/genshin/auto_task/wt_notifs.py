@@ -123,7 +123,7 @@ class WTNotifs:
             # If the user is None, break out of the loop
             if user is None:
                 break
-            
+
             try:
                 # Get the user's ID and item list
                 user_id = user.user_id
