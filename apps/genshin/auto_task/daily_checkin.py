@@ -2,7 +2,7 @@ import asyncio
 import datetime
 import io
 import os
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 import discord
 import sentry_sdk
@@ -44,8 +44,6 @@ class DailyCheckin:
             CheckInAPI.RENDER: os.getenv("RENDER_URL"),
             CheckInAPI.RAILWAY: os.getenv("RAILWAY_URL"),
         }
-        
-        self.queue_ready = asyncio.Event()
 
     async def start(self) -> None:
         try:
@@ -53,11 +51,11 @@ class DailyCheckin:
             self._start_time = get_dt_now()
 
             # initialize the queue
-            queue: asyncio.Queue[UserAccount] = asyncio.Queue()
+            queue: asyncio.Queue[Optional[UserAccount]] = asyncio.Queue()
 
             # add users to queue
             tasks: List[asyncio.Task] = [
-                asyncio.create_task(self._add_user_to_queue(queue))
+                asyncio.create_task(self._add_users_to_queue(queue))
             ]
 
             # add checkin tasks
@@ -82,11 +80,11 @@ class DailyCheckin:
             owner = self.bot.get_user(self.bot.owner_id) or await self.bot.fetch_user(
                 self.bot.owner_id
             )
-            await owner.send(f"An error occurred in DailyCheckin:\n```{e}```")
+            await owner.send(f"An error occurred in DailyCheckin:\n```\n{e}\n```")
         finally:
             log.info("[DailyCheckin] Finished")
 
-    async def _add_user_to_queue(self, queue: asyncio.Queue[UserAccount]) -> None:
+    async def _add_users_to_queue(self, queue: asyncio.Queue[Optional[UserAccount]]) -> None:
         log.info("[DailyCheckin] Adding users to queue...")
 
         rows = await self.bot.pool.fetch(
@@ -117,8 +115,8 @@ class DailyCheckin:
                     user = user.copy(update={"checkin_game": GameType.HSR})
                     await queue.put(user)
 
-        self.queue_ready.set()
         log.info(f"[DailyCheckin] Added {queue.qsize()} users to queue")
+        await queue.put(None)
 
     async def _daily_checkin_task(
         self, api: CheckInAPI, queue: asyncio.Queue[UserAccount]
@@ -142,9 +140,10 @@ class DailyCheckin:
         MAX_API_ERROR = 5
         api_error_count = 0
 
-        await self.queue_ready.wait()
-        while not queue.empty():
+        while True:
             user = await queue.get()
+            if user is None:
+                break
             try:
                 embed = await self._do_daily_checkin(api, user)
                 notif = await get_user_notif(user.user_id, self.bot.pool)
@@ -170,6 +169,7 @@ class DailyCheckin:
                     self._success[api] += 1
             finally:
                 await asyncio.sleep(1.5)
+                queue.task_done()
 
     async def _do_daily_checkin(
         self, api: CheckInAPI, user: UserAccount, retry_count: int = 0

@@ -76,14 +76,7 @@ class Schedule(commands.Cog):
                 21: -7,  # Europe
             }
             asyncio.create_task(
-                self.weapon_talent_base_notification(
-                    "talent_notification", hour_dict[now.hour]
-                )
-            )
-            asyncio.create_task(
-                self.weapon_talent_base_notification(
-                    "weapon_notification", hour_dict[now.hour]
-                )
+                auto_task.WTNotifs(self.bot, hour_dict[now.hour]).exec()
             )
 
         if now.hour == 10 and now.minute < self.loop_interval:  # 10am
@@ -255,129 +248,6 @@ class Schedule(commands.Cog):
             success = True
             value = text_map.get(109, locale)
         return value, success
-
-    @schedule_error_handler
-    async def weapon_talent_base_notification(
-        self, notification_type: str, time_offset: int
-    ):
-        time_offset = int(time_offset)
-        log.info(f"[Schedule][{notification_type}][offset: {time_offset}] Start")
-        upgrade_cache: Dict[str, ambr.CharacterUpgrade | ambr.WeaponUpgrade] = {}
-        item_cache: Dict[str, ambr.Weapon | ambr.Character] = {}
-
-        rows = await self.bot.pool.fetch(
-            f"SELECT user_id, item_list FROM {notification_type} WHERE toggle = true"
-        )
-        count = 0
-        for row in rows:
-            user_id: int = row["user_id"]
-            item_list: List[str] = row["item_list"]
-
-            uid = await genshin_app.get_uid(user_id, self.bot.pool)
-            uid_tz = genshin_app.get_uid_tz(uid)
-            if uid_tz != time_offset:
-                continue
-
-            log.info(
-                f"[Schedule][{notification_type}][offset: {time_offset}] {user_id} ({count})"
-            )
-
-            now = get_dt_now() + timedelta(hours=time_offset)
-            locale = await get_user_lang(user_id, self.bot.pool) or "en-US"
-
-            client = ambr.AmbrTopAPI(self.bot.session, to_ambr_top(locale))
-            domains = await client.get_domains()
-            today_domains = [d for d in domains if d.weekday == now.weekday()]
-
-            user = self.bot.get_user(user_id) or await self.bot.fetch_user(user_id)
-            notified: Dict[str, Dict[str, Any]] = {}
-
-            for item_id in item_list:
-                for domain in today_domains:
-                    for reward in domain.rewards:
-                        upgrade = upgrade_cache.get(str(item_id))
-
-                        if upgrade is None:
-                            if notification_type == "talent_notification":
-                                upgrade = await client.get_character_upgrade(
-                                    str(item_id)
-                                )
-                            else:
-                                upgrade = await client.get_weapon_upgrade(int(item_id))
-                            if not isinstance(
-                                upgrade, (ambr.CharacterUpgrade, ambr.WeaponUpgrade)
-                            ):
-                                raise AssertionError
-                            upgrade_cache[str(item_id)] = upgrade
-
-                        if reward in upgrade.items:
-                            if item_id not in notified:
-                                notified[item_id] = {
-                                    "materials": [],
-                                    "domain": domain,
-                                }
-                            if reward.id not in notified[item_id]["materials"]:
-                                notified[item_id]["materials"].append(reward.id)
-
-            for item_id, item_info in notified.items():
-                item = item_cache.get(str(item_id))
-
-                if item is None:
-                    if notification_type == "talent_notification":
-                        item = await client.get_character(str(item_id))
-                    else:
-                        item = await client.get_weapon(int(item_id))
-                    if not isinstance(item, (ambr.Character, ambr.Weapon)):
-                        continue
-                    item_cache[str(item_id)] = item
-
-                materials: List[Tuple[ambr.Material, str]] = []
-                for material_id in item_info["materials"]:
-                    material = await client.get_material(material_id)
-                    if not isinstance(material, ambr.Material):
-                        continue
-                    materials.append((material, ""))
-
-                dark_mode = await get_user_theme(user_id, self.bot.pool)
-                fp = await main_funcs.draw_material_card(
-                    models.DrawInput(
-                        loop=self.bot.loop,
-                        session=self.bot.session,
-                        locale=locale,
-                        dark_mode=dark_mode,
-                    ),
-                    materials,  # type: ignore
-                    "",
-                    draw_title=False,
-                )
-                fp.seek(0)
-                _file = discord.File(fp, "reminder_card.jpeg")
-
-                domain: ambr.Domain = item_info["domain"]
-
-                embed = models.DefaultEmbed()
-                embed.add_field(
-                    name=text_map.get(609, locale),
-                    value=f"{domain.name} ({get_city_name(domain.city.id, locale)})",
-                )
-                embed.set_author(
-                    name=text_map.get(312, locale).format(name=item.name),
-                    icon_url=item.icon,
-                )
-                embed.set_footer(text=text_map.get(134, locale))
-                embed.set_image(url="attachment://reminder_card.jpeg")
-
-                try:
-                    await user.send(embed=embed, files=[_file])
-                except discord.Forbidden:
-                    await self.bot.pool.execute(
-                        f"UPDATE {notification_type} SET toggle = false WHERE user_id = $1",
-                        user_id,
-                    )
-                else:
-                    count += 1
-            await asyncio.sleep(2.5)
-        log.info(f"[Schedule][{notification_type}] Ended (Notified {count} users)")
 
     @schedule_error_handler
     async def update_game_data(self):

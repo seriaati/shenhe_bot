@@ -24,7 +24,6 @@ class RealtimeNotes:
         self._total: Dict[NotifType, int] = {}
         self._success: Dict[NotifType, int] = {}
         self._notes_dict: Dict[int, genshin.models.Notes] = {}
-        self._queue_ready = asyncio.Event()
 
     async def start(self) -> None:
         log.info("[RealtimeNotes] Starting...")
@@ -32,10 +31,12 @@ class RealtimeNotes:
         try:
             # Create the queue of notifications
             queue: asyncio.Queue[
-                Union[
-                    ResinNotif,
-                    PotNotif,
-                    PTNotif,
+                Optional[
+                    Union[
+                        ResinNotif,
+                        PotNotif,
+                        PTNotif,
+                    ]
                 ]
             ] = asyncio.Queue()
 
@@ -51,20 +52,22 @@ class RealtimeNotes:
             owner = self.bot.get_user(self.bot.owner_id) or await self.bot.fetch_user(
                 self.bot.owner_id
             )
-            await owner.send(f"An error occurred in RealtimeNotes:\n```{e}```")
+            await owner.send(f"An error occurred in RealtimeNotes:\n```\n{e}\n```")
         finally:
             for type, total in self._total.items():
                 success = self._success.get(type, 0)
-                log.info(f"[RealtimeNotes] {type.name} - {success}/{total} sent")
+                log.info(f"[RealtimeNotes] {type.name}: {success}/{total} sent")
             log.info("[RealtimeNotes] Finished")
 
     async def _make_queue(
         self,
         queue: asyncio.Queue[
-            Union[
-                ResinNotif,
-                PotNotif,
-                PTNotif,
+            Optional[
+                Union[
+                    ResinNotif,
+                    PotNotif,
+                    PTNotif,
+                ]
             ]
         ],
     ) -> None:
@@ -92,15 +95,17 @@ class RealtimeNotes:
 
         # Log the number of users added to the queue
         log.info(f"[RealtimeNotes] Queue made with {queue.qsize()} users")
-        self._queue_ready.set()
+        await queue.put(None)
 
     async def _get_realtime_notes(
         self,
         queue: asyncio.Queue[
-            Union[
-                ResinNotif,
-                PotNotif,
-                PTNotif,
+            Optional[
+                Union[
+                    ResinNotif,
+                    PotNotif,
+                    PTNotif,
+                ]
             ]
         ],
     ) -> None:
@@ -115,9 +120,10 @@ class RealtimeNotes:
         """
 
         # Process notifications in the queue
-        await self._queue_ready.wait()
-        while not queue.empty():
+        while True:
             notif_user = await queue.get()
+            if notif_user is None:
+                break
 
             # Fetch user account details
             try:
@@ -155,14 +161,11 @@ class RealtimeNotes:
                 await db.update(user.user_id, user.uid, toggle=False, current=0)
                 embed = await self._create_error_embed(notif_user.type, lang, e)
                 if embed:
-                    await self._send_notif(discord_user, embed)
+                    await self._send_notif(discord_user, embed, notif_user.type)
             else:
                 # Cache the latest notes
                 if user.uid not in self._notes_dict:
                     self._notes_dict[user.uid] = notes
-                self._success[notif_user.type] = (
-                    self._success.get(notif_user.type, 0) + 1
-                )
 
                 # Check if the threshold is exceeded and reset the notification counter if necessary
                 check = await self._check_notes(notif_user)
@@ -178,7 +181,7 @@ class RealtimeNotes:
                     embed = self._create_notif_embed(
                         notif_user.type, notif_user.uid, notes, discord_user, lang
                     )
-                    await self._send_notif(discord_user, embed)
+                    await self._send_notif(discord_user, embed, notif_user.type)
                     await db.update(
                         user.user_id,
                         user.uid,
@@ -191,6 +194,7 @@ class RealtimeNotes:
             finally:
                 # Wait for 1.5 seconds before processing the next notification
                 await asyncio.sleep(1.5)
+                queue.task_done()
 
     @staticmethod
     async def _create_error_embed(
@@ -349,8 +353,9 @@ class RealtimeNotes:
         embed.set_footer(text=text_map.get(305, locale))
         return embed
 
-    @staticmethod
-    async def _send_notif(user: User, embed: Union[DefaultEmbed, ErrorEmbed]) -> None:
+    async def _send_notif(
+        self, user: User, embed: Union[DefaultEmbed, ErrorEmbed], notif_type: NotifType
+    ) -> None:
         """
         Sends the notification to the user's DM.
 
@@ -364,3 +369,6 @@ class RealtimeNotes:
             # If the bot is not allowed to send messages to the user's DM,
             # catch the error and do nothing.
             pass
+        else:
+            if isinstance(embed, DefaultEmbed):
+                self._success[notif_type] = self._success.get(notif_type, 0) + 1
