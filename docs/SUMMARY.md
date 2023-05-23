@@ -1,6 +1,12 @@
 # Table of contents
 
-## Accounts
+* [👋 Welcome](README.md)
 
-* [Your account and Shenhe](README.md)
-* [帳戶安全](accounts/zhang-hu-an-quan.md)
+## accounts
+
+* [Your account and Shenhe](<README (1).md>)
+* [帳戶安全](zhang-hu-an-quan.md)
+
+## wish history
+
+* [About wish history](wish-history/about-wish-history.md)
