@@ -5,7 +5,6 @@
 ## accounts
 
 * [Your account and Shenhe](<README (1).md>)
-* [帳戶安全](zhang-hu-an-quan.md)
 
 ## wish history
 
