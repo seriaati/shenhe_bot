@@ -60,7 +60,7 @@ class View(BaseView):
     async def update(self, i: Inter) -> None:
         now = get_dt_now()
         day_in_month = calendar.monthrange(now.year, now.month)[1]
-        
+
         client = await self.user.client
         _, claimed_rewards = await client.get_reward_info(
             game=convert_game_type(self.game)
@@ -113,9 +113,7 @@ class ClaimReward(ui.Button):
         await i.response.defer()
 
         client = await self.view.user.client
-        reward = await client.claim_daily_reward(
-            game=convert_game_type(self.view.game)
-        )
+        reward = await client.claim_daily_reward(game=convert_game_type(self.view.game))
         reward_str = f"{reward.amount}x {reward.name}"
         embed = DefaultEmbed(
             description=text_map.get(41, self.view.locale).format(reward=reward_str)

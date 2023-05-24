@@ -75,7 +75,7 @@ class HoyoAccount(BaseModel):
             cookie = await self._cookie_db.get(self.ltuid)
             self._cookie = cookie
         return self._cookie
-    
+
     @property
     async def client(self) -> Client:
         """Get the genshin.py client"""
@@ -215,7 +215,7 @@ class HoyoAccountTable:
             )
             for account in accounts
         ]
-    
+
     async def get_all(self) -> list[HoyoAccount]:
         """Get all accounts"""
         accounts = await self.pool.fetch(

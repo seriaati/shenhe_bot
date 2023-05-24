@@ -332,6 +332,7 @@ class ConditionalResult:
 class Inter(discord.Interaction):
     client: BotModel
 
+
 @define
 class AbyssResult:
     embed_title: str

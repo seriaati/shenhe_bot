@@ -49,7 +49,7 @@ class Database:
         """Hoyoverse accounts"""
         self.wish = tables.WishHistoryTable(pool)
         """Wish history"""
-    
+
     async def create(self):
         await self.cookies.create()
         await self.users.create()
