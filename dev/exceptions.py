@@ -3,11 +3,6 @@ from discord import app_commands
 from dev.enum import CheckInAPI
 
 
-class UIDNotFound(Exception):
-    def __str__(self):
-        return "UID not found"
-
-
 class AccountNotFound(Exception):
     def __str__(self):
         return "Shenhe account not found"

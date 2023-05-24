@@ -71,9 +71,6 @@ def get_error_handle_embed(
     ):
         embed.description = text_map.get(624, locale)
         embed.set_author(name=text_map.get(623, locale))
-    elif isinstance(e, exceptions.UIDNotFound):
-        embed.description = text_map.get(35, locale)
-        embed.set_author(name=text_map.get(672, locale))
     elif isinstance(e, exceptions.AccountNotFound):
         embed.description = text_map.get(35, locale)
         embed.set_author(name=text_map.get(545, locale))
@@ -89,21 +86,8 @@ def get_error_handle_embed(
         embed.set_author(name=text_map.get(523, locale))
     elif isinstance(e, exceptions.NoCharacterFound):
         embed.description = text_map.get(287, locale)
-        embed.set_author(
-            name=text_map.get(141, locale),
-        )
+        embed.set_author(name=text_map.get(141, locale))
         embed.set_image(url="https://i.imgur.com/frMsGHO.gif")
-    elif isinstance(e, exceptions.NoUID):
-        embed.description = text_map.get(572, locale)
-        embed.set_author(name=text_map.get(571 if e.current_user else 579, locale))
-    elif isinstance(e, exceptions.NoCookie):
-        if e.current_account:
-            embed.description = f"{text_map.get(572, locale)}\n"
-            embed.description += text_map.get(563, locale)
-            embed.set_author(name=text_map.get(573 if e.current_user else 580, locale))
-        else:
-            embed.description = text_map.get(575, locale)
-            embed.set_author(name=text_map.get(574 if e.current_user else 581, locale))
     elif isinstance(e, exceptions.NoWishHistory):
         embed.description = text_map.get(368, locale)
         embed.set_author(name=text_map.get(683, locale))

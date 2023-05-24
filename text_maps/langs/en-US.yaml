@@ -528,24 +528,10 @@
   The only file that is supported is the .yaml file exported from Shenhe.
 '568': Please provide an Image URL in either .png or .jpg format
 '569': Account type
-'570': |-
-  Your Cookie contains multiple accounts
-  please choose the one you want to add
-'571': You don't have an account registered
-'572': Use </accounts:1020188057628065866> to add one
 '573': Your current account is not linked to a Cookie
-'574': |-
-  One of your other accounts is linked to a Cookie,
-  but the current one is only linked to a UID
-'575': Use </accounts:1020188057628065866> to switch between accounts
 '576': "Owned characters: {current}/{total}"
 '577': "Maxed friendship level: {current}/{total}"
 '578': Friendship Lv.
-'579': This user doesn't have an account registered
-'580': This user's current account is not linked to a Cookie
-'581': |-
-  One of this user's accounts is linked to a Cookie,
-  but the current one is only linked to a UID
 '582': Resin notification
 '583': Select a weekday
 '584': Realm currency notification
@@ -641,7 +627,6 @@
 '669': Mora
 '670': Go to login page
 '671': Wish History
-'672': UID not found
 '673': You currently have **{a}** wishes stored in Shenhe's database
 '674': Please link a UID before importing new wishes
 '675': Newest wish
