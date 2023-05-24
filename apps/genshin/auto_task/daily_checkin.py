@@ -341,7 +341,7 @@ class DailyCheckin:
             string = "\n".join(f"{k}: {v}" for k, v in self._errors.items())
             bytes_io.write(string.encode("utf-8"))
             bytes_io.seek(0)
-        
+
         if bytes_io:
             file_ = discord.File(bytes_io, "errors.txt")
             await owner.send(embed=embed, file=file_)

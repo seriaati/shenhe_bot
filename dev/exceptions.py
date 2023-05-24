@@ -101,8 +101,10 @@ class InvalidInput(Exception):
         self.a = a
         self.b = b
 
+
 class AbyssDataNotFound(Exception):
     pass
+
 
 class WishFileImportError(Exception):
     pass

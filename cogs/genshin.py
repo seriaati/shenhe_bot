@@ -26,8 +26,14 @@ from apps.genshin import enka, leaderboard
 from apps.genshin_data import abyss
 from apps.text_map import convert_locale, text_map
 from data.cards.dice_element import get_dice_emoji
-from utils import (disable_view_items, get_character_emoji,
-                   get_uid_region_hash, get_user_lang, get_user_theme, log)
+from utils import (
+    disable_view_items,
+    get_character_emoji,
+    get_uid_region_hash,
+    get_user_lang,
+    get_user_theme,
+    log,
+)
 from utils.genshin import update_talents_json
 
 load_dotenv()
@@ -192,7 +198,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     ):
         await i.response.defer(ephemeral=ephemeral)
         member = member or i.user
-        
+
         user = await self.bot.db.users.get(member.id)
         lang = await self.bot.db.settings.get(i.user.id, Settings.LANG)
         lang = lang or str(i.locale)
@@ -507,9 +513,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         dark_mode = await self.bot.db.settings.get(i.user.id, Settings.DARK_MODE)
 
         client = await user.client
-        abyss = await client.get_genshin_spiral_abyss(
-            user.uid, previous=bool(previous)
-        )
+        abyss = await client.get_genshin_spiral_abyss(user.uid, previous=bool(previous))
         if not abyss.ranks.most_kills:
             raise exceptions.AbyssDataNotFound
         g_user = await client.get_partial_genshin_user(user.uid)
