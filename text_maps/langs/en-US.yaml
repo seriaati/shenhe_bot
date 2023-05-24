@@ -1,6 +1,5 @@
 '1': Full
 '2': Realm currency
-'3': Choose an import method
 '4': Resin
 '5': Resin discounts
 '6': Daily comission
@@ -97,19 +96,6 @@
 '107': Code is invalid
 '108': Code
 '109': Code redeemed successfully
-'110': Summer event data not found
-'111': Golden Apple Archipelago
-'112': Waverider Waypoints Unlocked
-'113': Waypoints Unlocked
-'114': Treasure Chests Obtained
-'115': Unfinished
-'116': Surfpiercer
-'117': Summer Memories
-'118': Realm Exploration
-'119': Time completed
-'120': Successfully challenged
-'121': times
-'122': Unleashed elemental skill
 '124': Back to default
 '125': |-
   • By default, shenhe responds to you with the same language your discord uses
@@ -164,8 +150,6 @@
 '162': Build
 '163': Choose a build
 '164': builds
-'165': This user hasn't registered their account yet
-'166': User not found
 '167': "{name}'s UID"
 '168': current level
 '169': Character {level_type}
@@ -344,31 +328,9 @@
 '355': Please wait while Shenhe is processing your wish history...
 '356': Successfully imported wish history
 '357': Candace Q
-'358': |-
-  1. Open Genshin Impact in this PC (If you use multiple accounts, please restart the game)
-  2. Then open the wish history in the game and wait it to load
-  3. Press START on your keyboard, then search for Powershell
-  4. Click Windows Powershell, then copy & paste the script below to the Powershell
-  5. Press ENTER, and a link will copied to your clipboard
-  6. Click the submit button and paste the link to the textbox that pops up
 '360': Hydro infusion
 '361': Choose your information source
-'362': |-
-  1. Download Stream on App Store [here](https://apps.apple.com/app/stream/id1312141691)
-  2. Open the app, then allow VPN in system preferences (Settings > General > VPN)
-  3. Install CA (click Sniff Now on Stream App > Install CA > A pop-up window will appear and choose allow > Now CA is downloaded
-  4. Go to Settings > General > VPN & Device management > Click on Stream Generated CA and install
-  5. Open Genshin Impact then open the Wish screen, and stay on that page
-  6. Back to Stream App > Choose I've trusted > Tap Sniff Now Button
-  7. Back to Genshin Impact then open the Wish history page
-  8. Wait for the page to load
-  9. Back to Stream App > Stop Sniffing
-  10. Click Sniff History > Choose a request that ends by .json (the link starts with https://hk4e-api-os.mihoyo.com/)
-  11. Click the Request tab, then copy the link
-  12. Click the submit button and paste the link to the textbox that pops up
 '363': The link you have provided is invalid
-'364': Video Tutorial
-'365': Choose your platform
 '366': Your P.T. is ready to use!
 '367': This UID has no player data in it
 '368': Use </wish import:1000187021635104890> to import your wish history
@@ -380,14 +342,6 @@
 '381': "Changes {time}"
 '388': 'Yes'
 '389': 'No'
-'394': |-
-  1. Press START on your keyboard, then search for Powershell
-  2. Click Windows Powershell, then copy & paste the script below to the Powershell, then press ENTER (only when 'Press Enter to continue...' message is not showing yet)
-  3. Open Genshin Impact in this PC
-  4. Then open the wish history in the game and wait it to load
-  5. Click the table, then press CTRL+A then CTRL+C
-  6. Alt+Tab to the powershell, then press ENTER, the link will be copied to your clipboard
-  7. Click the submit button and paste the link to the textbox that pops up
 '396': "{pull} pulls"
 '397': Transformative Reactions
 '398': |-
@@ -402,15 +356,6 @@
 '400': Link generated, click on the button below to login
 '401': Generate login link
 '402': Generating login link...
-'403': |-
-  1. Open Genshin Impact in this PC (If you use multiple accounts, please restart the game)
-  2. Then open the wish history in the game and wait it to load
-  3. Then open the folder where your game is installed (example: C:\Games\Genshin Impact)
-  4. Then open folder GenshinImpact_Data → webCaches → Cache → Cache_Data
-  5. Right click "data_2" file then click "Open with" then select Notepad (If you get error like "The process cannot access the file because it is being used by another process" please exit the game first)
-  6. Press CTRL+F then check "Wrap around" and select direction "Up" then in the input box search for "e20190909gacha-v2" (without the quote) then click Find Next
-  7. Copy all the link from https://webstatic until game_biz=hk4e_global the url looks like this: https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?.......&game_biz=hk4e_global
-  8. Click the submit button and paste the link to the textbox that pops up
 '404': Update talent levels
 '406': Start time
 '407': End time
@@ -432,7 +377,6 @@
 '423': month
 '424': Choose a month to view
 '425': This month
-'426': Text tutorial is coming soon, for now please watch the video tutorial
 '427': The month before last month
 '428': View abyss data (need /register)
 '430': phase
@@ -464,7 +408,6 @@
 '456': Load
 '457': You are currently not in the leaderboard
 '458': character
-'459': View past genshin event stats
 '460': Calculate materials needed for upgrading a character
 '461': sync
 '462': sync with in-game data (autofill the levels)
@@ -822,3 +765,4 @@
   • The code selector gathers currently available Genshin codes from [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes), select to redeem
   • The code input method allows you to enter up to 3 codes (at least 1) manually
 '778': Code redemption service is currently busy, please try again later
+'779': See [Shenhe's documentation](https://shenhe.gitbook.io/shenhe/wish-history/about-wish-history) for more information

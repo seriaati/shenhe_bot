@@ -14,7 +14,7 @@ from dev.enum import NotifType
 from dev.exceptions import AccountNotFound
 from dev.models import BotModel, DefaultEmbed, ErrorEmbed
 from utils import log
-from utils.general import get_dt_now
+from utils.general import get_dc_user, get_dt_now
 
 
 class RealtimeNotes:
@@ -125,7 +125,7 @@ class RealtimeNotes:
 
             # Fetch user account details
             try:
-                user = await self.bot.db.users.get(notif_user.user_id, notif_user.uid)
+                user = await self.bot.db.users.get(notif_user.user_id)
             except AccountNotFound:
                 continue
 
@@ -139,27 +139,24 @@ class RealtimeNotes:
                 raise AssertionError("Invalid notification type")
 
             # Fetch user's language preference
-            lang = await user.fetch_lang(self.bot.pool)
-
-            # Set default lang to en-US if no preference found
-            if lang is None:
-                lang = "en-US"
+            lang = (await user.settings).lang or "en-US"
 
             # Fetch Discord user object associated with the user account
-            discord_user = await user.fetch_discord_user(self.bot)
+            dc_user = await get_dc_user(self.bot, user.user_id)
 
             try:
                 # Retrieve the latest notes from Genshin Impact API
                 if user.uid in self._notes_dict:
                     notes = self._notes_dict[user.uid]
                 else:
-                    notes = await user.client.get_genshin_notes(user.uid)
+                    client = await user.client
+                    notes = await client.get_genshin_notes(user.uid)
             except Exception as e:  # skipcq: PYL-W0703
                 # Disable notifications and create error embed if API request fails
                 await db.update(user.user_id, user.uid, toggle=False, current=0)
                 embed = await self._create_error_embed(notif_user.type, lang, e)
                 if embed:
-                    await self._send_notif(discord_user, embed, notif_user.type)
+                    await self._send_notif(dc_user, embed, notif_user.type)
             else:
                 # Cache the latest notes
                 if user.uid not in self._notes_dict:
@@ -177,9 +174,9 @@ class RealtimeNotes:
 
                     # Send the notification and update the notification counter
                     embed = self._create_notif_embed(
-                        notif_user.type, notif_user.uid, notes, discord_user, lang
+                        notif_user.type, notif_user.uid, notes, dc_user, lang
                     )
-                    await self._send_notif(discord_user, embed, notif_user.type)
+                    await self._send_notif(dc_user, embed, notif_user.type)
                     await db.update(
                         user.user_id,
                         user.uid,

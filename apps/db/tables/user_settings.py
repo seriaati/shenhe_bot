@@ -13,7 +13,6 @@ class Settings(Enum):
     NOTIFICATION = "notification"
     AUTO_REDEEM = "auto_redeem"
     PROFILE_VERSION = "profile_version"
-    DEFAULT_GAME = "default_game"
 
 
 class UserSettings(BaseModel):
@@ -31,8 +30,6 @@ class UserSettings(BaseModel):
     """Auto redeem toggle"""
     profile_version: int = Field(default=2, alias="profile_ver")
     """Profile card version"""
-    default_game: GameType = Field(default="genshin")
-    """Default game"""
 
 
 class UserSettingsTable:
@@ -61,8 +58,16 @@ class UserSettingsTable:
         )
         if val is None and settings is not Settings.LANG:
             await self.insert(user_id)
-            val = await self.get(user_id, settings)
+            return await self.get(user_id, settings)
 
-        if settings is Settings.DEFAULT_GAME:
-            return GameType(val)
         return val
+
+    async def get_all(self, user_id: int) -> UserSettings:
+        """Get all user settings"""
+        settings = await self.pool.fetchrow(
+            "SELECT * FROM user_settings WHERE user_id = $1", user_id
+        )
+        if settings is None:
+            await self.insert(user_id)
+            return await self.get_all(user_id)
+        return UserSettings(**settings)

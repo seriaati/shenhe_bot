@@ -6,11 +6,7 @@ from discord import ui
 import dev.asset as asset
 import dev.config as config
 from ambr import AmbrTopAPI
-from apps.db.main import Database
-from apps.db.tables.notes_notif import NotifTable
-from apps.db.tables.talent_notif import WTNotifTable
-from apps.db.tables.user_account import UserAccount
-from apps.db.tables.user_settings import Settings
+from apps.db.tables.hoyo_account import HoyoAccount
 from apps.text_map import text_map, to_ambr_top
 from data.game.elements import convert_elements, elements
 from data.game.weapon_types import get_weapon_type_emoji
@@ -25,14 +21,14 @@ class View(BaseView):
     def __init__(self) -> None:
         super().__init__(timeout=config.mid_timeout)
         self.lang: str
-        self.user: UserAccount
+        self.user: HoyoAccount
         self.notif_type: NotifType
         self.uid: int
         self.author: Union[discord.User, discord.Member]
 
     async def _init(self, i: Inter) -> None:
         """Initialize view attributes"""
-        lang = await i.client.db.settings.get(i.user.id, Settings.LANG)
+        lang = (await self.user.settings).lang
         self.lang = lang or str(i.locale)
         self.user = await i.client.db.users.get(i.user.id)
         self.uid = self.user.uid

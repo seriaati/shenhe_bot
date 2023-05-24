@@ -8,19 +8,15 @@ from discord.ext import commands
 
 import ambr
 import dev.models as models
+from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
-from apps.genshin import check_account, check_wish_history, get_uid
 from apps.text_map import text_map, to_ambr_top
-from apps.wish.models import RecentWish, WishData, WishHistory, WishInfo, WishItem
-from dev.base_ui import capture_exception
+from apps.wish.models import (RecentWish, WishData, WishHistory, WishInfo,
+                              WishItem)
+from dev.exceptions import WishFileImportError
 from ui.wish import set_auth_key, wish_filter
-from ui.wish.set_auth_key import wish_import_command
-from utils import (
-    get_user_lang,
-    get_user_theme,
-    get_wish_history_embeds,
-    get_wish_info_embed,
-)
+from utils import (get_user_lang, get_user_theme, get_wish_history_embeds,
+                   get_wish_info_embed)
 from utils.paginators import WishHistoryPaginator, WishOverviewPaginator
 
 
@@ -29,15 +25,14 @@ class WishCog(commands.GroupCog, name="wish"):
         self.bot: models.BotModel = bot
         super().__init__()
 
-    @check_account()
     @app_commands.command(
         name="import", description=_("import your genshin wish history", hash=474)
     )
     async def wish_import(self, inter: discord.Interaction) -> None:
         i: models.Inter = inter  # type: ignore
-        await wish_import_command(i)
+        view = set_auth_key.View()
+        await view.start(i)
 
-    @check_account()
     @app_commands.command(
         name="file-import",
         description=_(
@@ -49,10 +44,14 @@ class WishCog(commands.GroupCog, name="wish"):
         self, inter: discord.Interaction, file: discord.Attachment
     ) -> None:
         i: models.Inter = inter  # type: ignore
-        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
         try:
             rows = yaml.safe_load((await file.read()).decode("utf-8"))
-            wish_history = [WishHistory.from_row(row) for row in rows]  # type: ignore
+            if rows is None:
+                raise WishFileImportError
+
+            wish_history = [WishHistory(**row) for row in rows]
+
             character_banner = 0
             weapon_banner = 0
             permanent_banner = 0
@@ -77,29 +76,21 @@ class WishCog(commands.GroupCog, name="wish"):
                 permanent_banner_num=permanent_banner,
                 novice_banner_num=novice_banner,
             )
-            embed = await get_wish_info_embed(i, str(locale), wish_info)
-            view = set_auth_key.View(locale, True, True)
+
+            uid = await i.client.db.users.get_uid(i.user.id)
+            linked = await i.client.db.wish.check_uid(uid)
+            embed = get_wish_info_embed(i.user, lang, wish_info, uid, linked)
+            view = set_auth_key.View()
+            await view.init(i)
             view.clear_items()
-            view.add_item(
-                set_auth_key.ConfirmWishimport(
-                    locale, wish_history, from_text_file=True
-                )
-            )
-            view.add_item(set_auth_key.CancelWishimport(locale))
+            view.add_item(set_auth_key.ConfirmWishimport(lang, wish_history))  # type: ignore
+            view.add_item(set_auth_key.CancelWishimport(lang))
             view.author = i.user
             await i.response.send_message(embed=embed, view=view)
             view.message = await i.original_response()
-        except Exception as e:  # skipcq: PYL-W0703
-            if not isinstance(e, UnicodeDecodeError):
-                capture_exception(e)
-            await i.response.send_message(
-                embed=models.ErrorEmbed(
-                    description=text_map.get(567, locale)
-                ).set_title(135, locale, i.user),
-                ephemeral=True,
-            )
+        except Exception:  # skipcq: PYL-W0703
+            raise WishFileImportError
 
-    @check_wish_history()
     @app_commands.command(name="history", description=_("View wish history", hash=478))
     @app_commands.rename(member=_("user", hash=415))
     @app_commands.describe(member=_("Check other user's data", hash=416))
@@ -107,7 +98,7 @@ class WishCog(commands.GroupCog, name="wish"):
         self, inter: discord.Interaction, member: Optional[discord.User] = None
     ):
         i: models.Inter = inter  # type: ignore
-        locale = (await get_user_lang(i.user.id, self.bot.pool)) or i.locale
+        locale = (await get_user_lang(i.user.id, self.bot.pool)) or str(i.locale)
         embeds = await get_wish_history_embeds(i, "", member)
 
         await WishHistoryPaginator(
@@ -119,7 +110,6 @@ class WishCog(commands.GroupCog, name="wish"):
             ],
         ).start()
 
-    @check_wish_history()
     @app_commands.command(
         name="overview", description=_("View you genshin wish overview", hash=484)
     )
@@ -138,7 +128,7 @@ class WishCog(commands.GroupCog, name="wish"):
         client = ambr.AmbrTopAPI(self.bot.session, to_ambr_top(locale))
 
         wishes: List[WishItem] = []
-        uid = await get_uid(member.id, self.bot.pool)
+        uid = await i.client.db.users.get_uid(member.id)
         rows = await self.bot.pool.fetch(
             "SELECT wish_name, wish_banner_type, wish_rarity, wish_time FROM wish_history WHERE user_id = $1 AND uid = $2 ORDER BY wish_id DESC",
             member.id,

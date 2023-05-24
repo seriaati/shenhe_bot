@@ -4,7 +4,7 @@ import discord
 from discord import ui
 
 import dev.config as config
-from apps.genshin import edit_enka_cache, get_uid
+from apps.genshin import edit_enka_cache
 from apps.text_map import text_map
 from dev.base_ui import BaseView, EnkaView
 from dev.exceptions import UIDNotFound
@@ -155,9 +155,7 @@ class CacheSelect(ui.Select):
         self.locale = locale
 
     async def callback(self, i: Inter):
-        uid = await get_uid(i.user.id, i.client.pool)
-        if uid is None:
-            raise UIDNotFound
+        uid = await i.client.db.users.get_uid(i.user.id)
         await edit_enka_cache(
             uid, [int(v) for v in self.values], i.client.pool, en=True
         )

@@ -18,15 +18,14 @@ import dev.models as models
 from ambr import AmbrTopAPI, Character, Domain, Material, Weapon
 from ambr.models import CharacterDetail
 from apps.db.json import read_json, write_json
+from apps.db.tables.hoyo_account import HoyoAccount
 from apps.enka.api_docs import get_character_skill_order
-from apps.text_map import cond_text, text_map, to_ambr_top, to_genshin_py
+from apps.text_map import cond_text, text_map, to_ambr_top
 from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
-from dev.exceptions import AccountNotFound
 
-from .db import get_user_lang
 from .general import get_dt_now
 from .text_map import get_city_name, translate_main_stat
 
@@ -203,105 +202,6 @@ def get_uid_tz(uid: Optional[int]) -> int:
     return region_map.get(str_uid[0], 0)
 
 
-async def get_shenhe_account(
-    user_id: int,
-    bot: models.BotModel,
-    *,
-    locale: Optional[discord.Locale | str] = None,
-    custom_cookie: Optional[Dict[str, Any]] = None,
-    custom_uid: Optional[int] = None,
-) -> models.ShenheAccount:
-    discord_user = bot.get_user(user_id) or await bot.fetch_user(user_id)
-
-    if custom_cookie and not custom_uid:
-        raise AssertionError
-
-    if not custom_cookie:
-        if custom_uid:
-            user_data = await bot.pool.fetchrow(
-                """
-                SELECT ltuid, ltoken, cookie_token, uid, china, daily_checkin
-                FROM user_accounts
-                WHERE user_id = $1 AND uid = $2
-                """,
-                user_id,
-                custom_uid,
-            )
-        else:
-            user_data = await bot.pool.fetchrow(
-                """
-                SELECT ltuid, ltoken, cookie_token, uid, china, daily_checkin
-                FROM user_accounts
-                WHERE user_id = $1
-                AND current = true
-                """,
-                user_id,
-            )
-    else:
-        user_data = await bot.pool.fetchrow(
-            """
-            SELECT china, daily_checkin
-            FROM user_accounts
-            WHERE user_id = $1
-            AND uid = $2
-            """,
-            user_id,
-            custom_uid,
-        )
-
-    if not user_data:
-        raise AccountNotFound
-
-    if custom_cookie:
-        client = genshin.Client()
-        client.set_cookies(
-            ltuid=custom_cookie["ltuid"],
-            ltoken=custom_cookie["ltoken"],
-            account_id=custom_cookie["ltuid"],
-            cookie_token=custom_cookie["cookie_token"],
-        )
-    else:
-        if user_data["ltuid"]:
-            client = genshin.Client()
-            client.set_cookies(
-                ltuid=user_data["ltuid"],
-                ltoken=user_data["ltoken"],
-                account_id=user_data["ltuid"],
-                cookie_token=user_data["cookie_token"],
-            )
-        else:
-            client = bot.genshin_client
-
-    final_locale = locale or (await get_user_lang(user_id, bot.pool))
-
-    client.lang = to_genshin_py(str(final_locale))
-    client.default_game = genshin.Game.GENSHIN
-    client.uid = custom_uid or user_data["uid"]
-
-    if user_data["china"]:
-        client.lang = "zh-cn"
-        client.region = genshin.Region.CHINESE
-    else:
-        client.region = genshin.Region.OVERSEAS
-
-    user_obj = models.ShenheAccount(
-        client=client,
-        uid=client.uid,
-        discord_user=discord_user,
-        user_locale=str(final_locale),
-        china=user_data["china"],
-        daily_checkin=user_data["daily_checkin"],
-    )
-    return user_obj
-
-
-async def get_uid(user_id: int, pool: asyncpg.Pool) -> Optional[int]:
-    return await pool.fetchval(
-        "SELECT uid FROM user_accounts WHERE user_id = $1 AND current = true",
-        user_id,
-    )
-
-
 async def get_farm_data(
     locale: Locale | str, session: aiohttp.ClientSession, weekday: int
 ) -> List[models.FarmData]:
@@ -472,19 +372,15 @@ def get_abyss_season_date_range(season: int) -> str:
 
 
 def get_account_select_options(
-    accounts: List[asyncpg.Record], locale: discord.Locale | str
+    accounts: List[HoyoAccount],
 ) -> List[discord.SelectOption]:
-    options = []
+    options: List[discord.SelectOption] = []
     for account in accounts:
-        emoji = asset.cookie_emoji if account["ltuid"] else asset.uid_emoji
-        nickname = f"{account['nickname']} | " if account["nickname"] else ""
-        if len(nickname) > 15:
-            nickname = nickname[:15] + "..."
         options.append(
             discord.SelectOption(
-                label=f"{nickname}{account['uid']} | {text_map.get(get_uid_region_hash(account['uid']), locale)}",
-                emoji=emoji,
-                value=str(account["uid"]),
+                label=str(account.uid),
+                description=account.nickname[:100] if account.nickname else None,
+                value=str(account.uid),
             )
         )
     return options

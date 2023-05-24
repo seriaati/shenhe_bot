@@ -7,13 +7,12 @@ import apps.db.custom_image as image
 import dev.asset as asset
 import dev.config as config
 from ambr import AmbrTopAPI
-from apps.genshin import get_character_emoji
 from apps.text_map import text_map, to_ambr_top
 from data.game.elements import get_element_emoji, get_element_list
 from dev.base_ui import BaseModal, BaseView, EnkaView
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
 from ui.genshin import enka_damage_calc
-from utils import divide_chunks
+from utils import divide_chunks, get_character_emoji
 
 
 class View(BaseView):

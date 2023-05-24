@@ -127,6 +127,12 @@ def get_error_handle_embed(
     elif isinstance(e, exceptions.InvalidInput):
         embed.set_author(name=text_map.get(190, locale))
         embed.description = text_map.get(172, locale).format(a=e.a, b=e.b)
+    elif isinstance(e, exceptions.AbyssDataNotFound):
+        embed.set_author(name=text_map.get(76, locale))
+        embed.description = text_map.get(74, locale)
+    elif isinstance(e, exceptions.WishFileImportError):
+        embed.set_author(name=text_map.get(135, locale))
+        embed.description = text_map.get(567, locale)
     elif isinstance(e, genshin.errors.GenshinException):
         if isinstance(e, genshin.errors.DataNotPublic):
             embed.set_author(name=text_map.get(22, locale))
@@ -142,6 +148,10 @@ def get_error_handle_embed(
             embed.set_author(name=text_map.get(107, locale))
         elif isinstance(e, genshin.errors.RedemptionCooldown):
             embed.set_author(name=text_map.get(133, locale))
+        elif isinstance(e, genshin.errors.InvalidAuthkey):
+            embed.set_author(name=text_map.get(363, locale))
+        elif isinstance(e, genshin.errors.AuthkeyTimeout):
+            embed.set_author(name=text_map.get(702, locale))
         elif e.retcode == -10002:
             embed.set_author(name=text_map.get(772, locale))
         elif e.retcode == -10001:

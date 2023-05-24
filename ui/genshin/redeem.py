@@ -1,14 +1,14 @@
-from typing import Dict, List, Union
+from typing import List, Union
 
-import aiohttp
 import discord
 from discord import ui
 
-from apps.db.tables.user_account import UserAccount, convert_game_type
+from apps.db.tables.hoyo_account import HoyoAccount, convert_game_type
 from apps.db.tables.user_settings import Settings
 from apps.text_map import text_map
 from dev.asset import gift_open_outline, peko_yahoo
-from dev.base_ui import BaseGameSelector, BaseModal, BaseView, get_error_handle_embed
+from dev.base_ui import (BaseGameSelector, BaseModal, BaseView,
+                         get_error_handle_embed)
 from dev.config import mid_timeout
 from dev.enum import GameType
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
@@ -20,13 +20,13 @@ class View(BaseView):
 
         self.lang: str
         self.game: GameType
-        self.user: UserAccount
+        self.user: HoyoAccount
 
     async def init(self, i: Inter):
-        lang = await i.client.db.settings.get(i.user.id, Settings.LANG)
-        self.lang = lang or str(i.locale)
-        self.game = await i.client.db.settings.get(i.user.id, Settings.DEFAULT_GAME)
         self.user = await i.client.db.users.get(i.user.id)
+        settings = await self.user.settings
+        self.lang = settings.lang or str(i.locale)
+        self.game = self.user.game
 
     async def start(self, i: Inter):
         await i.response.defer()
@@ -56,8 +56,9 @@ class View(BaseView):
     async def redeem_code(
         self, code: str, user: Union[discord.User, discord.Member]
     ) -> discord.Embed:
-        client = self.user.client
-        uid = self.user.uid if self.game is GameType.GENSHIN else self.user.hsr_uid
+        client = await self.user.client
+        uid = self.user.uid
+        
         try:
             await client.redeem_code(code, uid, game=convert_game_type(self.game))
         except Exception as e:  # skipcq: PYL-W0703
@@ -168,7 +169,7 @@ class GameSelector(BaseGameSelector):
         await self.loading(i)
         self.view.game = GameType(self.values[0])
         if self.values[0] == GameType.GENSHIN.value:
-            codes = await self.view.get_codes(i.client.session)
+            codes = await i.client.db.codes.get_all()
         else:
             codes = []
         self.view.add_components(codes)

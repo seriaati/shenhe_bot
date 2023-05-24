@@ -15,18 +15,13 @@ import data.game.elements as game_elements
 import dev.asset as asset
 import dev.config as config
 from apps.db.json import read_json
+from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.text_map import text_map
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, DrawInput, ErrorEmbed, Inter
-from utils import (
-    get_dt_now,
-    get_shenhe_account,
-    get_uid,
-    get_user_theme,
-    image_gen_transition,
-    update_talents_json,
-)
+from utils import (get_dt_now, get_user_theme, image_gen_transition,
+                   update_talents_json)
 
 
 class View(BaseView):
@@ -53,7 +48,7 @@ class View(BaseView):
 
     async def start(self, i: Inter) -> None:
         self.author = i.user
-        fp = await self.draw_fp(i.client.session, i.client.loop, i.client.pool)
+        fp = await self.draw_fp(i)
         fp.seek(0)
         for child in self.children:
             if isinstance(child, (SortBy, FilterBy)):
@@ -88,21 +83,19 @@ class View(BaseView):
 
     async def draw_fp(
         self,
-        session: aiohttp.ClientSession,
-        loop: asyncio.AbstractEventLoop,
-        pool: asyncpg.Pool,
+        i: Inter,
     ) -> io.BytesIO:
         draw_input = DrawInput(
-            loop=loop,
-            session=session,
+            loop=i.client.loop,
+            session=i.client.session,
             locale=self.locale,
-            dark_mode=await get_user_theme(self.author.id, pool),
+            dark_mode=await i.client.db.settings.get(i.user.id, Settings.DARK_MODE),
         )
-        uid = await get_uid(self.member.id, pool)
-        talents = await read_json(pool, f"talents/{uid}.json")
+        uid = await i.client.db.users.get_uid(self.member.id)
+        talents = await read_json(i.client.pool, f"talents/{uid}.json")
 
         fp = await main_funcs.character_summary_card(
-            draw_input, self.character_copy, talents or {}, pool
+            draw_input, self.character_copy, talents or {}, i.client.pool
         )
         return fp
 
@@ -224,7 +217,7 @@ class UpdateTalentsJson(ui.Button):
             view=None,
         )
 
-        acc = await get_shenhe_account(i.user.id, i.client)
+        acc = await i.client.db.users.get(i.user.id)
         talents = await read_json(i.client.pool, f"talents/{acc.uid}.json")
         if (
             talents
@@ -239,7 +232,11 @@ class UpdateTalentsJson(ui.Button):
                 )
             )
         await update_talents_json(
-            self.view.characters, acc.client, i.client.pool, acc.uid, i.client.session
+            self.view.characters,
+            await acc.client,
+            i.client.pool,
+            acc.uid,
+            i.client.session,
         )
         await i.edit_original_response(
             embed=DefaultEmbed(description=text_map.get(763, locale)).set_title(

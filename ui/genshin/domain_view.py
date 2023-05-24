@@ -11,15 +11,9 @@ import dev.config as config
 from apps.draw import main_funcs
 from apps.text_map import text_map
 from dev.base_ui import BaseView
-from dev.models import DefaultEmbed, DrawInput
-from utils import (
-    get_dt_now,
-    get_farm_data,
-    get_uid,
-    get_uid_tz,
-    get_user_lang,
-    get_user_theme,
-)
+from dev.models import DefaultEmbed, DrawInput, Inter
+from utils import (get_dt_now, get_farm_data, get_uid_tz, get_user_lang,
+                   get_user_theme)
 
 
 class View(BaseView):
@@ -43,22 +37,22 @@ class WeekDaySelect(ui.Select):
         self.locale = locale
         super().__init__(options=options, placeholder=text_map.get(583, locale), row=4)
 
-    async def callback(self, i: discord.Interaction):
+    async def callback(self, i: Inter):
         await return_farm_interaction(i, int(self.values[0]))
 
 
 async def return_farm_interaction(
-    i: discord.Interaction, weekday: Optional[int] = None
+    i: Inter, weekday: Optional[int] = None
 ):
     await i.response.defer()
 
-    pool: asyncpg.pool.Pool = i.client.pool  # type: ignore
-    session: aiohttp.ClientSession = i.client.session  # type: ignore
+    pool: asyncpg.pool.Pool = i.client.pool
+    session: aiohttp.ClientSession = i.client.session
 
     locale = await get_user_lang(i.user.id, pool) or i.locale
 
     if weekday is None:
-        uid = await get_uid(i.user.id, pool)
+        uid = await i.client.db.users.get_uid(i.user.id)
         now = get_dt_now() + timedelta(hours=get_uid_tz(uid))
         weekday = now.weekday()
     if weekday == 6:

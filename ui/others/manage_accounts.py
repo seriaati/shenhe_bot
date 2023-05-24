@@ -13,7 +13,8 @@ from apps.text_map import text_map, to_hutao_login_lang
 from cogs.login import register_user
 from dev.base_ui import BaseModal, BaseView
 from dev.models import BotModel, DefaultEmbed, Inter
-from utils import get_account_select_options, get_uid_region_hash, get_user_lang, log
+from utils import (get_account_select_options, get_uid_region_hash,
+                   get_user_lang, log)
 
 
 class View(BaseView):
@@ -334,7 +335,7 @@ async def return_accounts(i: Inter):
         else:
             account_str += f"• {nickname}{account[0]} | {text_map.get(get_uid_region_hash(account[0]), locale)} | {text_map.get(569, locale)}: {emoji}\n"
 
-    select_options = get_account_select_options(accounts, locale)
+    select_options = get_account_select_options(accounts)
     if not found_current:
         await i.client.pool.execute(
             "UPDATE user_accounts SET current = true WHERE user_id = $1 AND uid = $2",

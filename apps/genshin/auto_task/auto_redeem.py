@@ -5,12 +5,12 @@ import discord
 import genshin
 import sentry_sdk
 
-from apps.db.tables.user_account import UserAccount
-from apps.db.tables.user_settings import Settings
+from apps.db.tables.hoyo_account import HoyoAccount
 from apps.text_map import text_map
 from dev.base_ui import get_error_handle_embed
 from dev.models import BotModel, DefaultEmbed
 from utils import log
+from utils.general import get_dc_user
 
 
 class AutoRedeem:
@@ -38,7 +38,7 @@ class AutoRedeem:
                 return
 
             # create a queue of users with auto-redeem enabled
-            queue: asyncio.Queue[Optional[UserAccount]] = asyncio.Queue()
+            queue: asyncio.Queue[Optional[HoyoAccount]] = asyncio.Queue()
             tasks = [
                 asyncio.create_task(self._make_queue(queue)),
                 asyncio.create_task(self._process_queue(queue, codes)),
@@ -52,34 +52,30 @@ class AutoRedeem:
         finally:
             log.info("[AutoRedeem] Finished")
 
-    async def _make_queue(self, queue: asyncio.Queue[Optional[UserAccount]]) -> None:
+    async def _make_queue(self, queue: asyncio.Queue[Optional[HoyoAccount]]) -> None:
         """
         Adds all users with auto-redeem enabled to the queue.
 
         Args:
-            queue (asyncio.Queue[Optional[UserAccount]]): The queue of users.
+            queue (asyncio.Queue[Optional[HoyoAccount]]): The queue of users.
         """
         users = await self.bot.pool.fetch(
             "SELECT user_id FROM user_settings WHERE auto_redeem = true"
         )
         for user in users:
             account = await self.bot.db.users.get(user["user_id"])
-            auto_redeem = await self.bot.db.settings.get(
-                account.user_id, Settings.AUTO_REDEEM
-            )
-            if auto_redeem:
-                await queue.put(account)
-                self._total += 1
+            await queue.put(account)
+            self._total += 1
         await queue.put(None)
 
     async def _process_queue(
-        self, queue: asyncio.Queue[Optional[UserAccount]], codes: List[str]
+        self, queue: asyncio.Queue[Optional[HoyoAccount]], codes: List[str]
     ) -> None:
         """
         Processes the queue of users and redeems codes for each user.
 
         Args:
-            queue (asyncio.Queue[Optional[UserAccount]]): The queue of users.
+            queue (asyncio.Queue[Optional[HoyoAccount]]): The queue of users.
             codes (List[str]): The list of codes to redeem.
         """
         while True:
@@ -88,27 +84,25 @@ class AutoRedeem:
                 break
 
             try:
-                discord_user = self.bot.get_user(
-                    user.user_id
-                ) or await self.bot.fetch_user(user.user_id)
-                embeds = await self._redeem_codes(user, codes, discord_user)
+                dc_user = await get_dc_user(self.bot, user.user_id)
+                embeds = await self._redeem_codes(user, codes, dc_user)
             except Exception as e:  # skipcq: PYL-W0703
                 log.exception(f"[AutoRedeem] {e}")
                 sentry_sdk.capture_exception(e)
             else:
-                await self.notify_user(discord_user, embeds)
+                await self.notify_user(dc_user, embeds)
                 self._success += 1
             finally:
                 queue.task_done()
 
     async def _redeem_codes(
-        self, account: UserAccount, codes: List[str], discord_user: discord.User
+        self, account: HoyoAccount, codes: List[str], discord_user: discord.User
     ) -> List[discord.Embed]:
         """
         Redeems all codes for a given user account.
 
         Args:
-            account (UserAccount): The user account to redeem codes for.
+            account (HoyoAccount): The user account to redeem codes for.
             codes (List[str]): The list of codes to redeem.
             discord_user (discord.User): The Discord user to notify.
 
@@ -123,28 +117,28 @@ class AutoRedeem:
                 continue
 
             embed = await self._redeem_code(account, code, discord_user)
-            # await self.bot.db.redeemed.insert(account.uid, code)
+            await self.bot.db.redeemed.insert(account.uid, code)
             embeds.append(embed)
             await asyncio.sleep(10.0)
 
         return embeds
 
     async def _redeem_code(
-        self, account: UserAccount, code: str, user: discord.User
+        self, account: HoyoAccount, code: str, user: discord.User
     ) -> discord.Embed:
         """
         Redeems a single code for a given user account.
 
         Args:
-            account (UserAccount): The user account to redeem the code for.
+            account (HoyoAccount): The user account to redeem the code for.
             code (str): The code to redeem.
             user (discord.User): The Discord user to notify.
 
         Returns:
             discord.Embed: The embed to send to the user.
         """
-        client = account.client
-        lang = await self.bot.db.settings.get(account.user_id, Settings.LANG)
+        client = await account.client
+        lang = (await account.settings).lang or "en-US"
         try:
             await client.redeem_code(code, account.uid, game=genshin.Game.GENSHIN)
         except Exception as e:  # skipcq: PYL-W0703

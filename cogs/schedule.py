@@ -1,7 +1,6 @@
 import asyncio
 import json
-from datetime import timedelta
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 import aiofiles
 import discord
@@ -13,21 +12,10 @@ from dotenv import load_dotenv
 import ambr
 import apps.genshin as genshin_app
 import dev.models as models
-from apps.draw import main_funcs
 from apps.genshin import auto_task
-from apps.text_map import text_map, to_ambr_top
 from dev.base_ui import capture_exception
-from utils import (
-    convert_dict_to_zipped_json,
-    dm_embed,
-    fetch_cards,
-    get_discord_user_from_id,
-    get_dt_now,
-    get_user_lang,
-    get_user_theme,
-    log,
-)
-from utils.text_map import get_city_name
+from utils import convert_dict_to_zipped_json, fetch_cards, get_dt_now, log
+from utils.general import get_dc_user
 
 load_dotenv()
 
@@ -110,13 +98,13 @@ class Schedule(commands.Cog):
         result["size"] = 0
         result["data"] = []
 
-        accounts = await self.bot.db.users.get_all_with_cookie()
+        accounts = await self.bot.db.users.get_all()
 
         for account in accounts:
             if str(account.uid)[0] in (1, 2, 5):
                 continue
 
-            client = account.client
+            client = await account.client
             client.lang = "en-us"
 
             try:
@@ -131,7 +119,7 @@ class Schedule(commands.Cog):
                 genshin_app.add_abyss_entry(result, account, abyss, list(characters))
         log.info("[Schedule] Generated abyss.json")
 
-        user = await get_discord_user_from_id(self.bot, 630235350526328844)
+        user = await get_dc_user(self.bot, 630235350526328844)
         fp = convert_dict_to_zipped_json(result)
         await user.send(file=discord.File(fp, "abyss_json.zip"))
         log.info("[Schedule] Saved abyss.json")

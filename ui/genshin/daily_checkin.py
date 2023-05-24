@@ -7,8 +7,7 @@ from discord.errors import InteractionResponded
 
 import dev.asset as asset
 import dev.config as config
-from apps.db.tables.user_account import UserAccount, convert_game_type
-from apps.db.tables.user_settings import Settings
+from apps.db.tables.hoyo_account import HoyoAccount, convert_game_type
 from apps.text_map import text_map
 from dev.base_ui import BaseGameSelector, BaseView
 from dev.enum import GameType
@@ -21,7 +20,7 @@ class View(BaseView):
         super().__init__(timeout=config.mid_timeout)
         self.locale: Union[Locale, str]
         self.uid: int
-        self.user: UserAccount
+        self.user: HoyoAccount
         self.daily_checkin: bool
         self.game: GameType
 
@@ -32,10 +31,10 @@ class View(BaseView):
             pass
 
         self.user = await i.client.db.users.get(i.user.id)
-        self.game = await i.client.db.settings.get(i.user.id, Settings.DEFAULT_GAME)
+        self.game = self.user.game
         self.recognize_daily_checkin()
 
-        self.locale = await self.user.fetch_lang(i.client.pool) or i.locale
+        self.lang = (await self.user.settings).lang
 
         self.add_items()
         await self.update(i)
@@ -49,7 +48,7 @@ class View(BaseView):
         elif self.game is GameType.HSR:
             self.daily_checkin = self.user.hsr_daily
         else:
-            self.daily_checkin = self.user.daily_checkin
+            self.daily_checkin = self.user.genshin_daily
 
     def add_items(self) -> None:
         self.clear_items()
@@ -61,8 +60,9 @@ class View(BaseView):
     async def update(self, i: Inter) -> None:
         now = get_dt_now()
         day_in_month = calendar.monthrange(now.year, now.month)[1]
-
-        _, claimed_rewards = await self.user.client.get_reward_info(
+        
+        client = await self.user.client
+        _, claimed_rewards = await client.get_reward_info(
             game=convert_game_type(self.game)
         )
 
@@ -76,7 +76,8 @@ class View(BaseView):
         embed.set_footer(text=text_map.get(769, self.locale))
 
         values = []
-        async for reward in self.user.client.claimed_rewards(
+        client = await self.user.client
+        async for reward in client.claimed_rewards(
             limit=claimed_rewards, game=convert_game_type(self.game)
         ):
             values.append(
@@ -98,7 +99,7 @@ class View(BaseView):
         elif self.game is GameType.HONKAI:
             kwargs["honkai_daily"] = toggle
         elif self.game is GameType.GENSHIN:
-            kwargs["daily_checkin"] = toggle
+            kwargs["genshin_daily"] = toggle
 
         return kwargs
 
@@ -111,7 +112,8 @@ class ClaimReward(ui.Button):
     async def callback(self, i: Inter):
         await i.response.defer()
 
-        reward = await self.view.user.client.claim_daily_reward(
+        client = await self.view.user.client
+        reward = await client.claim_daily_reward(
             game=convert_game_type(self.view.game)
         )
         reward_str = f"{reward.amount}x {reward.name}"

@@ -24,11 +24,8 @@ from apps.db.main import Database
 from apps.genshin import launch_browsers, launch_debug_browser
 from apps.genshin_data.text_maps import load_text_maps
 from apps.text_map import text_map
-from dev.base_ui import (
-    get_error_handle_embed,
-    global_error_handler,
-    support_server_view,
-)
+from dev.base_ui import (get_error_handle_embed, global_error_handler,
+                         support_server_view)
 from dev.exceptions import FeatureDisabled, Maintenance
 from dev.models import BotModel
 from utils import log, sentry_logging
@@ -167,6 +164,9 @@ class Shenhe(BotModel):
         self.db = Database(self.pool)
 
     async def setup_hook(self) -> None:
+        # create database tables
+        await self.db.create()
+        
         # load jishaku
         await self.load_extension("jishaku")
 

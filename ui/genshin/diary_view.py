@@ -1,36 +1,135 @@
+import calendar
 import io
-from typing import List
+from datetime import timedelta
+from typing import Dict, List, Optional, Union
 
-from discord import File, Locale, Member, User, utils
-from discord.ui import Button, Select
+from dateutil.relativedelta import relativedelta
+from discord import File, Member, User, utils
+from discord.ui import Button
+from genshin.models import DiaryType
 from matplotlib import pyplot as plt
 
 import dev.asset as asset
 import dev.config as config
-from utils import divide_chunks, get_user_lang
-from apps.genshin import GenshinApp
+from apps.db.tables.hoyo_account import HoyoAccount
+from apps.db.tables.user_settings import Settings
+from apps.draw.main_funcs import draw_diary_card
 from apps.text_map import text_map
-from dev.base_ui import BaseView
-from dev.models import DefaultEmbed, ErrorEmbed, Inter
+from apps.text_map.convert_locale import to_genshin_py
+from dev.base_ui import BaseButton, BaseSelect, BaseView
+from dev.models import DefaultEmbed, DrawInput, Inter
+from utils import divide_chunks
+from utils.general import get_dt_now
+from utils.genshin import convert_ar_to_wl, convert_wl_to_mora, get_uid_tz
 
 
 class View(BaseView):
     def __init__(
         self,
-        author: User | Member,
-        member: User | Member,
-        genshin_app: GenshinApp,
-        locale: Locale | str,
     ):
         super().__init__(timeout=config.mid_timeout)
-        self.author = author
+        self.user: HoyoAccount
+        self.lang: str
+        self.dark_mode: bool
+        self.member: Union[Member, User]
+
+    async def _init(self, i: Inter):
+        self.user = await i.client.db.users.get(self.member.id)
+        settings = await self.user.settings
+        lang = settings.lang
+        self.lang = lang or str(i.locale)
+        self.dark_mode = settings.dark_mode
+
+    async def start(self, i: Inter, member: Union[Member, User]):
+        await i.response.defer()
         self.member = member
-        self.genshin_app = genshin_app
-        self.locale = locale
-        self.add_item(MonthSelect(text_map.get(424, locale), locale))
-        self.add_item(Primo(text_map.get(70, locale)))
-        self.add_item(Mora(text_map.get(72, locale)))
+        await self._init(i)
+        self._add_items()
+
+        fp = await self.get_diary(i)
+        fp.seek(0)
+
+        self.author = i.user
+        await i.followup.send(view=self, file=File(fp, "diary.jpeg"))
+        self.message = await i.original_response()
+
+    def _add_items(self):
+        self.clear_items()
+        self.add_item(MonthSelect(text_map.get(424, self.lang), self.lang))
+        self.add_item(Primo(text_map.get(70, self.lang)))
+        self.add_item(Mora(text_map.get(72, self.lang)))
         self.add_item(InfoButton())
+
+    async def get_diary(
+        self, i: Inter, month_offset: Optional[int] = None
+    ) -> io.BytesIO:
+        tz = get_uid_tz(self.user.uid)
+        now = get_dt_now() + timedelta(hours=tz)
+        if month_offset:
+            now += relativedelta(months=month_offset)
+        month = now.month
+
+        client = await self.user.client
+        diary = await client.get_diary(
+            self.user.uid, month=month, lang=to_genshin_py(self.lang)
+        )
+
+        fp = await draw_diary_card(
+            DrawInput(
+                loop=i.client.loop,
+                session=i.client.session,
+                locale=self.lang,
+                dark_mode=self.dark_mode,
+            ),
+            diary,
+            convert_wl_to_mora(convert_ar_to_wl(60)),
+            now.month,
+        )
+        return fp
+
+    async def get_logs(self, type: DiaryType):
+        now = get_dt_now()
+        now += timedelta(hours=get_uid_tz(self.user.uid))
+        primo_per_day: Dict[int, int] = {}
+
+        client = await self.user.client
+        async for action in client.diary_log(uid=self.user.uid, type=type):
+            if action.time.day not in primo_per_day:
+                primo_per_day[action.time.day] = 0
+            primo_per_day[action.time.day] += action.amount
+
+        before_adding: Dict[int, int] = primo_per_day.copy()
+        before_adding = dict(sorted(before_adding.items()))
+
+        for i in range(1, calendar.monthrange(now.year, now.month)[1] + 1):
+            if i not in primo_per_day:
+                primo_per_day[i] = 0
+
+        primo_per_day = dict(sorted(primo_per_day.items()))
+
+        embed = DefaultEmbed()
+        embed.set_image(url="attachment://diary.png")
+
+        now = utils.utcnow()
+        values: List[str] = []
+        for day, amount in before_adding.items():
+            values.append(
+                f"{utils.format_dt(now.replace(day=day), 'd')} / **{amount}**\n"
+            )
+        divided_values: List[List[str]] = list(divide_chunks(values, 15))
+        for d_v in divided_values:
+            embed.add_field(name="** **", value="".join(d_v), inline=True)
+
+        plt.plot(
+            primo_per_day.keys(),
+            primo_per_day.values(),
+            color="#617d9d",
+        )
+        plot = io.BytesIO()
+        plt.savefig(plot, bbox_inches=None, format="png")
+        plt.clf()
+
+        return plot, embed
 
 
 class InfoButton(Button):
@@ -40,107 +139,51 @@ class InfoButton(Button):
 
     async def callback(self, i: Inter):
         await i.response.send_message(
-            embed=DefaultEmbed(description=text_map.get(398, self.view.locale)),
+            embed=DefaultEmbed(description=text_map.get(398, self.view.lang)),
             ephemeral=True,
         )
 
 
-class MonthSelect(Select):
-    def __init__(self, placeholder: str, locale: Locale | str):
+class MonthSelect(BaseSelect):
+    def __init__(self, placeholder: str, lang: str):
         super().__init__(placeholder=placeholder)
-        self.add_option(label=text_map.get(425, locale), value="0")
-        self.add_option(label=text_map.get(506, locale), value="-1")
-        self.add_option(label=text_map.get(427, locale), value="-2")
+        self.add_option(label=text_map.get(425, lang), value="0")
+        self.add_option(label=text_map.get(506, lang), value="-1")
+        self.add_option(label=text_map.get(427, lang), value="-2")
 
         self.view: View
 
     async def callback(self, i: Inter):
-        user_locale = await get_user_lang(i.user.id, i.client.pool)
-        embed = DefaultEmbed()
-        embed.set_author(
-            name=text_map.get(644, i.locale, user_locale),
-            icon_url="https://i.imgur.com/V76M9Wa.gif",
-        )
-        await i.response.edit_message(embed=embed, attachments=[])
-        user_locale = await get_user_lang(i.user.id, i.client.pool)
-        r = await self.view.genshin_app.get_diary(
-            self.view.member.id, i.user.id, i.locale, int(self.values[0])
-        )
-        if isinstance(r.result, ErrorEmbed):
-            return await i.followup.send(embed=r.result)
-
-        result = r.result
-        fp = result.file
+        await self.loading(i)
+        fp = await self.view.get_diary(i, int(self.values[0]))
         fp.seek(0)
-        view = View(
-            i.user,
-            self.view.member,
-            self.view.genshin_app,
-            user_locale or i.locale,
-        )
-        view.message = await i.edit_original_response(
-            embed=result.embed,
-            view=view,
-            attachments=[File(fp, "diary.jpeg")],
-        )
+        await self.restore(i)
+        await i.edit_original_response(attachments=[File(fp, filename="diary.jpeg")])
 
 
-class Primo(Button):
+class Primo(BaseButton):
     def __init__(self, label: str):
         super().__init__(label=label, emoji=asset.primo_emoji)
         self.view: View
 
     async def callback(self, i: Inter):
-        if not self.label:
-            raise AssertionError
+        await self.loading(i)
+        plot, embed = await self.view.get_logs(DiaryType.PRIMOGEMS)
+        await self.restore(i)
 
-        await primo_mora_button_callback(i, self.view, True, self.label)
+        plot.seek(0)
+        await i.followup.send(embed=embed, file=File(plot, "diary.png"), ephemeral=True)
 
 
-class Mora(Button):
+class Mora(BaseButton):
     def __init__(self, label: str):
         super().__init__(label=label, emoji=asset.mora_emoji)
         self.view: View
 
     async def callback(self, i: Inter):
-        if not self.label:
-            raise AssertionError
+        await self.loading(i)
+        plot, embed = await self.view.get_logs(DiaryType.MORA)
+        await self.restore(i)
 
-        await primo_mora_button_callback(i, self.view, False, self.label)
-
-
-async def primo_mora_button_callback(i: Inter, view: View, is_primo: bool, label: str):
-    await i.response.defer(ephemeral=True)
-    result = await view.genshin_app.get_diary_logs(
-        view.member.id, i.user.id, is_primo, i.locale
-    )
-    if isinstance(result.result, ErrorEmbed):
-        await i.followup.send(embed=result.result, ephemeral=True)
-        return
-
-    log_result = result.result
-
-    embed = DefaultEmbed()
-    embed.title = label
-    embed.set_image(url="attachment://diary.png")
-
-    now = utils.utcnow()
-    values: List[str] = []
-    for day, amount in log_result.before_adding.items():
-        values.append(f"{utils.format_dt(now.replace(day=day), 'd')} / **{amount}**\n")
-    divided_values: List[List[str]] = list(divide_chunks(values, 15))
-    for d_v in divided_values:
-        embed.add_field(name="** **", value="".join(d_v), inline=True)
-
-    plt.plot(
-        log_result.primo_per_day.keys(),
-        log_result.primo_per_day.values(),
-        color="#617d9d",
-    )
-    plot = io.BytesIO()
-    plt.savefig(plot, bbox_inches=None, format="png")
-    plt.clf()
-
-    plot.seek(0)
-    file_ = File(plot, "diary.png")
-    await i.followup.send(embed=embed, ephemeral=True, file=file_)
+        plot.seek(0)
+        await i.followup.send(embed=embed, file=File(plot, "diary.png"), ephemeral=True)

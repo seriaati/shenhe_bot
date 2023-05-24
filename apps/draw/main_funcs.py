@@ -15,7 +15,8 @@ from ambr import Material
 from apps.db.json import read_json, write_json
 from apps.db.tables.abyss_board import AbyssBoardEntry
 from apps.wish.models import RecentWish, WishData
-from utils import calculate_time, compress_image_util, download_images, extract_urls
+from utils import (calculate_time, compress_image_util, download_images,
+                   extract_urls)
 
 
 @calculate_time
@@ -266,7 +267,7 @@ async def draw_abyss_floor_card(
 async def draw_diary_card(
     draw_input: models.DrawInput,
     diary_data: genshin.models.Diary,
-    user_data: genshin.models.PartialGenshinUserStats,
+    mora_count: int,
     month: int,
 ) -> io.BytesIO:
     colors = (
@@ -306,7 +307,7 @@ async def draw_diary_card(
     func = functools.partial(
         funcs.diary.card,
         diary_data,
-        user_data,
+        mora_count,
         draw_input.locale,
         month,
         draw_input.dark_mode,

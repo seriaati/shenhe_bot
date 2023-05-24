@@ -7,18 +7,12 @@ from PIL import Image, ImageDraw
 
 import dev.asset as asset
 from apps.text_map import text_map
-from utils import (
-    convert_ar_to_wl,
-    convert_wl_to_mora,
-    get_font,
-    get_month_name,
-    human_format,
-)
+from utils import get_font, get_month_name, human_format
 
 
 def card(
     diary: genshin.models.Diary,
-    user: genshin.models.PartialGenshinUserStats,
+    mora_count: int,
     locale: discord.Locale | str,
     month: int,
     dark_mode: bool,
@@ -38,7 +32,6 @@ def card(
         fill=fill,
     )
 
-    mora_count = convert_wl_to_mora(convert_ar_to_wl(user.info.level))
     data = [
         {diary.data.current_primogems: 663},
         {diary.data.current_primogems // 160: 664},

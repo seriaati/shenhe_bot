@@ -33,8 +33,6 @@ class Database:
     """Database"""
 
     def __init__(self, pool: asyncpg.Pool):
-        self.users = tables.UserAccountTable(pool)
-        """User account"""
         self.settings = tables.UserSettingsTable(pool)
         """User settings"""
         self.leaderboard = Leaderboard(pool)
@@ -44,3 +42,14 @@ class Database:
         self.codes = tables.GenshinCodes(pool)
         """Genshin codes"""
         self.redeemed = tables.RedeemedCodeTable(pool)
+        """Redeemed codes"""
+        self.cookies = tables.CookieTable(pool)
+        """Cookies"""
+        self.users = tables.HoyoAccountTable(pool, self.cookies, self.settings)
+        """Hoyoverse accounts"""
+        self.wish = tables.WishHistoryTable(pool)
+        """Wish history"""
+    
+    async def create(self):
+        await self.cookies.create()
+        await self.users.create()

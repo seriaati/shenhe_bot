@@ -63,7 +63,7 @@ async def get_enka_cache(
         uid,
     )
     if cache:
-        return pickle.loads(cache)
+        return pickle.loads(cache) # type: ignore
     return None
 
 

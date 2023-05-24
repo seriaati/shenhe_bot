@@ -331,3 +331,15 @@ class ConditionalResult:
 
 class Inter(discord.Interaction):
     client: BotModel
+
+@define
+class AbyssResult:
+    embed_title: str
+    abyss: genshin.models.SpiralAbyss
+    genshin_user: genshin.models.PartialGenshinUserStats
+    discord_user: discord.User | discord.Member | discord.ClientUser
+    overview_embed: discord.Embed
+    overview_file: io.BytesIO
+    abyss_floors: typing.List[genshin.models.Floor]
+    characters: typing.List[genshin.models.Character]
+    uid: int
