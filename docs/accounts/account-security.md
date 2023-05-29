@@ -1,23 +1,10 @@
-# Your account and Shenhe
-
-There are two major ways of linking your Genshin Impact account: UID and Cookie (Using script or email & password)
-
-### 🔢 UID
-
-This is the safest login method, the only thing you are giving to Shenhe is your UID in Genshin Impact, and there's nothing else. However, the commands you can use will be limited, this is why most players move on to the second login method: Cookie.\
-Noticeably, with the power of [Enka](https://enka.shinshin.moe/), you get to use many useful features with just your UID.
+# Account Security
 
 ### 🍪 Cookie
 
 #### What is a Cookie?
 
-When you first login into the Hoyolab website with your account, a text file called "Cookie" is created and stored on your computer.\
-Have you ever wondered why the next time you go to the Hoyolab website, you don't need to enter your email and password again?\
-It's because your browser uses the Cookie that was stored to identify you as the owner of the Hoyolab account.\
-The Cookie is an encrypted string of text that temporarily stores your account's information so that you don't have to log in with your email and password every single time.\
-This feature is convenient, but of course, it comes with security issues.\
-In other words, anyone that has access to your account's Cookie will be treated as the owner of your account.\
-And yes! Shenhe asks you to give her your Cookie because data like Spiral Abyss and real-time notes are only visible to the owner of the Hoyolab account, this is why you can't use these commands without linking your account to a Cookie.
+When you log in to Hoyolab, a "Cookie" file is created on your computer. This file allows you to access the website without entering your email and password again. The Cookie contains encrypted information about your account and serves as your identification. It saves you from logging in every time but poses security risks. If someone has your Cookie, they will be considered the owner of your account. Shenhe requires your Cookie to access exclusive features like Spiral Abyss and real-time notes. Therefore, linking your account to a Cookie is necessary.
 
 #### Can I hack your account?
 

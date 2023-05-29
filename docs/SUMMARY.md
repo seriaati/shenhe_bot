@@ -4,7 +4,7 @@
 
 ## accounts
 
-* [Your account and Shenhe](<README (1).md>)
+* [Account Security](accounts/account-security.md)
 
 ## wish history
 
