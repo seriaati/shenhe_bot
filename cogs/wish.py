@@ -11,15 +11,11 @@ import dev.models as models
 from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
-from apps.wish.models import RecentWish, WishData, WishHistory, WishInfo, WishItem
+from apps.wish.models import (RecentWish, WishData, WishHistory, WishInfo,
+                              WishItem)
 from dev.exceptions import WishFileImportError
 from ui.wish import set_auth_key, wish_filter
-from utils import (
-    get_user_lang,
-    get_user_theme,
-    get_wish_history_embeds,
-    get_wish_info_embed,
-)
+from utils import get_user_lang, get_wish_history_embeds, get_wish_info_embed
 from utils.paginators import WishHistoryPaginator, WishOverviewPaginator
 
 
@@ -243,7 +239,7 @@ class WishCog(commands.GroupCog, name="wish"):
             all_wish_data["301"].pity += all_wish_data["400"].pity
             all_wish_data["400"].pity += temp
 
-        dark_mode = await get_user_theme(i.user.id, self.bot.pool)
+        dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
         current_banner = list(all_wish_data.keys())[0]
         fp = await main_funcs.draw_wish_overview_card(
             models.DrawInput(

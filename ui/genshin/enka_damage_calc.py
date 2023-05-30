@@ -11,13 +11,14 @@ import dev.asset as asset
 import dev.config as config
 import yelan.damage_calculator as damage_calc
 from apps.db.custom_image import get_user_custom_image
+from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.genshin import get_browser
 from apps.text_map import text_map
 from dev.base_ui import BaseView, EnkaView
 from dev.exceptions import CardNotReady, NoCharacterFound
 from dev.models import DrawInput, ErrorEmbed, Inter
-from utils import divide_chunks, get_character_fanarts, get_profile_ver, get_user_theme
+from utils import divide_chunks, get_character_fanarts, get_profile_ver
 from yelan.data.GO_modes import HIT_MODE_TEXTS
 
 
@@ -151,7 +152,7 @@ async def go_back_callback(i: Inter, enka_view: EnkaView):
     if not character:
         raise AssertionError
 
-    dark_mode = await get_user_theme(i.user.id, i.client.pool)
+    dark_mode = dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
     version = await get_profile_ver(i.user.id, i.client.pool)
     try:
         custom_image = await get_user_custom_image(

@@ -5,11 +5,12 @@ from discord import ui
 
 import dev.config as config
 from ambr import AmbrTopAPI, Material, Monster
+from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
 from dev.base_ui import BaseView
 from dev.models import AbyssHalf, DefaultEmbed, DrawInput, Inter
-from utils import divide_chunks, get_user_theme, image_gen_transition
+from utils import divide_chunks, image_gen_transition
 
 
 class View(BaseView):
@@ -114,7 +115,7 @@ async def select_callback(i: Inter, view: View, value: str):
                 loop=i.client.loop,
                 session=i.client.session,
                 locale=view.locale,
-                dark_mode=await get_user_theme(i.user.id, i.client.pool),
+                dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE),
             ),
             materials,
             "",

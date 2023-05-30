@@ -7,13 +7,14 @@ from discord import ui, utils
 import dev.asset as asset
 import dev.config as config
 import dev.models as models
-from utils import divide_chunks, get_dt_now, get_user_theme
+from apps.db.tables.user_settings import Settings
 from apps.draw.main_funcs import draw_artifact_card
 from apps.text_map import text_map
 from dev.base_ui import EnkaView
 from dev.exceptions import FeatureDisabled
 from ui.genshin import enka_damage_calc, profile_settings
 from ui.others.settings import custom_image
+from utils import divide_chunks, get_dt_now
 from yelan.damage_calculator import return_current_status
 
 
@@ -198,7 +199,7 @@ class ShowArtifacts(ui.Button):
                 loop=i.client.loop,
                 session=i.client.session,
                 locale=self.view.locale,
-                dark_mode=await get_user_theme(i.user.id, i.client.pool),
+                dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
             ),
             [e for e in character.equipments if e.type is enka.EquipmentsType.ARTIFACT],
             character,

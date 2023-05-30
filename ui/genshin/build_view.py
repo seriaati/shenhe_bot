@@ -7,19 +7,14 @@ from discord import ui
 
 import dev.asset as asset
 import dev.config as config
+from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.text_map import cond_text, text_map, to_genshin_py
 from data.game.elements import get_element_emoji, get_element_list
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, DrawInput, Inter
-from utils import (
-    disable_view_items,
-    get_character_builds,
-    get_character_emoji,
-    get_user_lang,
-    get_user_theme,
-    image_gen_transition,
-)
+from utils import (disable_view_items, get_character_builds,
+                   get_character_emoji, get_user_lang, image_gen_transition)
 
 
 class View(BaseView):
@@ -128,7 +123,7 @@ class TeamButton(ui.Button):
 
     async def callback(self, i: Inter):
         locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
-        dark_mode = await get_user_theme(i.user.id, i.client.pool)
+        dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
 
         await image_gen_transition(i, self.view, locale)
 

@@ -4,12 +4,13 @@ import discord
 from discord import ui
 
 import dev.config as config
+from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.draw.main_funcs import draw_abyss_one_page
 from apps.text_map import text_map
 from dev.base_ui import BaseView
 from dev.models import AbyssResult, DefaultEmbed, DrawInput, Inter
-from utils import get_user_lang, get_user_theme
+from utils import get_user_lang
 
 
 class View(BaseView):
@@ -43,7 +44,7 @@ class FloorSelect(ui.Select):
 
     async def callback(self, i: Inter) -> Any:
         await i.response.defer()
-        dark_mode = await get_user_theme(i.user.id, i.client.pool)
+        dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
         locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
         if self.values[0] == "overview":
             fp = self.abyss_result.overview_file

@@ -8,11 +8,12 @@ from discord import ui
 
 import dev.asset as asset
 import dev.config as config
+from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.text_map import text_map
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, DrawInput, Inter
-from utils import get_dt_now, get_farm_data, get_uid_tz, get_user_lang, get_user_theme
+from utils import get_dt_now, get_farm_data, get_uid_tz, get_user_lang
 
 
 class View(BaseView):
@@ -74,7 +75,7 @@ async def return_farm_interaction(i: Inter, weekday: Optional[int] = None):
             loop=i.client.loop,
             session=session,
             locale=locale,
-            dark_mode=await get_user_theme(i.user.id, pool),
+            dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
         ),
         farm_data,
     )

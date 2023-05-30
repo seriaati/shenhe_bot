@@ -3,11 +3,11 @@ from typing import Any, Dict, List, Union
 
 import discord
 
+from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.text_map import text_map
 from apps.wish.models import RecentWish, WishData
 from dev.models import DrawInput, Inter
-from utils import get_user_theme
 
 from .paginator import GeneralPaginator, GeneralPaginatorView
 
@@ -51,7 +51,7 @@ class WishOverviewPaginatorView(GeneralPaginatorView):
                 loop=i.client.loop,
                 session=i.client.session,
                 locale=self.locale,
-                dark_mode=await get_user_theme(i.user.id, i.client.pool),
+                dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE),
             ),
             wish_data,
         )
@@ -65,7 +65,7 @@ class WishOverviewPaginatorView(GeneralPaginatorView):
                 loop=i.client.loop,
                 session=i.client.session,
                 locale=self.locale,
-                dark_mode=await get_user_theme(i.user.id, i.client.pool),
+                dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE),
             ),
             wish_recents,
         )

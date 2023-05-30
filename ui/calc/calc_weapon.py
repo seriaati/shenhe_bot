@@ -7,6 +7,7 @@ import dev.asset as asset
 import dev.config as config
 import dev.models as models
 from ambr import AmbrTopAPI, Material, WeaponDetail
+from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
 from data.game.weapon_exp import get_weapon_exp_table
@@ -14,13 +15,8 @@ from data.game.weapon_types import get_weapon_type_emoji
 from dev.base_ui import BaseModal, BaseView
 from dev.exceptions import InvalidAscensionInput, InvalidWeaponCalcInput
 from ui.calc.add_to_todo import AddButton
-from utils import (
-    divide_chunks,
-    get_user_theme,
-    get_weapon_emoji,
-    image_gen_transition,
-    level_to_ascension_phase,
-)
+from utils import (divide_chunks, get_weapon_emoji, image_gen_transition,
+                   level_to_ascension_phase)
 
 
 class View(BaseView):
@@ -286,7 +282,7 @@ class LevelModal(BaseModal):
                 loop=i.client.loop,
                 session=i.client.session,
                 locale=self.locale,
-                dark_mode=await get_user_theme(i.user.id, i.client.pool),
+                dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
             ),
             all_materials,
             "",

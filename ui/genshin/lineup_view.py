@@ -7,17 +7,13 @@ from genshin.models import LineupPreview, LineupScenario
 import dev.asset as asset
 import dev.config as config
 from ambr import Character
+from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.text_map import text_map
 from data.game.elements import get_element_emoji, get_element_list
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, DrawInput, Inter
-from utils import (
-    disable_view_items,
-    get_character_emoji,
-    get_user_theme,
-    image_gen_transition,
-)
+from utils import disable_view_items, get_character_emoji, image_gen_transition
 
 
 class View(BaseView):
@@ -228,7 +224,7 @@ class LineupSelector(Select):
                 loop=i.client.loop,
                 session=i.client.session,
                 locale=self.view.locale,
-                dark_mode=await get_user_theme(i.user.id, i.client.pool),
+                dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
             ),
             lineup,
             self.character_id,
