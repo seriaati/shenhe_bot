@@ -2,7 +2,7 @@
 
 ## Getting history links
 
-paimon.moe is a widely used wish tracker tool for Genshin Impact, you follow their tutorial on how to get a history link of your account.
+paimon.moe is a widely used wish tracker tool for Genshin Impact, you can follow their tutorial on how to get your account's history link.
 
 [Click me](https://paimon.moe/wish/import)
 

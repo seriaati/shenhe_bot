@@ -4,7 +4,7 @@
 
 ## accounts
 
-* [Account Security](accounts/account-security.md)
+* [Account Security](<README (1).md>)
 
 ## wish history
 
