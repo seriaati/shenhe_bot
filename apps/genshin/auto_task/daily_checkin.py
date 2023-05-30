@@ -143,7 +143,9 @@ class DailyCheckin:
                 break
             try:
                 embed = await self._do_genshin_daily(api, user)
-                notif = await self.bot.db.settings.get(user.user_id, Settings.NOTIFICATION)
+                notif = await self.bot.db.settings.get(
+                    user.user_id, Settings.NOTIFICATION
+                )
                 if notif:
                     await self._notify_user(user, embed)
             except Exception as e:  # skipcq: PYL-W0703
