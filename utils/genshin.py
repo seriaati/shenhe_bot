@@ -50,43 +50,43 @@ def calculate_artifact_score(substats: dict):
 
 
 def get_character_builds(
-    character_id: str, element_builds_dict: dict, locale: discord.Locale | str
+    character_id: str, element_builds_dict: dict, lang: discord.Locale | str
 ) -> List[models.CharacterBuild]:
     """Gets a character's builds
 
     Args:
         character_id (int): the id of the character
         element_builds_dict (dict): the dictionary of all characters of a given element, this is stored in data/builds
-        locale (Locale): the discord locale
-        user_locale (str): the user locale
+        lang (Locale): the discord lang
+        user_locale (str): the user lang
 
     Returns:
         List[models.CharacterBuild]
     """
     character_name = text_map.get_character_name(character_id, "zh-TW")
-    translated_character_name = text_map.get_character_name(character_id, locale)
+    translated_character_name = text_map.get_character_name(character_id, lang)
     count = 1
     result = []
 
     for build in element_builds_dict[character_name]["builds"]:
         stat_str = ""
         for stat, value in build["stats"].items():
-            stat_str += f"{cond_text.get_text(str(locale), 'build', stat)} ➜ {str(value).replace('任意', 'ANY')}\n"
+            stat_str += f"{cond_text.get_text(str(lang), 'build', stat)} ➜ {str(value).replace('任意', 'ANY')}\n"
         move_text = cond_text.get_text(
-            str(locale), "build", f"{character_name}_{build['move']}"
+            str(lang), "build", f"{character_name}_{build['move']}"
         )
         weapon_id = text_map.get_id_from_name(build["weapon"])
         if weapon_id is None:
             raise ValueError(f"Unknown weapon {build['weapon']}")
         embed = models.DefaultEmbed(
-            f"{translated_character_name} - {text_map.get(90, locale)}{count}",
-            f"{text_map.get(91, locale)} • {get_weapon_emoji(weapon_id)} {text_map.get_weapon_name(weapon_id, locale)}\n"
-            f"{text_map.get(92, locale)} • {cond_text.get_text(str(locale), 'build', build['artifacts'])}\n"
-            f"{text_map.get(93, locale)} • {translate_main_stat(build['main_stats'], locale)}\n"
-            f"{text_map.get(94, locale)} • {build['talents']}\n"
+            f"{translated_character_name} - {text_map.get(90, lang)}{count}",
+            f"{text_map.get(91, lang)} • {get_weapon_emoji(weapon_id)} {text_map.get_weapon_name(weapon_id, lang)}\n"
+            f"{text_map.get(92, lang)} • {cond_text.get_text(str(lang), 'build', build['artifacts'])}\n"
+            f"{text_map.get(93, lang)} • {translate_main_stat(build['main_stats'], lang)}\n"
+            f"{text_map.get(94, lang)} • {build['talents']}\n"
             f"{move_text} • {str(build['dmg']).replace('任意', 'ANY')}\n\n",
         )
-        embed.add_field(name=text_map.get(95, locale), value=stat_str)
+        embed.add_field(name=text_map.get(95, lang), value=stat_str)
         count += 1
         embed.set_thumbnail(url=get_character_icon(str(character_id)))
         result.append(
@@ -100,12 +100,12 @@ def get_character_builds(
 
     if "thoughts" in element_builds_dict[character_name]:
         count = 1
-        embed = models.DefaultEmbed(text_map.get(97, locale))
+        embed = models.DefaultEmbed(text_map.get(97, lang))
         for _ in element_builds_dict[character_name]["thoughts"]:
             embed.add_field(
                 name=f"#{count}",
                 value=cond_text.get_text(
-                    str(locale), "build", f"{character_name}_thoughts_{count-1}"
+                    str(lang), "build", f"{character_name}_thoughts_{count-1}"
                 ),
                 inline=False,
             )
@@ -203,11 +203,11 @@ def get_uid_tz(uid: Optional[int]) -> int:
 
 
 async def get_farm_data(
-    locale: Locale | str, session: aiohttp.ClientSession, weekday: int
+    lang: Locale | str, session: aiohttp.ClientSession, weekday: int
 ) -> List[models.FarmData]:
     result: List[models.FarmData] = []
 
-    client = AmbrTopAPI(session, to_ambr_top(locale))
+    client = AmbrTopAPI(session, to_ambr_top(lang))
     domains = await client.get_domains()
     c_upgrades = await client.get_character_upgrade()
     w_upgrades = await client.get_weapon_upgrade()
@@ -253,12 +253,12 @@ async def get_farm_data(
     return result
 
 
-def get_domain_title(domain: Domain, locale: discord.Locale | str) -> str:
+def get_domain_title(domain: Domain, lang: discord.Locale | str) -> str:
     if "Forgery" in text_map.get_domain_name(domain.id, "en-US"):
         return (
-            f"{get_city_name(domain.city.id, str(locale))} - {text_map.get(91, locale)}"
+            f"{get_city_name(domain.city.id, str(lang))} - {text_map.get(91, lang)}"
         )
-    return f"{get_city_name(domain.city.id, str(locale))} - {text_map.get(105, locale).title()}"
+    return f"{get_city_name(domain.city.id, str(lang))} - {text_map.get(105, lang).title()}"
 
 
 def convert_ar_to_wl(ar: int) -> int:

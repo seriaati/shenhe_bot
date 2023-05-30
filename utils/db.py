@@ -17,10 +17,3 @@ async def get_profile_ver(user_id: int, pool: asyncpg.pool.Pool) -> int:
     if ver is None:
         return 2
     return ver
-
-
-async def get_user_lang(user_id: int, pool: asyncpg.Pool) -> typing.Optional[str]:
-    user_locale = await pool.fetchval(
-        "SELECT lang FROM user_settings WHERE user_id = $1", user_id
-    )
-    return user_locale

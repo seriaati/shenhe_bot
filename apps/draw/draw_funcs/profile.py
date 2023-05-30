@@ -13,7 +13,7 @@ from dev.models import DynamicBackgroundInput, TopPadding
 
 def character_card(
     character: enkanetwork.model.CharacterInfo,
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
     dark_mode: bool = False,
     custom_image_url: Optional[str] = None,
 ) -> Optional[io.BytesIO]:
@@ -52,34 +52,34 @@ def character_card(
 
     # character stats
     texts = {
-        text_map.get(292, locale): format(
+        text_map.get(292, lang): format(
             character.stats.FIGHT_PROP_MAX_HP.to_rounded(), ","
         ),
-        text_map.get(262, locale): format(
+        text_map.get(262, lang): format(
             character.stats.FIGHT_PROP_CUR_DEFENSE.to_rounded(), ","
         ),
-        text_map.get(260, locale): format(
+        text_map.get(260, lang): format(
             character.stats.FIGHT_PROP_CUR_ATTACK.to_rounded(), ","
         ),
         text_map.get(
-            264, locale
+            264, lang
         ): character.stats.FIGHT_PROP_CRITICAL.to_percentage_symbol(),
         text_map.get(
-            265, locale
+            265, lang
         ): character.stats.FIGHT_PROP_CRITICAL_HURT.to_percentage_symbol(),
         text_map.get(
-            267, locale
+            267, lang
         ): character.stats.FIGHT_PROP_CHARGE_EFFICIENCY.to_percentage_symbol(),
-        text_map.get(266, locale): format(
+        text_map.get(266, lang): format(
             character.stats.FIGHT_PROP_ELEMENT_MASTERY.to_rounded(), ","
         ),
-        text_map.get(273, locale): add_hurt_text,
+        text_map.get(273, lang): add_hurt_text,
     }
 
     draw = ImageDraw.Draw(card)
 
     # write character stats
-    font = draw_utility.get_font(locale, 50)
+    font = draw_utility.get_font(lang, 50)
     y_pos = 773
     xpos = 230
     for key, value in texts.items():
@@ -140,7 +140,7 @@ def character_card(
     # write talent levels
     x_pos = 1150
     y_pos = 1205
-    font = draw_utility.get_font(locale, 50)
+    font = draw_utility.get_font(lang, 50)
     for talent in character.skills:
         if talent.id in [10013, 10413]:  # ayaka and mona passive sprint
             continue
@@ -152,7 +152,7 @@ def character_card(
     y_pos = 111
     substat_x_pos = 2072
     substat_y_pos = 138
-    font = draw_utility.get_font(locale, 44)
+    font = draw_utility.get_font(lang, 44)
     for artifact in filter(
         lambda x: x.type == enkanetwork.EquipmentsType.ARTIFACT, character.equipments
     ):
@@ -228,7 +228,7 @@ def character_card(
 def overview_and_characters(
     data: enkanetwork.model.base.EnkaNetworkResponse,
     dark_mode: bool,
-    locale: str | discord.Locale,
+    lang: str | discord.Locale,
 ) -> Tuple[io.BytesIO, io.BytesIO]:
     profile_card, _ = draw_utility.draw_dynamic_background(
         DynamicBackgroundInput(
@@ -269,7 +269,7 @@ def overview_and_characters(
     offset = (46, 48)
     for index, character in enumerate(data.characters):
         index += 1
-        u_c_card = user_character_card(dark_mode, character, locale)
+        u_c_card = user_character_card(dark_mode, character, lang)
         character_bg.paste(u_c_card, offset, u_c_card)
         if index % 2 == 0:
             offset = (offset[0] + 378, 48)
@@ -361,7 +361,7 @@ def user_profile_card(
 def user_character_card(
     dark_mode: bool,
     character: enkanetwork.model.CharacterInfo,
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
 ) -> Image.Image:
     im = Image.open(
         f"yelan/templates/profile/[{'dark' if dark_mode else 'light'}] Character Card.png"
@@ -371,10 +371,10 @@ def user_character_card(
     character_icon = draw_utility.circular_crop(character_icon)
     im.paste(character_icon, (115, 19), character_icon)
     draw = ImageDraw.Draw(im)
-    font = draw_utility.get_font(locale, 32, "Medium")
+    font = draw_utility.get_font(lang, 32, "Medium")
     fill = asset.primary_text if not dark_mode else asset.white
     draw.text((173, 170), character.name, font=font, fill=fill, anchor="mm")
-    font = draw_utility.get_font(locale, 24)
+    font = draw_utility.get_font(lang, 24)
     fill = asset.secondary_text if not dark_mode else asset.white
     draw.text(
         (90, 196),
@@ -383,7 +383,7 @@ def user_character_card(
         fill=fill,
     )
     offset = (23, 258)
-    font = draw_utility.get_font(locale, 20)
+    font = draw_utility.get_font(lang, 20)
     for talent in character.skills:
         if talent.id in [10013, 10413]:  # ayaka and mona passive sprint
             continue
@@ -410,7 +410,7 @@ def user_character_card(
 
 
 def card_v2(
-    locale: Union[discord.Locale, str],
+    lang: Union[discord.Locale, str],
     dark_mode: bool,
     character: enkanetwork.model.CharacterInfo,
     image_url: str,
@@ -483,7 +483,7 @@ def card_v2(
     im.paste(weapon_icon, (947, 151), weapon_icon)
 
     x_offset = 1135
-    font = draw_utility.get_font(locale, 40, "Medium")
+    font = draw_utility.get_font(lang, 40, "Medium")
     weapon_name = weapon.detail.name
     weapon_name = draw_utility.shorten_text(weapon_name, x_offset - 819, font)
     draw.text((x_offset, 151), weapon_name, color, font=font)

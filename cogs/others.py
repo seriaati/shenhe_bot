@@ -18,12 +18,13 @@ from dotenv import load_dotenv
 import dev.asset as asset
 from ambr import AmbrTopAPI, Character
 from apps.db import custom_image
+from apps.db.tables.user_settings import Settings
 from apps.draw.main_funcs import compress_image
 from apps.text_map import text_map, to_ambr_top
 from dev.exceptions import AutocompleteError
 from dev.models import BotModel, DefaultEmbed, ErrorEmbed, Inter
 from ui.others import feedback_menu, manage_accounts, settings, settings_menu
-from utils import create_user_settings, get_user_lang
+from utils import create_user_settings
 
 load_dotenv()
 
@@ -59,11 +60,11 @@ class OthersCog(commands.Cog, name="others"):
         description=_("Meet the awesome people that helped me!", hash=297),
     )
     async def view_credits(self, i: discord.Interaction):
-        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
-        embed = DefaultEmbed(text_map.get(475, locale) + " 🎉")
+        lang = await self.bot.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
+        embed = DefaultEmbed(text_map.get(475, lang) + " 🎉")
 
         embed.add_field(
-            name=text_map.get(298, locale),
+            name=text_map.get(298, lang),
             value="""
             [kakaka#7100](https://discord.com/users/425140480334888980) - 🇯🇵
             [Tedd#0660](https://discord.com/users/425140480334888980) - 🇯🇵
@@ -76,7 +77,7 @@ class OthersCog(commands.Cog, name="others"):
             inline=False,
         )
         embed.add_field(
-            name=text_map.get(466, locale),
+            name=text_map.get(466, lang),
             value="""
             [GauravM#6722](https://discord.com/users/327390030689730561)
             [KT#7777](https://discord.com/users/153087013447401472)
@@ -85,8 +86,8 @@ class OthersCog(commands.Cog, name="others"):
             inline=False,
         )
         embed.add_field(
-            name=text_map.get(479, locale),
-            value=text_map.get(497, locale),
+            name=text_map.get(479, lang),
+            value=text_map.get(497, lang),
             inline=False,
         )
         await i.response.send_message(embed=embed)
@@ -117,10 +118,10 @@ class OthersCog(commands.Cog, name="others"):
 
     @app_commands.command(name="info", description=_("View the bot's info", hash=63))
     async def view_bot_info(self, i: discord.Interaction):
-        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
+        lang = await self.bot.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
 
         revision = self.get_last_commits()
-        embed = DefaultEmbed("申鶴 | Shenhe", f"{text_map.get(296, locale)}\n{revision}")
+        embed = DefaultEmbed("申鶴 | Shenhe", f"{text_map.get(296, lang)}\n{revision}")
 
         seria = self.bot.get_user(410036441129943050) or await self.bot.fetch_user(
             410036441129943050
@@ -131,13 +132,13 @@ class OthersCog(commands.Cog, name="others"):
         memory_usage = process.memory_full_info().uss / 1024**2  # type: ignore
         cpu_usage = process.cpu_percent() / psutil.cpu_count()  # type: ignore
         embed.add_field(
-            name=text_map.get(349, locale),
+            name=text_map.get(349, lang),
             value=f"{memory_usage:.2f} MB\n{cpu_usage:.2f}% CPU",
         )
 
         total = await self.bot.db.users.get_total()
         embed.add_field(
-            name=text_map.get(524, locale),
+            name=text_map.get(524, lang),
             value=str(total),
         )
 
@@ -152,18 +153,18 @@ class OthersCog(commands.Cog, name="others"):
             total_members += guild.member_count or 0
 
         embed.add_field(
-            name=text_map.get(528, locale),
-            value=text_map.get(566, locale).format(
+            name=text_map.get(528, lang),
+            value=text_map.get(566, lang).format(
                 total=total_members, unique=total_unique
             ),
         )
 
         embed.add_field(
-            name=text_map.get(503, locale),
+            name=text_map.get(503, lang),
             value=str(guilds),
         )
         embed.add_field(
-            name=text_map.get(564, locale),
+            name=text_map.get(564, lang),
             value=f"{round(self.bot.latency*1000, 2)} ms",
         )
 
@@ -172,14 +173,14 @@ class OthersCog(commands.Cog, name="others"):
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
         embed.add_field(
-            name=text_map.get(147, locale),
+            name=text_map.get(147, lang),
             value=f"{days}d {hours}h {minutes}m {seconds}s",
         )
 
         view = View()
         view.add_item(
             Button(
-                label=text_map.get(642, locale),
+                label=text_map.get(642, lang),
                 url="https://discord.gg/ryfamUykRw",
                 emoji=asset.discord_emoji,
             )
@@ -217,8 +218,8 @@ class OthersCog(commands.Cog, name="others"):
         i: Inter = inter  # type: ignore
         await i.response.defer()
 
-        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
-        ambr = AmbrTopAPI(self.bot.session, to_ambr_top(locale))
+        lang = await self.bot.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
+        ambr = AmbrTopAPI(self.bot.session, to_ambr_top(lang))
         character = await ambr.get_character(character_id)
         if not isinstance(character, Character):
             raise AutocompleteError
@@ -237,7 +238,7 @@ class OthersCog(commands.Cog, name="others"):
             image_name,
             self.bot.pool,
         )
-        view = settings.custom_image.View(locale)
+        view = settings.custom_image.View(lang)
         view.author = i.user
 
         await settings.custom_image.return_custom_image_interaction(
@@ -248,7 +249,7 @@ class OthersCog(commands.Cog, name="others"):
     async def custom_image_upload_autocomplete(
         self, i: discord.Interaction, current: str
     ):
-        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
+        lang = await self.bot.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
         options = []
         for character_id, character_names in self.avatar.items():
             if any(
@@ -256,10 +257,10 @@ class OthersCog(commands.Cog, name="others"):
             ):
                 continue
 
-            if current.lower() in character_names[to_ambr_top(locale)].lower():
+            if current.lower() in character_names[to_ambr_top(lang)].lower():
                 options.append(
                     app_commands.Choice(
-                        name=character_names[to_ambr_top(locale)], value=character_id
+                        name=character_names[to_ambr_top(lang)], value=character_id
                     )
                 )
         return options[:25]
@@ -268,11 +269,8 @@ class OthersCog(commands.Cog, name="others"):
         name="feedback", description=_("Send feedback to the bot developer", hash=723)
     )
     async def feedback(self, i: discord.Interaction):
-        await i.response.send_modal(
-            feedback_menu.FeedbackModal(
-                await get_user_lang(i.user.id, self.bot.pool) or i.locale
-            )
-        )
+        lang = await self.bot.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
+        await i.response.send_modal(feedback_menu.FeedbackModal(lang))
 
     @app_commands.command(
         name="source", description=_("View the bot source code", hash=739)
@@ -288,14 +286,14 @@ class OthersCog(commands.Cog, name="others"):
         if not command:
             return await i.response.send_message(f"<{source_url}>")
 
-        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
+        lang = await self.bot.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
 
         command_map = self.get_command_map(self.bot.tree)
         obj = command_map.get(command)
         if obj is None:
             return await i.response.send_message(
                 embed=ErrorEmbed().set_author(
-                    name=text_map.get(740, locale), icon_url=i.user.display_avatar.url
+                    name=text_map.get(740, lang), icon_url=i.user.display_avatar.url
                 )
             )
 
@@ -313,7 +311,7 @@ class OthersCog(commands.Cog, name="others"):
             if filename is None:
                 return await i.response.send_message(
                     embed=ErrorEmbed().set_author(
-                        name=text_map.get(741, locale),
+                        name=text_map.get(741, lang),
                         icon_url=i.user.display_avatar.url,
                     )
                 )

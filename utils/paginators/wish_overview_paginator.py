@@ -15,11 +15,11 @@ from .paginator import GeneralPaginator, GeneralPaginatorView
 class WishOverviewPaginatorView(GeneralPaginatorView):
     def __init__(
         self,
-        locale: str,
+        lang: str,
         current_banner: str,
         all_wish_data: Dict[str, WishData],
     ) -> None:
-        super().__init__([discord.Embed()], locale)
+        super().__init__([discord.Embed()], lang)
 
         self.current_banner = current_banner
         self.all_wish_data = all_wish_data
@@ -50,7 +50,7 @@ class WishOverviewPaginatorView(GeneralPaginatorView):
             DrawInput(
                 loop=i.client.loop,
                 session=i.client.session,
-                locale=self.locale,
+                lang=self.lang,
                 dark_mode=await i.client.db.settings.get(i.user.id, Settings.DARK_MODE),
             ),
             wish_data,
@@ -64,7 +64,7 @@ class WishOverviewPaginatorView(GeneralPaginatorView):
             DrawInput(
                 loop=i.client.loop,
                 session=i.client.session,
-                locale=self.locale,
+                lang=self.lang,
                 dark_mode=await i.client.db.settings.get(i.user.id, Settings.DARK_MODE),
             ),
             wish_recents,
@@ -75,14 +75,14 @@ class WishOverviewPaginatorView(GeneralPaginatorView):
 class BannerSelect(discord.ui.Select):
     def __init__(
         self,
-        locale: Union[discord.Locale, str],
+        lang: Union[discord.Locale, str],
         options: List[discord.SelectOption],
         all_wish_data: Dict[str, WishData],
         member: Union[discord.Member, discord.User],
     ) -> None:
-        super().__init__(placeholder=text_map.get(656, locale), options=options)
+        super().__init__(placeholder=text_map.get(656, lang), options=options)
 
-        self.locale = locale
+        self.lang = lang
         self.all_wish_data = all_wish_data
         self.member = member
         self.view: WishOverviewPaginatorView
@@ -139,14 +139,14 @@ class WishOverviewPaginator(GeneralPaginator):
         return kwargs
 
     def setup_view(
-        self, locale: Union[discord.Locale, str]
+        self, lang: Union[discord.Locale, str]
     ) -> WishOverviewPaginatorView:
         view = WishOverviewPaginatorView(
-            str(locale), self.current_banner, self.all_wish_data
+            str(lang), self.current_banner, self.all_wish_data
         )
         view.add_item(
             BannerSelect(
-                str(locale), self.select_options, self.all_wish_data, self.i.user
+                str(lang), self.select_options, self.all_wish_data, self.i.user
             )
         )
         return view

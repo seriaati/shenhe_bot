@@ -11,10 +11,11 @@ import dev.models as models
 from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
-from apps.wish.models import RecentWish, WishData, WishHistory, WishInfo, WishItem
+from apps.wish.models import (RecentWish, WishData, WishHistory, WishInfo,
+                              WishItem)
 from dev.exceptions import WishFileImportError
 from ui.wish import set_auth_key, wish_filter
-from utils import get_user_lang, get_wish_history_embeds, get_wish_info_embed
+from utils import get_wish_history_embeds, get_wish_info_embed
 from utils.paginators import WishHistoryPaginator, WishOverviewPaginator
 
 
@@ -96,15 +97,15 @@ class WishCog(commands.GroupCog, name="wish"):
         self, inter: discord.Interaction, member: Optional[discord.User] = None
     ):
         i: models.Inter = inter  # type: ignore
-        locale = (await get_user_lang(i.user.id, self.bot.pool)) or str(i.locale)
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
         embeds = await get_wish_history_embeds(i, "", member)
 
         await WishHistoryPaginator(
             i,
             embeds,
             [
-                select_banner := wish_filter.SelectBanner(locale),
-                wish_filter.SelectRarity(text_map.get(661, locale), select_banner),
+                select_banner := wish_filter.SelectBanner(lang),
+                wish_filter.SelectRarity(text_map.get(661, lang), select_banner),
             ],
         ).start()
 
@@ -121,9 +122,9 @@ class WishCog(commands.GroupCog, name="wish"):
         i: models.Inter = inter  # type: ignore
         await i.response.defer()
         member = member or i.user
-        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
 
-        client = ambr.AmbrTopAPI(self.bot.session, to_ambr_top(locale))
+        client = ambr.AmbrTopAPI(self.bot.session, to_ambr_top(lang))
 
         wishes: List[WishItem] = []
         uid = await i.client.db.users.get_uid(member.id)
@@ -199,15 +200,15 @@ class WishCog(commands.GroupCog, name="wish"):
 
             title = ""
             if banner_id == 100:
-                title = text_map.get(647, locale)
+                title = text_map.get(647, lang)
             elif banner_id == 301:
-                title = text_map.get(645, locale) + " 1"
+                title = text_map.get(645, lang) + " 1"
             elif banner_id == 400:
-                title = text_map.get(645, locale) + " 2"
+                title = text_map.get(645, lang) + " 2"
             elif banner_id == 302:
-                title = text_map.get(646, locale)
+                title = text_map.get(646, lang)
             elif banner_id == 200:
-                title = text_map.get(655, locale)
+                title = text_map.get(655, lang)
 
             wish_data = WishData(
                 title=title,
@@ -228,7 +229,7 @@ class WishCog(commands.GroupCog, name="wish"):
         if not all_wish_data:
             return await i.followup.send(
                 embed=models.ErrorEmbed().set_author(
-                    name=text_map.get(731, locale),
+                    name=text_map.get(731, lang),
                     icon_url=i.user.display_avatar.url,
                 )
             )
@@ -244,7 +245,7 @@ class WishCog(commands.GroupCog, name="wish"):
             models.DrawInput(
                 loop=self.bot.loop,
                 session=self.bot.session,
-                locale=locale,
+                lang=lang,
                 dark_mode=dark_mode,
             ),
             all_wish_data[current_banner],

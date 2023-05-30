@@ -10,16 +10,16 @@ from dev.models import DefaultEmbed
 class FeedbackModal(BaseModal):
     feedback = TextInput(label="feedback", style=TextStyle.long)
 
-    def __init__(self, locale: Locale | str):
-        super().__init__(title=text_map.get(724, locale), timeout=config.long_timeout)
-        self.feedback.label = text_map.get(724, locale)
+    def __init__(self, lang: Locale | str):
+        super().__init__(title=text_map.get(724, lang), timeout=config.long_timeout)
+        self.feedback.label = text_map.get(724, lang)
 
-        self.locale = locale
+        self.lang = lang
 
     async def on_submit(self, i: Interaction) -> None:
         await i.response.send_message(
             embed=DefaultEmbed().set_author(
-                name=text_map.get(725, self.locale), icon_url=i.user.display_avatar.url
+                name=text_map.get(725, self.lang), icon_url=i.user.display_avatar.url
             ),
             ephemeral=True,
         )

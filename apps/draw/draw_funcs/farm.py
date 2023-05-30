@@ -10,7 +10,7 @@ from utils import get_cache, get_domain_title, get_font
 
 def draw_domain_card(
     farm_data: List[FarmData],
-    locale: Locale | str,
+    lang: Locale | str,
     dark_mode: bool,
 ) -> io.BytesIO:
     app_mode = "dark" if dark_mode else "light"
@@ -39,11 +39,11 @@ def draw_domain_card(
         )
         basic_card.paste(lid, (0, 0), lid)
 
-        font = get_font(locale, 48, "Medium")
+        font = get_font(lang, 48, "Medium")
         draw = ImageDraw.Draw(basic_card)
         draw.text(
             (32, 23),
-            get_domain_title(data.domain, locale),
+            get_domain_title(data.domain, lang),
             font=font,
             fill="#FFFFFF",
         )

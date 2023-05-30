@@ -22,7 +22,7 @@ class View(EnkaView):
     def __init__(
         self,
         character_options: List[discord.SelectOption],
-        locale: Union[discord.Locale, str],
+        lang: Union[discord.Locale, str],
     ):
         super().__init__(timeout=config.mid_timeout)
 
@@ -30,11 +30,11 @@ class View(EnkaView):
             divide_chunks(character_options, 25)
         )
 
-        self.add_item(OverviewButton(text_map.get(43, locale)))
-        self.add_item(BoxButton(options, text_map.get(105, locale)))
-        self.add_item(CalculateDamageButton(text_map.get(348, locale)))
-        self.add_item(SetCustomImage(locale))
-        self.add_item(ShowArtifacts(text_map.get(92, locale)))
+        self.add_item(OverviewButton(text_map.get(43, lang)))
+        self.add_item(BoxButton(options, text_map.get(105, lang)))
+        self.add_item(CalculateDamageButton(text_map.get(348, lang)))
+        self.add_item(SetCustomImage(lang))
+        self.add_item(ShowArtifacts(text_map.get(92, lang)))
         self.add_item(InfoButton())
         self.add_item(CardSettings())
 
@@ -51,7 +51,7 @@ class InfoButton(ui.Button):
 
     async def callback(self, i: models.Inter):
         await i.response.send_message(
-            embed=models.DefaultEmbed(description=text_map.get(399, self.view.locale)),
+            embed=models.DefaultEmbed(description=text_map.get(399, self.view.lang)),
             ephemeral=True,
         )
 
@@ -93,10 +93,10 @@ class OverviewButton(ui.Button):
 
 
 class SetCustomImage(ui.Button):
-    def __init__(self, locale: discord.Locale | str):
+    def __init__(self, lang: discord.Locale | str):
         super().__init__(
             style=discord.ButtonStyle.green,
-            label=text_map.get(62, locale),
+            label=text_map.get(62, lang),
             custom_id="set_custom_image",
             disabled=True,
             row=1,
@@ -134,7 +134,7 @@ class BoxButton(ui.Button):
             self.view.add_item(
                 PageSelect(
                     option,
-                    text_map.get(157, self.view.locale)
+                    text_map.get(157, self.view.lang)
                     + f" ({count}~{count+character_num-1})",
                 )
             )
@@ -170,7 +170,7 @@ class CalculateDamageButton(ui.Button):
         if now.month == 4 and now.day == 1:
             raise FeatureDisabled
 
-        view = enka_damage_calc.View(self.view, self.view.locale, i.client.browsers)
+        view = enka_damage_calc.View(self.view, self.view.lang, i.client.browsers)
         view.author = i.user
         await return_current_status(i, view)
         view.message = await i.original_response()
@@ -198,7 +198,7 @@ class ShowArtifacts(ui.Button):
             models.DrawInput(
                 loop=i.client.loop,
                 session=i.client.session,
-                locale=self.view.locale,
+                lang=self.view.lang,
                 dark_mode=await i.client.db.settings.get(i.user.id, Settings.DARK_MODE),
             ),
             [e for e in character.equipments if e.type is enka.EquipmentsType.ARTIFACT],
@@ -216,7 +216,7 @@ class CardSettings(ui.Button):
         self.view: EnkaView
 
     async def callback(self, i: models.Inter) -> Any:
-        view = profile_settings.View(self.view.locale, self.view)
+        view = profile_settings.View(self.view.lang, self.view)
         view.author = i.user
         await i.response.edit_message(
             embed=view.gen_settings_embed(), view=view, attachments=[]

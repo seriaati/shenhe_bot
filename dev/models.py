@@ -30,7 +30,7 @@ class DamageResult:
 class DrawInput:
     loop: asyncio.AbstractEventLoop
     session: aiohttp.ClientSession
-    locale: discord.Locale | str = "en-US"
+    lang: discord.Locale | str = "en-US"
     dark_mode: bool = False
 
 
@@ -78,11 +78,11 @@ class ShenheEmbed(discord.Embed):
     def set_title(
         self,
         map_hash: int,
-        locale: typing.Union[discord.Locale, str],
+        lang: typing.Union[discord.Locale, str],
         user: typing.Union[discord.Member, discord.User],
     ) -> "ShenheEmbed":
         self.set_author(
-            name=text_map.get(map_hash, locale), icon_url=user.display_avatar.url
+            name=text_map.get(map_hash, lang), icon_url=user.display_avatar.url
         )
         return self
 

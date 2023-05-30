@@ -77,7 +77,7 @@ class View(BaseView):
             DrawInput(
                 loop=i.client.loop,
                 session=i.client.session,
-                locale=self.lang,
+                lang=self.lang,
                 dark_mode=self.dark_mode,
             ),
             diary,

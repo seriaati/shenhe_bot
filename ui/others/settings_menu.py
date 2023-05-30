@@ -14,16 +14,16 @@ from ui.others.settings import custom_image, notif_menu
 
 
 class View(BaseView):
-    def __init__(self, locale: discord.Locale | str):
+    def __init__(self, lang: discord.Locale | str):
         super().__init__(timeout=config.mid_timeout)
-        self.add_item(Appearance(text_map.get(535, locale)))
-        self.add_item(Langauge(text_map.get(128, locale)))
-        self.add_item(CustomProfileImage(locale))
-        self.add_item(Notification(locale))
-        self.add_item(AutoRedeem(locale))
+        self.add_item(Appearance(text_map.get(535, lang)))
+        self.add_item(Langauge(text_map.get(128, lang)))
+        self.add_item(CustomProfileImage(lang))
+        self.add_item(Notification(lang))
+        self.add_item(AutoRedeem(lang))
 
         self.original_info: OriginalInfo
-        self.locale = locale
+        self.lang = lang
 
 
 class Appearance(ui.Button):
@@ -32,23 +32,23 @@ class Appearance(ui.Button):
         self.view: View
 
     async def callback(self, i: Inter) -> Any:
-        locale = self.view.locale
+        lang = self.view.lang
 
         dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
-        embed = get_appearance_embed(i.user.display_avatar.url, locale, dark_mode)
+        embed = get_appearance_embed(i.user.display_avatar.url, lang, dark_mode)
 
-        view = get_appearance_view(self.view, dark_mode, locale)
+        view = get_appearance_view(self.view, dark_mode, lang)
         await i.response.edit_message(embed=embed, view=view)
 
 
 class ModeButton(ui.Button):
-    def __init__(self, toggle: bool, current: bool, locale: discord.Locale | str):
+    def __init__(self, toggle: bool, current: bool, lang: discord.Locale | str):
         super().__init__(
             emoji=asset.moon_emoji if toggle else asset.sun_emoji,
             style=discord.ButtonStyle.blurple
             if toggle == current
             else discord.ButtonStyle.grey,
-            label=text_map.get(537 if not toggle else 536, locale),
+            label=text_map.get(537 if not toggle else 536, lang),
         )
         self.toggle = toggle
         self.view: View
@@ -57,10 +57,10 @@ class ModeButton(ui.Button):
         await i.client.db.settings.update(i.user.id, Settings.DARK_MODE, self.toggle)
         dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
         embed = get_appearance_embed(
-            i.user.display_avatar.url, self.view.locale, dark_mode
+            i.user.display_avatar.url, self.view.lang, dark_mode
         )
 
-        view = get_appearance_view(self.view, dark_mode, self.view.locale)
+        view = get_appearance_view(self.view, dark_mode, self.view.lang)
         await i.response.edit_message(embed=embed, view=view)
 
 
@@ -70,10 +70,10 @@ class Langauge(ui.Button):
         self.view: View
 
     async def callback(self, i: Inter):
-        locale = await i.client.db.settings.get(i.user.id, Settings.LANG)
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG)
 
-        embed = get_language_embed(i.user.display_avatar.url, locale)
-        view = get_language_view(self.view, locale)
+        embed = get_language_embed(i.user.display_avatar.url, lang)
+        view = get_language_view(self.view, lang)
         await i.response.edit_message(embed=embed, view=view)
 
 
@@ -86,10 +86,10 @@ class LanguageGoBack(ui.Button):
 
 
 class LangSelect(ui.Select):
-    def __init__(self, locale: discord.Locale | str):
+    def __init__(self, lang: discord.Locale | str):
         options = [
             discord.SelectOption(
-                label=text_map.get(124, locale), emoji="🏳️", value="none"
+                label=text_map.get(124, lang), emoji="🏳️", value="none"
             )
         ]
         for lang, lang_info in lang_options.items():
@@ -98,31 +98,31 @@ class LangSelect(ui.Select):
                     label=lang_info["name"], value=lang, emoji=lang_info["emoji"]
                 )
             )
-        super().__init__(options=options, placeholder=text_map.get(32, locale), row=1)
-        self.locale = locale
+        super().__init__(options=options, placeholder=text_map.get(32, lang), row=1)
+        self.lang = lang
 
     async def callback(self, i: Inter) -> Any:
         self.view: View
 
         converted_locale = self.values[0] if self.values[0] != "none" else None
         await i.client.db.settings.update(i.user.id, Settings.LANG, converted_locale)
-        locale = converted_locale or i.locale
+        lang = converted_locale or i.locale
 
-        embed = get_language_embed(i.user.display_avatar.url, locale)
-        view = get_language_view(self.view, locale)
+        embed = get_language_embed(i.user.display_avatar.url, lang)
+        view = get_language_view(self.view, lang)
         await i.response.edit_message(embed=embed, view=view)
 
 
 class CustomProfileImage(ui.Button):
-    def __init__(self, locale: str | discord.Locale):
+    def __init__(self, lang: str | discord.Locale):
         super().__init__(
-            emoji=asset.image_emoji, label=text_map.get(275, locale), row=2
+            emoji=asset.image_emoji, label=text_map.get(275, lang), row=2
         )
-        self.locale = locale
+        self.lang = lang
         self.view: View
 
     async def callback(self, i: Inter):
-        view = custom_image.View(self.locale)
+        view = custom_image.View(self.lang)
         view.add_item(GoBackButton(self.view.original_info))
 
         await i.response.edit_message(embed=view.gen_embed(), view=view)
@@ -131,51 +131,51 @@ class CustomProfileImage(ui.Button):
 
 
 class Notification(ui.Button):
-    def __init__(self, locale: str | discord.Locale):
+    def __init__(self, lang: str | discord.Locale):
         super().__init__(
-            emoji=asset.bell_badge_outline, label=text_map.get(137, locale), row=2
+            emoji=asset.bell_badge_outline, label=text_map.get(137, lang), row=2
         )
-        self.locale = locale
+        self.lang = lang
         self.view: View
 
     async def callback(self, i: Inter):
-        await notif_menu.return_view(i, self.locale, OriginalInfo(view=self.view, embed=i.message.embeds[0], children=self.view.children.copy()))  # type: ignore
+        await notif_menu.return_view(i, self.lang, OriginalInfo(view=self.view, embed=i.message.embeds[0], children=self.view.children.copy()))  # type: ignore
 
 
 class AutoRedeem(ui.Button):
-    def __init__(self, locale: str | discord.Locale):
+    def __init__(self, lang: str | discord.Locale):
         super().__init__(
-            emoji=asset.gift_outline, label=text_map.get(126, locale), row=3
+            emoji=asset.gift_outline, label=text_map.get(126, lang), row=3
         )
-        self.locale = locale
+        self.lang = lang
         self.view: View
 
     async def callback(self, i: Inter):
         auto_redeem = await i.client.db.settings.get(i.user.id, Settings.AUTO_REDEEM)
 
-        embed = get_redeem_embed(i.user.display_avatar.url, self.locale)
-        view = get_redeem_view(self.view, auto_redeem, self.locale)
+        embed = get_redeem_embed(i.user.display_avatar.url, self.lang)
+        view = get_redeem_view(self.view, auto_redeem, self.lang)
         await i.response.edit_message(embed=embed, view=view)
 
 
 class RedeemButton(ui.Button):
-    def __init__(self, toggle: bool, current: bool, locale: discord.Locale | str):
+    def __init__(self, toggle: bool, current: bool, lang: discord.Locale | str):
         super().__init__(
             emoji=asset.gift_open_outline if toggle else asset.gift_off_outline,
             style=discord.ButtonStyle.blurple
             if toggle == current
             else discord.ButtonStyle.grey,
-            label=text_map.get(99 if toggle else 100, locale),
+            label=text_map.get(99 if toggle else 100, lang),
         )
         self.toggle = toggle
-        self.locale = locale
+        self.lang = lang
         self.view: View
 
     async def callback(self, i: Inter) -> Any:
         await i.client.db.settings.update(i.user.id, Settings.AUTO_REDEEM, self.toggle)
 
-        embed = get_redeem_embed(i.user.display_avatar.url, self.locale)
-        view = get_redeem_view(self.view, self.toggle, self.locale)
+        embed = get_redeem_embed(i.user.display_avatar.url, self.lang)
+        view = get_redeem_view(self.view, self.toggle, self.lang)
         await i.response.edit_message(embed=embed, view=view)
 
 
@@ -199,12 +199,12 @@ async def return_settings(i: Inter, edit: bool = False):
     )
 
 
-def get_appearance_embed(icon_url: str, locale: discord.Locale | str, dark_mode: bool):
+def get_appearance_embed(icon_url: str, lang: discord.Locale | str, dark_mode: bool):
     embed = DefaultEmbed(
-        description=text_map.get(538, locale),
+        description=text_map.get(538, lang),
     )
     embed.set_author(
-        name=text_map.get(535, locale),
+        name=text_map.get(535, lang),
         icon_url=icon_url,
     )
     if not dark_mode:
@@ -215,46 +215,46 @@ def get_appearance_embed(icon_url: str, locale: discord.Locale | str, dark_mode:
     return embed
 
 
-def get_appearance_view(view: View, dark_mode: bool, locale: str | discord.Locale):
+def get_appearance_view(view: View, dark_mode: bool, lang: str | discord.Locale):
     view.clear_items()
     view.add_item(GoBackButton(view.original_info))
-    view.add_item(ModeButton(False, dark_mode, locale))
-    view.add_item(ModeButton(True, dark_mode, locale))
+    view.add_item(ModeButton(False, dark_mode, lang))
+    view.add_item(ModeButton(True, dark_mode, lang))
 
     return view
 
 
-def get_language_embed(icon_url: str, locale: discord.Locale | str):
-    embed = DefaultEmbed(description=text_map.get(125, locale))
-    lang_name = lang_options.get(str(locale), {"name": "Unknown"})["name"]
+def get_language_embed(icon_url: str, lang: discord.Locale | str):
+    embed = DefaultEmbed(description=text_map.get(125, lang))
+    lang_name = lang_options.get(str(lang), {"name": "Unknown"})["name"]
     lang_name = lang_name.split("|")[0]
     embed.set_author(
-        name=f"{text_map.get(34, locale)}: {lang_name}",
+        name=f"{text_map.get(34, lang)}: {lang_name}",
         icon_url=icon_url,
     )
 
     return embed
 
 
-def get_language_view(view: View, locale: str | discord.Locale):
+def get_language_view(view: View, lang: str | discord.Locale):
     view.clear_items()
     view.add_item(LanguageGoBack())
-    view.add_item(LangSelect(locale))
+    view.add_item(LangSelect(lang))
 
     return view
 
 
-def get_redeem_embed(icon_url: str, locale: discord.Locale | str):
-    embed = DefaultEmbed(description=text_map.get(285, locale))
-    embed.set_author(name=text_map.get(126, locale), icon_url=icon_url)
+def get_redeem_embed(icon_url: str, lang: discord.Locale | str):
+    embed = DefaultEmbed(description=text_map.get(285, lang))
+    embed.set_author(name=text_map.get(126, lang), icon_url=icon_url)
 
     return embed
 
 
-def get_redeem_view(view: View, auto_redeem: bool, locale: str | discord.Locale):
+def get_redeem_view(view: View, auto_redeem: bool, lang: str | discord.Locale):
     view.clear_items()
     view.add_item(GoBackButton(view.original_info))
-    view.add_item(RedeemButton(True, auto_redeem, locale))
-    view.add_item(RedeemButton(False, auto_redeem, locale))
+    view.add_item(RedeemButton(True, auto_redeem, lang))
+    view.add_item(RedeemButton(False, auto_redeem, lang))
 
     return view

@@ -193,15 +193,15 @@ class RealtimeNotes:
 
     @staticmethod
     async def _create_error_embed(
-        notif_type: NotifType, locale: str, e: Exception
+        notif_type: NotifType, lang: str, e: Exception
     ) -> Optional[ErrorEmbed]:
         """
-        Create and return an ErrorEmbed based on the given notification type, locale,
+        Create and return an ErrorEmbed based on the given notification type, lang,
         and exception object.
 
         Args:
             notif_type (NotificationType): The type of notification that caused the error.
-            locale (str): The locale code to use for the error message.
+            lang (str): The lang code to use for the error message.
             e (Exception): The exception object that caused the error.
 
         Returns:
@@ -223,14 +223,14 @@ class RealtimeNotes:
             raise AssertionError("Invalid notification type")
 
         # Set the author of the ErrorEmbed to the appropriate text based on the map hash
-        # and locale.
-        embed.set_author(name=text_map.get(map_hash, locale))
+        # and lang.
+        embed.set_author(name=text_map.get(map_hash, lang))
 
         # Determine the title and description of the ErrorEmbed based on the type of
         # exception that occurred.
         if isinstance(e, genshin.InvalidCookies):
             title_hash = 36
-            embed.description = text_map.get(767, locale)
+            embed.description = text_map.get(767, lang)
         elif isinstance(e, genshin.GenshinException):
             if e.retcode == 1009:
                 return None
@@ -244,11 +244,11 @@ class RealtimeNotes:
             sentry_sdk.capture_exception(e)
 
         # Set the title of the ErrorEmbed to the appropriate text based on the title hash
-        # and locale.
-        embed.title = text_map.get(title_hash, locale)
+        # and lang.
+        embed.title = text_map.get(title_hash, lang)
         if embed.description is None:
             embed.description = ""
-        embed.description += f"\n\n{text_map.get(631, locale)}"
+        embed.description += f"\n\n{text_map.get(631, lang)}"
 
         # Return the ErrorEmbed object.
         return embed
@@ -292,7 +292,7 @@ class RealtimeNotes:
         uid: int,
         notes: genshin.models.Notes,
         user: User,
-        locale: str,
+        lang: str,
     ) -> DefaultEmbed:
         """
         Creates and returns a notification embed based on the notification type and user data.
@@ -302,7 +302,7 @@ class RealtimeNotes:
             uid (int): The Genshin Imapct UID.
             notes (genshin.models.Notes): The user's notes.
             user (User): The user.
-            locale (str): The user's locale.
+            lang (str): The user's lang.
 
         Returns:
             DefaultEmbed: The notification embed.
@@ -310,42 +310,42 @@ class RealtimeNotes:
 
         if notif_type is NotifType.RESIN:
             if notes.current_resin == notes.max_resin:
-                remain_time = text_map.get(1, locale)  # "Full"
+                remain_time = text_map.get(1, lang)  # "Full"
             else:
                 remain_time = format_dt(notes.resin_recovery_time, "R")
 
             embed = DefaultEmbed(
                 description=f"""
-                {text_map.get(303, locale)}: {notes.current_resin}/{notes.max_resin}
-                {text_map.get(15, locale)}: {remain_time}
+                {text_map.get(303, lang)}: {notes.current_resin}/{notes.max_resin}
+                {text_map.get(15, lang)}: {remain_time}
                 UID: {uid}
                 """,
             )
-            embed.set_title(306, locale, user)
+            embed.set_title(306, lang, user)
             embed.set_thumbnail(url=asset.resin_icon)
         elif notif_type is NotifType.POT:
             if notes.current_realm_currency == notes.max_realm_currency:
-                remain_time = text_map.get(1, locale)  # "Full"
+                remain_time = text_map.get(1, lang)  # "Full"
             else:
                 remain_time = format_dt(notes.realm_currency_recovery_time, "R")
 
             embed = DefaultEmbed(
                 description=f"""
-                {text_map.get(102, locale)}: {notes.current_resin}/{notes.max_resin}
-                {text_map.get(15, locale)}: {remain_time}
+                {text_map.get(102, lang)}: {notes.current_resin}/{notes.max_resin}
+                {text_map.get(15, lang)}: {remain_time}
                 UID: {uid}
                 """,
             )
-            embed.set_title(518, locale, user)
+            embed.set_title(518, lang, user)
             embed.set_thumbnail(url=asset.realm_currency_icon)
         elif notif_type is NotifType.PT:
             embed = DefaultEmbed(description=f"UID: {uid}")
-            embed.set_title(366, locale, user)
+            embed.set_title(366, lang, user)
             embed.set_thumbnail(url=asset.pt_icon)
         else:
             raise AssertionError("Invalid notification type")
 
-        embed.set_footer(text=text_map.get(305, locale))
+        embed.set_footer(text=text_map.get(305, lang))
         return embed
 
     async def _send_notif(

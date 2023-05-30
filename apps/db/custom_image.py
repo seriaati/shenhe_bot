@@ -15,7 +15,7 @@ async def get_user_custom_image_options(
     character_id: int,
     pool: asyncpg.Pool,
     user_id: int,
-    locale: typing.Union[discord.Locale, str],
+    lang: typing.Union[discord.Locale, str],
 ) -> typing.List[discord.SelectOption]:
     c_fanarts = await get_character_fanarts(str(character_id))
 
@@ -33,7 +33,7 @@ async def get_user_custom_image_options(
     )
     options: typing.List[discord.SelectOption] = [
         discord.SelectOption(
-            label=text_map.get(124, locale), value="default", default=bool(not rows)
+            label=text_map.get(124, lang), value="default", default=bool(not rows)
         )
     ]
     current_image_url = None
@@ -59,7 +59,7 @@ async def get_user_custom_image_options(
         if any(option.value == url for option in options):
             continue
 
-        label = f"{text_map.get(748, locale)} ({index})"
+        label = f"{text_map.get(748, lang)} ({index})"
         options.append(
             discord.SelectOption(
                 label=label,
@@ -75,23 +75,23 @@ async def get_user_custom_image_options(
 
 async def get_user_custom_image_embed(
     i: Inter,
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
     character_id: str,
     custom_image: typing.Optional[UserCustomImage] = None,
     from_settings: bool = True,
 ) -> discord.Embed:
     embed = DefaultEmbed(
-        description=text_map.get(412, locale) if not from_settings else ""
+        description=text_map.get(412, lang) if not from_settings else ""
     )
     embed.set_author(
-        name=text_map.get(59, locale).format(
-            character_name=text_map.get_character_name(character_id, locale)
+        name=text_map.get(59, lang).format(
+            character_name=text_map.get_character_name(character_id, lang)
         ),
         icon_url=i.user.display_avatar.url,
     )
     if custom_image is not None:
         embed.add_field(
-            name=f"{text_map.get(277, locale)}: {custom_image.nickname}",
+            name=f"{text_map.get(277, lang)}: {custom_image.nickname}",
             value=custom_image.url,
         )
         embed.set_image(url=custom_image.url)
@@ -99,7 +99,7 @@ async def get_user_custom_image_embed(
         await validate_image_url(custom_image.url, i.client.session)
     ):
         embed.set_image(url=None)
-        embed.set_footer(text=text_map.get(274, locale))
+        embed.set_footer(text=text_map.get(274, lang))
     return embed
 
 

@@ -9,7 +9,8 @@ from apps.db.tables.abyss_board import AbyssBoardEntry
 from apps.text_map import text_map
 from dev.enum import Category
 from dev.models import BoardUser
-from utils import circular_crop, get_cache, get_font, global_write, shorten_text
+from utils import (circular_crop, get_cache, get_font, global_write,
+                   shorten_text)
 
 
 def board(
@@ -18,7 +19,7 @@ def board(
     user_uid: int,
     title_hash: int,
     column_hashes: List[int],
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
     category: Category,
 ) -> Image.Image:
     current_user = None
@@ -69,17 +70,17 @@ def board(
 
     # write title
     fill = asset.primary_text if not dark_mode else asset.white
-    font = get_font(locale, 75, "Bold")
-    draw.text((63, 36), text_map.get(title_hash, locale), fill=fill, font=font)
+    font = get_font(lang, 75, "Bold")
+    draw.text((63, 36), text_map.get(title_hash, lang), fill=fill, font=font)
 
     # write column titles
     fill = asset.secondary_text if not dark_mode else asset.white
-    font = get_font(locale, 36, "Bold")
+    font = get_font(lang, 36, "Bold")
     col_pos = (172, 460, 865, 1123, 1380)
     for index, c_hash in enumerate(column_hashes):
         draw.text(
             (col_pos[index], 220),
-            text_map.get(c_hash, locale),
+            text_map.get(c_hash, lang),
             fill=fill,
             font=font,
             anchor="mm",
@@ -229,7 +230,7 @@ def c_usage_card(
     usage_num: int,
     percentage: float,
     dark_mode: bool,
-    locale: str | discord.Locale,
+    lang: str | discord.Locale,
 ) -> Image.Image:
     # card
     im = Image.open(
@@ -244,23 +245,23 @@ def c_usage_card(
     im.paste(icon, (17, 23), icon)
 
     # character name
-    font = get_font(locale, 40, "Medium")
+    font = get_font(lang, 40, "Medium")
     fill = asset.primary_text if not dark_mode else asset.white
     text = shorten_text(character.name, 321, font)
     draw.text((127, 23), text, font=font, fill=fill)
 
     # number of usage
-    font = get_font(locale, 25)
+    font = get_font(lang, 25)
     fill = asset.secondary_text if not dark_mode else asset.white
     draw.text(
         (127, 77),
-        text_map.get(612, locale).format(num=usage_num),
+        text_map.get(612, lang).format(num=usage_num),
         font=font,
         fill=fill,
     )
 
     # percentage
-    font = get_font(locale, 36, "Medium")
+    font = get_font(lang, 36, "Medium")
     fill = asset.primary_text if not dark_mode else asset.white
     text = f"{percentage:.1f}%"
     draw.text((620 - font.getlength(text), 46), text, font=font, fill=fill)

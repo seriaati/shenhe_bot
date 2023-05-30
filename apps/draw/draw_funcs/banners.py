@@ -9,19 +9,19 @@ from apps.text_map import text_map
 from utils import get_cache, get_font
 
 
-def card(banner_image_urls: List[str], locale: Locale | str) -> io.BytesIO:
+def card(banner_image_urls: List[str], lang: Locale | str) -> io.BytesIO:
     im = Image.new("RGB", (2180 if len(banner_image_urls) > 3 else 1080, 1908))
     draw = ImageDraw.Draw(im)
 
     # draw titles
-    font = get_font(locale, 64, "Bold")
+    font = get_font(lang, 64, "Bold")
     draw.text(
-        (540, 81), text_map.get(744, locale), fill=asset.white, anchor="mm", font=font
+        (540, 81), text_map.get(744, lang), fill=asset.white, anchor="mm", font=font
     )
     if len(banner_image_urls) > 3:
         draw.text(
             (1620, 81),
-            text_map.get(745, locale),
+            text_map.get(745, lang),
             fill=asset.white,
             anchor="mm",
             font=font,

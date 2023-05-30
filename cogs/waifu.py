@@ -2,7 +2,7 @@ from discord import Interaction, app_commands
 from discord.ext import commands
 from discord.ui import Button, View
 
-from utils import get_user_lang
+from apps.db.tables.user_settings import Settings
 from dev.models import BotModel, DefaultEmbed, Inter
 
 
@@ -13,16 +13,15 @@ class WaifuCog(commands.Cog):
     @app_commands.command(name="waifu", description="指令都去哪了？")
     async def waifu_command(self, inter: Interaction):
         i: Inter = inter  # type: ignore
-        locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
-        locale = str(locale)
+        lang = await self.bot.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
         view = View()
         view.add_item(
             Button(
-                label="邀請萊依菈" if locale in ["zh-TW", "zh-CN"] else "Invite Layla",
+                label="邀請萊依菈" if lang in ("zh-TW", "zh-CN") else "Invite Layla",
                 url="https://discord.com/oauth2/authorize?client_id=841806468722589774&permissions=0&scope=bot%20applications.commands",
             )
         )
-        if locale in ("zh-TW", "zh-CN"):
+        if lang in ("zh-TW", "zh-CN"):
             embed = DefaultEmbed(
                 "指令都去哪了？",
                 "Discord 的新政策表示想要上架在 App Directory 的機器人不可以有任何色情內容。\n所以，我把所有的指令都移除了，並原封不動的將他們移植到另一個機器人：萊依菈 | Layla\n如果你想要繼續使用先前的 waifu 指令，請邀請萊依菈進入你的伺服器。\n造成不便，敬請見諒。",

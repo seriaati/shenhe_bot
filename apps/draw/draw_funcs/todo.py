@@ -7,21 +7,15 @@ from PIL import Image, ImageDraw
 import dev.asset as asset
 from ambr import Material
 from dev.models import DynamicBackgroundInput, TopPadding
-from utils import (
-    circular_crop,
-    draw_dynamic_background,
-    dynamic_font_size,
-    get_cache,
-    get_font,
-    human_format,
-)
+from utils import (circular_crop, draw_dynamic_background, dynamic_font_size,
+                   get_cache, get_font, human_format)
 
 
 def material_card(
     material_list: List[Tuple[Material, int | str]],
     title: str,
     dark_mode: bool,
-    locale: str | discord.Locale,
+    lang: str | discord.Locale,
     draw_title: bool = True,
     background_color: Optional[str] = None,
 ) -> io.BytesIO:
@@ -59,7 +53,7 @@ def material_card(
                 )
 
         # draw the card
-        card = small_card(material[0], material[1], dark_mode, locale)
+        card = small_card(material[0], material[1], dark_mode, lang)
 
         # paste the card
         x = 95 + (644 + 60) * (index // max_card_num)
@@ -69,7 +63,7 @@ def material_card(
 
     # title
     if draw_title:
-        font = get_font(locale, 75, "Bold")
+        font = get_font(lang, 75, "Bold")
         fill = asset.white if dark_mode else asset.primary_text
         text = title
         font = dynamic_font_size(text, 1, 75, 1200, font)
@@ -84,7 +78,7 @@ def small_card(
     material: Material,
     item_num: int | str,
     dark_mode: bool,
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
 ) -> Image.Image:
     im = Image.open(
         f"yelan/templates/todo/[{'light' if not dark_mode else 'dark'}] todo.png"
@@ -99,10 +93,10 @@ def small_card(
         im.paste(icon, (18, 30), icon)
 
     # material name
-    font = get_font(locale, 40)
+    font = get_font(lang, 40)
     fill = asset.primary_text if not dark_mode else asset.white
 
-    num_font = get_font(locale, 36)
+    num_font = get_font(lang, 36)
     num_length = num_font.getlength(str(item_num))
     num_left = 620 - num_length
     material_name = material.name
@@ -115,7 +109,7 @@ def small_card(
     )
 
     # number
-    font = get_font(locale, 36, "Medium")
+    font = get_font(lang, 36, "Medium")
     fill = asset.primary_text if not dark_mode else asset.white
     text = str(item_num)
     draw.text((618 - font.getlength(text), 46), text, font=font, fill=fill)

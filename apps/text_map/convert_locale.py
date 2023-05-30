@@ -125,33 +125,33 @@ GENSHIN_DB_LANGS = {
 }
 
 
-def to_enka(locale: Locale | str):
-    return ENKA_LANGS.get(str(locale)) or "en"
+def to_enka(lang: Locale | str):
+    return ENKA_LANGS.get(str(lang)) or "en"
 
 
-def to_ambr_top(locale: Locale | str):
-    return AMBR_LANGS.get(str(locale)) or "en"
+def to_ambr_top(lang: Locale | str):
+    return AMBR_LANGS.get(str(lang)) or "en"
 
 
-def to_genshin_py(locale: Locale | str):
-    return GENSHIN_PY_LANGS.get(str(locale)) or "en-us"
+def to_genshin_py(lang: Locale | str):
+    return GENSHIN_PY_LANGS.get(str(lang)) or "en-us"
 
 
-def to_go(locale: Locale | str):
-    return GENSHIN_OPTIMIZER_LANGS.get(str(locale)) or 4
+def to_go(lang: Locale | str):
+    return GENSHIN_OPTIMIZER_LANGS.get(str(lang)) or 4
 
 
-def to_paths(locale: Locale | str):
-    return CROWDIN_FILE_PATHS.get(str(locale)) or "en-US"
+def to_paths(lang: Locale | str):
+    return CROWDIN_FILE_PATHS.get(str(lang)) or "en-US"
 
 
-def to_event_lang(locale: Locale | str):
-    return AMBR_EVENT_LANGS.get(str(locale), "EN")
+def to_event_lang(lang: Locale | str):
+    return AMBR_EVENT_LANGS.get(str(lang), "EN")
 
 
-def to_hutao_login_lang(locale: Locale | str):
-    return HUTAO_LOGIN_LANGS.get(str(locale), "en")
+def to_hutao_login_lang(lang: Locale | str):
+    return HUTAO_LOGIN_LANGS.get(str(lang), "en")
 
 
-def to_genshin_db(locale: Locale | str):
-    return GENSHIN_DB_LANGS.get(str(locale), "English")
+def to_genshin_db(lang: Locale | str):
+    return GENSHIN_DB_LANGS.get(str(lang), "English")

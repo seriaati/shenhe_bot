@@ -16,7 +16,7 @@ from utils import divide_chunks, get_character_emoji
 
 
 class View(BaseView):
-    def __init__(self, locale: discord.Locale | str):
+    def __init__(self, lang: discord.Locale | str):
         super().__init__(timeout=config.mid_timeout)
 
         elements = get_element_list()
@@ -24,11 +24,11 @@ class View(BaseView):
             self.add_item(
                 ElementButton(get_element_emoji(element), element, index // 4)
             )
-        self.locale = locale
+        self.lang = lang
 
     def gen_embed(self) -> discord.Embed:
         embed = DefaultEmbed(
-            text_map.get(62, self.locale), text_map.get(276, self.locale)
+            text_map.get(62, self.lang), text_map.get(276, self.lang)
         )
         return embed
 
@@ -69,7 +69,7 @@ class GoBackCharacter(ui.Button):
 
 
 async def element_button_callback(i: Inter, view: View, element: str):
-    ambr = AmbrTopAPI(i.client.session, to_ambr_top(view.locale))
+    ambr = AmbrTopAPI(i.client.session, to_ambr_top(view.lang))
     characters = await ambr.get_character()
     if not isinstance(characters, List):
         raise TypeError("characters is not a list")
@@ -78,12 +78,12 @@ async def element_button_callback(i: Inter, view: View, element: str):
         if character.element == element:
             character_id = character.id.split("-")[0]
             image_options = await image.get_user_custom_image_options(
-                int(character_id), i.client.pool, i.user.id, view.locale
+                int(character_id), i.client.pool, i.user.id, view.lang
             )
             options.append(
                 discord.SelectOption(
                     label=character.name,
-                    description=text_map.get(532, view.locale).format(
+                    description=text_map.get(532, view.lang).format(
                         num=len(image_options)
                     ),
                     value=str(character_id),
@@ -91,11 +91,11 @@ async def element_button_callback(i: Inter, view: View, element: str):
                 )
             )
     view.clear_items()
-    view.add_item(CharacterSelect(view.locale, options, element))
+    view.add_item(CharacterSelect(view.lang, options, element))
     view.add_item(GoBack())
-    embed = DefaultEmbed(description=text_map.get(276, view.locale))
+    embed = DefaultEmbed(description=text_map.get(276, view.lang))
     embed.set_author(
-        name=text_map.get(62, view.locale), icon_url=i.user.display_avatar.url
+        name=text_map.get(62, view.lang), icon_url=i.user.display_avatar.url
     )
     await i.response.edit_message(view=view, embed=embed)
 
@@ -103,13 +103,13 @@ async def element_button_callback(i: Inter, view: View, element: str):
 class AddImage(ui.Button):
     def __init__(
         self,
-        locale: discord.Locale | str,
+        lang: discord.Locale | str,
         character_id: int,
         element: str,
         disabled: bool,
     ):
         super().__init__(
-            label=text_map.get(413, locale),
+            label=text_map.get(413, lang),
             style=discord.ButtonStyle.green,
             disabled=disabled,
         )
@@ -119,7 +119,7 @@ class AddImage(ui.Button):
 
     async def callback(self, i: Inter):
         await i.response.send_modal(
-            AddImageModal(self.view.locale, self.character_id, self.view, self.element)
+            AddImageModal(self.view.lang, self.character_id, self.view, self.element)
         )
 
 
@@ -134,12 +134,12 @@ class AddImageModal(BaseModal):
     )
 
     def __init__(
-        self, locale: discord.Locale | str, character_id: int, view: View, element: str
+        self, lang: discord.Locale | str, character_id: int, view: View, element: str
     ):
-        super().__init__(timeout=config.long_timeout, title=text_map.get(413, locale))
-        self.nickname.placeholder = text_map.get(45, locale)
-        self.nickname.label = text_map.get(601, locale)
-        self.url.label = text_map.get(60, locale)
+        super().__init__(timeout=config.long_timeout, title=text_map.get(413, lang))
+        self.nickname.placeholder = text_map.get(45, lang)
+        self.nickname.label = text_map.get(601, lang)
+        self.url.label = text_map.get(60, lang)
         self.character_id = character_id
         self.view = view
         self.element = element
@@ -149,9 +149,9 @@ class AddImageModal(BaseModal):
         if not check:
             return await i.response.send_message(
                 embed=ErrorEmbed(
-                    description=text_map.get(568, self.view.locale)
+                    description=text_map.get(568, self.view.lang)
                 ).set_author(
-                    name=text_map.get(274, self.view.locale),
+                    name=text_map.get(274, self.view.lang),
                     icon_url=i.user.display_avatar.url,
                 ),
                 ephemeral=True,
@@ -172,19 +172,19 @@ class AddImageModal(BaseModal):
 class RemoveImage(ui.Button):
     def __init__(
         self,
-        locale: discord.Locale | str,
+        lang: discord.Locale | str,
         character_id: int,
         disabled: bool,
         element: str,
     ):
         super().__init__(
-            label=text_map.get(61, locale),
+            label=text_map.get(61, lang),
             style=discord.ButtonStyle.red,
             disabled=disabled,
         )
         self.character_id = character_id
         self.element = element
-        self.locale = locale
+        self.lang = lang
         self.view: View
 
     async def callback(self, i: Inter):
@@ -205,13 +205,13 @@ class RemoveImage(ui.Button):
 class ImageSelect(ui.Select):
     def __init__(
         self,
-        locale: discord.Locale | str,
+        lang: discord.Locale | str,
         options: List[discord.SelectOption],
         character_id: int,
         element: str,
     ):
         super().__init__(
-            placeholder=text_map.get(562, locale),
+            placeholder=text_map.get(562, lang),
             options=options
             if options
             else [discord.SelectOption(label="none", value="none")],
@@ -233,11 +233,11 @@ class ImageSelect(ui.Select):
 class CharacterSelect(ui.Select):
     def __init__(
         self,
-        locale: discord.Locale | str,
+        lang: discord.Locale | str,
         options: List[discord.SelectOption],
         element: str,
     ):
-        super().__init__(placeholder=text_map.get(157, locale), options=options)
+        super().__init__(placeholder=text_map.get(157, lang), options=options)
         self.element = element
         self.view: View
 
@@ -263,22 +263,22 @@ async def return_custom_image_interaction(
     if not isinstance(view, EnkaView):
         view.add_item(GoBackCharacter(element))
     else:
-        v = View(view.locale)
+        v = View(view.lang)
         embeds.append(v.gen_embed())
         view.add_item(enka_damage_calc.GoBack())
 
     options = await image.get_user_custom_image_options(
-        character_id, i.client.pool, i.user.id, view.locale
+        character_id, i.client.pool, i.user.id, view.lang
     )
-    view.add_item(AddImage(view.locale, character_id, element, len(options) == 125))
+    view.add_item(AddImage(view.lang, character_id, element, len(options) == 125))
     view.add_item(
         remove_image := RemoveImage(
-            view.locale, character_id, bool(not options), element
+            view.lang, character_id, bool(not options), element
         )
     )
     div_options: List[List[discord.SelectOption]] = list(divide_chunks(options, 25))
     for d_options in div_options:
-        view.add_item(ImageSelect(view.locale, d_options, character_id, element))
+        view.add_item(ImageSelect(view.lang, d_options, character_id, element))
 
     custom_image = await image.get_user_custom_image(
         i.user.id, character_id, i.client.pool
@@ -287,7 +287,7 @@ async def return_custom_image_interaction(
         remove_image.disabled = True  # skipcq: PYL-W0201
 
     embed = await image.get_user_custom_image_embed(
-        i, view.locale, str(character_id), custom_image
+        i, view.lang, str(character_id), custom_image
     )
     embeds.append(embed)
     view.message = await i.edit_original_response(

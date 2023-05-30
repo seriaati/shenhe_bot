@@ -12,7 +12,7 @@ from utils import circular_crop, dynamic_font_size, get_cache, get_font
 
 
 def wish_overview(
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
     wish_data: WishData,
     dark_mode: bool,
 ) -> io.BytesIO:
@@ -22,28 +22,28 @@ def wish_overview(
     im = im.resize((im.width // 3, im.height // 3))
     draw = ImageDraw.Draw(im)
     fill = asset.primary_text if not dark_mode else asset.white
-    locale = str(locale)
+    lang = str(lang)
 
     # banner name
-    font = get_font(locale, 40, "Bold")
+    font = get_font(lang, 40, "Bold")
     draw.text((30, 100), wish_data.title, font=font, fill=fill)
 
     # primogem amount
-    font = get_font(locale, 20, "Regular")
+    font = get_font(lang, 20, "Regular")
     primo_count = f"{wish_data.total_wishes*160:,}"
     draw.text(
         (69, 171),
-        text_map.get(649, locale).format(a=primo_count),
+        text_map.get(649, lang).format(a=primo_count),
         font=font,
         fill=fill,
     )
 
     # stats
     stats = {
-        text_map.get(650, locale): wish_data.total_wishes,
-        text_map.get(651, locale): wish_data.pity,
-        text_map.get(652, locale): wish_data.four_star,
-        text_map.get(653, locale): wish_data.five_star,
+        text_map.get(650, lang): wish_data.total_wishes,
+        text_map.get(651, lang): wish_data.pity,
+        text_map.get(652, lang): wish_data.four_star,
+        text_map.get(653, lang): wish_data.five_star,
     }
 
     col = 0
@@ -52,7 +52,7 @@ def wish_overview(
         col += 1
         if col == 3:
             offset = (89, offset[1] + 118)
-        font = get_font(locale, 20, "Light")
+        font = get_font(lang, 20, "Light")
         text = text.upper().split(" ")
         draw.text(
             (offset[0] + 137 - font.getlength(text[0]), offset[1] - 27),
@@ -73,17 +73,17 @@ def wish_overview(
         adder = 262 if col in [2, 4] else 30
         mid_point = (adder + left_point) // 2
         font = dynamic_font_size(
-            str(stat), 30, 50, left_point - 30 - 20, get_font(locale, 50, "Medium")
+            str(stat), 30, 50, left_point - 30 - 20, get_font(lang, 50, "Medium")
         )
         draw.text((mid_point, offset[1]), str(stat), font=font, fill=fill, anchor="mm")
         offset = (offset[0] + 232, offset[1])
 
     # recent 5 star pulls
-    font = get_font(locale, 30, "Bold")
-    draw.text((30, 469), text_map.get(654, locale), font=font, fill=fill)
+    font = get_font(lang, 30, "Bold")
+    draw.text((30, 469), text_map.get(654, lang), font=font, fill=fill)
 
     draw_wish_recents(
-        locale, wish_data.recents[:8], dark_mode, im, draw, CardType.OVERVIEW
+        lang, wish_data.recents[:8], dark_mode, im, draw, CardType.OVERVIEW
     )
 
     fp = io.BytesIO()
@@ -95,7 +95,7 @@ def wish_overview(
 
 
 def draw_wish_recents_card(
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
     recents: List[RecentWish],
     dark_mode: bool,
 ) -> io.BytesIO:
@@ -105,7 +105,7 @@ def draw_wish_recents_card(
     im = im.resize((im.width // 3, im.height // 3))
     draw = ImageDraw.Draw(im)
 
-    draw_wish_recents(locale, recents, dark_mode, im, draw, CardType.RECENTS)
+    draw_wish_recents(lang, recents, dark_mode, im, draw, CardType.RECENTS)
 
     im = im.convert("RGB")
     im = im.resize((im.width * 3, im.height * 3))
@@ -115,7 +115,7 @@ def draw_wish_recents_card(
 
 
 def draw_wish_recents(
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
     recents: List[RecentWish],
     dark_mode: bool,
     im: Image.Image,
@@ -144,7 +144,7 @@ def draw_wish_recents(
             im.paste(icon, offset, icon)
 
         # character name
-        font = get_font(locale, 20, "Medium")
+        font = get_font(lang, 20, "Medium")
         fill = asset.primary_text if not dark_mode else asset.white
         character_name = item.name
         if font.getlength(character_name) >= 85:
@@ -155,7 +155,7 @@ def draw_wish_recents(
         draw.text((offset[0] + 69, offset[1] + 5), character_name, font=font, fill=fill)
 
         # number of pulls
-        font = get_font(locale, 16, "Regular")
+        font = get_font(lang, 16, "Regular")
         if 1 <= int(item.pull_num) <= 50:
             fill = "#5FA846" if not dark_mode else "#afff9c"
         elif 51 <= int(item.pull_num) <= 70:
@@ -164,7 +164,7 @@ def draw_wish_recents(
             fill = "#CF5656" if not dark_mode else "#ff8c8c"
         draw.text(
             (offset[0] + 69, offset[1] + 28),
-            text_map.get(396, locale).format(pull=item.pull_num),
+            text_map.get(396, lang).format(pull=item.pull_num),
             font=font,
             fill=fill,
         )

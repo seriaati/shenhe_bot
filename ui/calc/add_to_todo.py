@@ -11,13 +11,13 @@ class AddButton(Button):
     def __init__(
         self,
         materials: Dict[int, int],
-        locale: Locale | str,
+        lang: Locale | str,
     ):
         super().__init__(
-            style=ButtonStyle.blurple, label=text_map.get(175, locale), row=2
+            style=ButtonStyle.blurple, label=text_map.get(175, lang), row=2
         )
         self.materials = materials
-        self.locale = locale
+        self.lang = lang
 
     async def callback(self, i: Inter) -> Any:
         for item_id, item_count in self.materials.items():
@@ -29,8 +29,8 @@ class AddButton(Button):
             )
 
         await i.response.send_message(
-            embed=DefaultEmbed(description=text_map.get(178, self.locale)).set_author(
-                name=text_map.get(179, self.locale), icon_url=i.user.display_avatar.url
+            embed=DefaultEmbed(description=text_map.get(178, self.lang)).set_author(
+                name=text_map.get(179, self.lang), icon_url=i.user.display_avatar.url
             ),
             ephemeral=True,
         )

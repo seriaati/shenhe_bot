@@ -235,7 +235,7 @@ class WTNotifs:
             DrawInput(
                 loop=self.bot.loop,
                 session=self.bot.session,
-                locale=lang,
+                lang=lang,
                 dark_mode=dark_mode,
             ),
             materials,  # type: ignore

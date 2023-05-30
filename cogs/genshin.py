@@ -27,13 +27,7 @@ from apps.genshin_data import abyss
 from apps.text_map import convert_locale, text_map
 from data.cards.dice_element import get_dice_emoji
 from ui.others import manage_accounts
-from utils import (
-    disable_view_items,
-    get_character_emoji,
-    get_uid_region_hash,
-    get_user_lang,
-    get_user_theme,
-)
+from utils import disable_view_items, get_character_emoji, get_uid_region_hash
 from utils.genshin import update_talents_json
 
 load_dotenv()
@@ -176,7 +170,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         draw_input = models.DrawInput(
             loop=self.bot.loop,
             session=self.bot.session,
-            locale=lang,
+            lang=lang,
             dark_mode=dark_mode,
         )
         fp = await main_funcs.draw_realtime_card(
@@ -498,7 +492,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 models.DrawInput(
                     loop=self.bot.loop,
                     session=self.bot.session,
-                    locale=lang,
+                    lang=lang,
                     dark_mode=dark_mode,
                 ),
                 abyss,
@@ -537,10 +531,10 @@ class GenshinCog(commands.Cog, name="genshin"):
 
     @app_commands.command(name="stuck", description=_("Data not public?", hash=149))
     async def stuck(self, i: discord.Interaction):
-        user_locale = await get_user_lang(i.user.id, self.bot.pool)
+        lang = await self.bot.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
         embed = models.DefaultEmbed(
-            text_map.get(149, i.locale, user_locale),
-            text_map.get(150, i.locale, user_locale),
+            text_map.get(149, lang),
+            text_map.get(150, lang),
         )
         embed.set_image(url="https://i.imgur.com/w6Q7WwJ.gif")
         await i.response.send_message(embed=embed, ephemeral=True)
@@ -584,25 +578,26 @@ class GenshinCog(commands.Cog, name="genshin"):
         await self.search_uid_command(i, player)
 
     async def search_uid_command(
-        self, i: discord.Interaction, player: discord.User, ephemeral: bool = True
+        self, inter: discord.Interaction, player: discord.User, ephemeral: bool = True
     ):
-        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
+        i: models.Inter = inter # type: ignore
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
         uid = await self.bot.db.users.get_uid(player.id)
 
         embed = models.DefaultEmbed()
         embed.add_field(
-            name=f"{text_map.get(167, locale).format(name=player.display_name)}",
+            name=f"{text_map.get(167, lang).format(name=player.display_name)}",
             value=str(uid),
             inline=False,
         )
         embed.add_field(
-            name=text_map.get(727, locale),
-            value=text_map.get(get_uid_region_hash(uid), locale),
+            name=text_map.get(727, lang),
+            value=text_map.get(get_uid_region_hash(uid), lang),
             inline=False,
         )
         embed.set_thumbnail(url=player.display_avatar.url)
 
-        view = ui.uid_command.View(locale, uid)
+        view = ui.uid_command.View(lang, uid)
         await i.response.send_message(embed=embed, ephemeral=ephemeral, view=view)
         view.message = await i.original_response()
 
@@ -639,22 +634,22 @@ class GenshinCog(commands.Cog, name="genshin"):
         member = member or i.user
 
         uid = custom_uid or await self.bot.db.users.get_uid(member.id)
-        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
+        lang = await self.bot.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
 
         data, en_data, card_data = await enka.get_enka_data(
-            uid, convert_locale.to_enka(locale), self.bot.pool
+            uid, convert_locale.to_enka(lang), self.bot.pool
         )
 
         embeds = [
             models.DefaultEmbed()
             .set_author(
-                name=text_map.get(644, locale),
+                name=text_map.get(644, lang),
                 icon_url=asset.loader,
             )
             .set_image(url="https://i.imgur.com/3U1bJ0Z.gif"),
             models.DefaultEmbed()
             .set_author(
-                name=text_map.get(644, locale),
+                name=text_map.get(644, lang),
                 icon_url=asset.loader,
             )
             .set_image(url="https://i.imgur.com/25pdyUG.gif"),
@@ -667,7 +662,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         for c in data.characters:
             if c.id not in non_cache_ids:
-                description = text_map.get(543, locale)
+                description = text_map.get(543, lang)
             else:
                 description = None
             label = f"{c.name} | Lv.{c.level} | C{c.constellations_unlocked}R{c.equipments[-1].refinement}"
@@ -680,7 +675,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 )
             )
 
-        view = ui.enka_profile.View([], locale)
+        view = ui.enka_profile.View([], lang)
         disable_view_items(view)
 
         await i.edit_original_response(
@@ -693,23 +688,23 @@ class GenshinCog(commands.Cog, name="genshin"):
             general.get_dt_now() + timedelta(seconds=data.ttl), "R"
         )
         embed = models.DefaultEmbed(
-            text_map.get(144, locale),
+            text_map.get(144, lang),
             f"""
-            {asset.link_emoji} [{text_map.get(588, locale)}](https://enka.cc/u/{uid})
-            {asset.time_emoji} {text_map.get(589, locale).format(in_x_seconds=in_x_seconds)}
+            {asset.link_emoji} [{text_map.get(588, lang)}](https://enka.cc/u/{uid})
+            {asset.time_emoji} {text_map.get(589, lang).format(in_x_seconds=in_x_seconds)}
             """,
         )
         embed.set_image(url="attachment://profile.jpeg")
-        embed_two = models.DefaultEmbed(text_map.get(145, locale))
+        embed_two = models.DefaultEmbed(text_map.get(145, lang))
         embed_two.set_image(url="attachment://character.jpeg")
-        embed_two.set_footer(text=text_map.get(511, locale))
+        embed_two.set_footer(text=text_map.get(511, lang))
 
-        dark_mode = await get_user_theme(i.user.id, self.bot.pool)
+        dark_mode = await self.bot.db.settings.get(i.user.id, Settings.DARK_MODE)
         fp, fp_two = await main_funcs.draw_profile_overview_card(
             models.DrawInput(
                 loop=self.bot.loop,
                 session=self.bot.session,
-                locale=locale,
+                lang=lang,
                 dark_mode=dark_mode,
             ),
             card_data or data,
@@ -717,7 +712,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         fp.seek(0)
         fp_two.seek(0)
 
-        view = ui.enka_profile.View(options, locale)
+        view = ui.enka_profile.View(options, lang)
         view.overview_embeds = [embed, embed_two]
         view.overview_fps = [fp, fp_two]
         view.data = data
@@ -725,7 +720,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         view.card_data = card_data
         view.member = member
         view.author = i.user
-        view.locale = locale
+        view.lang = lang
 
         file_one = discord.File(fp, filename="profile.jpeg")
         file_two = discord.File(fp_two, filename="character.jpeg")
@@ -769,10 +764,10 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         await i.response.defer()
 
-        user_locale = await get_user_lang(i.user.id, self.bot.pool)
-        locale = user_locale or i.locale
-        ambr_top_locale = convert_locale.to_ambr_top(locale)
-        dark_mode = await get_user_theme(i.user.id, self.bot.pool)
+        user_locale = await self.bot.db.settings.get(i.user.id, Settings.LANG)
+        lang = user_locale or i.locale
+        ambr_top_locale = convert_locale.to_ambr_top(lang)
+        dark_mode = await self.bot.db.settings.get(i.user.id, Settings.DARK_MODE)
         client = AmbrTopAPI(self.bot.session, ambr_top_locale)
 
         item_type = None
@@ -788,69 +783,70 @@ class GenshinCog(commands.Cog, name="genshin"):
             if character is None:
                 raise exceptions.ItemNotFound
             await ui.search_nav.parse_character_wiki(
-                character, i, locale, client, dark_mode
+                character, i, lang, client, dark_mode
             )
 
         elif item_type == 1:  # weapon
             weapon = await client.get_weapon_detail(int(query))
             if weapon is None:
                 raise exceptions.ItemNotFound
-            await ui.search_nav.parse_weapon_wiki(weapon, i, locale, client, dark_mode)
+            await ui.search_nav.parse_weapon_wiki(weapon, i, lang, client, dark_mode)
 
         elif item_type == 2:  # material
             material = await client.get_material_detail(int(query))
             if material is None:
                 raise exceptions.ItemNotFound
             await ui.search_nav.parse_material_wiki(
-                material, i, locale, client, dark_mode
+                material, i, lang, client, dark_mode
             )
 
         elif item_type == 3:  # artifact
             artifact = await client.get_artifact_detail(int(query))
             if artifact is None:
                 raise exceptions.ItemNotFound
-            await ui.search_nav.parse_artifact_wiki(artifact, i, locale)
+            await ui.search_nav.parse_artifact_wiki(artifact, i, lang)
 
         elif item_type == 4:  # monster
             monster = await client.get_monster_detail(int(query))
             if monster is None:
                 raise exceptions.ItemNotFound
             await ui.search_nav.parse_monster_wiki(
-                monster, i, locale, client, dark_mode
+                monster, i, lang, client, dark_mode
             )
 
         elif item_type == 5:  # food
             food = await client.get_food_detail(int(query))
             if food is None:
                 raise exceptions.ItemNotFound
-            await ui.search_nav.parse_food_wiki(food, i, locale, client, dark_mode)
+            await ui.search_nav.parse_food_wiki(food, i, lang, client, dark_mode)
 
         elif item_type == 6:  # furniture
             furniture = await client.get_furniture_detail(int(query))
             if furniture is None:
                 raise exceptions.ItemNotFound
             await ui.search_nav.parse_furniture_wiki(
-                furniture, i, locale, client, dark_mode
+                furniture, i, lang, client, dark_mode
             )
 
         elif item_type == 7:  # namecard
             namecard = await client.get_name_card_detail(int(query))
             if namecard is None:
                 raise exceptions.ItemNotFound
-            await ui.search_nav.parse_namecard_wiki(namecard, i, locale)
+            await ui.search_nav.parse_namecard_wiki(namecard, i, lang)
 
         elif item_type == 8:  # book
             book = await client.get_book_detail(int(query))
             if book is None:
                 raise exceptions.ItemNotFound
-            await ui.search_nav.parse_book_wiki(book, i, locale, client)
+            await ui.search_nav.parse_book_wiki(book, i, lang, client)
 
     @search.autocomplete("query")
     async def query_autocomplete(
         self, i: discord.Interaction, current: str
     ) -> List[app_commands.Choice[str]]:
-        user_locale = await get_user_lang(i.user.id, self.bot.pool)
-        ambr_top_locale = convert_locale.to_ambr_top(user_locale or i.locale)
+        lang = await self.bot.db.settings.get(i.user.id, Settings.LANG)
+        lang = lang or str(i.locale)
+        ambr_top_locale = convert_locale.to_ambr_top(lang)
         result: List[app_commands.Choice] = []
         for queries in self.text_map_files:
             for item_id, query_names in queries.items():
@@ -880,9 +876,11 @@ class GenshinCog(commands.Cog, name="genshin"):
         description=_("View the list of current beta items in Genshin", hash=434),
     )
     async def view_beta_items(self, i: discord.Interaction):
-        user_locale = await get_user_lang(i.user.id, self.bot.pool)
+        lang = await self.bot.db.settings.get(i.user.id, Settings.LANG)
+        lang = lang or str(i.locale)
+        
         client = AmbrTopAPI(
-            self.bot.session, convert_locale.to_ambr_top(user_locale or i.locale)
+            self.bot.session, convert_locale.to_ambr_top(lang)
         )
         result = ""
         first_icon_url = ""
@@ -893,11 +891,11 @@ class GenshinCog(commands.Cog, name="genshin"):
         for thing in things:
             result, first_icon_url = self.get_beta_items(result, thing, first_icon_url)
         if result == "":
-            result = text_map.get(445, i.locale, user_locale)
-        embed = models.DefaultEmbed(text_map.get(437, i.locale, user_locale), result)
+            result = text_map.get(445, lang)
+        embed = models.DefaultEmbed(text_map.get(437, lang), result)
         if first_icon_url != "":
             embed.set_thumbnail(url=first_icon_url)
-        embed.set_footer(text=text_map.get(444, i.locale, user_locale))
+        embed.set_footer(text=text_map.get(444, lang))
         await i.response.send_message(embed=embed)
 
     @staticmethod
@@ -921,8 +919,8 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def banners(self, i: discord.Interaction):
         await i.response.defer()
 
-        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
-        lang = convert_locale.to_genshin_py(locale)
+        lang = await self.bot.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
+        lang = convert_locale.to_genshin_py(lang)
         client = genshin.Client()
 
         zh_tw_annoucements = await client.get_genshin_announcements(lang="zh-tw")
@@ -936,13 +934,13 @@ class GenshinCog(commands.Cog, name="genshin"):
         if not banners:
             return await i.followup.send(
                 embed=models.DefaultEmbed(
-                    description=text_map.get(376, locale)
-                ).set_author(name=text_map.get(23, locale))
+                    description=text_map.get(376, lang)
+                ).set_author(name=text_map.get(23, lang))
             )
 
         fp = await main_funcs.draw_banner_card(
             models.DrawInput(
-                loop=self.bot.loop, session=self.bot.session, locale=locale
+                loop=self.bot.loop, session=self.bot.session, lang=lang
             ),
             [w.banner for w in banners],
         )
@@ -950,8 +948,8 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         await i.followup.send(
             embed=models.DefaultEmbed(
-                text_map.get(746, locale),
-                text_map.get(381, locale).format(
+                text_map.get(746, lang),
+                text_map.get(381, lang).format(
                     time=format_dt(
                         banners[0].end_time,
                         "R",
@@ -965,13 +963,14 @@ class GenshinCog(commands.Cog, name="genshin"):
         name="abyss-enemies",
         description=_("View the list of enemies in the current abyss phases", hash=294),
     )
-    async def abyss_enemies(self, i: discord.Interaction):
+    async def abyss_enemies(self, inter: discord.Interaction):
+        i: models.Inter = inter # type: ignore
         await i.response.defer()
-        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
-        floors = await abyss.get_abyss_enemies(self.bot.gd_text_map, locale)
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
+        floors = await abyss.get_abyss_enemies(self.bot.gd_text_map, lang)
 
         ley_line_disorders = await abyss.get_ley_line_disorders(
-            self.bot.gd_text_map, locale
+            self.bot.gd_text_map, lang
         )
 
         embeds: Dict[str, discord.Embed] = {}
@@ -979,17 +978,17 @@ class GenshinCog(commands.Cog, name="genshin"):
         for floor in floors:
             for chamber in floor.chambers:
                 embed = models.DefaultEmbed(
-                    f"{text_map.get(146, locale).format(a=floor.num)} - {text_map.get(177, locale).format(a=chamber.num)}"
+                    f"{text_map.get(146, lang).format(a=floor.num)} - {text_map.get(177, lang).format(a=chamber.num)}"
                 )
                 embed.add_field(
-                    name=text_map.get(706, locale),
+                    name=text_map.get(706, lang),
                     value=general.add_bullet_points(
                         ley_line_disorders.get(floor.num, [])
                     ),
                     inline=False,
                 )
                 embed.add_field(
-                    name=text_map.get(295, locale),
+                    name=text_map.get(295, lang),
                     value=chamber.enemy_level,
                     inline=False,
                 )
@@ -1000,20 +999,20 @@ class GenshinCog(commands.Cog, name="genshin"):
         embed = models.DefaultEmbed()
         embed.set_image(url=asset.abyss_image)
         embed.set_author(
-            name=f"{text_map.get(705, locale)}",
+            name=f"{text_map.get(705, lang)}",
             icon_url=i.user.display_avatar.url,
         )
 
         buff_name, buff_desc = await abyss.get_abyss_blessing(
-            self.bot.gd_text_map, locale
+            self.bot.gd_text_map, lang
         )
-        buff_embed = models.DefaultEmbed(text_map.get(733, locale))
+        buff_embed = models.DefaultEmbed(text_map.get(733, lang))
         buff_embed.add_field(
             name=buff_name,
             value=buff_desc,
         )
 
-        view = ui.abyss_enemy.View(locale, enemies, embeds, buff_embed)
+        view = ui.abyss_enemy.View(lang, enemies, embeds, buff_embed)
         view.author = i.user
         await i.followup.send(embed=embed, view=view)
         view.message = await i.original_response()
@@ -1026,7 +1025,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     async def slash_lineup(self, inter: discord.Interaction):
         i: models.Inter = inter  # type: ignore
-        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
 
         user = await i.client.db.users.get(i.user.id)
         client = await user.client
@@ -1047,11 +1046,11 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
             scenario_dict[str(scenario.id)] = scenario
 
-        ambr = AmbrTopAPI(self.bot.session, convert_locale.to_ambr_top(locale))
+        ambr = AmbrTopAPI(self.bot.session, convert_locale.to_ambr_top(lang))
         characters = await ambr.get_character(include_beta=False)
 
         if isinstance(characters, List):
-            view = ui.lineup_view.View(locale, options, scenario_dict, characters)
+            view = ui.lineup_view.View(lang, options, scenario_dict, characters)
             view.author = i.user
             await ui.lineup_view.search_lineup(i, view)
             view.message = await i.original_response()
@@ -1060,12 +1059,13 @@ class GenshinCog(commands.Cog, name="genshin"):
         name="tcg", description=_("Search a card in the Genshin TCG", hash=717)
     )
     @app_commands.rename(card_id=_("card", hash=718))
-    async def slash_tcg(self, i: discord.Interaction, card_id: str):
+    async def slash_tcg(self, inter: discord.Interaction, card_id: str):
         if not card_id.isdigit():
             raise exceptions.AutocompleteError
 
-        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
-        genshin_db_locale = convert_locale.to_genshin_db(locale)
+        i: models.Inter = inter  # type: ignore
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
+        genshin_db_locale = convert_locale.to_genshin_db(lang)
 
         the_card = None
         card_type = None
@@ -1090,7 +1090,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
 
             for skill in card["skills"]:
-                cost_str = f"**{text_map.get(710, locale)}: **"
+                cost_str = f"**{text_map.get(710, lang)}: **"
                 cost_str += " / ".join(
                     [
                         f"{get_dice_emoji(cost['costtype'])} ({cost['count']})"
@@ -1121,7 +1121,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                         for cost in card["playcost"]
                     ]
                 )
-                embed.add_field(name=text_map.get(710, locale), value=cost_str)
+                embed.add_field(name=text_map.get(710, lang), value=cost_str)
         elif card_type == "tcgcardbacks":
             embed = models.DefaultEmbed(card["name"], card["description"])
             embed.set_footer(text=card["source"])
@@ -1148,10 +1148,11 @@ class GenshinCog(commands.Cog, name="genshin"):
 
     @slash_tcg.autocomplete("card_id")
     async def card_autocomplete(
-        self, i: discord.Interaction, current: str
+        self, inter: discord.Interaction, current: str
     ) -> List[app_commands.Choice[str]]:
-        locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
-        genshin_db_locale = convert_locale.to_genshin_db(locale)
+        i: models.Inter = inter # type: ignore
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
+        genshin_db_locale = convert_locale.to_genshin_db(lang)
 
         choices: List[app_commands.Choice] = []
 

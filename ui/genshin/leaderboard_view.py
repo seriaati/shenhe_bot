@@ -199,7 +199,7 @@ class View(BaseView):
             models.DrawInput(
                 loop=loop,
                 session=session,
-                locale=self.lang,
+                lang=self.lang,
                 dark_mode=self.dark_mode,
             ),
             self.uid,
@@ -233,7 +233,7 @@ class View(BaseView):
             models.DrawInput(
                 loop=loop,
                 session=session,
-                locale=self.lang,
+                lang=self.lang,
                 dark_mode=self.dark_mode,
             ),
             self.uid,
@@ -286,7 +286,7 @@ class View(BaseView):
             models.DrawInput(
                 loop=loop,
                 session=session,
-                locale=self.lang,
+                lang=self.lang,
                 dark_mode=self.dark_mode,
             ),
             uc_list,
@@ -322,12 +322,12 @@ class LeaderboardSelect(BaseSelect):
 
 
 class AbyssSeasonSelect(BaseSelect):
-    def __init__(self, locale: discord.Locale | str):
+    def __init__(self, lang: discord.Locale | str):
         current_season = get_current_abyss_season()
         hashes = (435, 436, 151)
         options = [
             discord.SelectOption(
-                label=text_map.get(hashes[index], locale)
+                label=text_map.get(hashes[index], lang)
                 + f" ({current_season - index})",
                 description=get_abyss_season_date_range(current_season - index),
                 value=str(current_season - index),
@@ -335,10 +335,10 @@ class AbyssSeasonSelect(BaseSelect):
             for index in range(3)
         ]
         options.insert(
-            0, discord.SelectOption(label=text_map.get(154, locale), value="0")
+            0, discord.SelectOption(label=text_map.get(154, lang), value="0")
         )
         super().__init__(
-            placeholder=text_map.get(153, locale),
+            placeholder=text_map.get(153, lang),
             options=options,
             custom_id="season_select",
         )
@@ -389,10 +389,10 @@ class Server(BaseButton):
         await self.restore(i)
 
 
-def get_al_title(season: int, locale: discord.Locale | str):
+def get_al_title(season: int, lang: discord.Locale | str):
     """Get the title of the abyss leaderboard."""
     if season != 0:
-        return text_map.get(88, locale).format(
-            phase=text_map.get(430, locale) + " ", num=season
+        return text_map.get(88, lang).format(
+            phase=text_map.get(430, lang) + " ", num=season
         )
-    return text_map.get(88, locale).format(phase="", num=text_map.get(154, locale))
+    return text_map.get(88, lang).format(phase="", num=text_map.get(154, lang))

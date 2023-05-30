@@ -137,7 +137,7 @@ def shorten_text(text: str, max_length: int, font: ImageFont.FreeTypeFont):
 
 
 def get_font_name(
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
     variation: typing.Literal[
         "Bold", "Light", "Thin", "Black", "Medium", "Regular"
     ] = "Regular",
@@ -147,23 +147,23 @@ def get_font_name(
     default = {"extension": "ttf", "name": "NotoSans"}
     return (
         path
-        + FONTS.get(str(locale), default)["name"]
+        + FONTS.get(str(lang), default)["name"]
         + "-"
         + variation
         + "."
-        + FONTS.get(str(locale), default)["extension"]
+        + FONTS.get(str(lang), default)["extension"]
     )
 
 
 def get_font(
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
     size: int,
     variation: typing.Literal[
         "Bold", "Light", "Thin", "Black", "Medium", "Regular"
     ] = "Regular",
 ) -> ImageFont.FreeTypeFont:
     """Get a font"""
-    font_name = get_font_name(locale, variation)
+    font_name = get_font_name(lang, variation)
     return ImageFont.truetype(font_name, size)
 
 
@@ -210,11 +210,11 @@ def draw_dynamic_background(
 
 
 async def image_gen_transition(
-    i: discord.Interaction, view: discord.ui.View, locale: discord.Locale | str
+    i: discord.Interaction, view: discord.ui.View, lang: discord.Locale | str
 ):
     """Disable all items in a view, show a loader text"""
     embed = DefaultEmbed().set_author(
-        name=text_map.get(644, locale), icon_url=asset.loader
+        name=text_map.get(644, lang), icon_url=asset.loader
     )
     # disable all items in the view
     for item in view.children:

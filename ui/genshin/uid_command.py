@@ -7,12 +7,12 @@ from dev.base_ui import BaseView
 
 
 class View(BaseView):
-    def __init__(self, locale: Locale | str, uid: int):
+    def __init__(self, lang: Locale | str, uid: int):
         super().__init__(timeout=config.short_timeout)
-        self.locale = locale
+        self.lang = lang
         self.uid = uid
 
-        self.add_item(CopyUID(text_map.get(726, locale)))
+        self.add_item(CopyUID(text_map.get(726, lang)))
 
 
 class CopyUID(Button):

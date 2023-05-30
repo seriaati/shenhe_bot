@@ -10,7 +10,7 @@ import dev.asset as asset
 import dev.exceptions as exceptions
 from apps.db.tables.user_settings import Settings
 from apps.text_map import text_map
-from utils import get_user_lang, log
+from utils import log
 
 from .models import ErrorEmbed, Inter, OriginalInfo
 
@@ -19,9 +19,9 @@ async def global_error_handler(
     i: Inter,
     e: typing.Union[Exception, discord.app_commands.AppCommandError],
 ):
-    locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
-    embed = get_error_handle_embed(i.user, e, locale)
-    view = support_server_view(locale)
+    lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
+    embed = get_error_handle_embed(i.user, e, lang)
+    view = support_server_view(lang)
 
     try:
         await i.response.send_message(
@@ -39,11 +39,11 @@ async def global_error_handler(
         pass
 
 
-def support_server_view(locale: typing.Union[discord.Locale, str]):
+def support_server_view(lang: typing.Union[discord.Locale, str]):
     view = discord.ui.View()
     view.add_item(
         discord.ui.Button(
-            label=text_map.get(642, locale),
+            label=text_map.get(642, lang),
             url="https://discord.gg/ryfamUykRw",
             emoji="<:discord_icon:1032123254103621632>",
         )
@@ -55,7 +55,7 @@ def support_server_view(locale: typing.Union[discord.Locale, str]):
 def get_error_handle_embed(
     user: typing.Optional[typing.Union[discord.User, discord.Member]],
     e: Exception,
-    locale: typing.Union[discord.Locale, str],
+    lang: typing.Union[discord.Locale, str],
 ) -> ErrorEmbed:
     """Returns an error embed based on the givern error type."""
     embed = ErrorEmbed()
@@ -68,87 +68,87 @@ def get_error_handle_embed(
         10008,
         10015,
     ):
-        embed.description = text_map.get(624, locale)
-        embed.set_author(name=text_map.get(623, locale))
+        embed.description = text_map.get(624, lang)
+        embed.set_author(name=text_map.get(623, lang))
     elif isinstance(e, exceptions.AccountNotFound):
-        embed.description = text_map.get(35, locale)
-        embed.set_author(name=text_map.get(545, locale))
+        embed.description = text_map.get(35, lang)
+        embed.set_author(name=text_map.get(545, lang))
     elif isinstance(e, exceptions.NoPlayerFound):
-        embed.set_author(name=text_map.get(367, locale))
+        embed.set_author(name=text_map.get(367, lang))
     elif isinstance(e, enkanetwork.EnkaServerMaintanance):
-        embed.description = text_map.get(519, locale)
-        embed.set_author(name=text_map.get(523, locale))
+        embed.description = text_map.get(519, lang)
+        embed.set_author(name=text_map.get(523, lang))
     elif isinstance(e, (enkanetwork.VaildateUIDError, enkanetwork.EnkaPlayerNotFound)):
-        embed.description = text_map.get(286, locale)
-        embed.set_author(name=text_map.get(523, locale))
+        embed.description = text_map.get(286, lang)
+        embed.set_author(name=text_map.get(523, lang))
     elif isinstance(e, (enkanetwork.EnkaServerError, enkanetwork.HTTPException)):
-        embed.set_author(name=text_map.get(523, locale))
+        embed.set_author(name=text_map.get(523, lang))
     elif isinstance(e, exceptions.NoCharacterFound):
-        embed.description = text_map.get(287, locale)
-        embed.set_author(name=text_map.get(141, locale))
+        embed.description = text_map.get(287, lang)
+        embed.set_author(name=text_map.get(141, lang))
         embed.set_image(url="https://i.imgur.com/frMsGHO.gif")
     elif isinstance(e, exceptions.NoWishHistory):
-        embed.description = text_map.get(368, locale)
-        embed.set_author(name=text_map.get(683, locale))
+        embed.description = text_map.get(368, lang)
+        embed.set_author(name=text_map.get(683, lang))
     elif isinstance(e, exceptions.CardNotFound):
-        embed.set_author(name=text_map.get(719, locale))
+        embed.set_author(name=text_map.get(719, lang))
     elif isinstance(e, exceptions.ItemNotFound):
-        embed.set_author(name=text_map.get(542, locale))
+        embed.set_author(name=text_map.get(542, lang))
     elif isinstance(e, exceptions.NumbersOnly):
-        embed.set_author(name=text_map.get(187, locale))
+        embed.set_author(name=text_map.get(187, lang))
     elif isinstance(e, exceptions.AutocompleteError):
-        embed.set_author(name=text_map.get(310, locale))
+        embed.set_author(name=text_map.get(310, lang))
         embed.set_image(url="https://i.imgur.com/TRcvXCG.gif")
     elif isinstance(e, exceptions.CardNotReady):
-        embed.set_author(name=text_map.get(189, locale))
+        embed.set_author(name=text_map.get(189, lang))
     elif isinstance(e, exceptions.FeatureDisabled):
-        embed.set_author(name=text_map.get(758, locale))
-        embed.description = text_map.get(759, locale)
+        embed.set_author(name=text_map.get(758, lang))
+        embed.description = text_map.get(759, lang)
     elif isinstance(e, exceptions.Maintenance):
-        embed.set_author(name=text_map.get(760, locale))
-        embed.description = text_map.get(759, locale)
+        embed.set_author(name=text_map.get(760, lang))
+        embed.description = text_map.get(759, lang)
     elif isinstance(e, exceptions.InvalidInput):
-        embed.set_author(name=text_map.get(190, locale))
-        embed.description = text_map.get(172, locale).format(a=e.a, b=e.b)
+        embed.set_author(name=text_map.get(190, lang))
+        embed.description = text_map.get(172, lang).format(a=e.a, b=e.b)
     elif isinstance(e, exceptions.AbyssDataNotFound):
-        embed.set_author(name=text_map.get(76, locale))
-        embed.description = text_map.get(74, locale)
+        embed.set_author(name=text_map.get(76, lang))
+        embed.description = text_map.get(74, lang)
     elif isinstance(e, exceptions.WishFileImportError):
-        embed.set_author(name=text_map.get(135, locale))
-        embed.description = text_map.get(567, locale)
+        embed.set_author(name=text_map.get(135, lang))
+        embed.description = text_map.get(567, lang)
     elif isinstance(e, genshin.errors.GenshinException):
         if isinstance(e, genshin.errors.DataNotPublic):
-            embed.set_author(name=text_map.get(22, locale))
-            embed.description = f"{text_map.get(21, locale)}"
+            embed.set_author(name=text_map.get(22, lang))
+            embed.description = f"{text_map.get(21, lang)}"
         elif isinstance(e, genshin.errors.InvalidCookies):
-            embed.set_author(name=text_map.get(36, locale))
-            embed.description = text_map.get(767, locale)
+            embed.set_author(name=text_map.get(36, lang))
+            embed.description = text_map.get(767, lang)
         elif isinstance(e, genshin.errors.AlreadyClaimed):
-            embed.set_author(name=text_map.get(40, locale))
+            embed.set_author(name=text_map.get(40, lang))
         elif isinstance(e, genshin.errors.RedemptionClaimed):
-            embed.set_author(name=text_map.get(106, locale))
+            embed.set_author(name=text_map.get(106, lang))
         elif isinstance(e, genshin.errors.RedemptionInvalid):
-            embed.set_author(name=text_map.get(107, locale))
+            embed.set_author(name=text_map.get(107, lang))
         elif isinstance(e, genshin.errors.RedemptionCooldown):
-            embed.set_author(name=text_map.get(133, locale))
+            embed.set_author(name=text_map.get(133, lang))
         elif isinstance(e, genshin.errors.InvalidAuthkey):
-            embed.set_author(name=text_map.get(363, locale))
+            embed.set_author(name=text_map.get(363, lang))
         elif isinstance(e, genshin.errors.AuthkeyTimeout):
-            embed.set_author(name=text_map.get(702, locale))
+            embed.set_author(name=text_map.get(702, lang))
         elif e.retcode == -10002:
-            embed.set_author(name=text_map.get(772, locale))
+            embed.set_author(name=text_map.get(772, lang))
         elif e.retcode == -10001:
-            embed.set_author(name=text_map.get(778, locale))
+            embed.set_author(name=text_map.get(778, lang))
         else:
             embed.description = f"```\n[{e.retcode}]: {e.msg}\n```"
             if e.original:
                 embed.description += f"```\n{e.original}\n```"
-            embed.set_author(name=text_map.get(10, locale))
+            embed.set_author(name=text_map.get(10, lang))
     else:
         capture_exception(e)
 
         embed.description = f"```{type(e)}: {e}```"
-        embed.set_author(name=text_map.get(135, locale))
+        embed.set_author(name=text_map.get(135, lang))
         embed.set_thumbnail(url="https://i.imgur.com/Xi51hSe.gif")
 
     icon_url = user.display_avatar.url if user else None
@@ -197,11 +197,11 @@ class BaseView(discord.ui.View):
         if self.author is None:
             return True
 
-        user_locale = await get_user_lang(i.user.id, i.client.pool)
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
         if self.author.id != i.user.id:
             await i.response.send_message(
                 embed=ErrorEmbed().set_author(
-                    name=text_map.get(143, i.locale, user_locale),
+                    name=text_map.get(143, lang),
                     icon_url=i.user.display_avatar.url,
                 ),
                 ephemeral=True,
@@ -268,7 +268,7 @@ class EnkaView(BaseView):
     author: typing.Union[discord.User, discord.Member]
     message: discord.Message
     character_options: typing.List[discord.SelectOption]
-    locale: typing.Union[discord.Locale, str]
+    lang: typing.Union[discord.Locale, str]
 
     original_children: typing.List[discord.ui.Item] = []
     character_id: str = "0"
