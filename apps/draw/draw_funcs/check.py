@@ -81,9 +81,7 @@ def card(
         # status
         font = get_font(lang, 25)
         fill = "#444444" if not dark_mode else asset.white
-        status_text = text_map.get(
-            694 if expedition.status == "Ongoing" else 695, lang
-        )
+        status_text = text_map.get(694 if expedition.status == "Ongoing" else 695, lang)
         draw.text((offset[0], offset[1] + 60), status_text, font=font, fill=fill)
 
         # time

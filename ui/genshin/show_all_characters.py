@@ -130,18 +130,12 @@ class SortBy(ui.Select):
             discord.SelectOption(
                 label=text_map.get(703, lang).title(), value="element"
             ),
-            discord.SelectOption(
-                label=text_map.get(183, lang).title(), value="level"
-            ),
-            discord.SelectOption(
-                label=text_map.get(467, lang).title(), value="rarity"
-            ),
+            discord.SelectOption(label=text_map.get(183, lang).title(), value="level"),
+            discord.SelectOption(label=text_map.get(467, lang).title(), value="rarity"),
             discord.SelectOption(
                 label=text_map.get(299, lang).title(), value="friendship"
             ),
-            discord.SelectOption(
-                label=text_map.get(318, lang).title(), value="const"
-            ),
+            discord.SelectOption(label=text_map.get(318, lang).title(), value="const"),
         ]
         super().__init__(options=options, placeholder=text_map.get(278, lang))
 
@@ -158,9 +152,7 @@ class FilterBy(ui.Select):
     def __init__(self, lang: Union[discord.Locale, str]):
         elements = game_elements.get_element_list()
         options: List[discord.SelectOption] = [
-            discord.SelectOption(
-                label=text_map.get(124, lang), value="default_filter"
-            )
+            discord.SelectOption(label=text_map.get(124, lang), value="default_filter")
         ]
         for element in elements:
             t_hash = game_elements.get_element_text(element)

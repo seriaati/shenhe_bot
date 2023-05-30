@@ -255,9 +255,7 @@ async def get_farm_data(
 
 def get_domain_title(domain: Domain, lang: discord.Locale | str) -> str:
     if "Forgery" in text_map.get_domain_name(domain.id, "en-US"):
-        return (
-            f"{get_city_name(domain.city.id, str(lang))} - {text_map.get(91, lang)}"
-        )
+        return f"{get_city_name(domain.city.id, str(lang))} - {text_map.get(91, lang)}"
     return f"{get_city_name(domain.city.id, str(lang))} - {text_map.get(105, lang).title()}"
 
 

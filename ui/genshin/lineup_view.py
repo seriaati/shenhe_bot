@@ -37,9 +37,7 @@ class View(BaseView):
 
         self.add_item(SearchLineup(text_map.get(715, lang)))
         self.add_item(CharacterSelectButton(text_map.get(714, lang)))
-        self.add_item(
-            ScenarioSelector(text_map.get(140, lang), options, scenario_dict)
-        )
+        self.add_item(ScenarioSelector(text_map.get(140, lang), options, scenario_dict))
 
 
 class CharacterSelectButton(Button):
@@ -114,9 +112,7 @@ class CharacterSelector(Select):
                 )
             )
         else:
-            self.view.add_item(
-                CharacterSelectButton(text_map.get(714, self.view.lang))
-            )
+            self.view.add_item(CharacterSelectButton(text_map.get(714, self.view.lang)))
         self.view.add_item(
             ScenarioSelector(
                 text_map.get(140, self.view.lang),

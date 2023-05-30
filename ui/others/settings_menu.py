@@ -115,9 +115,7 @@ class LangSelect(ui.Select):
 
 class CustomProfileImage(ui.Button):
     def __init__(self, lang: str | discord.Locale):
-        super().__init__(
-            emoji=asset.image_emoji, label=text_map.get(275, lang), row=2
-        )
+        super().__init__(emoji=asset.image_emoji, label=text_map.get(275, lang), row=2)
         self.lang = lang
         self.view: View
 
@@ -144,9 +142,7 @@ class Notification(ui.Button):
 
 class AutoRedeem(ui.Button):
     def __init__(self, lang: str | discord.Locale):
-        super().__init__(
-            emoji=asset.gift_outline, label=text_map.get(126, lang), row=3
-        )
+        super().__init__(emoji=asset.gift_outline, label=text_map.get(126, lang), row=3)
         self.lang = lang
         self.view: View
 
