@@ -27,8 +27,13 @@ from apps.genshin_data import abyss
 from apps.text_map import convert_locale, text_map
 from data.cards.dice_element import get_dice_emoji
 from ui.others import manage_accounts
-from utils import (disable_view_items, get_character_emoji,
-                   get_uid_region_hash, get_user_lang)
+from utils import (
+    disable_view_items,
+    get_character_emoji,
+    get_uid_region_hash,
+    get_user_lang,
+    get_user_theme,
+)
 from utils.genshin import update_talents_json
 
 load_dotenv()
@@ -127,7 +132,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             "Register your genshin account in shenhe's database to use commands that require one",
             hash=410,
         ),
-    )
+)
     async def slash_register(self, inter: discord.Interaction):
         i: models.Inter = inter  # type: ignore
         view = manage_accounts.View()
@@ -625,12 +630,11 @@ class GenshinCog(commands.Cog, name="genshin"):
 
     async def profile_command(
         self,
-        inter: discord.Interaction,
+        i: discord.Interaction,
         member: Optional[discord.User | discord.Member] = None,
         ephemeral: bool = True,
         custom_uid: Optional[int] = None,
     ):
-        i: models.Inter = inter # type: ignore
         await i.response.defer(ephemeral=ephemeral)
         member = member or i.user
 
@@ -700,7 +704,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         embed_two.set_image(url="attachment://character.jpeg")
         embed_two.set_footer(text=text_map.get(511, locale))
 
-        dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
+        dark_mode = await get_user_theme(i.user.id, self.bot.pool)
         fp, fp_two = await main_funcs.draw_profile_overview_card(
             models.DrawInput(
                 loop=self.bot.loop,
@@ -768,7 +772,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         user_locale = await get_user_lang(i.user.id, self.bot.pool)
         locale = user_locale or i.locale
         ambr_top_locale = convert_locale.to_ambr_top(locale)
-        dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
+        dark_mode = await get_user_theme(i.user.id, self.bot.pool)
         client = AmbrTopAPI(self.bot.session, ambr_top_locale)
 
         item_type = None
