@@ -152,7 +152,9 @@ async def go_back_callback(i: Inter, enka_view: EnkaView):
     if not character:
         raise AssertionError
 
-    dark_mode = dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
+    dark_mode = dark_mode = await i.client.db.settings.get(
+        i.user.id, Settings.DARK_MODE
+    )
     version = await get_profile_ver(i.user.id, i.client.pool)
     try:
         custom_image = await get_user_custom_image(

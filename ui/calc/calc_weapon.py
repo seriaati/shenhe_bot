@@ -15,8 +15,12 @@ from data.game.weapon_types import get_weapon_type_emoji
 from dev.base_ui import BaseModal, BaseView
 from dev.exceptions import InvalidAscensionInput, InvalidWeaponCalcInput
 from ui.calc.add_to_todo import AddButton
-from utils import (divide_chunks, get_weapon_emoji, image_gen_transition,
-                   level_to_ascension_phase)
+from utils import (
+    divide_chunks,
+    get_weapon_emoji,
+    image_gen_transition,
+    level_to_ascension_phase,
+)
 
 
 class View(BaseView):
@@ -282,7 +286,7 @@ class LevelModal(BaseModal):
                 loop=i.client.loop,
                 session=i.client.session,
                 locale=self.locale,
-                dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
+                dark_mode=await i.client.db.settings.get(i.user.id, Settings.DARK_MODE),
             ),
             all_materials,
             "",

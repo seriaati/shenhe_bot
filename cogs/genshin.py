@@ -132,7 +132,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             "Register your genshin account in shenhe's database to use commands that require one",
             hash=410,
         ),
-)
+    )
     async def slash_register(self, inter: discord.Interaction):
         i: models.Inter = inter  # type: ignore
         view = manage_accounts.View()

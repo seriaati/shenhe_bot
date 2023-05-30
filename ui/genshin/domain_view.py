@@ -75,7 +75,7 @@ async def return_farm_interaction(i: Inter, weekday: Optional[int] = None):
             loop=i.client.loop,
             session=session,
             locale=locale,
-            dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
+            dark_mode=await i.client.db.settings.get(i.user.id, Settings.DARK_MODE),
         ),
         farm_data,
     )

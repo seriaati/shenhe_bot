@@ -199,7 +199,7 @@ class ShowArtifacts(ui.Button):
                 loop=i.client.loop,
                 session=i.client.session,
                 locale=self.view.locale,
-                dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
+                dark_mode=await i.client.db.settings.get(i.user.id, Settings.DARK_MODE),
             ),
             [e for e in character.equipments if e.type is enka.EquipmentsType.ARTIFACT],
             character,

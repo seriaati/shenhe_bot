@@ -13,8 +13,13 @@ from apps.text_map import cond_text, text_map, to_genshin_py
 from data.game.elements import get_element_emoji, get_element_list
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, DrawInput, Inter
-from utils import (disable_view_items, get_character_builds,
-                   get_character_emoji, get_user_lang, image_gen_transition)
+from utils import (
+    disable_view_items,
+    get_character_builds,
+    get_character_emoji,
+    get_user_lang,
+    image_gen_transition,
+)
 
 
 class View(BaseView):

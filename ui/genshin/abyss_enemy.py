@@ -115,7 +115,7 @@ async def select_callback(i: Inter, view: View, value: str):
                 loop=i.client.loop,
                 session=i.client.session,
                 locale=view.locale,
-                dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE),
+                dark_mode=await i.client.db.settings.get(i.user.id, Settings.DARK_MODE),
             ),
             materials,
             "",

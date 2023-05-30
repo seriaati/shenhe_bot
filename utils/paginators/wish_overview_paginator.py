@@ -51,7 +51,7 @@ class WishOverviewPaginatorView(GeneralPaginatorView):
                 loop=i.client.loop,
                 session=i.client.session,
                 locale=self.locale,
-                dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE),
+                dark_mode=await i.client.db.settings.get(i.user.id, Settings.DARK_MODE),
             ),
             wish_data,
         )
@@ -65,7 +65,7 @@ class WishOverviewPaginatorView(GeneralPaginatorView):
                 loop=i.client.loop,
                 session=i.client.session,
                 locale=self.locale,
-                dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE),
+                dark_mode=await i.client.db.settings.get(i.user.id, Settings.DARK_MODE),
             ),
             wish_recents,
         )
