@@ -26,14 +26,9 @@ from apps.genshin import enka, leaderboard
 from apps.genshin_data import abyss
 from apps.text_map import convert_locale, text_map
 from data.cards.dice_element import get_dice_emoji
-from utils import (
-    disable_view_items,
-    get_character_emoji,
-    get_uid_region_hash,
-    get_user_lang,
-    get_user_theme,
-    log,
-)
+from ui.others import manage_accounts
+from utils import (disable_view_items, get_character_emoji,
+                   get_uid_region_hash, get_user_lang, get_user_theme, log)
 from utils.genshin import update_talents_json
 
 load_dotenv()
@@ -67,42 +62,6 @@ class GenshinCog(commands.Cog, name="genshin"):
         self.bot.tree.add_command(self.check_context_menu)
 
     async def cog_load(self) -> None:
-        cookie_list: List[Dict[str, str]] = []
-        self.bot.genshin_client = genshin.Client()
-        self.bot.genshin_client.region = genshin.Region.OVERSEAS
-
-        rows = await self.bot.pool.fetch(
-            """
-            SELECT ltuid, ltoken, uid
-            FROM user_accounts
-            WHERE ltoken IS NOT NULL
-            AND ltuid IS NOT NULL
-            AND uid IS NOT NULL
-            AND china = false
-            """
-        )
-        for row in rows:
-            if str(row["uid"])[0] in ("1", "2", "5"):
-                continue
-
-            ltuid = row["ltuid"]
-            ltoken = row["ltoken"]
-            cookie: Dict[str, Any] = {"ltuid": ltuid, "ltoken": ltoken}
-
-            for c in cookie_list:
-                if c["ltuid"] == ltuid:
-                    break
-            else:
-                cookie_list.append(cookie)
-
-        if cookie_list:
-            try:
-                self.bot.genshin_client.set_cookies(cookie_list)
-            except Exception as e:  # skipcq: PYL-W0703
-                log.warning(f"[Genshin Client][Error]: {e}", exc_info=e)
-            else:
-                log.info(f"[Genshin Client]: {len(cookie_list)} cookies loaded")
-
         async with self.bot.session.get(
             "https://genshin-db-api.vercel.app/api/languages"
         ) as r:
@@ -171,8 +130,8 @@ class GenshinCog(commands.Cog, name="genshin"):
     )
     async def slash_register(self, inter: discord.Interaction):
         i: models.Inter = inter  # type: ignore
-        await i.response.defer(ephemeral=True)
-        await ui.manage_accounts.return_accounts(i)
+        view = manage_accounts.View()
+        await view.start(i)
 
     @app_commands.command(
         name="check",
@@ -1064,8 +1023,8 @@ class GenshinCog(commands.Cog, name="genshin"):
         i: models.Inter = inter  # type: ignore
         locale = await get_user_lang(i.user.id, self.bot.pool) or i.locale
 
-        client = self.bot.genshin_client
-        client.lang = convert_locale.to_genshin_py(locale)
+        user = await i.client.db.users.get(i.user.id)
+        client = await user.client
         scenarios = await client.get_lineup_scenarios()
 
         scenarios_to_search = [

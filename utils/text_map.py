@@ -3,6 +3,7 @@ from typing import Optional
 from discord import Locale
 
 from apps.text_map import text_map
+from dev.enum import GameType
 from text_maps.artifact_main_stat import ARTIFACT_MAIN_STAT_TRANSLATION
 
 CITY_HASHES = {
@@ -101,3 +102,14 @@ def get_month_name(
         12: text_map.get(232, locale, user_locale),
     }
     return month_dict.get(month, str(month))
+
+
+GAMES = {
+    GameType.GENSHIN: 313,
+    GameType.HSR: 770,
+    GameType.HONKAI: 771,
+}
+
+
+def get_game_name(game: GameType, lang: str) -> str:
+    return text_map.get(GAMES.get(game, 700), lang)

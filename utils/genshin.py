@@ -371,16 +371,25 @@ def get_abyss_season_date_range(season: int) -> str:
     return f"{season_start.strftime('%Y-%m-%d')} ~ {season_end.strftime('%Y-%m-%d')}"
 
 
-def get_account_select_options(
+def get_account_options(
     accounts: List[HoyoAccount],
 ) -> List[discord.SelectOption]:
+    GAME_EMOJIS = {
+        enum.GameType.GENSHIN: asset.genshin_emoji,
+        enum.GameType.HSR: asset.hsr_emoji,
+        enum.GameType.HONKAI: asset.honkai_emoji,
+    }
+
     options: List[discord.SelectOption] = []
     for account in accounts:
+        label = str(account.uid)
+        if account.nickname:
+            label += f" ({account.nickname[:80]})"
         options.append(
             discord.SelectOption(
-                label=str(account.uid),
-                description=account.nickname[:100] if account.nickname else None,
+                label=label,
                 value=str(account.uid),
+                emoji=GAME_EMOJIS[account.game],
             )
         )
     return options

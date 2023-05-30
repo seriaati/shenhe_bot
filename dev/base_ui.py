@@ -10,7 +10,6 @@ import dev.asset as asset
 import dev.exceptions as exceptions
 from apps.db.tables.user_settings import Settings
 from apps.text_map import text_map
-from dev.enum import GameType
 from utils import get_user_lang, log
 
 from .models import ErrorEmbed, Inter, OriginalInfo
@@ -303,45 +302,6 @@ class BaseSelect(discord.ui.Select):
     async def restore(self, i: Inter):
         self.options = self.original_options
         await i.edit_original_response(view=self.view)
-
-
-class BaseGameSelector(BaseSelect):
-    def __init__(
-        self,
-        locale: typing.Union[discord.Locale, str],
-        default: GameType,
-        *,
-        honkai: bool = False,
-        **kwargs,
-    ):
-        super().__init__(
-            options=[
-                discord.SelectOption(
-                    label=text_map.get(313, locale),
-                    emoji=asset.genshin_emoji,
-                    value="genshin",
-                    default=default == GameType.GENSHIN,
-                ),
-                discord.SelectOption(
-                    label=text_map.get(770, locale),
-                    emoji=asset.hsr_emoji,
-                    value="hsr",
-                    default=default == GameType.HSR,
-                ),
-            ],
-            **kwargs,
-        )
-        if honkai:
-            self.add_option(
-                label=text_map.get(771, locale),
-                emoji=asset.honkai_emoji,
-                value="honkai",
-                default=default == GameType.HONKAI,
-            )
-
-        self.locale = locale
-        self.view: BaseView
-
 
 class BaseButton(discord.ui.Button):
     def __init__(self, *args, **kwargs):

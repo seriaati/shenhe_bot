@@ -18,18 +18,30 @@ class CookieTable:
 
     async def create(self) -> None:
         """Create the table"""
-        async with self.pool.acquire() as conn:
-            await conn.execute(
-                """
-                CREATE TABLE IF NOT EXISTS cookies (
-                    ltuid BIGINT NOT NULL PRIMARY KEY,
-                    ltoken TEXT NOT NULL,
-                    cookie_token TEXT NOT NULL,
-                )
-                """
+        await self.pool.execute(
+            """
+            CREATE TABLE IF NOT EXISTS cookies (
+                ltuid BIGINT NOT NULL PRIMARY KEY,
+                ltoken TEXT NOT NULL,
+                cookie_token TEXT NOT NULL
             )
+            """
+        )
+    
+    async def migrate(self) -> None:
+        rows = await self.pool.fetch(
+            """
+            SELECT ltuid, ltoken, cookie_token
+            FROM user_accounts
+            WHERE ltuid IS NOT NULL
+            AND ltoken IS NOT NULL
+            AND cookie_token IS NOT NULL
+            """
+        )
+        for row in rows:
+            await self.insert(Cookie(**row))
 
-    async def add(self, cookie: Cookie) -> None:
+    async def insert(self, cookie: Cookie) -> None:
         """Insert a new cookie"""
         await self.pool.execute(
             """
@@ -61,4 +73,13 @@ class CookieTable:
             cookie.ltuid,
             cookie.ltoken,
             cookie.cookie_token,
+        )
+
+    async def delete(self, ltuid: int) -> None:
+        """Delete a cookie"""
+        await self.pool.execute(
+            """
+            DELETE FROM cookies WHERE ltuid = $1
+            """,
+            ltuid,
         )

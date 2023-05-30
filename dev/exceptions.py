@@ -1,5 +1,3 @@
-from discord import app_commands
-
 from dev.enum import CheckInAPI
 
 
@@ -38,28 +36,8 @@ class InvalidAscensionInput(Exception):
         return "Invalid ascension input"
 
 
-class DBError(Exception):
-    def __init__(self, msg: str):
-        self.msg = msg
-
-    def __str__(self):
-        return self.msg
-
-
-class NoUID(app_commands.CheckFailure):
-    def __init__(self, current_user: bool):
-        self.current_user = current_user
-
-
-class NoCookie(app_commands.CheckFailure):
-    def __init__(self, current_user: bool, current_account: bool):
-        self.current_user = current_user
-        self.current_account = current_account
-
-
-class NoWishHistory(app_commands.CheckFailure):
-    def __str__(self):
-        return "No wish history"
+class NoWishHistory(Exception):
+    pass
 
 
 class NumbersOnly(Exception):

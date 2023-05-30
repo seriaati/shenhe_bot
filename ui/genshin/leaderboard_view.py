@@ -61,7 +61,7 @@ class View(BaseView):
         ]
         return options
 
-    def add_items(self) -> None:
+    def add_components(self) -> None:
         """Add items to the view"""
         self.clear_items()
         self.add_item(
@@ -79,7 +79,7 @@ class View(BaseView):
 
         embed = models.DefaultEmbed(description=text_map.get(253, self.lang))
         embed.set_author(name=f"👑 {text_map.get(252, self.lang)}")
-        self.add_items()
+        self.add_components()
 
         self.author = i.user
         await i.followup.send(embed=embed, view=self)

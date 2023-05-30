@@ -15,7 +15,7 @@ from apps.text_map import text_map
 from apps.wish.models import WishHistory, WishInfo
 from dev.base_ui import BaseModal, BaseView
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
-from utils import get_account_select_options, get_wish_info_embed
+from utils import get_account_options, get_wish_info_embed
 
 
 class View(BaseView):
@@ -32,6 +32,7 @@ class View(BaseView):
         settings = await user.settings
         self.user = user
         self.lang = settings.lang or str(i.locale)
+        self.author = i.user
 
     async def get_wishes(
         self, wish_table: WishHistoryTable, linked: bool
@@ -46,21 +47,20 @@ class View(BaseView):
         await i.response.defer()
         await self.init(i)
 
-        linked = await i.client.db.wish.check_uid(self.user.uid)
-        wishes = await self.get_wishes(i.client.db.wish, linked)
-        empty = not wishes
-        self.add_items(linked)
-        if empty:
-            embed = ErrorEmbed(description=f"UID: {self.user.uid}")
-            embed.set_title(683, self.lang, i.user)
-        else:
-            embed = self.get_wish_import_embed(linked)
+        linked = await i.client.db.wish.check_linked(self.user.user_id)
+        await self.get_wishes(i.client.db.wish, linked)
+        self.add_components(linked)
+        embed = self.get_wish_import_embed(linked)
 
-        self.author = i.user
         await i.followup.send(embed=embed, view=self)
         self.message = await i.original_response()
 
     def get_wish_import_embed(self, linked: bool) -> discord.Embed:
+        if not self.wishes:
+            embed = ErrorEmbed(description=f"UID: {self.user.uid}")
+            embed.set_title(683, self.lang, self.author)
+            return embed
+        
         character_banner = 0
         weapon_banner = 0
         permanent_banner = 0
@@ -95,7 +95,7 @@ class View(BaseView):
             import_command=True,
         )
 
-    def add_items(self, linked: bool) -> None:
+    def add_components(self, linked: bool) -> None:
         self.clear_items()
         self.add_item(ImportWishHistory(self.lang, not linked))
         self.add_item(ExportWishHistory(self.lang, not self.wishes))
@@ -110,9 +110,10 @@ class GOBack(ui.Button):
 
     async def callback(self, i: Inter) -> None:
         await i.response.defer()
-        linked = await i.client.db.wish.check_uid(self.view.user.uid)
+        linked = await i.client.db.wish.check_linked(self.view.user.user_id)
         await self.view.get_wishes(i.client.db.wish, linked)
         embed = self.view.get_wish_import_embed(linked)
+        self.view.add_components(linked)
         await i.followup.send(embed=embed, view=self.view)
 
 
@@ -133,7 +134,7 @@ class LinkUID(ui.Button):
             name=text_map.get(677, lang), icon_url=i.user.display_avatar.url
         )
         accounts = await i.client.db.users.get_all_of_user(i.user.id)
-        options = get_account_select_options(accounts)
+        options = get_account_options(accounts)
         self.view.clear_items()
         self.view.add_item(GOBack())
         self.view.add_item(UIDSelect(lang, options))
@@ -159,7 +160,7 @@ class UIDSelect(ui.Select):
 
         await i.client.db.wish.get_with_uid(uid)
         embed = self.view.get_wish_import_embed(True)
-        self.view.add_items(True)
+        self.view.add_components(True)
         await i.response.edit_message(embed=embed, view=self.view)
 
 
@@ -177,7 +178,7 @@ class ImportWishHistory(ui.Button):
     async def callback(self, i: Inter):
         lang = self.view.lang
         embed = DefaultEmbed()
-        embed.set_title(686, lang, i.user)
+        embed.set_title(474, lang, i.user)
 
         self.view.clear_items()
         self.view.add_item(GOBack())
@@ -200,12 +201,12 @@ class ImportGenshin(ui.Button):
 
     async def callback(self, i: Inter):
         embed = DefaultEmbed(description=text_map.get(779, self.lang))
-        embed.set_title(363, self.lang, i.user)
+        embed.set_title(474, self.lang, i.user)
 
         self.view.clear_items()
         self.view.add_item(GOBack())
         self.view.add_item(SubmitLink(text_map.get(477, self.lang)))
-        await i.response.edit_message(embed=embed)
+        await i.response.edit_message(embed=embed, view=self.view)
 
 
 class SubmitLink(ui.Button):
@@ -231,7 +232,7 @@ class SubmitLink(ui.Button):
                 embed=embed,
             )
 
-        await i.response.edit_message(
+        await i.edit_original_response(
             embed=DefaultEmbed().set_author(
                 name=text_map.get(355, self.view.lang),
                 icon_url=asset.loader,
@@ -240,6 +241,7 @@ class SubmitLink(ui.Button):
         )
 
         client = await self.view.user.client
+        client.set_authkey(authkey)
         wish_history = await client.wish_history()
 
         character_banner = 0
@@ -266,7 +268,7 @@ class SubmitLink(ui.Button):
             novice_banner_num=novice_banner,
         )
 
-        linked = await i.client.db.wish.check_uid(self.view.user.uid)
+        linked = await i.client.db.wish.check_linked(self.view.user.user_id)
         embed = get_wish_info_embed(
             i.user, self.view.lang, wish_info, self.view.user.uid, linked
         )
@@ -308,7 +310,7 @@ class ExportWishHistory(ui.Button):
         await i.response.defer(ephemeral=True)
         s = io.StringIO()
 
-        linked = await i.client.db.wish.check_uid(self.view.user.uid)
+        linked = await i.client.db.wish.check_linked(self.view.user.user_id)
         wishes = await self.view.get_wishes(i.client.db.wish, linked)
 
         wishes_dict = [wish.dict() for wish in wishes]
@@ -351,7 +353,7 @@ class Confirm(ui.Button):
         self.view: View
 
     async def callback(self, i: Inter):
-        linked = await i.client.db.wish.check_uid(self.view.user.uid)
+        linked = await i.client.db.wish.check_linked(self.view.user.user_id)
         if linked:
             await i.client.db.wish.delete_with_uid(self.view.user.uid)
         else:
@@ -359,7 +361,7 @@ class Confirm(ui.Button):
 
         self.view.wishes = []
         embed = self.view.get_wish_import_embed(linked)
-        self.view.add_items(linked)
+        self.view.add_components(linked)
         await i.response.edit_message(embed=embed, view=self.view)
 
 
@@ -372,9 +374,9 @@ class Cancel(ui.Button):
         self.view: View
 
     async def callback(self, i: Inter):
-        linked = await i.client.db.wish.check_uid(self.view.user.uid)
+        linked = await i.client.db.wish.check_linked(self.view.user.user_id)
         embed = self.view.get_wish_import_embed(linked)
-        self.view.add_items(linked)
+        self.view.add_components(linked)
         await i.response.edit_message(embed=embed, view=self.view)
 
 
@@ -408,6 +410,7 @@ class ConfirmWishimport(ui.Button):
             # If the wish is a genshin.models.Wish object, convert it to a WishHistory object and insert it into the database
             else:
                 wish_history = WishHistory.from_genshin_wish(wish, i.user.id)
+                wish_history.uid = self.view.user.uid
                 await i.client.db.wish.insert(wish_history)
 
         # Calculate pity pulls for each banner type
@@ -442,10 +445,15 @@ class ConfirmWishimport(ui.Button):
 
             # Loop through each wish and update the pity count
             for wish in wishes:
+                if wish.item_id is None:
+                    item_id = text_map.get_id_from_name(wish.name)
+                else:
+                    item_id = wish.item_id
                 await i.client.pool.execute(
                     """
                     UPDATE wish_history
-                    SET pity_pull = $1
+                    SET pity_pull = $1,
+                    item_id = $5
                     WHERE user_id = $2
                     AND wish_id = $3
                     AND uid = $4
@@ -454,16 +462,17 @@ class ConfirmWishimport(ui.Button):
                     i.user.id,
                     wish.wish_id,
                     self.view.user.uid,
+                    item_id,
                 )
                 # If the wish is a 5-star, reset the pity count to 1, otherwise increment it
                 count = 1 if wish.rarity == 5 else count + 1
 
         # Check if the user is linked to a UID
-        linked = await i.client.db.wish.check_uid(self.view.user.uid)
+        linked = await i.client.db.wish.check_linked(self.view.user.user_id)
         # Get the user's wishes and update the view
         await self.view.get_wishes(i.client.db.wish, linked)
         embed = self.view.get_wish_import_embed(linked)
-        self.view.add_items(linked)
+        self.view.add_components(linked)
         # Edit the original response to show the new embed and updated view
         await i.edit_original_response(embed=embed, view=self.view)
 
@@ -477,9 +486,9 @@ class CancelWishimport(ui.Button):
         self.view: View
 
     async def callback(self, i: Inter):
-        linked = await i.client.db.wish.check_uid(self.view.user.uid)
+        linked = await i.client.db.wish.check_linked(self.view.user.user_id)
         embed = self.view.get_wish_import_embed(linked)
-        self.view.add_items(linked)
+        self.view.add_components(linked)
         await i.response.edit_message(embed=embed, view=self.view)
 
 

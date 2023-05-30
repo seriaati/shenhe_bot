@@ -12,65 +12,13 @@ from attr import define, field
 from discord.ext import commands
 from enkanetwork.model.base import EnkaNetworkResponse
 from logingateway import HuTaoLoginAPI
+from logingateway.model import Player
 from pyppeteer.browser import Browser
 
 import ambr.models as ambr
 from apps.db.main import Database
 from apps.text_map import text_map
-
-
-@define
-class ShenheAccount:
-    client: genshin.Client
-    uid: int
-    discord_user: typing.Union[discord.User, discord.Member]
-    china: bool
-    daily_checkin: bool
-    user_locale: typing.Optional[str] = None
-
-
-@define
-class User:
-    uid: int
-    user_id: int
-
-    current: bool
-    daily_checkin: bool
-    china: bool
-    client: genshin.Client = field(init=False)
-
-    nickname: typing.Optional[str] = None
-    ltuid: typing.Optional[str] = None
-    ltoken: typing.Optional[str] = None
-    cookie_token: typing.Optional[str] = None
-    last_checkin_date: typing.Optional[datetime] = None
-
-    def __attrs_post_init__(self) -> None:
-        self.client = genshin.Client(
-            {
-                "ltuid": self.ltuid,
-                "ltoken": self.ltoken,
-                "cookie_token": self.cookie_token,
-            },
-            uid=self.uid,
-            game=genshin.Game.GENSHIN,
-            region=genshin.Region.CHINESE if self.china else genshin.Region.OVERSEAS,
-        )
-
-    @staticmethod
-    def from_row(row: asyncpg.Record) -> "User":
-        return User(
-            uid=row["uid"],
-            user_id=row["user_id"],
-            current=row["current"],
-            daily_checkin=row["daily_checkin"],
-            china=row["china"],
-            nickname=row["nickname"],
-            ltuid=row["ltuid"],
-            ltoken=row["ltoken"],
-            cookie_token=row["cookie_token"],
-            last_checkin_date=row["last_checkin_date"],
-        )
+from dev.enum import GameType
 
 
 @define
@@ -87,8 +35,14 @@ class DrawInput:
     dark_mode: bool = False
 
 
+@define
+class LoginInfo:
+    message: discord.Message
+    lang: str
+    author: typing.Union[discord.User, discord.Member]
+
+
 class BotModel(commands.AutoShardedBot):
-    genshin_client: genshin.Client
     session: aiohttp.ClientSession
     browsers: typing.Dict[str, Browser]
     gateway: HuTaoLoginAPI
@@ -108,7 +62,8 @@ class BotModel(commands.AutoShardedBot):
     abyss_overview_card_cache = cachetools.TTLCache(maxsize=512, ttl=120)
     abyss_floor_card_cache = cachetools.TTLCache(maxsize=512, ttl=120)
     abyss_one_page_cache = cachetools.TTLCache(maxsize=512, ttl=120)
-    tokenStore: typing.Dict[str, typing.Any] = {}
+    token_store: typing.Dict[str, LoginInfo] = {}
+    player_store: typing.Dict[int, Player] = {}
     disabled_commands: typing.List[str] = []
 
 

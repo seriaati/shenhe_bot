@@ -13,12 +13,8 @@ from apps.text_map import text_map, to_genshin_py
 from data.game.elements import get_element_emoji, get_element_list
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, DrawInput, Inter
-from utils import (
-    disable_view_items,
-    get_character_emoji,
-    get_user_theme,
-    image_gen_transition,
-)
+from utils import (disable_view_items, get_character_emoji, get_user_theme,
+                   image_gen_transition)
 
 
 class View(BaseView):
@@ -213,8 +209,8 @@ class LineupSelector(Select):
         await image_gen_transition(i, self.view, self.view.locale)
 
         lineup = self.lineup_dict[self.values[0]]
-        client: Client = i.client.genshin_client
-        client.lang = to_genshin_py(self.view.locale)
+        user = await i.client.db.users.get(i.user.id)
+        client = await user.client
         lineup_detail = await client.get_lineup_details(lineup)
 
         embed = DefaultEmbed(lineup_detail.title, lineup_detail.description)
@@ -288,8 +284,8 @@ async def search_lineup(i: Inter, view: View):
     embed.set_author(name=text_map.get(709, locale), icon_url=i.user.display_avatar.url)
     embed = update_search_status(view, embed)
 
-    client: Client = i.client.genshin_client
-    client.lang = to_genshin_py(locale)
+    user = await i.client.db.users.get(i.user.id)
+    client = await user.client
     lineups = await client.get_lineups(
         scenario=view.scenario, characters=view.characters, limit=12, page_size=1
     )

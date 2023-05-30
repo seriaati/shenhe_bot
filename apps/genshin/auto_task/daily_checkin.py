@@ -171,9 +171,9 @@ class DailyCheckin:
         self, api: CheckInAPI, user: HoyoAccount, retry_count: int = 0
     ) -> model.ShenheEmbed:
         lang = (await user.settings).lang or "en-US"
-        client = await user.client
         if api is CheckInAPI.LOCAL:
             try:
+                client = await user.client
                 reward = await client.claim_daily_reward(
                     game=convert_game_type(user.checkin_game)
                 )

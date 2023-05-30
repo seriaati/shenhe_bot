@@ -11,15 +11,12 @@ import dev.models as models
 from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
-from apps.wish.models import RecentWish, WishData, WishHistory, WishInfo, WishItem
+from apps.wish.models import (RecentWish, WishData, WishHistory, WishInfo,
+                              WishItem)
 from dev.exceptions import WishFileImportError
 from ui.wish import set_auth_key, wish_filter
-from utils import (
-    get_user_lang,
-    get_user_theme,
-    get_wish_history_embeds,
-    get_wish_info_embed,
-)
+from utils import (get_user_lang, get_user_theme, get_wish_history_embeds,
+                   get_wish_info_embed)
 from utils.paginators import WishHistoryPaginator, WishOverviewPaginator
 
 
@@ -81,7 +78,7 @@ class WishCog(commands.GroupCog, name="wish"):
             )
 
             uid = await i.client.db.users.get_uid(i.user.id)
-            linked = await i.client.db.wish.check_uid(uid)
+            linked = await i.client.db.wish.check_linked(uid)
             embed = get_wish_info_embed(i.user, lang, wish_info, uid, linked)
             view = set_auth_key.View()
             await view.init(i)
@@ -255,8 +252,6 @@ class WishCog(commands.GroupCog, name="wish"):
             all_wish_data[current_banner],
         )
         fp.seek(0)
-        embed = models.DefaultEmbed().set_user_footer(member, uid)
-        embed.set_image(url="attachment://wish_overview_0.jpeg")
 
         for option in options:
             if option.value == current_banner:
@@ -264,7 +259,7 @@ class WishCog(commands.GroupCog, name="wish"):
                 break
 
         await WishOverviewPaginator(
-            i, [embed], current_banner, all_wish_data, options, fp
+            i, current_banner, all_wish_data, options, fp
         ).start(edit=True)
 
 

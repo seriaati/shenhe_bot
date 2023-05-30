@@ -51,8 +51,8 @@ class OthersCog(commands.Cog, name="others"):
     )
     async def accounts_command(self, inter: discord.Interaction):
         i: Inter = inter  # type: ignore
-        await i.response.defer(ephemeral=True)
-        await manage_accounts.return_accounts(i)
+        view = manage_accounts.View()
+        await view.start(i)
 
     @app_commands.command(
         name="credits",
@@ -135,18 +135,10 @@ class OthersCog(commands.Cog, name="others"):
             value=f"{memory_usage:.2f} MB\n{cpu_usage:.2f}% CPU",
         )
 
-        total = await self.bot.pool.fetchval("SELECT COUNT(*) FROM user_accounts")
-        cookie = await self.bot.pool.fetchval(
-            "SELECT COUNT(*) FROM user_accounts WHERE ltuid IS NOT NULL"
-        )
-        china = await self.bot.pool.fetchval(
-            "SELECT COUNT(*) FROM user_accounts WHERE china = true"
-        )
+        total = await self.bot.db.users.get_total()
         embed.add_field(
             name=text_map.get(524, locale),
-            value=text_map.get(194, locale).format(
-                total=total, cookie=cookie, china=china
-            ),
+            value=str(total),
         )
 
         total_members = 0

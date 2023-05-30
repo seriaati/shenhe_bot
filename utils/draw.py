@@ -303,7 +303,7 @@ def resize_and_crop_image(
     im = im.resize((new_width, new_height), resample=Image.LANCZOS)
 
     # Crop the image
-    im = im.crop((left, top, right, bottom))
+    im = im.crop((left, top, right, bottom)) # type: ignore
 
     if dark_mode:
         # add dark transparency to the image

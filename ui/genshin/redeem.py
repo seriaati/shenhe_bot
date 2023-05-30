@@ -4,10 +4,9 @@ import discord
 from discord import ui
 
 from apps.db.tables.hoyo_account import HoyoAccount, convert_game_type
-from apps.db.tables.user_settings import Settings
 from apps.text_map import text_map
 from dev.asset import gift_open_outline, peko_yahoo
-from dev.base_ui import BaseGameSelector, BaseModal, BaseView, get_error_handle_embed
+from dev.base_ui import BaseModal, BaseView, get_error_handle_embed
 from dev.config import mid_timeout
 from dev.enum import GameType
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
@@ -31,7 +30,10 @@ class View(BaseView):
         await i.response.defer()
         await self.init(i)
 
-        codes = await i.client.db.codes.get_all()
+        if self.game is GameType.GENSHIN:
+            codes = await i.client.db.codes.get_all()
+        else:
+            codes = []
         self.add_components(codes)
         embed = self._make_start_embed(i.user)
 
@@ -43,7 +45,6 @@ class View(BaseView):
         self.clear_items()
         self.add_item(RedeemCode(text_map.get(776, self.lang)))
         self.add_item(CodeSelector(codes, text_map.get(774, self.lang)))
-        self.add_item(GameSelector(self.lang, self.game))
 
     def _make_start_embed(
         self, user: Union[discord.User, discord.Member]
@@ -157,22 +158,6 @@ class CodeSelector(ui.Select):
     async def callback(self, i: Inter):
         await i.response.defer()
         await self.view.redeem_response(i, self.values[0])
-
-
-class GameSelector(BaseGameSelector):
-    def __init__(self, lang: str, game: GameType):
-        super().__init__(lang, game, row=2)
-        self.view: View
-
-    async def callback(self, i: Inter):
-        await self.loading(i)
-        self.view.game = GameType(self.values[0])
-        if self.values[0] == GameType.GENSHIN.value:
-            codes = await i.client.db.codes.get_all()
-        else:
-            codes = []
-        self.view.add_components(codes)
-        await i.edit_original_response(view=self.view)
 
 
 class MeToo(ui.Button):

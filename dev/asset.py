@@ -99,3 +99,8 @@ hsr_icon = "https://i.imgur.com/CCgeiIH.png"
 genshin_icon = "https://i.imgur.com/VMdOvQo.png"
 honkai_icon = "https://i.imgur.com/4mhmAGb.png"
 peko_yahoo = "<:pekoyahoo:1107092764954468442>"
+game_emojis = {
+    "genshin": genshin_emoji,
+    "honkai": honkai_emoji,
+    "hsr": hsr_emoji,
+}

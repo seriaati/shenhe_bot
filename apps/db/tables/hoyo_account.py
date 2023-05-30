@@ -2,14 +2,12 @@ import datetime
 from typing import Optional
 
 from asyncpg import Pool
-from discord import User
 from genshin import Client, Game, Region
 from pydantic import BaseModel, Field
 
 from apps.text_map.convert_locale import to_genshin_py
 from dev.enum import GameType
 from dev.exceptions import AccountNotFound
-from utils.general import get_dc_user
 
 from .cookies import Cookie, CookieTable
 from .user_settings import UserSettings, UserSettingsTable
@@ -21,6 +19,14 @@ def convert_game_type(game_type: GameType) -> Game:
     if game_type is GameType.HONKAI:
         return Game.HONKAI
     return Game.GENSHIN
+
+
+def convert_game(game: Game) -> GameType:
+    if game is Game.STARRAIL:
+        return GameType.HSR
+    if game is Game.HONKAI:
+        return GameType.HONKAI
+    return GameType.GENSHIN
 
 
 class HoyoAccount(BaseModel):
@@ -53,16 +59,16 @@ class HoyoAccount(BaseModel):
     china: bool
     """Whether the account's region is in China"""
 
-    _settings_db: UserSettingsTable
+    settings_db: UserSettingsTable
     """User settings database"""
-    _cookie_db: CookieTable
+    cookie_db: CookieTable
     """Cookie database"""
 
-    _cookie: Optional[Cookie] = None
+    internal_cookie: Optional[Cookie]
     """Hoyoverse cookie"""
-    _client: Optional[Client] = None
+    internal_client: Optional[Client]
     """Genshin.py client"""
-    _settings: Optional[UserSettings] = None
+    internal_settings: Optional[UserSettings]
     """User settings"""
 
     def __init__(self, **kwargs) -> None:
@@ -71,27 +77,27 @@ class HoyoAccount(BaseModel):
 
     @property
     async def cookie(self) -> Cookie:
-        if not self._cookie:
-            cookie = await self._cookie_db.get(self.ltuid)
-            self._cookie = cookie
-        return self._cookie
+        if not self.internal_cookie:
+            cookie = await self.cookie_db.get(self.ltuid)
+            self.internal_cookie = cookie
+        return self.internal_cookie
 
     @property
     async def client(self) -> Client:
         """Get the genshin.py client"""
-        if not self._client:
+        if not self.internal_client:
             cookie = await self.cookie
-            self._client = self._create_client(cookie)
-        return self._client
+            self.internal_client = self._create_client(cookie)
+        return self.internal_client
 
     @property
     async def settings(self) -> UserSettings:
         """Get the user settings"""
-        if not self._settings:
-            self._settings = await self._settings_db.get_all(self.user_id)
-        if self._client:
-            self._client.lang = to_genshin_py(str(self._settings.lang))
-        return self._settings
+        if not self.internal_settings:
+            self.internal_settings = await self.settings_db.get_all(self.user_id)
+        if self.internal_client:
+            self.internal_client.lang = to_genshin_py(str(self.internal_settings.lang))
+        return self.internal_settings
 
     def _create_client(self, cookie: Cookie) -> Client:
         """Create a genshin.py client"""
@@ -107,6 +113,10 @@ class HoyoAccount(BaseModel):
         client.game = convert_game_type(self.game)
         client.region = Region.CHINESE if self.china else Region.OVERSEAS
         return client
+
+    class Config:
+        arbitrary_types_allowed = True
+        allow_private = True
 
 
 class HoyoAccountTable:
@@ -133,10 +143,30 @@ class HoyoAccountTable:
             genshin_daily BOOLEAN NOT NULL DEFAULT FALSE,
             hsr_daily BOOLEAN NOT NULL DEFAULT FALSE,
             honkai_daily BOOLEAN NOT NULL DEFAULT FALSE,
-            UNIQUE (user_id, uid),
+            UNIQUE (user_id, uid)
         )
         """
         )
+
+    async def migrate(self) -> None:
+        rows = await self.pool.fetch(
+            """
+            SELECT user_id, uid, ltuid, nickname
+            FROM user_accounts
+            WHERE ltuid IS NOT NULL
+            AND ltoken IS NOT NULL
+            AND cookie_token IS NOT NULL
+            """
+        )
+        for row in rows:
+            nickname = row["nickname"]
+            await self.insert(
+                game=GameType.GENSHIN,
+                nickname=None if len(str(nickname)) > 15 else nickname,
+                user_id=row["user_id"],
+                uid=row["uid"],
+                ltuid=row["ltuid"],
+            )
 
     async def insert(
         self,
@@ -152,10 +182,11 @@ class HoyoAccountTable:
             """
             INSERT INTO hoyo_account (user_id, uid, ltuid, current, game, nickname)
             VALUES ($1, $2, $3, $4, $5, $6)
+            ON CONFLICT DO NOTHING
             """,
             user_id,
-            uid,
-            ltuid,
+            int(uid),
+            int(ltuid),
             True,
             game.value,
             nickname,
@@ -169,6 +200,15 @@ class HoyoAccountTable:
             """,
             user_id,
             uid,
+        )
+
+    async def check_exist(self, ltuid: int) -> bool:
+        """Check if an account exists"""
+        return await self.pool.fetchval(
+            """
+            SELECT EXISTS(SELECT 1 FROM hoyo_account WHERE ltuid = $1)
+            """,
+            ltuid,
         )
 
     async def get_uid(self, user_id: int) -> int:
@@ -194,8 +234,8 @@ class HoyoAccountTable:
         if not account:
             raise AccountNotFound
         return HoyoAccount(
-            _cookie_db=self.cookie_db,
-            _settings_db=self.settings_db,
+            cookie_db=self.cookie_db,
+            settings_db=self.settings_db,
             **account,
         )
 
@@ -209,8 +249,8 @@ class HoyoAccountTable:
         )
         return [
             HoyoAccount(
-                _cookie_db=self.cookie_db,
-                _settings_db=self.settings_db,
+                cookie_db=self.cookie_db,
+                settings_db=self.settings_db,
                 **account,
             )
             for account in accounts
@@ -225,15 +265,23 @@ class HoyoAccountTable:
         )
         return [
             HoyoAccount(
-                _cookie_db=self.cookie_db,
-                _settings_db=self.settings_db,
+                cookie_db=self.cookie_db,
+                settings_db=self.settings_db,
                 **account,
             )
             for account in accounts
         ]
 
-    async def update_current(self, user_id: int, uid: int) -> None:
-        """Update the current account"""
+    async def get_total(self) -> int:
+        """Get the total number of accounts"""
+        return await self.pool.fetchval(
+            """
+            SELECT COUNT(*) FROM hoyo_account
+            """
+        )
+
+    async def set_current(self, user_id: int, uid: int) -> None:
+        """Set the current account"""
         await self.pool.execute(
             """
             UPDATE hoyo_account SET current = FALSE WHERE user_id = $1

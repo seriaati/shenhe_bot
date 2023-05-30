@@ -15,12 +15,11 @@ from .paginator import GeneralPaginator, GeneralPaginatorView
 class WishOverviewPaginatorView(GeneralPaginatorView):
     def __init__(
         self,
-        embeds: List[discord.Embed],
         locale: str,
         current_banner: str,
         all_wish_data: Dict[str, WishData],
     ) -> None:
-        super().__init__(embeds, locale)
+        super().__init__([discord.Embed()], locale)
 
         self.current_banner = current_banner
         self.all_wish_data = all_wish_data
@@ -28,7 +27,6 @@ class WishOverviewPaginatorView(GeneralPaginatorView):
     async def make_response(self, i: Inter) -> None:
         wish_data = self.all_wish_data[self.current_banner]
         current_page = self.current_page
-        embed = self.embeds[0]
 
         if current_page == 0:
             fp = await self.draw_overview_fp(i, wish_data)
@@ -40,9 +38,7 @@ class WishOverviewPaginatorView(GeneralPaginatorView):
             )
         fp.seek(0)
 
-        embed.set_image(url=f"attachment://wish_overview_{current_page}.jpeg")
         await i.response.edit_message(
-            embed=embed,
             view=self,
             attachments=[
                 discord.File(fp, filename=f"wish_overview_{current_page}.jpeg")
@@ -116,13 +112,12 @@ class WishOverviewPaginator(GeneralPaginator):
     def __init__(
         self,
         i: Inter,
-        embeds: List[discord.Embed],
         current_banner: str,
         all_wish_data: Dict[str, WishData],
         select_options: List[discord.SelectOption],
         first_fp: io.BytesIO,
     ) -> None:
-        super().__init__(i=i, embeds=embeds)
+        super().__init__(i=i, embeds=[discord.Embed()])
 
         self.current_banner = current_banner
         self.all_wish_data = all_wish_data
@@ -137,7 +132,6 @@ class WishOverviewPaginator(GeneralPaginator):
     def setup_kwargs(self, view: GeneralPaginatorView) -> Dict[str, Any]:
         kwargs = {
             "view": view,
-            "embed": self.embeds[0],
             "attachments": [
                 discord.File(self.first_fp, filename="wish_overview_0.jpeg")
             ],
@@ -148,7 +142,7 @@ class WishOverviewPaginator(GeneralPaginator):
         self, locale: Union[discord.Locale, str]
     ) -> WishOverviewPaginatorView:
         view = WishOverviewPaginatorView(
-            self.embeds, str(locale), self.current_banner, self.all_wish_data
+            str(locale), self.current_banner, self.all_wish_data
         )
         view.add_item(
             BannerSelect(

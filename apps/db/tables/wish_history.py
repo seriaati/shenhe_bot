@@ -39,8 +39,8 @@ class WishHistory(BaseModel):
             uid=wish.uid,
             wish_name=wish.name,
             wish_rarity=wish.rarity,
-            wish_time=wish.time,
-            wish_banner_type=wish.banner_type,
+            wish_time=wish.time.replace(tzinfo=None),
+            wish_banner_type=wish.banner_type.value,
         )
 
 
@@ -58,6 +58,7 @@ class WishHistoryTable:
             VALUES (
                 $1, $2, $3, $4, $5, $6, $7, $8, $9
             )
+            ON CONFLICT (wish_id) DO NOTHING
             """,
             history.wish_id,
             history.user_id,
@@ -69,11 +70,17 @@ class WishHistoryTable:
             history.item_id,
             history.pity,
         )
-
-    async def check_uid(self, uid: int) -> bool:
-        return await self.pool.fetchval(
-            "SELECT EXISTS(SELECT 1 FROM wish_history WHERE uid = $1)", uid
+    
+    async def check_linked(self, user_id: int) -> bool:
+        first_check = await self.pool.fetchval(
+            "SELECT EXISTS(SELECT 1 FROM wish_history WHERE user_id = $1)", user_id
         )
+        if not first_check:
+            return True
+        second_check = await self.pool.fetchval(
+            "SELECT EXISTS(SELECT 1 FROM wish_history WHERE user_id = $1 AND uid IS NOT NULL)", user_id
+        )
+        return second_check
 
     async def get_with_uid(self, uid: int) -> List[WishHistory]:
         return [
