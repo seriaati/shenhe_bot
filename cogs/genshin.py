@@ -33,7 +33,7 @@ from utils import (
     get_uid_region_hash,
     get_user_lang,
     get_user_theme,
-    )
+)
 from utils.genshin import update_talents_json
 
 load_dotenv()
