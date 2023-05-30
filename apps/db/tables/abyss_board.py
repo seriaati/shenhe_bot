@@ -19,8 +19,6 @@ class SingleStrikeCharacter(BaseModel):
 
 class AbyssBoardEntry(BaseModel):
     """Abyss leaderboard entry"""
-
-
     def __init__(self, **data):
         character = SingleStrikeCharacter(
             const=data["const"],
