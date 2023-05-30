@@ -1,10 +1,6 @@
-import asyncio
 import io
 from datetime import timedelta
 from typing import List, Union
-
-import aiohttp
-import asyncpg
 import discord
 import genshin
 from dateutil import parser
@@ -20,7 +16,7 @@ from apps.draw import main_funcs
 from apps.text_map import text_map
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, DrawInput, ErrorEmbed, Inter
-from utils import get_dt_now, get_user_theme, image_gen_transition, update_talents_json
+from utils import get_dt_now, image_gen_transition, update_talents_json
 
 
 class View(BaseView):

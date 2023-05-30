@@ -12,7 +12,6 @@ from matplotlib import pyplot as plt
 import dev.asset as asset
 import dev.config as config
 from apps.db.tables.hoyo_account import HoyoAccount
-from apps.db.tables.user_settings import Settings
 from apps.draw.main_funcs import draw_diary_card
 from apps.text_map import text_map
 from apps.text_map.convert_locale import to_genshin_py
