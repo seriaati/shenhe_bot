@@ -7,8 +7,6 @@ from apps.db.tables.user_settings import Settings
 from apps.text_map import text_map
 from apps.wish.models import WishHistory, WishInfo
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
-
-from .db import get_user_lang
 from .general import divide_chunks
 from .genshin import get_character_emoji, get_weapon_emoji
 

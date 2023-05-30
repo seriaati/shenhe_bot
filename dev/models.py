@@ -8,7 +8,7 @@ import asyncpg
 import cachetools
 import discord
 import genshin
-from attr import define, field
+from attr import define
 from discord.ext import commands
 from enkanetwork.model.base import EnkaNetworkResponse
 from logingateway import HuTaoLoginAPI
@@ -18,7 +18,6 @@ from pyppeteer.browser import Browser
 import ambr.models as ambr
 from apps.db.main import Database
 from apps.text_map import text_map
-from dev.enum import GameType
 
 
 @define

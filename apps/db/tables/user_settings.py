@@ -4,8 +4,6 @@ from enum import Enum
 from asyncpg import Pool
 from pydantic import BaseModel, Field
 
-from dev.enum import GameType
-
 
 class Settings(Enum):
     LANG = "lang"
