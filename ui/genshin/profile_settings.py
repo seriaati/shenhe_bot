@@ -4,12 +4,12 @@ import discord
 from discord import ui
 
 import dev.config as config
+from apps.db.tables.user_settings import Settings
 from apps.genshin import edit_enka_cache
 from apps.text_map import text_map
 from dev.base_ui import BaseView, EnkaView
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
 from ui.genshin.enka_damage_calc import GoBack
-from utils import create_user_settings, get_profile_ver
 
 
 class View(BaseView):
@@ -60,7 +60,7 @@ class VersionButton(ui.Button):
         self.view: View
 
     async def callback(self, i: Inter):
-        ver = await get_profile_ver(i.user.id, i.client.pool)
+        ver = await i.client.db.settings.get(i.user.id, Settings.PROFILE_VERSION)
         embed = self.view.gen_version_embed(ver)
         self.view.clear_items()
         self.view.add_item(VersionSelect(self.lang, ver))
@@ -90,12 +90,7 @@ class VersionSelect(ui.Select):
         self.view: View
 
     async def callback(self, i: Inter):
-        await create_user_settings(i.user.id, i.client.pool)
-        await i.client.pool.execute(
-            "UPDATE user_settings SET profile_ver = $1 WHERE user_id = $2",
-            int(self.values[0]),
-            i.user.id,
-        )
+        await i.client.db.settings.update(i.user.id, Settings.PROFILE_VERSION, int(self.values[0]))
         for option in self.options:
             option.default = option.value == self.values[0]
         embed = self.view.gen_version_embed(int(self.values[0]))

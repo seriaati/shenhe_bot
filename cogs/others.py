@@ -24,7 +24,6 @@ from apps.text_map import text_map, to_ambr_top
 from dev.exceptions import AutocompleteError
 from dev.models import BotModel, DefaultEmbed, ErrorEmbed, Inter
 from ui.others import feedback_menu, manage_accounts, settings, settings_menu
-from utils import create_user_settings
 
 load_dotenv()
 
@@ -44,7 +43,6 @@ class OthersCog(commands.Cog, name="others"):
     )
     async def settings(self, inter: discord.Interaction):
         i: Inter = inter  # type: ignore
-        await create_user_settings(i.user.id, self.bot.pool)
         await settings_menu.return_settings(i)
 
     @app_commands.command(

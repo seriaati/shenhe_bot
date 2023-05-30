@@ -18,7 +18,7 @@ from apps.text_map import text_map
 from dev.base_ui import BaseView, EnkaView
 from dev.exceptions import CardNotReady, NoCharacterFound
 from dev.models import DrawInput, ErrorEmbed, Inter
-from utils import divide_chunks, get_character_fanarts, get_profile_ver
+from utils import divide_chunks, get_character_fanarts
 from yelan.data.GO_modes import HIT_MODE_TEXTS
 
 
@@ -155,7 +155,7 @@ async def go_back_callback(i: Inter, enka_view: EnkaView):
     dark_mode = dark_mode = await i.client.db.settings.get(
         i.user.id, Settings.DARK_MODE
     )
-    version = await get_profile_ver(i.user.id, i.client.pool)
+    version = await i.client.db.settings.get(i.user.id, Settings.PROFILE_VERSION)
     try:
         custom_image = await get_user_custom_image(
             i.user.id, int(enka_view.character_id), i.client.pool

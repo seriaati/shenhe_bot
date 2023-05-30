@@ -34,11 +34,7 @@ class NotificationButton(ui.Button):
         self.view: View
 
     async def callback(self, i: Inter):
-        await i.client.pool.execute(
-            "UPDATE user_settings SET notification = $1 WHERE user_id = $2",
-            self.toggle,
-            i.user.id,
-        )
+        await i.client.db.settings.update(i.user.id, Settings.NOTIFICATION, self.toggle)
         if self.view.original_info is None:
             raise AssertionError
         await return_view(i, self.lang, self.view.original_info)
