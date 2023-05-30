@@ -8,4 +8,5 @@
 
 ## wish history
 
-* [About wish history](wish-history/about-wish-history.md)
+* [Getting wish history link](wish-history/getting-wish-history-link.md)
+* [Importing wish history](wish-history/importing-wish-history.md)
