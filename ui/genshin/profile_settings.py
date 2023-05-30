@@ -90,7 +90,9 @@ class VersionSelect(ui.Select):
         self.view: View
 
     async def callback(self, i: Inter):
-        await i.client.db.settings.update(i.user.id, Settings.PROFILE_VERSION, int(self.values[0]))
+        await i.client.db.settings.update(
+            i.user.id, Settings.PROFILE_VERSION, int(self.values[0])
+        )
         for option in self.options:
             option.default = option.value == self.values[0]
         embed = self.view.gen_version_embed(int(self.values[0]))
