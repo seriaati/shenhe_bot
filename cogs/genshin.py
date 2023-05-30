@@ -27,8 +27,14 @@ from apps.genshin_data import abyss
 from apps.text_map import convert_locale, text_map
 from data.cards.dice_element import get_dice_emoji
 from ui.others import manage_accounts
-from utils import (disable_view_items, get_character_emoji,
-                   get_uid_region_hash, get_user_lang, get_user_theme, log)
+from utils import (
+    disable_view_items,
+    get_character_emoji,
+    get_uid_region_hash,
+    get_user_lang,
+    get_user_theme,
+    log,
+)
 from utils.genshin import update_talents_json
 
 load_dotenv()

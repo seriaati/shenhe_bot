@@ -70,7 +70,7 @@ class WishHistoryTable:
             history.item_id,
             history.pity,
         )
-    
+
     async def check_linked(self, user_id: int) -> bool:
         first_check = await self.pool.fetchval(
             "SELECT EXISTS(SELECT 1 FROM wish_history WHERE user_id = $1)", user_id
@@ -78,7 +78,8 @@ class WishHistoryTable:
         if not first_check:
             return True
         second_check = await self.pool.fetchval(
-            "SELECT EXISTS(SELECT 1 FROM wish_history WHERE user_id = $1 AND uid IS NOT NULL)", user_id
+            "SELECT EXISTS(SELECT 1 FROM wish_history WHERE user_id = $1 AND uid IS NOT NULL)",
+            user_id,
         )
         return second_check
 

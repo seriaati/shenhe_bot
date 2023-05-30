@@ -303,6 +303,7 @@ class BaseSelect(discord.ui.Select):
         self.options = self.original_options
         await i.edit_original_response(view=self.view)
 
+
 class BaseButton(discord.ui.Button):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

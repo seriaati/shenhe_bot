@@ -60,7 +60,7 @@ class View(BaseView):
             embed = ErrorEmbed(description=f"UID: {self.user.uid}")
             embed.set_title(683, self.lang, self.author)
             return embed
-        
+
         character_banner = 0
         weapon_banner = 0
         permanent_banner = 0

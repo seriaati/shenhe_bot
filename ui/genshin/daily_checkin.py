@@ -86,9 +86,7 @@ class View(BaseView):
         divided_value = list(divide_chunks(values, 10))
         for index, val in enumerate(divided_value):
             r = "".join(val)
-            embed.add_field(
-                name=f"{text_map.get(605, self.lang)} ({index+1})", value=r
-            )
+            embed.add_field(name=f"{text_map.get(605, self.lang)} ({index+1})", value=r)
 
         await i.edit_original_response(embed=embed, view=self)
 

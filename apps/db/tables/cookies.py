@@ -27,7 +27,7 @@ class CookieTable:
             )
             """
         )
-    
+
     async def migrate(self) -> None:
         rows = await self.pool.fetch(
             """

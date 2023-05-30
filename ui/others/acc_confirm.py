@@ -98,7 +98,7 @@ class Add(ui.Button):
             nickname=acc.nickname,
         )
         await i.client.db.users.set_current(i.user.id, acc.uid)
-        
+
         embed = DefaultEmbed()
         embed.set_title(39, self.view.lang, i.user)
         await i.edit_original_response(embed=embed, view=None)
