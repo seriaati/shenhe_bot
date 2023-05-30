@@ -18,6 +18,7 @@ class SingleStrikeCharacter(BaseModel):
 
 
 class AbyssBoardEntry(BaseModel):
+    """Abyss leaderboard entry"""
     def __init__(self, **data):
         character = SingleStrikeCharacter(
             const=data["const"],
@@ -26,8 +27,6 @@ class AbyssBoardEntry(BaseModel):
             c_icon=data["c_icon"],
         )
         super().__init__(**data, character=character)
-
-    """Abyss leaderboard entry"""
 
     uid: int
     """Genshin Impact UID"""
