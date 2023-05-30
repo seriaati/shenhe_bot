@@ -138,9 +138,7 @@ class WishOverviewPaginator(GeneralPaginator):
         }
         return kwargs
 
-    def setup_view(
-        self, lang: Union[discord.Locale, str]
-    ) -> WishOverviewPaginatorView:
+    def setup_view(self, lang: Union[discord.Locale, str]) -> WishOverviewPaginatorView:
         view = WishOverviewPaginatorView(
             str(lang), self.current_banner, self.all_wish_data
         )

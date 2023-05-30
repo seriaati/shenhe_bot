@@ -27,9 +27,7 @@ class View(BaseView):
 
 class FloorSelect(ui.Select):
     def __init__(self, result: AbyssResult, lang: discord.Locale | str):
-        options = [
-            discord.SelectOption(label=text_map.get(43, lang), value="overview")
-        ]
+        options = [discord.SelectOption(label=text_map.get(43, lang), value="overview")]
         for index in range(len(result.abyss_floors)):
             options.append(
                 discord.SelectOption(

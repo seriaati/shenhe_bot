@@ -13,8 +13,12 @@ from apps.text_map import cond_text, text_map, to_genshin_py
 from data.game.elements import get_element_emoji, get_element_list
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, DrawInput, Inter
-from utils import (disable_view_items, get_character_builds,
-                   get_character_emoji, image_gen_transition)
+from utils import (
+    disable_view_items,
+    get_character_builds,
+    get_character_emoji,
+    image_gen_transition,
+)
 
 
 class View(BaseView):
@@ -298,9 +302,7 @@ async def element_button_callback(i: Inter, element: str, view: View):
 
     for character_name, character_builds in builds.items():
         character_id = text_map.get_id_from_name(character_name)
-        localized_character_name = text_map.get_character_name(
-            str(character_id), lang
-        )
+        localized_character_name = text_map.get_character_name(str(character_id), lang)
         if localized_character_name is None:
             continue
         options.append(

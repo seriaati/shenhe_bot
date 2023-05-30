@@ -13,14 +13,17 @@ from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.enka.api_docs import get_character_skill_order
 from apps.text_map import text_map, to_ambr_top
-from data.game.elements import (get_element_color, get_element_emoji,
-                                get_element_list)
+from data.game.elements import get_element_color, get_element_emoji, get_element_list
 from data.game.upgrade_exp import get_exp_table
 from dev.base_ui import BaseModal, BaseView
 from dev.exceptions import InvalidWeaponCalcInput
 from ui.calc.add_to_todo import AddButton
-from utils import (get_character_emoji, get_character_suggested_talent_levels,
-                   image_gen_transition, level_to_ascension_phase)
+from utils import (
+    get_character_emoji,
+    get_character_suggested_talent_levels,
+    image_gen_transition,
+    level_to_ascension_phase,
+)
 
 
 class View(BaseView):

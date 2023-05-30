@@ -117,7 +117,9 @@ class GeneralPaginator:
         if not self.embeds:
             raise ValueError("Missing embeds")
 
-        lang = await self.i.client.db.settings.get(self.i.user.id, Settings.LANG) or str(self.i.locale)
+        lang = await self.i.client.db.settings.get(
+            self.i.user.id, Settings.LANG
+        ) or str(self.i.locale)
         view = self.setup_view(lang)
         view.author = self.i.user
         view.first.disabled = view.previous.disabled = True

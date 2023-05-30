@@ -27,9 +27,7 @@ class View(BaseView):
         self.lang = lang
 
     def gen_embed(self) -> discord.Embed:
-        embed = DefaultEmbed(
-            text_map.get(62, self.lang), text_map.get(276, self.lang)
-        )
+        embed = DefaultEmbed(text_map.get(62, self.lang), text_map.get(276, self.lang))
         return embed
 
 
@@ -272,9 +270,7 @@ async def return_custom_image_interaction(
     )
     view.add_item(AddImage(view.lang, character_id, element, len(options) == 125))
     view.add_item(
-        remove_image := RemoveImage(
-            view.lang, character_id, bool(not options), element
-        )
+        remove_image := RemoveImage(view.lang, character_id, bool(not options), element)
     )
     div_options: List[List[discord.SelectOption]] = list(divide_chunks(options, 25))
     for d_options in div_options:

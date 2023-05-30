@@ -580,7 +580,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def search_uid_command(
         self, inter: discord.Interaction, player: discord.User, ephemeral: bool = True
     ):
-        i: models.Inter = inter # type: ignore
+        i: models.Inter = inter  # type: ignore
         lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
         uid = await self.bot.db.users.get_uid(player.id)
 
@@ -810,9 +810,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             monster = await client.get_monster_detail(int(query))
             if monster is None:
                 raise exceptions.ItemNotFound
-            await ui.search_nav.parse_monster_wiki(
-                monster, i, lang, client, dark_mode
-            )
+            await ui.search_nav.parse_monster_wiki(monster, i, lang, client, dark_mode)
 
         elif item_type == 5:  # food
             food = await client.get_food_detail(int(query))
@@ -878,10 +876,8 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def view_beta_items(self, i: discord.Interaction):
         lang = await self.bot.db.settings.get(i.user.id, Settings.LANG)
         lang = lang or str(i.locale)
-        
-        client = AmbrTopAPI(
-            self.bot.session, convert_locale.to_ambr_top(lang)
-        )
+
+        client = AmbrTopAPI(self.bot.session, convert_locale.to_ambr_top(lang))
         result = ""
         first_icon_url = ""
         characters = await client.get_character()
@@ -939,9 +935,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
 
         fp = await main_funcs.draw_banner_card(
-            models.DrawInput(
-                loop=self.bot.loop, session=self.bot.session, lang=lang
-            ),
+            models.DrawInput(loop=self.bot.loop, session=self.bot.session, lang=lang),
             [w.banner for w in banners],
         )
         fp.seek(0)
@@ -964,7 +958,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         description=_("View the list of enemies in the current abyss phases", hash=294),
     )
     async def abyss_enemies(self, inter: discord.Interaction):
-        i: models.Inter = inter # type: ignore
+        i: models.Inter = inter  # type: ignore
         await i.response.defer()
         lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
         floors = await abyss.get_abyss_enemies(self.bot.gd_text_map, lang)
@@ -1150,7 +1144,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     async def card_autocomplete(
         self, inter: discord.Interaction, current: str
     ) -> List[app_commands.Choice[str]]:
-        i: models.Inter = inter # type: ignore
+        i: models.Inter = inter  # type: ignore
         lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
         genshin_db_locale = convert_locale.to_genshin_db(lang)
 

@@ -15,14 +15,16 @@ from data.game.weapon_types import get_weapon_type_emoji
 from dev.base_ui import BaseModal, BaseView
 from dev.exceptions import InvalidAscensionInput, InvalidWeaponCalcInput
 from ui.calc.add_to_todo import AddButton
-from utils import (divide_chunks, get_weapon_emoji, image_gen_transition,
-                   level_to_ascension_phase)
+from utils import (
+    divide_chunks,
+    get_weapon_emoji,
+    image_gen_transition,
+    level_to_ascension_phase,
+)
 
 
 class View(BaseView):
-    def __init__(
-        self, lang: discord.Locale | str, weapon_types: typing.Dict[str, str]
-    ):
+    def __init__(self, lang: discord.Locale | str, weapon_types: typing.Dict[str, str]):
         super().__init__(timeout=config.short_timeout)
         self.lang = lang
 
@@ -80,9 +82,7 @@ class WeaponSelect(ui.Select):
         options: typing.List[discord.SelectOption],
         range_: str,
     ):
-        super().__init__(
-            placeholder=text_map.get(180, lang) + range_, options=options
-        )
+        super().__init__(placeholder=text_map.get(180, lang) + range_, options=options)
         self.view: View
 
     async def callback(self, i: models.Inter) -> typing.Any:
@@ -140,9 +140,7 @@ class LevelModal(BaseModal):
             target_ascension = int(self.target_ascension.value)
         except ValueError:
             return await i.followup.send(
-                embed=models.ErrorEmbed(
-                    description=text_map.get(187, lang)
-                ).set_author(
+                embed=models.ErrorEmbed(description=text_map.get(187, lang)).set_author(
                     name=text_map.get(190, lang), icon_url=i.user.display_avatar.url
                 ),
                 ephemeral=True,
