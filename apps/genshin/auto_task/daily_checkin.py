@@ -12,11 +12,12 @@ from genshin import GenshinException
 import dev.asset as asset
 import dev.models as model
 from apps.db.tables.hoyo_account import HoyoAccount, convert_game_type
+from apps.db.tables.user_settings import Settings
 from apps.text_map import text_map
 from apps.text_map.convert_locale import to_genshin_py
 from dev.enum import CheckInAPI, GameType
 from dev.exceptions import CheckInAPIError
-from utils import get_dt_now, get_user_notif, log
+from utils import get_dt_now, log
 from utils.general import get_dc_user
 
 load_dotenv()
@@ -142,7 +143,7 @@ class DailyCheckin:
                 break
             try:
                 embed = await self._do_genshin_daily(api, user)
-                notif = await get_user_notif(user.user_id, self.bot.pool)
+                notif = await self.bot.db.settings.get(user.user_id, Settings.NOTIFICATION)
                 if notif:
                     await self._notify_user(user, embed)
             except Exception as e:  # skipcq: PYL-W0703

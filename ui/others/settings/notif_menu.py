@@ -3,7 +3,7 @@ from discord import ui
 
 import dev.asset as asset
 import dev.config as config
-from utils import get_user_notif
+from apps.db.tables.user_settings import Settings
 from apps.text_map import text_map
 from dev.base_ui import BaseView, GoBackButton
 from dev.models import DefaultEmbed, Inter, OriginalInfo
@@ -47,7 +47,7 @@ class NotificationButton(ui.Button):
 async def return_view(
     i: Inter, locale: discord.Locale | str, original_info: OriginalInfo
 ):
-    notif = await get_user_notif(i.user.id, i.client.pool)  # type: ignore
+    notif = await i.client.db.settings.get(i.user.id, Settings.NOTIFICATION)
     view = View(locale, notif, original_info)
     view.add_item(GoBackButton(original_info))
     embed = DefaultEmbed(description=text_map.get(138, locale))
