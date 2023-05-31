@@ -471,7 +471,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         dark_mode = await self.bot.db.settings.get(i.user.id, Settings.DARK_MODE)
 
         client = await user.client
-        abyss_data = await client.get_genshin_spiral_abyss(user.uid, previous=bool(previous))
+        abyss_data = await client.get_genshin_spiral_abyss(
+            user.uid, previous=bool(previous)
+        )
         if not abyss_data.ranks.most_kills:
             raise exceptions.AbyssDataNotFound
         g_user = await client.get_partial_genshin_user(user.uid)
