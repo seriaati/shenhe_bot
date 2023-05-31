@@ -152,7 +152,7 @@ class AdminCog(commands.Cog, name="admin"):
         else:
             self.bot.disabled_commands.append(command)
             await ctx.send("command disabled")
-    
+
     @commands.is_owner()
     @commands.command(name="flush")
     async def flush_log(self, ctx: commands.Context):
