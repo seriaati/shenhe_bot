@@ -505,7 +505,7 @@
 '559': Switch account
 '562': Choose a custom image
 '563': |-
-  • Read [the docs](https://bit.ly/shenhe_docs) regarding account security
+  • Read [the docs](https://bit.ly/shenhe-docs) regarding account security
 '564': Latency
 '565': Credits
 '566': |-
@@ -735,7 +735,7 @@
   • The code selector gathers currently available Genshin codes from [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes), select to redeem
   • The code input method allows you to enter up to 3 codes (at least 1) manually
 '778': Code redemption service is currently busy, please try again later
-'779': See [Shenhe's documentation](https://bit.ly/shenhe_docs) for how to get the wish history link
+'779': See [Shenhe's documentation](https://bit.ly/shenhe-docs) for how to get the wish history link
 '780': Account Manager
 '781': Confirm
 '782': Account information
