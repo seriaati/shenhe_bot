@@ -13,7 +13,7 @@ from apps.db.tables.hoyo_account import HoyoAccount
 from apps.db.tables.wish_history import WishHistoryTable
 from apps.text_map import text_map
 from apps.wish.models import WishHistory, WishInfo
-from dev.base_ui import BaseModal, BaseView
+from dev.base_ui import BaseButton, BaseModal, BaseView
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
 from utils import get_account_options, get_wish_info_embed
 
@@ -295,7 +295,7 @@ class ImportShenhe(ui.Button):
         await i.response.send_message(embed=embed, ephemeral=True)
 
 
-class ExportWishHistory(ui.Button):
+class ExportWishHistory(BaseButton):
     def __init__(self, lang: str, disabled: bool):
         super().__init__(
             label=text_map.get(679, lang),
@@ -313,11 +313,11 @@ class ExportWishHistory(ui.Button):
         linked = await i.client.db.wish.check_linked(self.view.user.user_id)
         wishes = await self.view.get_wishes(i.client.db.wish, linked)
 
-        wishes_dict = [wish.dict() for wish in wishes]
+        wishes_dict = [wish.to_dict() for wish in wishes]
         s.write(str(yaml.safe_dump(wishes_dict, indent=4, allow_unicode=True)))
         s.seek(0)
         await i.followup.send(
-            file=discord.File(s.getvalue(), f"SHENHE_WISH_{uuid4()}.yaml"),
+            file=discord.File(s, f"SHENHE_WISH_{uuid4()}.yaml"), # type: ignore
             ephemeral=True,
         )
 

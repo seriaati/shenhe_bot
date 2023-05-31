@@ -42,6 +42,20 @@ class WishHistory(BaseModel):
             wish_time=wish.time.replace(tzinfo=None),
             wish_banner_type=wish.banner_type.value,
         )
+    
+    def to_dict(self) -> dict:
+        """Converts the wish object to a dictionary"""
+        return {
+            "wish_id": self.wish_id,
+            "user_id": self.user_id,
+            "uid": self.uid,
+            "wish_name": self.name,
+            "wish_rarity": self.rarity,
+            "wish_time": self.time,
+            "wish_banner_type": self.banner,
+            "item_id": self.item_id,
+            "pity_pull": self.pity,
+        }
 
 
 class WishHistoryTable:

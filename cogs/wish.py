@@ -11,10 +11,11 @@ import dev.models as models
 from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
-from apps.wish.models import RecentWish, WishData, WishHistory, WishInfo, WishItem
+from apps.wish.models import (RecentWish, WishData, WishHistory, WishInfo,
+                              WishItem)
 from dev.exceptions import WishFileImportError
 from ui.wish import set_auth_key, wish_filter
-from utils import get_wish_history_embeds, get_wish_info_embed
+from utils import get_wish_history_embeds, get_wish_info_embed, log
 from utils.paginators import WishHistoryPaginator, WishOverviewPaginator
 
 
@@ -86,7 +87,8 @@ class WishCog(commands.GroupCog, name="wish"):
             view.author = i.user
             await i.response.send_message(embed=embed, view=view)
             view.message = await i.original_response()
-        except Exception:  # skipcq: PYL-W0703
+        except Exception as e:  # skipcq: PYL-W0703
+            log.exception("Error while importing wish history", exc_info=e)
             raise WishFileImportError
 
     @app_commands.command(name="history", description=_("View wish history", hash=478))
