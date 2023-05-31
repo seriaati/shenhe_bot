@@ -92,10 +92,10 @@ class LangSelect(ui.Select):
                 label=text_map.get(124, lang), emoji="🏳️", value="none"
             )
         ]
-        for lang, lang_info in lang_options.items():
+        for lang_id, lang_info in lang_options.items():
             options.append(
                 discord.SelectOption(
-                    label=lang_info["name"], value=lang, emoji=lang_info["emoji"]
+                    label=lang_info["name"], value=lang_id, emoji=lang_info["emoji"]
                 )
             )
         super().__init__(options=options, placeholder=text_map.get(32, lang), row=1)
