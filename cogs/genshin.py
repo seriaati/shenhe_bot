@@ -185,8 +185,9 @@ class GenshinCog(commands.Cog, name="genshin"):
             ephemeral=ephemeral,
         )
 
+    @staticmethod
     def parse_notes_embed(
-        self, notes: genshin.models.Notes, lang: str
+        notes: genshin.models.Notes, lang: str
     ) -> models.DefaultEmbed:
         if notes.current_resin == notes.max_resin:
             resin_recover_time = text_map.get(1, lang)

@@ -85,8 +85,8 @@ class View(BaseView):
         await i.followup.send(embed=embed, view=self)
         self.message = await i.original_response()
 
+    @staticmethod
     def _filter_guild_members(
-        self,
         entries: Union[List[AbyssBoardEntry], List[AbyssCharaBoardEntry]],
         guild: discord.Guild,
     ):

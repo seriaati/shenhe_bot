@@ -244,8 +244,9 @@ class WTNotifs:
         )
         return fp
 
+    @staticmethod
     def _get_embed(
-        self, lang: str, domain: ambr.Domain, item: Union[ambr.Character, ambr.Weapon]
+        lang: str, domain: ambr.Domain, item: Union[ambr.Character, ambr.Weapon]
     ):
         embed = DefaultEmbed()
         embed.add_field(

@@ -123,8 +123,9 @@ class AutoRedeem:
 
         return embeds
 
+    @staticmethod
     async def _redeem_code(
-        self, account: HoyoAccount, code: str, user: discord.User
+        account: HoyoAccount, code: str, user: discord.User
     ) -> discord.Embed:
         """
         Redeems a single code for a given user account.
@@ -153,8 +154,9 @@ class AutoRedeem:
         embed.set_footer(text=text_map.get(126, lang))
         return embed
 
+    @staticmethod
     async def notify_user(
-        self, user: discord.User, embeds: List[discord.Embed]
+        user: discord.User, embeds: List[discord.Embed]
     ) -> None:
         """
         Notifies a user of the redeemed codes.
