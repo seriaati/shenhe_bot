@@ -154,7 +154,7 @@
 '169': キャラクター{level_type}
 '170': '例: {a}'
 '171': 通常攻撃(A) {level_type}
-'172': The number needs to be between {a} and {b}
+'172': レベルは {a} から {b} の間でなければなりません
 '173': 元素スキル (E) {level_type}
 '174': 元素爆発(Q) {level_type}
 '175': ToDoリストに追加
@@ -497,19 +497,19 @@
 '553': 不明な地域
 '554': (内部)
 '556': アカウントの追加
-'557': Remove current account
+'557': 現在のアカウントを削除
 '559': アカウントの切り替え
 '562': カスタム画像を選択
 '563': |-
-  • Read [the docs](https://bit.ly/shenhe-docs) regarding account security
+  • アカウントのセキュリティに関しては [ドキュメント](https://bit.ly/shenhe-docs) を参照してください
 '564': レイテンシ
 '565': クレジット
 '566': |-
   合計: {total}
   ユニーク: {unique}
 '567': |-
-  There is **NO** support for paimon.moe, please view this [GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371) for the reason.
-  The only file that is supported is the YAML file exported from Shenhe.
+  paimon.moeの形式は **サポートされていません** 理由はこちらの [GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371) をご覧ください。
+  サポートされているのは、申鶴からエクスポートされたYAMLファイルのみです。
 '568': 画像のURLは.pngまたは.jpg形式で指定してください
 '569': アカウントの種類
 '573': 現在のアカウントはCookieにリンクされていません
@@ -543,8 +543,8 @@
 '597': ShenheはDMを送ることができませんでした
 '598': キャラクターの追加/削除
 '599': すべてのキャラクターを削除する
-'600': Change nickname
-'601': Nickname
+'600': ニックネームの変更
+'601': ニックネーム
 '602': ニックネームを変更したいアカウントを選択してください
 '603': 報酬を受け取る
 '604': HoYoLABのデイリーログインボーナス
@@ -571,7 +571,7 @@
 '626': 材料
 '627': デイリーログインボーナスの切り替え
 '630': 申鶴のデイリーログインボーナスの自動チェックイン機能を無効にしました。再度有効にするには、 </claim:1020580644365021250> を実行してください。
-'631': Shenhe has automatically disabled this remind feature for you, to enable it back, please use </remind:1020580644365021255>
+'631': 申鶴は自動的にこのリマインダー機能をオフにしました。オンにするには</remind:1020580644365021255>を使用してください
 '632': 武器突破素材通知
 '633': |-
   • 武器の素材秘境が周回可能である場合に通知する
@@ -628,8 +628,7 @@
 '685': 祈願をインポートする方法を選択してください
 '686': 'ファイルから原神の祈願履歴をインポート'
 '687': |-
-  You can use the </wish file-import:123123> command to import wishes from a file
-  Only support YAML files exported from Shenhe
+  </wish file-import:123123>コマンドを使用することでファイルから祈願をインポートできます。申鶴からエクスポートされたYAMLファイルのみをサポートしています。
 '688': 本当によろしいですか？
 '689': |-
   ・このアカウントの祈願履歴を削除しようとしています！この操作は元に戻すことができません。
@@ -637,7 +636,7 @@
   ・ゲーム内で保存されなくなった祈願が申鶴に保存されている場合があります。
 '690': 申鶴はこのファイル/リンクから **{a}**個の祈願が見つかりました
 '691': 祈願のインポートを確認
-'692': Import your Genshin wish history from a YAML file exported by Shenhe
+'692': 申鶴からエクスポートされたYAMLファイル形式の祈願履歴をインポートします
 '694': 進行中
 '695': 完了
 '696': 残り
@@ -672,7 +671,7 @@
 '725': フィードバックが送信されました。ご協力ありがとうございます🥰
 '726': UID をコピー
 '727': サーバーの地域
-'728': Once you see a green checkmark on the website, click the green button below to confirm
+'728': ウェブサイトに緑のチェックマークが表示されたら、以下の緑のボタンをクリックして確定してください
 '729': 素材の量を変更
 '730': 無効な突破段階
 '731': 祈願データが見つかりません
@@ -728,17 +727,17 @@
   • コードセレクターは、[Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)から現在入手可能な引き換えコードをもとに表示されています。
   • コードは最大３つ同時に入力できます
 '778': コード引き換えサービスは現在ビジー状態です。後でもう一度お試しください
-'779': See [Shenhe's documentation](https://bit.ly/shenhe-docs) for how to get the wish history link
-'780': Account Manager
-'781': Confirm
-'782': Account information
-'783': Account level
-'784': Game
-'785': Select an account to add
-'786': Add this account
-'787': Cancel
-'788': Your accounts have been shattered into pieces
-'789': '{current} is not supported for this feature yet'
+'779': 祈願履歴のURLを取得する方法は[申鶴のドキュメント](https://bit.ly/shenhe-docs)から確認できます
+'780': アカウントマネージャー
+'781': 確定
+'782': アカウント情報
+'783': アカウントレベル
+'784': ゲーム
+'785': 追加するアカウントを選択
+'786': このアカウントを追加
+'787': キャンセル
+'788': あなたのアカウントはシュレッダーにかけられました
+'789': '{current} はまだこの機能ではサポートされていません'
 '790': |-
-  Your curernt game: **{current}**
-  Supported games are: **{supported}**
+  あなたが選択している現在のゲーム: **{current}**
+  サポートされているゲーム: **{supported}**
