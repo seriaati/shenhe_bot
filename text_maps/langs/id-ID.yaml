@@ -1,6 +1,5 @@
 '1': Penuh
 '2': Realm Currency
-'3': Pilih Metode Masukan
 '4': Resin
 '5': Resin Discounts
 '6': Daily Comission
@@ -97,19 +96,6 @@
 '107': Kode tidak valid
 '108': Kode
 '109': Kode berhasil ditukarkan
-'110': Data event summer tidak ditemukan
-'111': Golden Apple Archipelago
-'112': Waverider Waypoints Terbuka
-'113': Waypoints Terbuka
-'114': Treasure Chests Diperoleh
-'115': Belum selesai
-'116': Surfpiercer
-'117': Summer Memories
-'118': Eksplorasi Dunia
-'119': Waktu selesai
-'120': Berhasil ditantang
-'121': waktu
-'122': Keterampilan elemen yang dilepaskan
 '124': Kembali ke default
 '125': |-
   • Secara default, shenhe meresponmu dengan bahasa yang sama dengan yang digunakan discord kamu
@@ -164,14 +150,12 @@
 '162': Build
 '163': Pilih Build
 '164': Build
-'165': Pengguna ini belum mendaftarkan akunnya
-'166': Pengguna tidak ditemukan
 '167': "{name} UID"
 '168': Level Saat Ini
 '169': Karakter {level_type}
 '170': 'Contoh: {a}'
 '171': Serangan Auto Target (A) {level_type}
-'172': Level harus antara {a} dan {b}
+'172': The number needs to be between {a} and {b}
 '173': Elemental Skill (E) {level_type}
 '174': Elemental Burst (Q) {level_type}
 '175': Tambahkan ke daftar tugas
@@ -192,10 +176,6 @@
 '190': Masukan Tidak Valid
 '192': Konten Perhitungan
 '193': Didukung oleh Genshin Optimizer
-'194': |-
-  {total} total
-  {cookie} dengan Cookie
-  {china} China users
 '195': Jenis file tidak valid
 '196': Ringkasan Karakter Genshin
 '197': Tidak Perlu Material
@@ -342,33 +322,10 @@
 '353': Mengimpor riwayat wish
 '354': Silakan tempel tautannya di sini
 '355': Harap tunggu sementara Shenhe sedang memproses riwayat wish kamu...
-'356': Berhasil mengimpor riwayat wish
 '357': Candace Q
-'358': |-
-  1. Buka Genshin Impact di PC (Jika kamu menggunakan banyak akun, harap mulai ulang game)
-  2. Kemudian buka riwayat wish di dalam game dan tunggu hingga dimuat
-  3. Tekan tombol WINDOWS pada keyboardmu, lalu cari Powershell
-  4. Klik Windows Powershell, lalu salin & tempel skrip di bawah ini ke Powershell
-  5. Tekan ENTER, dan link akan disalin ke clipboardmu
-  6. Klik tombol "Kirim Tautan" dan tempel tautan di kotak teks yang muncul
 '360': Hydro infusion
 '361': Pilih sumber informasimu
-'362': |-
-  1. Unduh Stream di App Store [here](https://apps.apple.com/app/stream/id1312141691)
-  2. Buka aplikasi, lalu izinkan VPN di preferensi sistem (Settings > General > VPN)
-  3. Instal CA (klik Sniff Now di Stream App > Install CA > Jendela pop-up akan muncul dan pilih izinkan > Sekarang CA telah diunduh
-  4. Buka Settings > General > VPN & Device management > Klik di Stream Generated CA dan instal
-  5. Buka Genshin Impact lalu buka layar Wish, dan tetap di halaman tersebut
-  6. Kembali ke Aplikasi Stream > Pilih I've trusted > Ketuk Tombol Sniff Now
-  7. Kembali ke Genshin Impact lalu buka halaman riwayat Wish
-  8. Tunggu halaman dimuat
-  9. Kembali ke Aplikasi Streaming > Stop Sniffing
-  10. Klik Sniff History > Pilih permintaan yang diakhiri dengan .json (tautan dimulai dengan https://hk4e-api-os.mihoyo.com/)
-  11. Klik tab Request, lalu salin tautannya
-  12. Klik tombol "Kirim Tautan" dan tempel tautan di kotak teks yang muncul
 '363': Tautan yang kamu berikan tidak valid
-'364': Video Tutorial
-'365': Pilih Platformmu
 '366': P.T. kamu siap digunakan!
 '367': UID ini tidak memiliki data pemain di dalamnya
 '368': Gunakan </wish import:1000187021635104890> untuk mengimpor riwayat wish kamu
@@ -380,14 +337,6 @@
 '381': "Perubahan {time}"
 '388': 'Ya'
 '389': 'Tidak'
-'394': |-
-  1. Tekan tombol WINDOWS pada keyboardmu, lalu cari Powershell
-  2. Klik Windows Powershell, lalu salin & tempel skrip di bawah ini ke Powershell, lalu tekan ENTER (hanya jika pesan 'Tekan Enter untuk melanjutkan...' belum muncul)
-  3. Buka Genshin Impact di PC ini
-  4. Kemudian buka riwayat wish di dalam game dan tunggu hingga dimuat
-  5. Klik tabel, lalu tekan CTRL+A lalu CTRL+C
-  6. Alt+Tab ke powershell, lalu tekan ENTER, link akan disalin ke clipboardmu
-  7. Klik tombol "Kirim Tautan" dan tempel tautan di kotak teks yang muncul
 '396': "{pull} pulls"
 '397': Transformative Reactions
 '398': |-
@@ -400,16 +349,6 @@
   Secara teoritis, kamu dapat memiliki semua karaktermu di /profile kamu dan dapat digunakan di Kalkulator Damage.
 '400': Tautan dihasilkan, klik tombol di bawah untuk masuk
 '401': Hasilkan tautan masuk
-'402': Membuat tautan masuk...
-'403': |-
-  1. Buka Genshin Impact di PC ini (Jika kamu menggunakan banyak akun, harap mulai ulang game)
-  2. Kemudian buka riwayat wish di dalam game dan tunggu hingga dimuat
-  3. Kemudian buka folder tempat game kalian terinstall (contoh: C:\Games\Genshin Impact)
-  4. Kemudian buka folder GenshinImpact_Data → webCaches → Cache → Cache_Data
-  5. Klik kanan file "data_2" lalu klik "Open with" lalu pilih Notepad (Jika mendapatkan error seperti "The process cannot access the file because it is being used by another process" harap keluar dari game terlebih dahulu)
-  6. Tekan CTRL+F lalu centang "Wrap around" dan pilih arah "Up" lalu pada input box cari "e20190909gacha-v2" (tanpa tanda petik) lalu klik Find Next
-  7. Salin semua tautan dari https://webstatic hingga game_biz=hk4e_global urlnya terlihat seperti ini: https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?.... ...&game_biz=hk4e_global
-  8. Klik tombol kirim dan tempel tautan ke kotak teks yang muncul
 '404': Pebarui level talenta
 '406': Mulai Waktu
 '407': Akhir Waktu
@@ -431,7 +370,6 @@
 '423': bulan
 '424': Pilih Bulan Untuk Dilihat
 '425': Bulan Ini
-'426': Tutorial teks akan segera hadir, untuk saat ini silahkan tonton video tutorialnya
 '427': Bulan sebelum bulan lalu
 '428': Lihat Data Abyss (perlu /register)
 '430': Fase
@@ -463,7 +401,6 @@
 '456': Load
 '457': Saat ini kamu tidak ada di leaderboard
 '458': Karakter
-'459': Lihat stat evet genshin sebelumnya
 '460': Hitung bahan yang dibutuhkan untuk meningkatkan karakter
 '461': sinkronisasi
 '462': sinkronkan dengan data dalam game (isi otomatis level)
@@ -480,7 +417,6 @@
 '473': Lihat Daftar Tugas
 '474': Impor Riwayat Wish
 '475': Terima kasih banyak untuk orang-orang ini!
-'476': Tutorial Impor Riwayat Wish
 '477': Kirim Tautan
 '478': Lihat Riwayat Wish
 '479': Dan kamu!
@@ -563,45 +499,26 @@
 '552': Asia
 '553': Region tidak dikenal
 '554': (Internal)
-'555': Akunmu
 '556': Tambahkan Akun
-'557': Hapus Akun
+'557': Remove current account
 '559': Ganti Akun
-'560': Pilih satu atau beberapa akun di bawah untuk dihapus
-'561': Akun Terhapus
 '562': Pilih Gambar Kustom
 '563': |-
-  • Ada dua jenis akun: UID dan Cookie
-  • Beberapa perintah memerlukan Cookie, untuk menambahkannya, pilih salah satu opsi di kotak merah saat menambahkan akun
-  • Penjelasan mendetail terkait keamanan akun dapat ditemukan [here](https://shenhe.gitbook.io/shenhe)
+  • Read [the docs](https://bit.ly/shenhe-docs) regarding account security
 '564': Latensi
 '565': Kredit
 '566': |-
   {total} total
   {unique} unique
 '567': |-
-  **TIDAK ADA** dukungan untuk paimon.moe, harap lihat [masalah GitHub](https://github.com/seriaati/shenhe_bot/issues/371) ini untuk alasannya.
-  Satu-satunya file yang didukung adalah file .yaml yang diekspor dari Shenhe.
+  There is **NO** support for paimon.moe, please view this [GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371) for the reason.
+  The only file that is supported is the YAML file exported from Shenhe.
 '568': Berikan URL gambar dalam format .png atau .jpg
 '569': Tipe akun
-'570': |-
-  Cookie kamu berisi banyak akun
-  silahkan pilih salah satu yang ingin kamu tambahkan
-'571': Kamu tidak memiliki akun terdaftar
-'572': Gunakan </accounts:1020188057628065866> untuk menambahkannya
 '573': Akunmu saat ini tidak ditautkan ke Cookie
-'574': |-
-  Salah satu akunmu yang lain ditautkan ke Cookie,
-  tetapi yang sekarang hanya ditautkan ke UID
-'575': Gunakan </accounts:1020188057628065866> untuk beralih antar akun
 '576': "Karakter yang dimiliki: {current}/{total}"
 '577': "Tingkat pertemanan maksimal: {current}/{total}"
 '578': Friendship Lv.
-'579': Pengguna ini tidak memiliki akun terdaftar
-'580': Akun pengguna saat ini tidak ditautkan ke Cookie
-'581': |-
-  Salah satu akun pengguna ini ditautkan ke Cookie,
-  tetapi yang sekarang hanya ditautkan ke UID
 '582': Notifikasi resin
 '583': Pilih Hari
 '584': Notifikasi realm currency
@@ -629,8 +546,8 @@
 '597': Shenhe gagal DM kamu
 '598': Tambah/Hapus karakter
 '599': Hapus semua karakter
-'600': Ubah nickname
-'601': nickname
+'600': Change nickname
+'601': Nickname
 '602': Pilih akun yang ingin kamu ubah nicknamenya
 '603': Klaim hadiah
 '604': Check-in harian Hoyolab
@@ -657,7 +574,7 @@
 '626': Bahan-bahan
 '627': Alihkan check-in harian
 '630': Shenhe telah secara otomatis menonaktifkan fitur check-in harian otomatis untukmu, untuk mengaktifkannya kembali, silakan gunakan </claim:1020580644365021250>
-'631': Shenhe telah secara otomatis menonaktifkan {feature} fitur untukmu, untuk mengaktifkannya kembali, silakan gunakan </remind:1020580644365021255>
+'631': Shenhe has automatically disabled this remind feature for you, to enable it back, please use </remind:1020580644365021255>
 '632': Notifikasi senjata
 '633': |-
   • Memberitahumu saat domain senjata dapat difarming
@@ -697,7 +614,6 @@
 '669': Mora
 '670': Pergi ke halaman login
 '671': Riwayat Wish
-'672': UID tidak ditemukan
 '673': Saat ini kamu memiliki **{a}** wish yang disimpan di database Shenhe
 '674': Harap tautkan UID sebelum mengimpor wish baru
 '675': Wish terbaru
@@ -715,8 +631,8 @@
 '685': Pilih metode mengimpor wish
 '686': 'Impor riwayat wish Genshinmu dari file'
 '687': |-
-  Kamu dapat menggunakan command </wish file-import:123123> untuk mengimpor wish dari sebuah file
-  Hanya mendukung file `.yaml` yang diekspor dari Shenhe
+  You can use the </wish file-import:123123> command to import wishes from a file
+  Only support YAML files exported from Shenhe
 '688': Apa kamu yakin?
 '689': |-
   • Kamu akan menghapus riwayat wish untuk akun ini, tindakan ini tidak dapat diurungkan.
@@ -724,7 +640,7 @@
   • Kamu mungkin memiliki wish yang disimpan di Shenhe yang tidak lagi disimpan dalam game, jika kamu menghapus riwayat wish, kamu akan kehilangan wish tersebut.
 '690': Shenhe telah menemukan **{a}** wish di tautan/file ini
 '691': Konfirmasi impor wish
-'692': Impor riwayat wish Genshinmu dari file yaml yang diekspor oleh Shenhe
+'692': Import your Genshin wish history from a YAML file exported by Shenhe
 '694': Sedang berlangsung
 '695': Selesai
 '696': Tersisa
@@ -759,10 +675,7 @@
 '725': Feedback terkirim, terima kasih! 🥰
 '726': Salin UID
 '727': Server region
-'728': |-
-  Jika akunmu tidak ditambahkan setelah masuk ke situs web (✅ ditampilkan),
-  silakan tekan tombol muat ulang di bawah, lalu tambahkan kembali akunmu di situs web.
-  Jika akunmu masih belum ditambahkan, silakan DM seria#5334 atau gunakan command </feedback:1054261265561833512>.
+'728': Once you see a green checkmark on the website, click the green button below to confirm
 '729': Edit jumlah item saat ini
 '730': Nomor fase ascension tidak valid
 '731': Tidak ada data wish ditemukan
@@ -821,3 +734,17 @@
   • Pemilih kode mengumpulkan kode Genshin yang tersedia saat ini dari [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes), pilih untuk ditukarkan
   • Metode input kode memungkinkan kamu memasukkan hingga 3 kode (setidaknya 1) secara manual
 '778': Layanan penukaran kode sedang sibuk, silakan coba lagi nanti
+'779': See [Shenhe's documentation](https://bit.ly/shenhe-docs) for how to get the wish history link
+'780': Account Manager
+'781': Confirm
+'782': Account information
+'783': Account level
+'784': Game
+'785': Select an account to add
+'786': Add this account
+'787': Cancel
+'788': Your accounts have been shattered into pieces
+'789': '{current} is not supported for this feature yet'
+'790': |-
+  Your curernt game: **{current}**
+  Supported games are: **{supported}**
