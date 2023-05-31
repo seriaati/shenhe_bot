@@ -38,7 +38,7 @@ class View(BaseView):
         self.user = await i.client.db.users.get(self.member.id)
         if self.user.game is not GameType.GENSHIN:
             raise GameNotSupported(self.user.game, [GameType.GENSHIN])
-        
+
         settings = await self.user.settings
         lang = settings.lang
         self.lang = lang or str(i.locale)

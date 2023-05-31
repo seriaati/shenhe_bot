@@ -84,6 +84,7 @@ class AbyssDataNotFound(Exception):
 class WishFileImportError(Exception):
     pass
 
+
 class GameNotSupported(Exception):
     def __init__(self, current: GameType, supported: List[GameType]) -> None:
         self.current = current

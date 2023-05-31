@@ -161,7 +161,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         user = await self.bot.db.users.get(member.id)
         if user.game is not GameType.GENSHIN:
             raise exceptions.GameNotSupported(user.game, [GameType.GENSHIN])
-        
+
         lang = await self.bot.db.settings.get(i.user.id, Settings.LANG)
         lang = lang or str(i.locale)
         dark_mode = await self.bot.db.settings.get(i.user.id, Settings.DARK_MODE)
@@ -269,7 +269,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         user = await self.bot.db.users.get(member.id)
         if user.game is not GameType.GENSHIN:
             raise exceptions.GameNotSupported(user.game, [GameType.GENSHIN])
-        
+
         lang = await self.bot.db.settings.get(i.user.id, Settings.LANG)
         lang = lang or str(i.locale)
         dark_mode = await self.bot.db.settings.get(i.user.id, Settings.DARK_MODE)
@@ -331,7 +331,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         user = await self.bot.db.users.get(member.id)
         if user.game is not GameType.GENSHIN:
             raise exceptions.GameNotSupported(user.game, [GameType.GENSHIN])
-        
+
         lang = await self.bot.db.settings.get(i.user.id, Settings.LANG)
         lang = lang or str(i.locale)
         dark_mode = await self.bot.db.settings.get(i.user.id, Settings.DARK_MODE)
@@ -398,7 +398,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         user = await self.bot.db.users.get(member.id)
         if user.game is not GameType.GENSHIN:
             raise exceptions.GameNotSupported(user.game, [GameType.GENSHIN])
-        
+
         lang = await self.bot.db.settings.get(i.user.id, Settings.LANG)
         lang = lang or str(i.locale)
 
@@ -482,7 +482,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         user = await self.bot.db.users.get(member.id)
         if user.game is not GameType.GENSHIN:
             raise exceptions.GameNotSupported(user.game, [GameType.GENSHIN])
-        
+
         lang = await self.bot.db.settings.get(i.user.id, Settings.LANG)
         lang = lang or str(i.locale)
         dark_mode = await self.bot.db.settings.get(i.user.id, Settings.DARK_MODE)
@@ -1043,7 +1043,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         user = await i.client.db.users.get(i.user.id)
         if user.game is not GameType.GENSHIN:
             raise exceptions.GameNotSupported(user.game, [GameType.GENSHIN])
-        
+
         client = await user.client
         scenarios = await client.get_lineup_scenarios()
 

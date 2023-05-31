@@ -33,7 +33,7 @@ class View(BaseView):
         self.user = await i.client.db.users.get(i.user.id)
         if self.user.game is not GameType.GENSHIN:
             raise GameNotSupported(self.user.game, [GameType.GENSHIN])
-        
+
         self.uid = self.user.uid
         self.author = i.user
 

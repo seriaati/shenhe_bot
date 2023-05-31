@@ -317,7 +317,7 @@ class ExportWishHistory(BaseButton):
         s.write(str(yaml.safe_dump(wishes_dict, indent=4, allow_unicode=True)))
         s.seek(0)
         await i.followup.send(
-            file=discord.File(s, f"SHENHE_WISH_{uuid4()}.yaml"), # type: ignore
+            file=discord.File(s, f"SHENHE_WISH_{uuid4()}.yaml"),  # type: ignore
             ephemeral=True,
         )
 
