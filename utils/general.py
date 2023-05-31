@@ -11,17 +11,7 @@ import discord
 import pytz
 from sentry_sdk.integrations.logging import LoggingIntegration
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    handlers=[
-        logging.FileHandler("log.log"),
-        logging.StreamHandler(),
-    ],
-)
 log = logging
-
 sentry_logging = LoggingIntegration(level=logging.INFO, event_level=logging.ERROR)
 
 
