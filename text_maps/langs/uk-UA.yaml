@@ -1,6 +1,5 @@
 '1': Повний
 '2': Валюта Області
-'3': Виберіть метод імпорту
 '4': Смола
 '5': Знижка на смолу
 '6': Щоденні завдання
@@ -97,19 +96,6 @@
 '107': Неправильний код
 '108': Код
 '109': Код успішно активований
-'110': Дані літнього заходу не знайдено
-'111': Архіпелаг золотого яблука
-'112': Точки телепортації Waverider розблоковані
-'113': Точки телепортацій розблоковано
-'114': Отримано скрині зі скарбами
-'115': Незавершений
-'116': Surfpiercer
-'117': Літня пам'ять
-'118': Дослідження королівства
-'119': Час на виконання
-'120': Виклик успішно здійснений
-'121': рази(ів)
-'122': Розв'язаний елементарний навик
 '124': Повернутися до налаштувань за замовчуванням
 '125': |-
   • За замовчуванням, Shenhe відповідає на вас тією ж мовою, яку ваш discord використовує
@@ -165,14 +151,12 @@
 '162': Збірка
 '163': Обрати збірку
 '164': збірки
-'165': Цей користувач ще не зареєстрував свій обліковий запис
-'166': Користувача не знайдено в базі
 '167': "{name} UID"
 '168': поточний рівень
 '169': Персонаж {level_type}
 '170': 'Для прикладу: {a}'
 '171': Ціль автоматичної атаки (А) {level_type}
-'172': Рівень повинен бути між {a} і {b}
+'172': The number needs to be between {a} and {b}
 '173': Елементальне вміння (E) {level_type}
 '174': Елементальний вибух (Q) {level_type}
 '175': Додати до списку завдань
@@ -193,10 +177,6 @@
 '190': Введено неправильні дані
 '192': Розрахунок змісту
 '193': Працює на основі Genshin Optimizer
-'194': |-
-  {total} всього
-  {cookie} з Cookie
-  {china} користувачі Китаю
 '195': Неправильний тип файлу
 '196': Сумарно персонажів Genshin
 '197': Матеріали не потрібні
@@ -343,33 +323,10 @@
 '353': Імпорт історії побажань
 '354': Будь ласка, вставте посилання тут
 '355': Будь ласка, зачекайте поки Shenhe обробляє ваші побажання...
-'356': Імпорт історії бажань успішно завершено
 '357': Candace Q
-'358': |-
-  1. Відкрийте вплив Genshin на цьому комп'ютері (якщо ви використовуєте кілька облікових записів, перезапустіть гру)
-  2. Відкрийте історію побажань в грі і зачекайте поки вона завантажиться
-  3. Натисніть WIN на клавіатурі, потім шукайте Powershell
-  4. Натисніть Powershell, потім скопіюйте та вставте скрипт нижче до Powershell
-  5. Натисніть ENTER, і посилання буде скопійоване в буфер обміну
-  6. Натисніть кнопку Надіслати і вставте посилання в текстове поле, що спливає
 '360': Інфузія гідро
 '361': Виберіть джерело інформації
-'362': |-
-  1. Завантажити потік у App Store [here](https://apps.apple.com/app/stream/id1312141691)
-  2. Відкрийте додаток, потім дозвольте VPN в налаштуваннях системи (Налаштування > Загальні > VPN)
-  3. Встановіть CA (натисніть Sniff зараз на Stream App > Встановити CA > Виринаюче вікно з'явиться і виберіть дозволити > Зараз CA завантажене
-  4. Перейдіть до Налаштувань > Загальні > VPN та керування пристроями > Натисніть на Stream Generated CA та встановіть
-  5. Відкрийте Genshin а потім відкрийте екран бажання, і залишитися на цій сторінці
-  6. Повернувшись до розширеного додатку > Оберіть я довірений> Торкніться кнопки Сніг Тепер
-  7. Повернемося до впливу Genshin та відкрийте сторінку історії бажань
-  8. Чекати на сторінку завантаження
-  9. Назад до програми Stream > Stop Sniffing
-  10. Натисніть Закуп Sniff History > Виберіть запит, який закінчується .json (посилання починається з https://hk4e-api-os.mihoyo.com/)
-  11. Натисніть вкладку "Замовити", потім скопіюйте посилання
-  12. Натисніть кнопку "Надіслати і вставте посилання до текстового поля, що спливає
 '363': Надане посилання недійсне
-'364': Відеоуроки
-'365': Виберіть платформу
 '366': Ваш П.П готовий до використання. 
 '367': Цей UID не має даних гравця в ньому
 '368': Використовуйте </wish import:1000187021635104890>, щоб імпортувати вашу історію побажань
@@ -381,14 +338,6 @@
 '381': "Змінити {time} "
 '388': 'Так'
 '389': 'Ні'
-'394': |-
-  1. Press START on your keyboard, then search for Powershell
-  2. Click Windows Powershell, then copy & paste the script below to the Powershell, then press ENTER (only when 'Press Enter to continue...' message is not showing yet)
-  3. Open Genshin Impact in this PC
-  4. Then open the wish history in the game and wait it to load
-  5. Click the table, then press CTRL+A then CTRL+C
-  6. Alt+Tab to the powershell, then press ENTER, the link will be copied to your clipboard
-  7. Click the submit button and paste the link to the textbox that pops up
 '396': "{pull} pulls"
 '397': Transformative Reactions
 '398': |-
@@ -402,16 +351,6 @@
   in your /profile and use them in the damage calculator.
 '400': Згенероване посилання, натисніть на кнопку нижче, щоб увійти
 '401': Згенерувати посилання для входу
-'402': Створення посилання для входу...
-'403': |-
-  1. Open Genshin Impact in this PC (If you use multiple accounts, please restart the game)
-  2. Then open the wish history in the game and wait it to load
-  3. Then open the folder where your game is installed (example: C:\Games\Genshin Impact)
-  4. Then open folder GenshinImpact_Data → webCaches → Cache → Cache_Data
-  5. Right click "data_2" file then click "Open with" then select Notepad (If you get error like "The process cannot access the file because it is being used by another process" please exit the game first)
-  6. Press CTRL+F then check "Wrap around" and select direction "Up" then in the input box search for "e20190909gacha-v2" (without the quote) then click Find Next
-  7. Copy all the link from https://webstatic until game_biz=hk4e_global the url looks like this: https://webstatic-sea.hoyoverse.com/genshin/event/e20190909gacha-v2/index.html?.......&game_biz=hk4e_global
-  8. Click the submit button and paste the link to the textbox that pops up
 '404': Update talent levels
 '406': Час початку
 '407': Час закінчення
@@ -433,7 +372,6 @@
 '423': місяць
 '424': Виберіть місяць для перегляду
 '425': Цього місяця
-'426': Text tutorial is coming soon, for now please watch the video tutorial
 '427': The month before last month
 '428': Перегляд даних Безодні (потрібен /register)
 '430': фаза
@@ -465,7 +403,6 @@
 '456': Загрузити
 '457': Наразі ви не в таблиці лідерів
 '458': персонаж
-'459': Перегляд статистики події останніх відвідувань
 '460': Розрахунок матеріалів, необхідних для прокачування персонажу
 '461': синхронізувати
 '462': синхронізація з ігровими даними (автозаповнення рівнів)
@@ -482,7 +419,6 @@
 '473': View the todo list
 '474': Імпорт історії побажань
 '475': Велике спасибі цим людям!
-'476': Підручник про імпорт історії бажань
 '477': Запропонувати посилання
 '478': Переглянути історію побажань
 '479': And you!
@@ -565,17 +501,12 @@
 '552': Asia
 '553': Unknown region
 '554': (Internal)
-'555': Your accounts
 '556': Add an account
-'557': Remove accounts
+'557': Remove current account
 '559': Switch account
-'560': Choose one or multiple accounts below to remove
-'561': Accounts removed
 '562': Choose a custom image
 '563': |-
-  • There are two account types: UID and Cookie
-  • Some commands require Cookie, to add them, choose one of the options in the red box when adding an account
-  • A detailed explanation regarding account security can be found [here](https://shenhe.gitbook.io/shenhe)
+  • Read [the docs](https://bit.ly/shenhe-docs) regarding account security
 '564': Latency
 '565': Credits
 '566': |-
@@ -583,27 +514,13 @@
   {unique} unique
 '567': |-
   There is **NO** support for paimon.moe, please view this [GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371) for the reason.
-  The only file that is supported is the .yaml file exported from Shenhe.
+  The only file that is supported is the YAML file exported from Shenhe.
 '568': Please provide an Image URL in either .png or .jpg format
 '569': Account type
-'570': |-
-  Your Cookie contains multiple accounts
-  please choose the one you want to add
-'571': You don't have an account registered
-'572': Use </accounts:1020188057628065866> to add one
 '573': Your current account is not linked to a Cookie
-'574': |-
-  One of your other accounts is linked to a Cookie,
-  but the current one is only linked to a UID
-'575': Use </accounts:1020188057628065866> to switch between accounts
 '576': "Owned characters: {current}/{total}"
 '577': "Maxed friendship level: {current}/{total}"
 '578': Friendship Lv.
-'579': This user doesn't have an account registered
-'580': This user's current account is not linked to a Cookie
-'581': |-
-  One of this user's accounts is linked to a Cookie,
-  but the current one is only linked to a UID
 '582': Resin notification
 '583': Виберіть день тижня
 '584': Realm currency notification
@@ -631,8 +548,8 @@
 '597': Shenhe has failed to DM you
 '598': Add/Remove characters
 '599': Remove all characters
-'600': Change nicknames
-'601': nickname
+'600': Change nickname
+'601': Nickname
 '602': Select the account you want to change the nickname of
 '603': Claim reward
 '604': Hoyolab daily check in
@@ -659,7 +576,7 @@
 '626': Ingredients
 '627': Toggle daily check-in
 '630': Shenhe has automatically disabled the auto daily check-in feature for you, to enable it back, please use </claim:1020580644365021250>
-'631': Shenhe has automatically disabled the {feature} feature for you, to enable it back, please use </remind:1020580644365021255>
+'631': Shenhe has automatically disabled this remind feature for you, to enable it back, please use </remind:1020580644365021255>
 '632': Weapon notification
 '633': |-
   • Notify you when a weapon's domain is farmable
@@ -699,7 +616,6 @@
 '669': Mora
 '670': Go to login page
 '671': Wish History
-'672': UID не знайдено
 '673': You currently have **{a}** wishes stored in Shenhe's database
 '674': Please link a UID before importing new wishes
 '675': Newest wish
@@ -718,7 +634,7 @@
 '686': 'Import your Genshin wish history from a file'
 '687': |-
   You can use the </wish file-import:123123> command to import wishes from a file
-  Only support `.yaml` files exported from Shenhe
+  Only support YAML files exported from Shenhe
 '688': Are you sure?
 '689': |-
   • You are about to clear your wish history for this account, this action cannot be undone.
@@ -726,7 +642,7 @@
   • You may have wishes stored in Shenhe that is no longer saved in-game, if you clear your wish history, you will lose those wishes.
 '690': Shenhe has found **{a}** wishes in this link/file
 '691': Confirm wish import
-'692': Import your Genshin wish history from a yaml file exported by Shenhe
+'692': Import your Genshin wish history from a YAML file exported by Shenhe
 '694': Ongoing
 '695': Finished
 '696': Remaining
@@ -761,10 +677,7 @@
 '725': Feedback sent, thank you! 🥰
 '726': Copy UID
 '727': Server region
-'728': |-
-  If your account is not added after logging in on the website (a ✅ is shown),
-  please press the reload button below, then add your account on the website again.
-  If your account is still not added, please DM seria#5334 or use the </feedback:1054261265561833512> command.
+'728': Once you see a green checkmark on the website, click the green button below to confirm
 '729': Edit item's current amount
 '730': Invalid ascension phase number
 '731': No wish data found
@@ -823,3 +736,17 @@
   • The code selector gathers currently available Genshin codes from [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes), select to redeem
   • The code input method allows you to enter up to 3 codes (at least 1) manually
 '778': Code redemption service is currently busy, please try again later
+'779': See [Shenhe's documentation](https://bit.ly/shenhe-docs) for how to get the wish history link
+'780': Account Manager
+'781': Confirm
+'782': Account information
+'783': Account level
+'784': Game
+'785': Select an account to add
+'786': Add this account
+'787': Cancel
+'788': Your accounts have been shattered into pieces
+'789': '{current} is not supported for this feature yet'
+'790': |-
+  Your curernt game: **{current}**
+  Supported games are: **{supported}**
