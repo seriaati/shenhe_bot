@@ -24,11 +24,8 @@ from apps.db.main import Database
 from apps.genshin import launch_browsers, launch_debug_browser
 from apps.genshin_data.text_maps import load_text_maps
 from apps.text_map import text_map
-from dev.base_ui import (
-    get_error_handle_embed,
-    global_error_handler,
-    support_server_view,
-)
+from dev.base_ui import (get_error_handle_embed, global_error_handler,
+                         support_server_view)
 from dev.exceptions import FeatureDisabled, Maintenance
 from dev.models import BotModel
 from utils import log, sentry_logging
@@ -50,6 +47,9 @@ if args.env == "production":
     debug = False
     launch_browser_in_debug = False
     database_url = os.getenv("SHENHE_BOT_DATABASE_URL")
+    sentry_sdk.init(
+        dsn=os.getenv("SENTRY_DSN"), integrations=[sentry_logging], traces_sample_rate=1.0
+    )
 elif args.env == "testing":
     token = os.getenv("SHENHE_TEST_TOKEN")
     debug = True
@@ -224,11 +224,6 @@ class Shenhe(BotModel):
         if hasattr(self, "browsers"):
             for browser in self.browsers.values():
                 await browser.close()
-
-
-sentry_sdk.init(
-    dsn=os.getenv("SENTRY_DSN"), integrations=[sentry_logging], traces_sample_rate=1.0
-)
 
 if platform.system() == "Linux":
     import uvloop  # type: ignore
