@@ -86,13 +86,13 @@ class View(BaseView):
         )
         return fp
 
-    async def get_logs(self, type: DiaryType):
+    async def get_logs(self, diary_type: DiaryType):
         now = get_dt_now()
         now += timedelta(hours=get_uid_tz(self.user.uid))
         primo_per_day: Dict[int, int] = {}
 
         client = await self.user.client
-        async for action in client.diary_log(uid=self.user.uid, type=type):
+        async for action in client.diary_log(uid=self.user.uid, type=diary_type):
             if action.time.day not in primo_per_day:
                 primo_per_day[action.time.day] = 0
             primo_per_day[action.time.day] += action.amount

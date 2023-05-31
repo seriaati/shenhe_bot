@@ -54,9 +54,9 @@ class RealtimeNotes:
             )
             await owner.send(f"An error occurred in RealtimeNotes:\n```\n{e}\n```")
         finally:
-            for type, total in self._total.items():
-                success = self._success.get(type, 0)
-                log.info(f"[RealtimeNotes] {type.name}: {success}/{total} sent")
+            for notif_type, total in self._total.items():
+                success = self._success.get(notif_type, 0)
+                log.info(f"[RealtimeNotes] {notif_type.name}: {success}/{total} sent")
             log.info("[RealtimeNotes] Finished")
 
     async def _make_queue(

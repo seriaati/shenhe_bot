@@ -27,9 +27,9 @@ class TalentNotif(WTNotifBase):
 
 
 class WTNotifTable:
-    def __init__(self, pool: Pool, type: NotifType):
+    def __init__(self, pool: Pool, notif_type: NotifType):
         self.pool = pool
-        self.type = type
+        self.type = notif_type
 
     async def insert(self, user_id: int) -> None:
         await self.pool.execute(
