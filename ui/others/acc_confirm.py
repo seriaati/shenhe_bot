@@ -123,9 +123,7 @@ class AccSelect(ui.Select):
         self.view: View
 
     async def callback(self, i: Inter) -> None:
-        self.view.current_acc = next(
-            filter(lambda x: x.uid == int(self.values[0]), self.view.accs)
-        )
+        self.view.current_acc = discord.utils.get(self.view.accs, uid=int(self.values[0])) # type: ignore
         embed = self.view.acc_embed()
         self.view.add_components()
         await i.response.edit_message(embed=embed, view=self.view)
