@@ -471,8 +471,8 @@ class GenshinCog(commands.Cog, name="genshin"):
         dark_mode = await self.bot.db.settings.get(i.user.id, Settings.DARK_MODE)
 
         client = await user.client
-        abyss = await client.get_genshin_spiral_abyss(user.uid, previous=bool(previous))
-        if not abyss.ranks.most_kills:
+        abyss_data = await client.get_genshin_spiral_abyss(user.uid, previous=bool(previous))
+        if not abyss_data.ranks.most_kills:
             raise exceptions.AbyssDataNotFound
         g_user = await client.get_partial_genshin_user(user.uid)
         characters = await client.get_genshin_characters(user.uid)
@@ -480,7 +480,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         overview = models.DefaultEmbed()
         overview.set_image(url="attachment://overview_card.jpeg")
         overview.set_author(
-            name=f"{text_map.get(85, lang)} | {text_map.get(77, lang)} {abyss.season}",
+            name=f"{text_map.get(85, lang)} | {text_map.get(77, lang)} {abyss_data.season}",
             icon_url=member.display_avatar.url,
         )
         overview.set_footer(text=text_map.get(254, lang))
@@ -495,19 +495,19 @@ class GenshinCog(commands.Cog, name="genshin"):
                     lang=lang,
                     dark_mode=dark_mode,
                 ),
-                abyss,
+                abyss_data,
                 g_user,
             )
             cache[user.uid] = fp
 
         abyss_result = models.AbyssResult(
-            embed_title=f"{text_map.get(47, lang)} | {text_map.get(77, lang)} {abyss.season}",
-            abyss=abyss,
+            embed_title=f"{text_map.get(47, lang)} | {text_map.get(77, lang)} {abyss_data.season}",
+            abyss=abyss_data,
             genshin_user=g_user,
             discord_user=member,
             overview_embed=overview,
             overview_file=fp,
-            abyss_floors=list(abyss.floors),
+            abyss_floors=list(abyss_data.floors),
             characters=list(characters),
             uid=user.uid,
         )
