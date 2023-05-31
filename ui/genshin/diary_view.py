@@ -16,6 +16,8 @@ from apps.draw.main_funcs import draw_diary_card
 from apps.text_map import text_map
 from apps.text_map.convert_locale import to_genshin_py
 from dev.base_ui import BaseButton, BaseSelect, BaseView
+from dev.enum import GameType
+from dev.exceptions import GameNotSupported
 from dev.models import DefaultEmbed, DrawInput, Inter
 from utils import divide_chunks
 from utils.general import get_dt_now
@@ -34,6 +36,9 @@ class View(BaseView):
 
     async def _init(self, i: Inter):
         self.user = await i.client.db.users.get(self.member.id)
+        if self.user.game is not GameType.GENSHIN:
+            raise GameNotSupported(self.user.game, [GameType.GENSHIN])
+        
         settings = await self.user.settings
         lang = settings.lang
         self.lang = lang or str(i.locale)

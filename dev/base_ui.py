@@ -11,6 +11,7 @@ import dev.exceptions as exceptions
 from apps.db.tables.user_settings import Settings
 from apps.text_map import text_map
 from utils import log
+from utils.text_map import get_game_name
 
 from .models import ErrorEmbed, Inter, OriginalInfo
 
@@ -116,6 +117,14 @@ def get_error_handle_embed(
     elif isinstance(e, exceptions.WishFileImportError):
         embed.set_author(name=text_map.get(135, lang))
         embed.description = text_map.get(567, lang)
+    elif isinstance(e, exceptions.GameNotSupported):
+        lang = str(lang)
+        current_game_name = get_game_name(e.current, lang)
+        embed.set_author(name=text_map.get(789, lang).format(current=current_game_name))
+        supported_games = ", ".join([get_game_name(g, lang) for g in e.supported])
+        embed.description = text_map.get(790, lang).format(
+            current=current_game_name, supported=supported_games
+        )
     elif isinstance(e, genshin.errors.GenshinException):
         if isinstance(e, genshin.errors.DataNotPublic):
             embed.set_author(name=text_map.get(22, lang))

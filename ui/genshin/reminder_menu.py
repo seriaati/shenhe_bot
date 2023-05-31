@@ -11,8 +11,8 @@ from apps.text_map import text_map, to_ambr_top
 from data.game.elements import convert_elements, elements
 from data.game.weapon_types import get_weapon_type_emoji
 from dev.base_ui import BaseModal, BaseView
-from dev.enum import NotifType
-from dev.exceptions import InvalidInput, NumbersOnly
+from dev.enum import GameType, NotifType
+from dev.exceptions import GameNotSupported, InvalidInput, NumbersOnly
 from dev.models import DefaultEmbed, Inter
 from utils import divide_chunks, get_character_emoji, get_weapon_emoji
 
@@ -31,6 +31,9 @@ class View(BaseView):
         lang = (await self.user.settings).lang
         self.lang = lang or str(i.locale)
         self.user = await i.client.db.users.get(i.user.id)
+        if self.user.game is not GameType.GENSHIN:
+            raise GameNotSupported(self.user.game, [GameType.GENSHIN])
+        
         self.uid = self.user.uid
         self.author = i.user
 

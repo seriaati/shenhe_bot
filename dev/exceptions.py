@@ -1,4 +1,6 @@
-from dev.enum import CheckInAPI
+from typing import List
+
+from dev.enum import CheckInAPI, GameType
 
 
 class AccountNotFound(Exception):
@@ -81,3 +83,8 @@ class AbyssDataNotFound(Exception):
 
 class WishFileImportError(Exception):
     pass
+
+class GameNotSupported(Exception):
+    def __init__(self, current: GameType, supported: List[GameType]) -> None:
+        self.current = current
+        self.supported = supported

@@ -745,3 +745,7 @@
 '786': Add this account
 '787': Cancel
 '788': Your accounts have been shattered into pieces
+'789': '{current} is not supported for this feature yet'
+'790': |-
+  Your curernt game: **{current}**
+  Supported games are: **{supported}**
