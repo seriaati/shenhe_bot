@@ -10,7 +10,7 @@ class Settings(Enum):
     DARK_MODE = "dark_mode"
     NOTIFICATION = "notification"
     AUTO_REDEEM = "auto_redeem"
-    PROFILE_VERSION = "profile_version"
+    PROFILE_VERSION = "profile_ver"
 
 
 class UserSettings(BaseModel):
