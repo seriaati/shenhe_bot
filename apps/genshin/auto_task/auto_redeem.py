@@ -155,9 +155,7 @@ class AutoRedeem:
         return embed
 
     @staticmethod
-    async def notify_user(
-        user: discord.User, embeds: List[discord.Embed]
-    ) -> None:
+    async def notify_user(user: discord.User, embeds: List[discord.Embed]) -> None:
         """
         Notifies a user of the redeemed codes.
 
