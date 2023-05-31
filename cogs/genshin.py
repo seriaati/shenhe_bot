@@ -167,9 +167,8 @@ class GenshinCog(commands.Cog, name="genshin"):
         dark_mode = await self.bot.db.settings.get(i.user.id, Settings.DARK_MODE)
 
         client = await user.client
-        notes = await client.get_genshin_notes(
-            user.uid, lang=convert_locale.to_genshin_py(lang)
-        )
+        client.lang = convert_locale.to_genshin_py(lang)
+        notes = await client.get_genshin_notes(user.uid)
 
         draw_input = models.DrawInput(
             loop=self.bot.loop,
@@ -284,9 +283,8 @@ class GenshinCog(commands.Cog, name="genshin"):
         fp = self.bot.stats_card_cache.get(user.uid)
         if fp is None:
             client = await user.client
-            genshin_user = await client.get_partial_genshin_user(
-                user.uid, lang=convert_locale.to_genshin_py(lang)
-            )
+            client.lang = convert_locale.to_genshin_py(lang)
+            genshin_user = await client.get_partial_genshin_user(user.uid)
             ambr = AmbrTopAPI(self.bot.session)
             characters = await ambr.get_character(
                 include_beta=False, include_traveler=False
@@ -337,8 +335,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         dark_mode = await self.bot.db.settings.get(i.user.id, Settings.DARK_MODE)
 
         client = await user.client
+        client.lang = convert_locale.to_genshin_py(lang)
         genshin_user = await client.get_partial_genshin_user(
-            user.uid, lang=convert_locale.to_genshin_py(lang)
+            user.uid
         )
         explorations = genshin_user.explorations
 
@@ -410,8 +409,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         )
 
         client = await user.client
+        client.lang = convert_locale.to_genshin_py(lang)
         g_characters = await client.get_genshin_characters(
-            user.uid, lang=convert_locale.to_genshin_py(lang)
+            user.uid
         )
         g_characters = list(g_characters)
 
