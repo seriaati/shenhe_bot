@@ -2,7 +2,6 @@ from datetime import timedelta
 from typing import Optional
 
 import aiohttp
-import asyncpg
 import discord
 from discord import ui
 
