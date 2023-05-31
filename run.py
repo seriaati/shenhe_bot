@@ -25,11 +25,8 @@ from apps.db.main import Database
 from apps.genshin import launch_browsers, launch_debug_browser
 from apps.genshin_data.text_maps import load_text_maps
 from apps.text_map import text_map
-from dev.base_ui import (
-    get_error_handle_embed,
-    global_error_handler,
-    support_server_view,
-)
+from dev.base_ui import (get_error_handle_embed, global_error_handler,
+                         support_server_view)
 from dev.exceptions import FeatureDisabled, Maintenance
 from dev.models import BotModel
 from utils import log, sentry_logging
@@ -51,15 +48,6 @@ if args.env == "production":
     debug = False
     launch_browser_in_debug = False
     database_url = os.getenv("SHENHE_BOT_DATABASE_URL")
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s %(levelname)s %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-        handlers=[
-            logging.FileHandler("log.log"),
-            logging.StreamHandler(),
-        ],
-    )
     sentry_sdk.init(
         dsn=os.getenv("SENTRY_DSN"),
         integrations=[sentry_logging],
@@ -70,15 +58,6 @@ elif args.env == "testing":
     debug = True
     launch_browser_in_debug = True
     database_url = os.getenv("SHENHE_BOT_DATABASE_URL")
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s %(levelname)s %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-        handlers=[
-            logging.FileHandler("testing.log"),
-            logging.StreamHandler(),
-        ],
-    )
 elif args.env == "development":
     token = os.getenv("YAE_TOKEN")
     debug = True
