@@ -6,13 +6,14 @@ import genshin
 from PIL import Image, ImageDraw
 
 import dev.asset as asset
+from apps.db.tables.abyss_board import AbyssBoardEntry
 from apps.draw.draw_funcs import leaderboard
 from apps.text_map import text_map
+from dev.enum import Category
 from dev.models import (
+    BoardUser,
     CharacterUsageResult,
     DynamicBackgroundInput,
-    RunLeaderboardUser,
-    SingleStrikeLeaderboardUser,
     TopPadding,
     UsageCharacter,
 )
@@ -22,18 +23,18 @@ from utils import draw_dynamic_background, dynamic_font_size, get_cache, get_fon
 def one_page(
     user: genshin.models.PartialGenshinUserStats,
     abyss: genshin.models.SpiralAbyss,
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
     dark_mode: bool,
     user_characters: List[genshin.models.Character],
 ) -> io.BytesIO:
     app_mode = "dark" if dark_mode else "light"
-    font = get_font(locale, 60)
+    font = get_font(lang, 60)
     fill = asset.white if dark_mode else asset.primary_text
     im = Image.open(f"yelan/templates/abyss/[{app_mode}] Abyss One Page.png")
     draw = ImageDraw.Draw(im)
 
     # write the title
-    draw.text((595, 134), text_map.get(85, locale), fill=fill, font=font, anchor="mm")
+    draw.text((595, 134), text_map.get(85, lang), fill=fill, font=font, anchor="mm")
     # write the four basic stats
     draw.text((1361, 134), str(abyss.total_stars), fill=fill, font=font, anchor="mm")
     draw.text((1861, 134), str(abyss.max_floor), fill=fill, font=font, anchor="mm")
@@ -47,7 +48,7 @@ def one_page(
     draw.text((2861, 134), str(user.info.level), fill=fill, font=font, anchor="mm")
 
     # most played characters
-    draw.text((528, 326), text_map.get(613, locale), fill=fill, font=font, anchor="mm")
+    draw.text((528, 326), text_map.get(613, lang), fill=fill, font=font, anchor="mm")
     most_played = abyss.ranks.most_played[:4]
     offset = (75, 453)
     for character in most_played:
@@ -59,11 +60,11 @@ def one_page(
 
     # other ranks
     character_rank = {
-        text_map.get(83, locale): abyss.ranks.most_bursts_used[0],
-        text_map.get(84, locale): abyss.ranks.most_skills_used[0],
-        text_map.get(80, locale): abyss.ranks.strongest_strike[0],
-        text_map.get(81, locale): abyss.ranks.most_kills[0],
-        text_map.get(82, locale): abyss.ranks.most_damage_taken[0],
+        text_map.get(83, lang): abyss.ranks.most_bursts_used[0],
+        text_map.get(84, lang): abyss.ranks.most_skills_used[0],
+        text_map.get(80, lang): abyss.ranks.strongest_strike[0],
+        text_map.get(81, lang): abyss.ranks.most_kills[0],
+        text_map.get(82, lang): abyss.ranks.most_damage_taken[0],
     }
     character_level = {}
     for floor in abyss.floors:
@@ -74,9 +75,9 @@ def one_page(
     offset = (1387, 326)
     icon_offset = (1772, 284)
     count = 1
-    font = get_font(locale, 45)
-    value_font = get_font(locale, 88)
-    level_font = get_font(locale, 40)
+    font = get_font(lang, 45)
+    value_font = get_font(lang, 88)
+    level_font = get_font(lang, 40)
     for text, character in character_rank.items():
         if count == 3:
             offset = (375, 823)
@@ -111,7 +112,7 @@ def one_page(
         count += 1
 
     # abyss floors
-    level_font = get_font(locale, 20)
+    level_font = get_font(lang, 20)
     split_floors = [abyss.floors[:2], abyss.floors[2:]]
     offset = (104, 1313)
     for index, floors in enumerate(split_floors):
@@ -155,7 +156,7 @@ def one_page(
             offset = (offset[0] + 1503, offset[1] - 732)
 
     # draw stars
-    font = get_font(locale, 30)
+    font = get_font(lang, 30)
     stars = {
         1: f"yelan/templates/abyss/[{app_mode}] One Star.png",
         2: f"yelan/templates/abyss/[{app_mode}] Two Star.png",
@@ -196,15 +197,21 @@ def one_page(
     return fp
 
 
-def strike_leaderboard(
-    locale: discord.Locale | str,
+def strike_board(
+    lang: discord.Locale | str,
     dark_mode: bool,
-    users: List[SingleStrikeLeaderboardUser],
-    current_uid: int,
+    users: List[BoardUser[AbyssBoardEntry]],
+    user_uid: int,
 ) -> io.BytesIO:
     """Draw the "Strongest Single Strike" leaderboard."""
     im = leaderboard.board(
-        dark_mode, users, current_uid, 80, [89, 198, 199, 201, 430], locale
+        dark_mode,
+        users,
+        user_uid,
+        80,
+        [89, 198, 199, 201, 430],
+        lang,
+        Category.SINGLE_STRIKE,
     )
     fp = io.BytesIO()
     im = im.convert("RGB")
@@ -212,15 +219,21 @@ def strike_leaderboard(
     return fp
 
 
-def run_leaderboard(
-    locale: discord.Locale | str,
+def full_clear_board(
+    lang: discord.Locale | str,
     dark_mode: bool,
-    users: List[RunLeaderboardUser],
-    current_uid: int,
+    users: List[BoardUser[AbyssBoardEntry]],
+    user_uid: int,
 ) -> io.BytesIO:
     """Draw the "Runs Taken to Full Clear" leaderboard."""
     im = leaderboard.board(
-        dark_mode, users, current_uid, 160, [89, 198, 186, 293, 610], locale
+        dark_mode,
+        users,
+        user_uid,
+        160,
+        [89, 198, 186, 293, 610],
+        lang,
+        Category.FULL_CLEAR,
     )
     fp = io.BytesIO()
     im = im.convert("RGB")
@@ -229,7 +242,7 @@ def run_leaderboard(
 
 
 def abyss_overview(
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
     dark_mode: bool,
     abyss: genshin.models.SpiralAbyss,
     user: genshin.models.PartialGenshinUserStats,
@@ -240,9 +253,9 @@ def abyss_overview(
     )
     draw = ImageDraw.Draw(card)
 
-    font = get_font(locale, 90)
+    font = get_font(lang, 90)
     fill = asset.white if app_mode == "dark" else asset.primary_text
-    text = text_map.get(85, locale)
+    text = text_map.get(85, lang)
     offset = (950, 230)
     draw.text(offset, text=text, fill=fill, font=font, anchor="mm")
     text = str(abyss.total_stars)
@@ -258,7 +271,7 @@ def abyss_overview(
     offset = (offset[0] + 830, offset[1])
     draw.text(offset, text=text, fill=fill, font=font, anchor="mm")
     offset = (950 - 100, 220 + 320)
-    text = text_map.get(613, locale)
+    text = text_map.get(613, lang)
     draw.text(offset, text=text, fill=fill, font=font, anchor="mm")
     most_played = abyss.ranks.most_played[:4]
     offset = (120, 760)
@@ -269,11 +282,11 @@ def abyss_overview(
         card.paste(icon, offset, icon)
         offset = (offset[0] + 415, offset[1])
     character_rank = {
-        text_map.get(83, locale): abyss.ranks.most_bursts_used[0],
-        text_map.get(84, locale): abyss.ranks.most_skills_used[0],
-        text_map.get(80, locale): abyss.ranks.strongest_strike[0],
-        text_map.get(81, locale): abyss.ranks.most_kills[0],
-        text_map.get(82, locale): abyss.ranks.most_damage_taken[0],
+        text_map.get(83, lang): abyss.ranks.most_bursts_used[0],
+        text_map.get(84, lang): abyss.ranks.most_skills_used[0],
+        text_map.get(80, lang): abyss.ranks.strongest_strike[0],
+        text_map.get(81, lang): abyss.ranks.most_kills[0],
+        text_map.get(82, lang): abyss.ranks.most_damage_taken[0],
     }
     character_level = {}
     for floor in abyss.floors:
@@ -284,9 +297,9 @@ def abyss_overview(
     offset = (2300, 540)
     icon_offset = (2950, 490)
     count = 1
-    font = get_font(locale, 75)
-    value_font = get_font(locale, 128)
-    level_font = get_font(locale, 75)
+    font = get_font(lang, 75)
+    value_font = get_font(lang, 128)
+    level_font = get_font(lang, 75)
     for text, character in character_rank.items():
         if count == 3:
             offset = (610, 1370)
@@ -399,7 +412,7 @@ def floor_card(
 def character_usage(
     uc_list: List[UsageCharacter],
     dark_mode: bool,
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
 ) -> CharacterUsageResult:
     total = sum(x.usage_num for x in uc_list)
     uc_list = sorted(uc_list, key=lambda x: x.usage_num, reverse=True)
@@ -423,9 +436,9 @@ def character_usage(
     draw = ImageDraw.Draw(im)
 
     # title
-    font = get_font(locale, 75, "Bold")
+    font = get_font(lang, 75, "Bold")
     fill = asset.white if dark_mode else asset.primary_text
-    text = text_map.get(617, locale)
+    text = text_map.get(617, lang)
     font = dynamic_font_size(text, 1, 75, 645, font)
     draw.text((95, 40), text, font=font, fill=fill)
 
@@ -436,7 +449,7 @@ def character_usage(
             uc.usage_num,
             uc.usage_num / total * 100,
             dark_mode,
-            locale,
+            lang,
         )
         x = 95 + (644 + 60) * (index // max_card_num)
         y = 190 + (140 + 45) * (index % max_card_num)

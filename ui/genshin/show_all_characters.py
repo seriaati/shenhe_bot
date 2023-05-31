@@ -1,10 +1,7 @@
-import asyncio
 import io
 from datetime import timedelta
 from typing import List, Union
 
-import aiohttp
-import asyncpg
 import discord
 import genshin
 from dateutil import parser
@@ -15,30 +12,24 @@ import data.game.elements as game_elements
 import dev.asset as asset
 import dev.config as config
 from apps.db.json import read_json
+from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.text_map import text_map
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, DrawInput, ErrorEmbed, Inter
-from utils import (
-    get_dt_now,
-    get_shenhe_account,
-    get_uid,
-    get_user_theme,
-    image_gen_transition,
-    update_talents_json,
-)
+from utils import get_dt_now, image_gen_transition, update_talents_json
 
 
 class View(BaseView):
     def __init__(
         self,
-        locale: discord.Locale | str,
+        lang: discord.Locale | str,
         characters: List[genshin.models.Character],
         member: Union[discord.User, discord.Member],
         ambr_characters: List[ambr.models.Character],
     ):
         super().__init__(timeout=config.mid_timeout)
-        self.locale = locale
+        self.lang = lang
         self.characters = characters
         self.ambr_characters = ambr_characters
         self.character_copy = characters.copy()
@@ -47,13 +38,13 @@ class View(BaseView):
         self.sort_current = "default_sort"
         self.filter_current = "default_filter"
 
-        self.add_item(SortBy(locale))
-        self.add_item(FilterBy(locale))
-        self.add_item(UpdateTalentsJson(locale))
+        self.add_item(SortBy(lang))
+        self.add_item(FilterBy(lang))
+        self.add_item(UpdateTalentsJson(lang))
 
     async def start(self, i: Inter) -> None:
         self.author = i.user
-        fp = await self.draw_fp(i.client.session, i.client.loop, i.client.pool)
+        fp = await self.draw_fp(i)
         fp.seek(0)
         for child in self.children:
             if isinstance(child, (SortBy, FilterBy)):
@@ -88,21 +79,19 @@ class View(BaseView):
 
     async def draw_fp(
         self,
-        session: aiohttp.ClientSession,
-        loop: asyncio.AbstractEventLoop,
-        pool: asyncpg.Pool,
+        i: Inter,
     ) -> io.BytesIO:
         draw_input = DrawInput(
-            loop=loop,
-            session=session,
-            locale=self.locale,
-            dark_mode=await get_user_theme(self.author.id, pool),
+            loop=i.client.loop,
+            session=i.client.session,
+            lang=self.lang,
+            dark_mode=await i.client.db.settings.get(i.user.id, Settings.DARK_MODE),
         )
-        uid = await get_uid(self.member.id, pool)
-        talents = await read_json(pool, f"talents/{uid}.json")
+        uid = await i.client.db.users.get_uid(self.member.id)
+        talents = await read_json(i.client.pool, f"talents/{uid}.json")
 
         fp = await main_funcs.character_summary_card(
-            draw_input, self.character_copy, talents or {}, pool
+            draw_input, self.character_copy, talents or {}, i.client.pool
         )
         return fp
 
@@ -135,96 +124,88 @@ class View(BaseView):
 
 
 class SortBy(ui.Select):
-    def __init__(self, locale: Union[discord.Locale, str]):
+    def __init__(self, lang: Union[discord.Locale, str]):
         options = [
-            discord.SelectOption(label=text_map.get(124, locale), value="default_sort"),
+            discord.SelectOption(label=text_map.get(124, lang), value="default_sort"),
             discord.SelectOption(
-                label=text_map.get(703, locale).title(), value="element"
+                label=text_map.get(703, lang).title(), value="element"
             ),
+            discord.SelectOption(label=text_map.get(183, lang).title(), value="level"),
+            discord.SelectOption(label=text_map.get(467, lang).title(), value="rarity"),
             discord.SelectOption(
-                label=text_map.get(183, locale).title(), value="level"
+                label=text_map.get(299, lang).title(), value="friendship"
             ),
-            discord.SelectOption(
-                label=text_map.get(467, locale).title(), value="rarity"
-            ),
-            discord.SelectOption(
-                label=text_map.get(299, locale).title(), value="friendship"
-            ),
-            discord.SelectOption(
-                label=text_map.get(318, locale).title(), value="const"
-            ),
+            discord.SelectOption(label=text_map.get(318, lang).title(), value="const"),
         ]
-        super().__init__(options=options, placeholder=text_map.get(278, locale))
+        super().__init__(options=options, placeholder=text_map.get(278, lang))
 
         self.view: View
 
     async def callback(self, i: Inter):
-        await image_gen_transition(i, self.view, self.view.locale)
+        await image_gen_transition(i, self.view, self.view.lang)
         self.view.sort_current = self.values[0]
         self.view.apply_filter()
         await self.view.start(i)
 
 
 class FilterBy(ui.Select):
-    def __init__(self, locale: Union[discord.Locale, str]):
+    def __init__(self, lang: Union[discord.Locale, str]):
         elements = game_elements.get_element_list()
         options: List[discord.SelectOption] = [
-            discord.SelectOption(
-                label=text_map.get(124, locale), value="default_filter"
-            )
+            discord.SelectOption(label=text_map.get(124, lang), value="default_filter")
         ]
         for element in elements:
             t_hash = game_elements.get_element_text(element)
             options.append(
                 discord.SelectOption(
-                    label=text_map.get(t_hash, locale),
+                    label=text_map.get(t_hash, lang),
                     value=element,
                     emoji=game_elements.get_element_emoji(element),
                 )
             )
         friendship = [
             discord.SelectOption(
-                label=f"{text_map.get(299, locale).title()} = 10",
+                label=f"{text_map.get(299, lang).title()} = 10",
                 value="friendship_2",
                 emoji=asset.friendship_emoji,
             ),
             discord.SelectOption(
-                label=f"{text_map.get(299, locale).title()} < 10",
+                label=f"{text_map.get(299, lang).title()} < 10",
                 value="friendship_1",
                 emoji=asset.friendship_no_box_emoji,
             ),
         ]
         options.extend(friendship)
-        super().__init__(options=options, placeholder=text_map.get(279, locale))
+        super().__init__(options=options, placeholder=text_map.get(279, lang))
 
         self.view: View
 
     async def callback(self, i: Inter):
-        await image_gen_transition(i, self.view, self.view.locale)
+        await image_gen_transition(i, self.view, self.view.lang)
         self.view.filter_current = self.values[0]
         self.view.apply_filter()
         await self.view.start(i)
 
 
 class UpdateTalentsJson(ui.Button):
-    def __init__(self, locale: Union[discord.Locale, str]):
+    def __init__(self, lang: Union[discord.Locale, str]):
         super().__init__(
-            label=text_map.get(404, locale), style=discord.ButtonStyle.blurple
+            label=text_map.get(404, lang), style=discord.ButtonStyle.blurple
         )
 
         self.view: View
 
     async def callback(self, i: Inter):
-        locale = self.view.locale
+        lang = self.view.lang
         await i.response.edit_message(
             embed=DefaultEmbed().set_author(
-                name=text_map.get(762, locale), icon_url=asset.loader
+                name=text_map.get(762, lang), icon_url=asset.loader
             ),
             attachments=[],
             view=None,
         )
 
-        acc = await get_shenhe_account(i.user.id, i.client)
+        acc = await i.client.db.users.get(i.user.id)
         talents = await read_json(i.client.pool, f"talents/{acc.uid}.json")
         if (
             talents
@@ -234,15 +215,19 @@ class UpdateTalentsJson(ui.Button):
         ):
             return await i.edit_original_response(
                 embed=ErrorEmbed().set_author(
-                    name=text_map.get(659, locale).format(hour=1),
+                    name=text_map.get(659, lang).format(hour=1),
                     icon_url=i.user.display_avatar.url,
                 )
             )
         await update_talents_json(
-            self.view.characters, acc.client, i.client.pool, acc.uid, i.client.session
+            self.view.characters,
+            await acc.client,
+            i.client.pool,
+            acc.uid,
+            i.client.session,
         )
         await i.edit_original_response(
-            embed=DefaultEmbed(description=text_map.get(763, locale)).set_title(
-                761, locale, i.user
+            embed=DefaultEmbed(description=text_map.get(763, lang)).set_title(
+                761, lang, i.user
             ),
         )

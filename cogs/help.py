@@ -4,7 +4,7 @@ from discord.app_commands import locale_str as _
 from discord.ext import commands
 
 import ui
-from utils import get_user_lang
+from apps.db.tables.user_settings import Settings
 from dev.models import Inter
 
 
@@ -17,8 +17,8 @@ class HelpCog(commands.Cog):
     )
     async def help(self, inter: discord.Interaction):
         i: Inter = inter  # type: ignore
-        user_locale = await get_user_lang(i.user.id, i.client.pool)
-        view = ui.HelpView(user_locale or i.locale)
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
+        view = ui.HelpView(lang)
         await i.response.send_message(view=view)
         view.message = await i.original_response()
 

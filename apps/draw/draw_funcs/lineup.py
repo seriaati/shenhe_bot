@@ -11,7 +11,7 @@ from utils import get_cache, get_font
 
 
 def card(
-    dark_mode: bool, locale: str | Locale, lineup: LineupPreview, character_id: int
+    dark_mode: bool, lang: str | Locale, lineup: LineupPreview, character_id: int
 ) -> BytesIO:
     # rarity colors
     if dark_mode:
@@ -55,10 +55,10 @@ def card(
         im.paste(pc_icon, offset, pc_icon)
 
         # weapon
-        font = get_font(locale, 30)
+        font = get_font(lang, 30)
         draw.text(
             (offset[0] + 438, offset[1] + 94),
-            text_map.get(33, locale),
+            text_map.get(33, lang),
             font=font,
             fill=fill,
         )
@@ -81,7 +81,7 @@ def card(
         # artifacts
         draw.text(
             (offset[0] + 700, offset[1] + 94),
-            text_map.get(37, locale),
+            text_map.get(37, lang),
             font=font,
             fill=fill,
         )
@@ -114,7 +114,7 @@ def card(
             im.paste(aritfact_icon, (offset[0] + 710, offset[1] + 161), aritfact_icon)
 
         # artifact substats
-        font = get_font(locale, 24)
+        font = get_font(lang, 24)
         substat_string = " > ".join(
             [s.name.replace("Percentage", "%") for s in character.secondary_attributes]
         )
@@ -165,7 +165,7 @@ def card(
             )
 
         # aritfact stats
-        font = get_font(locale, 24)
+        font = get_font(lang, 24)
         row_offset = 0 if two_rows else 53
         stat_offset = (offset[0] + 972, offset[1] + 53 + row_offset)
         slot_dict = {

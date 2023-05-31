@@ -1,10 +1,8 @@
 import typing
 from enum import Enum
 
-import asyncpg
+from asyncpg import Pool
 from pydantic import BaseModel, Field
-
-from dev.enum import GameType
 
 
 class Settings(Enum):
@@ -13,7 +11,6 @@ class Settings(Enum):
     NOTIFICATION = "notification"
     AUTO_REDEEM = "auto_redeem"
     PROFILE_VERSION = "profile_version"
-    DEFAULT_GAME = "default_game"
 
 
 class UserSettings(BaseModel):
@@ -31,18 +28,24 @@ class UserSettings(BaseModel):
     """Auto redeem toggle"""
     profile_version: int = Field(default=2, alias="profile_ver")
     """Profile card version"""
-    default_game: GameType = Field(default="genshin")
-    """Default game"""
 
 
 class UserSettingsTable:
-    def __init__(self, pool: asyncpg.Pool):
+    def __init__(self, pool: Pool):
         self.pool = pool
 
     async def insert(self, user_id: int) -> None:
         """Insert user settings"""
         await self.pool.execute(
             "INSERT INTO user_settings (user_id) VALUES ($1) ON CONFLICT DO NOTHING",
+            user_id,
+        )
+
+    async def update(self, user_id: int, settings: Settings, value: typing.Any) -> None:
+        """Update user settings"""
+        await self.pool.execute(
+            f"UPDATE user_settings SET {settings.value} = $1 WHERE user_id = $2",
+            value,
             user_id,
         )
 
@@ -53,17 +56,16 @@ class UserSettingsTable:
         )
         if val is None and settings is not Settings.LANG:
             await self.insert(user_id)
-            val = await self.get(user_id, settings)
+            return await self.get(user_id, settings)
 
-        if settings is Settings.DEFAULT_GAME:
-            return GameType(val)
         return val
 
     async def get_all(self, user_id: int) -> UserSettings:
         """Get all user settings"""
-        row = await self.pool.fetchrow(
+        settings = await self.pool.fetchrow(
             "SELECT * FROM user_settings WHERE user_id = $1", user_id
         )
-        if row is None:
+        if settings is None:
             await self.insert(user_id)
-        return UserSettings(**row)
+            return await self.get_all(user_id)
+        return UserSettings(**settings)

@@ -69,18 +69,18 @@ class Translator(app_commands.Translator):
     async def translate(
         self,
         string: app_commands.locale_str,
-        locale: discord.Locale,
+        lang: discord.Locale,
         _: app_commands.TranslationContext,
     ) -> Optional[str]:
         try:
-            text = text_map.get(string.extras["hash"], locale)
+            text = text_map.get(string.extras["hash"], lang)
             if len(text.split(" ")) == 1:
                 return text.lower()
             if text == "":
                 return None
 
             # hard code stuff
-            if str(locale) == "vi" and string.extras["hash"] == 105:
+            if str(lang) == "vi" and string.extras["hash"] == 105:
                 return "nhân-vật"
 
             return text
@@ -167,6 +167,9 @@ class Shenhe(BotModel):
         self.db = Database(self.pool)
 
     async def setup_hook(self) -> None:
+        # create database tables
+        await self.db.create()
+
         # load jishaku
         await self.load_extension("jishaku")
 

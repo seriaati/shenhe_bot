@@ -4,20 +4,20 @@ import discord
 from discord import ui
 
 import dev.config as config
+from apps.db.tables.user_settings import Settings
 from apps.text_map import text_map
 from dev.base_ui import BaseView
 from dev.models import Inter
-from utils import get_user_lang
 
 
 class GeneralPaginatorView(BaseView):
     def __init__(
         self,
         embeds: List[discord.Embed],
-        locale: str,
+        lang: str,
     ) -> None:
         self.embeds = embeds
-        self.locale = locale
+        self.lang = lang
 
         self.current_page = 0
 
@@ -35,7 +35,7 @@ class GeneralPaginatorView(BaseView):
         self.previous.disabled = self.current_page <= 0
         self.last.disabled = self.current_page + 1 == len(self.embeds)
 
-        text = text_map.get(176, self.locale)
+        text = text_map.get(176, self.lang)
         self.page.label = text.format(num=f"{self.current_page + 1}/{len(self.embeds)}")
 
     async def make_response(self, i: discord.Interaction) -> None:
@@ -117,15 +117,15 @@ class GeneralPaginator:
         if not self.embeds:
             raise ValueError("Missing embeds")
 
-        locale = (
-            await get_user_lang(self.i.user.id, self.i.client.pool) or self.i.locale
-        )
-        view = self.setup_view(locale)
+        lang = await self.i.client.db.settings.get(
+            self.i.user.id, Settings.LANG
+        ) or str(self.i.locale)
+        view = self.setup_view(lang)
         view.author = self.i.user
         view.first.disabled = view.previous.disabled = True
         view.last.disabled = view.next.disabled = len(self.embeds) == 1
 
-        view.page.label = text_map.get(176, locale).format(
+        view.page.label = text_map.get(176, lang).format(
             num=f"{view.current_page + 1}/{len(self.embeds)}"
         )
 
@@ -157,6 +157,6 @@ class GeneralPaginator:
         }
         return kwargs
 
-    def setup_view(self, locale: discord.Locale | str) -> GeneralPaginatorView:
-        view = GeneralPaginatorView(self.embeds, str(locale))
+    def setup_view(self, lang: discord.Locale | str) -> GeneralPaginatorView:
+        view = GeneralPaginatorView(self.embeds, str(lang))
         return view

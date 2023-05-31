@@ -9,20 +9,21 @@ from discord.utils import format_dt
 
 import dev.asset as asset
 import dev.config as config
-from utils import get_user_lang, parse_html
-from utils.paginators import GeneralPaginator, GeneralPaginatorView
+from apps.db.tables.user_settings import Settings
 from apps.hoyolab_rss_feeds.create_feed import create_feed
 from apps.text_map import text_map, to_genshin_py
 from dev.base_ui import BaseView
 from dev.models import DefaultEmbed, Inter
+from utils import parse_html
+from utils.paginators import GeneralPaginator, GeneralPaginatorView
 
 
 class View(BaseView):
-    def __init__(self, locale: discord.Locale | str):
+    def __init__(self, lang: discord.Locale | str):
         super().__init__(timeout=config.short_timeout)
-        self.locale = locale
+        self.lang = lang
         self.add_item(Hoyolab())
-        self.add_item(Genshin(locale))
+        self.add_item(Genshin(lang))
 
 
 class Hoyolab(ui.Button):
@@ -33,9 +34,8 @@ class Hoyolab(ui.Button):
     async def callback(self, i: Inter):
         await i.response.defer()
 
-        user_locale = await get_user_lang(i.user.id, i.client.pool)
-        locale = user_locale or i.locale
-        genshin_locale = to_genshin_py(locale)
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
+        genshin_locale = to_genshin_py(lang)
 
         await create_feed(genshin_locale)
 
@@ -52,13 +52,13 @@ class Hoyolab(ui.Button):
             date_published = parser.parse(event["date_published"])
             embed = DefaultEmbed(event["title"])
             embed.add_field(
-                name=text_map.get(625, locale),
+                name=text_map.get(625, lang),
                 value=format_dt(date_published, "R"),  # type: ignore
                 inline=False,
             )
             embed.add_field(
-                name=text_map.get(408, locale),
-                value=f"{parse_html(event['content_html'])[:200]}...\n\n[{text_map.get(454, locale)}]({event['url']})",
+                name=text_map.get(408, lang),
+                value=f"{parse_html(event['content_html'])[:200]}...\n\n[{text_map.get(454, lang)}]({event['url']})",
                 inline=False,
             )
             if "image" in event:
@@ -80,22 +80,22 @@ class Hoyolab(ui.Button):
             i,
             embeds[list(embeds.keys())[0]],
             [
-                EventTypeSelect(select_options, embeds, self.view.locale),
-                GOBack(self.view.locale),
+                EventTypeSelect(select_options, embeds, self.view.lang),
+                GOBack(self.view.lang),
             ],
         ).start(edit=True)
 
 
 class Genshin(ui.Button):
-    def __init__(self, locale: discord.Locale | str):
+    def __init__(self, lang: discord.Locale | str):
         super().__init__(
-            label=text_map.get(313, locale), emoji="<:genshin_icon:1025630733068423169>"
+            label=text_map.get(313, lang), emoji="<:genshin_icon:1025630733068423169>"
         )
         self.view: View
 
     async def callback(self, i: Inter):
         await i.response.defer()
-        genshin_py_locale = to_genshin_py(self.view.locale)
+        genshin_py_locale = to_genshin_py(self.view.lang)
         event_overview_api = f"https://sg-hk4e-api.hoyoverse.com/common/hk4e_global/announcement/api/getAnnList?game=hk4e&game_biz=hk4e_global&lang={genshin_py_locale}&announcement_version=1.21&auth_appid=announcement&bundle_id=hk4e_global&channel_id=1&level=8&platform=pc&region=os_asia&sdk_presentation_style=fullscreen&sdk_screen_transparent=true&uid=901211014"
         event_details_api = f"https://sg-hk4e-api-static.hoyoverse.com/common/hk4e_global/announcement/api/getAnnContent?game=hk4e&game_biz=hk4e_global&lang={genshin_py_locale}&bundle_id=hk4e_global&platform=pc&region=os_asia&t=1659877813&level=7&channel_id=0"
         async with i.client.session.get(event_overview_api) as r:
@@ -125,15 +125,15 @@ class Genshin(ui.Button):
                 embed.set_author(name=e["type_label"], icon_url=e["tag_icon"])
                 embed.set_image(url=e["banner"])
                 embed.add_field(
-                    name=text_map.get(406, self.view.locale),
+                    name=text_map.get(406, self.view.lang),
                     value=format_dt(parser.parse(e["start_time"]), "R"),  # type: ignore
                 )
                 embed.add_field(
-                    name=text_map.get(407, self.view.locale),
+                    name=text_map.get(407, self.view.lang),
                     value=format_dt(parser.parse(e["end_time"]), "R"),  # type: ignore
                 )
                 embed.add_field(
-                    name=text_map.get(408, self.view.locale),
+                    name=text_map.get(408, self.view.lang),
                     value=parse_html(detail_dict[e["ann_id"]])[:500] + "...",
                     inline=False,
                 )
@@ -142,8 +142,8 @@ class Genshin(ui.Button):
             i,
             embeds[first_id],
             [
-                EventTypeSelect(options, embeds, self.view.locale),
-                GOBack(self.view.locale),
+                EventTypeSelect(options, embeds, self.view.lang),
+                GOBack(self.view.lang),
             ],
         ).start(edit=True)
 
@@ -153,9 +153,9 @@ class EventTypeSelect(ui.Select):
         self,
         options: List[discord.SelectOption],
         embeds: Dict[str, List[discord.Embed]],
-        locale: discord.Locale | str,
+        lang: discord.Locale | str,
     ) -> None:
-        super().__init__(options=options, placeholder=text_map.get(409, locale))
+        super().__init__(options=options, placeholder=text_map.get(409, lang))
         self.embeds = embeds
         self.view: GeneralPaginatorView
 
@@ -166,9 +166,9 @@ class EventTypeSelect(ui.Select):
 
 
 class GOBack(ui.Button):
-    def __init__(self, locale: discord.Locale | str):
+    def __init__(self, lang: discord.Locale | str):
         super().__init__(
-            label=text_map.get(282, locale), style=discord.ButtonStyle.green, row=3
+            label=text_map.get(282, lang), style=discord.ButtonStyle.green, row=3
         )
 
     async def callback(self, i: Inter):
@@ -177,10 +177,10 @@ class GOBack(ui.Button):
 
 async def return_events(i: Inter):
     await i.response.defer()
-    user_locale = await get_user_lang(i.user.id, i.client.pool)
-    view = View(user_locale or i.locale)
+    lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
+    view = View(lang)
     embed = DefaultEmbed().set_author(
-        name=text_map.get(361, i.locale, user_locale),
+        name=text_map.get(361, lang),
         icon_url=i.user.display_avatar.url,
     )
     await i.edit_original_response(embed=embed, view=view)

@@ -167,6 +167,6 @@ def convert_dict_to_zipped_json(data_dict: Dict[str, str]) -> BytesIO:
     return zip_buffer
 
 
-async def get_discord_user_from_id(bot: discord.Client, user_id: int) -> discord.User:
+async def get_dc_user(bot: discord.Client, user_id: int) -> discord.User:
     """Get a discord user from their id. If the user is not cached, fetch them from the discord API"""
     return bot.get_user(user_id) or await bot.fetch_user(user_id)

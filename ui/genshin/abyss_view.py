@@ -4,13 +4,12 @@ import discord
 from discord import ui
 
 import dev.config as config
-from utils import get_user_lang, get_user_theme
+from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.draw.main_funcs import draw_abyss_one_page
-from apps.genshin.models import AbyssResult
 from apps.text_map import text_map
 from dev.base_ui import BaseView
-from dev.models import DefaultEmbed, DrawInput, Inter
+from dev.models import AbyssResult, DefaultEmbed, DrawInput, Inter
 
 
 class View(BaseView):
@@ -18,34 +17,32 @@ class View(BaseView):
         self,
         author: discord.User | discord.Member,
         result: AbyssResult,
-        locale: discord.Locale | str,
+        lang: discord.Locale | str,
     ):
         self.author = author
         super().__init__(timeout=config.mid_timeout)
 
-        self.add_item(FloorSelect(result, locale))
+        self.add_item(FloorSelect(result, lang))
 
 
 class FloorSelect(ui.Select):
-    def __init__(self, result: AbyssResult, locale: discord.Locale | str):
-        options = [
-            discord.SelectOption(label=text_map.get(43, locale), value="overview")
-        ]
+    def __init__(self, result: AbyssResult, lang: discord.Locale | str):
+        options = [discord.SelectOption(label=text_map.get(43, lang), value="overview")]
         for index in range(len(result.abyss_floors)):
             options.append(
                 discord.SelectOption(
-                    label=text_map.get(146, locale).format(a=9 + index),
+                    label=text_map.get(146, lang).format(a=9 + index),
                     value=str(index),
                 )
             )
-        super().__init__(placeholder=text_map.get(148, locale), options=options)
-        self.add_option(label=text_map.get(643, locale), value="one-page")
+        super().__init__(placeholder=text_map.get(148, lang), options=options)
+        self.add_option(label=text_map.get(643, lang), value="one-page")
         self.abyss_result = result
 
     async def callback(self, i: Inter) -> Any:
         await i.response.defer()
-        dark_mode = await get_user_theme(i.user.id, i.client.pool)
-        locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
+        dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
         if self.values[0] == "overview":
             fp = self.abyss_result.overview_file
             fp.seek(0)
@@ -57,7 +54,7 @@ class FloorSelect(ui.Select):
         elif self.values[0] == "one-page":
             embed = DefaultEmbed()
             embed.set_author(
-                name=text_map.get(644, locale),
+                name=text_map.get(644, lang),
                 icon_url="https://i.imgur.com/V76M9Wa.gif",
             )
             await i.edit_original_response(embed=embed, attachments=[])
@@ -69,7 +66,7 @@ class FloorSelect(ui.Select):
                     DrawInput(
                         loop=i.client.loop,
                         session=i.client.session,
-                        locale=locale,
+                        lang=lang,
                         dark_mode=dark_mode,
                     ),
                     self.abyss_result.genshin_user,
@@ -89,7 +86,7 @@ class FloorSelect(ui.Select):
         else:
             embed = DefaultEmbed()
             embed.set_author(
-                name=text_map.get(644, locale),
+                name=text_map.get(644, lang),
                 icon_url="https://i.imgur.com/V76M9Wa.gif",
             )
             await i.edit_original_response(embed=embed, attachments=[])

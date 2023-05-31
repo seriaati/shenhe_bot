@@ -30,7 +30,7 @@ class TopggStats(commands.Cog):
             log.info("[Top.gg] No token found, skipping post")
             return
 
-        topggpy = topgg.DBLClient(
+        topggpy = topgg.DBLClient(  # type: ignore
             self.bot, topgg_token, post_shard_count=True, autopost=True
         )
         try:

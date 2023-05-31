@@ -10,16 +10,16 @@ from utils.paginators import WishHistoryPaginatorView
 
 
 class SelectBanner(discord.ui.Select):
-    def __init__(self, locale: Union[discord.Locale, str]):
+    def __init__(self, lang: Union[discord.Locale, str]):
         options = [
-            discord.SelectOption(label=f"{text_map.get(645, locale)} 1", value="301"),
-            discord.SelectOption(label=f"{text_map.get(645, locale)} 2", value="400"),
-            discord.SelectOption(label=text_map.get(646, locale), value="302"),
-            discord.SelectOption(label=text_map.get(647, locale), value="100"),
-            discord.SelectOption(label=text_map.get(655, locale), value="200"),
+            discord.SelectOption(label=f"{text_map.get(645, lang)} 1", value="301"),
+            discord.SelectOption(label=f"{text_map.get(645, lang)} 2", value="400"),
+            discord.SelectOption(label=text_map.get(646, lang), value="302"),
+            discord.SelectOption(label=text_map.get(647, lang), value="100"),
+            discord.SelectOption(label=text_map.get(655, lang), value="200"),
         ]
         super().__init__(
-            placeholder=text_map.get(662, locale),
+            placeholder=text_map.get(662, lang),
             options=options,
             row=3,
             max_values=len(options),

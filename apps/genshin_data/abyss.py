@@ -12,7 +12,7 @@ TOWER_SCHEDULE = "GenshinData/ExcelBinOutput/TowerScheduleExcelConfigData.json"
 
 
 async def get_abyss_blessing(
-    text_map: Dict[str, Dict[str, str]], locale: Union[Locale, str]
+    text_map: Dict[str, Dict[str, str]], lang: Union[Locale, str]
 ) -> Tuple[str, str]:
     async with aiofiles.open(TOWER_SCHEDULE) as f:
         tower: List[Dict[str, Any]] = json.loads(await f.read())
@@ -24,20 +24,20 @@ async def get_abyss_blessing(
     current_tower = get_current_tower(tower)
 
     buff_id = current_tower["monthlyLevelConfigId"]
-    buff_name = get_text(text_map, locale, current_tower["buffnameTextMapHash"])
+    buff_name = get_text(text_map, lang, current_tower["buffnameTextMapHash"])
 
     buff_desc = "Unknown"
     dungeon_configs = find_dungeon_configs(dungeon, buff_id)
     if dungeon_configs:
         buff_desc = parse_html(
-            get_text(text_map, locale, dungeon_configs[0]["descTextMapHash"])
+            get_text(text_map, lang, dungeon_configs[0]["descTextMapHash"])
         )
 
     return buff_name, buff_desc
 
 
 async def get_ley_line_disorders(
-    text_map: Dict[str, Dict[str, str]], locale: Union[Locale, str]
+    text_map: Dict[str, Dict[str, str]], lang: Union[Locale, str]
 ) -> Dict[int, List[str]]:
     async with aiofiles.open(TOWER_SCHEDULE) as f:
         tower: List[Dict[str, Any]] = json.loads(await f.read())
@@ -66,7 +66,7 @@ async def get_ley_line_disorders(
             dungeon_configs = find_dungeon_configs(dungeon, config_id)
             for dungeon_config in dungeon_configs:
                 disorder_desc = parse_html(
-                    get_text(text_map, locale, dungeon_config["descTextMapHash"])
+                    get_text(text_map, lang, dungeon_config["descTextMapHash"])
                 )
                 if disorder_desc != "Unknown":
                     result[num].append(disorder_desc)
@@ -76,7 +76,7 @@ async def get_ley_line_disorders(
 
 
 async def get_abyss_enemies(
-    text_map: Dict[str, Dict[str, str]], locale: Union[Locale, str]
+    text_map: Dict[str, Dict[str, str]], lang: Union[Locale, str]
 ) -> List[AbyssFloor]:
     result: List[AbyssFloor] = []
 
@@ -122,7 +122,7 @@ async def get_abyss_enemies(
                     monster = find_monster_describe(monster_describe, monster_id)
                     if monster:
                         a_half.enemies.append(
-                            get_text(text_map, locale, monster["nameTextMapHash"])
+                            get_text(text_map, lang, monster["nameTextMapHash"])
                         )
 
         result.append(a_floor)

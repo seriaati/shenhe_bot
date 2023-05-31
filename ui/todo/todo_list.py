@@ -8,35 +8,35 @@ import dev.asset as asset
 import dev.config as config
 import dev.models as models
 from ambr import AmbrTopAPI, Material
-from utils import get_user_lang, get_user_theme
-from utils.paginators import TodoPaginator, TodoPaginatorView
+from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
 from dev.base_ui import BaseModal, BaseView
 from dev.enum import TodoAction
+from utils.paginators import TodoPaginator, TodoPaginatorView
 
 
 class View(BaseView):
     def __init__(
         self,
         todo_items: List[models.TodoItem],
-        locale: Locale | str,
+        lang: Locale | str,
     ):
         super().__init__(timeout=config.long_timeout)
         self.todo_items = todo_items
-        self.locale = locale
-        self.add_item(AddItem(text_map.get(203, locale)))
+        self.lang = lang
+        self.add_item(AddItem(text_map.get(203, lang)))
         self.add_item(
-            EditOrRemove(not todo_items, text_map.get(729, locale), TodoAction.EDIT)
+            EditOrRemove(not todo_items, text_map.get(729, lang), TodoAction.EDIT)
         )
         self.add_item(
             EditOrRemove(
                 not todo_items,
-                text_map.get(205, locale),
+                text_map.get(205, lang),
                 TodoAction.REMOVE,
             )
         )
-        self.add_item(ClearItems(not todo_items, text_map.get(206, locale)))
+        self.add_item(ClearItems(not todo_items, text_map.get(206, lang)))
 
 
 class AddItem(Button):
@@ -47,8 +47,8 @@ class AddItem(Button):
 
     @staticmethod
     async def callback(i: models.Inter):
-        locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
-        await i.response.send_modal(AddItemModal(locale))
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
+        await i.response.send_modal(AddItemModal(lang))
 
 
 class EditOrRemove(Button):
@@ -68,7 +68,7 @@ class EditOrRemove(Button):
         self.view.clear_items()
         self.view.add_item(
             ItemSelect(
-                self.view.locale,
+                self.view.lang,
                 self.view.todo_items[
                     self.view.current_page * 14 : (self.view.current_page + 1) * 14
                 ],
@@ -92,7 +92,7 @@ class ClearItems(Button):
 class ItemSelect(Select):
     def __init__(
         self,
-        locale: Locale | str,
+        lang: Locale | str,
         todo_items: List[models.TodoItem],
         action: TodoAction,
     ):
@@ -101,7 +101,7 @@ class ItemSelect(Select):
 
         for todo_item in todo_items:
             if todo_item.name.isdigit():
-                item_label = text_map.get_material_name(int(todo_item.name), locale)
+                item_label = text_map.get_material_name(int(todo_item.name), lang)
                 if isinstance(item_label, int):
                     item_label = todo_item.name
             else:
@@ -111,11 +111,11 @@ class ItemSelect(Select):
             options.append(SelectOption(label=item_label, value=todo_item.name))
 
         super().__init__(
-            placeholder=text_map.get(207, locale),
+            placeholder=text_map.get(207, lang),
             options=options,
         )
 
-        self.locale = locale
+        self.lang = lang
         self.action = action
         self.item_dict = item_dict
         self.view: TodoPaginatorView
@@ -128,7 +128,7 @@ class ItemSelect(Select):
         )
         await i.response.send_modal(
             InputItemAmountModal(
-                self.locale,
+                self.lang,
                 self.values[0],
                 self.action,
                 row["count"],
@@ -147,12 +147,12 @@ class AddItemModal(BaseModal):
 
     count = TextInput(label="item_amount", placeholder="for_example:_90", max_length=10)
 
-    def __init__(self, locale: Locale | str) -> None:
-        super().__init__(title=text_map.get(203, locale), timeout=config.mid_timeout)
-        self.item.label = text_map.get(208, locale)
-        self.item.placeholder = text_map.get(209, locale)
-        self.count.label = text_map.get(308, locale)
-        self.count.placeholder = text_map.get(170, locale).format(a=90)
+    def __init__(self, lang: Locale | str) -> None:
+        super().__init__(title=text_map.get(203, lang), timeout=config.mid_timeout)
+        self.item.label = text_map.get(208, lang)
+        self.item.placeholder = text_map.get(209, lang)
+        self.count.label = text_map.get(308, lang)
+        self.count.placeholder = text_map.get(170, lang).format(a=90)
 
     async def on_submit(self, i: models.Inter) -> None:
         pool: asyncpg.Pool = i.client.pool  # type: ignore
@@ -183,7 +183,7 @@ class InputItemAmountModal(BaseModal):
 
     def __init__(
         self,
-        locale: Locale | str,
+        lang: Locale | str,
         item_name: str,
         action: TodoAction,
         current_amount: int,
@@ -191,14 +191,14 @@ class InputItemAmountModal(BaseModal):
         item_dict: Dict[str, str],
     ) -> None:
         super().__init__(
-            title=text_map.get(729 if action is TodoAction.EDIT else 205, locale),
+            title=text_map.get(729 if action is TodoAction.EDIT else 205, lang),
             timeout=config.mid_timeout,
         )
 
         self.item_name = item_name
         self.action = action
 
-        self.count.label = text_map.get(210, locale).format(item=item_dict[item_name])
+        self.count.label = text_map.get(210, lang).format(item=item_dict[item_name])
         self.count.default = (
             str(current_amount) if action is TodoAction.EDIT else str(max_amount)
         )
@@ -231,7 +231,7 @@ class InputItemAmountModal(BaseModal):
 async def return_todo(i: models.Inter):
     await i.response.defer()
 
-    locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
+    lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
     todo_items: List[models.TodoItem] = []
     materials: List[Tuple[Material, int | str]] = []
 
@@ -245,19 +245,19 @@ async def return_todo(i: models.Inter):
             models.TodoItem(name=row["item"], current=row["count"], max=row["max"])
         )
 
-    view = View(todo_items, locale)
+    view = View(todo_items, lang)
     view.author = i.user
 
-    embed = models.DefaultEmbed().set_title(202, locale, i.user)
+    embed = models.DefaultEmbed().set_title(202, lang, i.user)
 
     if not todo_items:
-        embed.description = text_map.get(204, locale)
+        embed.description = text_map.get(204, lang)
         view.message = await i.edit_original_response(
             embed=embed, view=view, attachments=[]
         )
     else:
-        dark_mode = await get_user_theme(i.user.id, i.client.pool)
-        client = AmbrTopAPI(i.client.session, to_ambr_top(locale))
+        dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
+        client = AmbrTopAPI(i.client.session, to_ambr_top(lang))
 
         for item in todo_items:
             if item.name.isdigit():
@@ -284,7 +284,7 @@ async def return_todo(i: models.Inter):
             models.DrawInput(
                 loop=i.client.loop,
                 session=i.client.session,
-                locale=locale,
+                lang=lang,
                 dark_mode=dark_mode,
             ),
             materials[:14],
@@ -298,7 +298,7 @@ async def return_todo(i: models.Inter):
             embeds.append(
                 models.DefaultEmbed()
                 .set_author(
-                    name=text_map.get(202, locale), icon_url=i.user.display_avatar.url
+                    name=text_map.get(202, lang), icon_url=i.user.display_avatar.url
                 )
                 .set_image(url="attachment://todo.jpeg")
             )

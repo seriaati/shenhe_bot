@@ -18,15 +18,14 @@ import dev.models as models
 from ambr import AmbrTopAPI, Character, Domain, Material, Weapon
 from ambr.models import CharacterDetail
 from apps.db.json import read_json, write_json
+from apps.db.tables.hoyo_account import HoyoAccount
 from apps.enka.api_docs import get_character_skill_order
-from apps.text_map import cond_text, text_map, to_ambr_top, to_genshin_py
+from apps.text_map import cond_text, text_map, to_ambr_top
 from data.game.artifact_map import artifact_map
 from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
 from data.game.weapon_map import weapon_map
-from dev.exceptions import AccountNotFound
 
-from .db import get_user_lang
 from .general import get_dt_now
 from .text_map import get_city_name, translate_main_stat
 
@@ -51,43 +50,43 @@ def calculate_artifact_score(substats: dict):
 
 
 def get_character_builds(
-    character_id: str, element_builds_dict: dict, locale: discord.Locale | str
+    character_id: str, element_builds_dict: dict, lang: discord.Locale | str
 ) -> List[models.CharacterBuild]:
     """Gets a character's builds
 
     Args:
         character_id (int): the id of the character
         element_builds_dict (dict): the dictionary of all characters of a given element, this is stored in data/builds
-        locale (Locale): the discord locale
-        user_locale (str): the user locale
+        lang (Locale): the discord lang
+        user_locale (str): the user lang
 
     Returns:
         List[models.CharacterBuild]
     """
     character_name = text_map.get_character_name(character_id, "zh-TW")
-    translated_character_name = text_map.get_character_name(character_id, locale)
+    translated_character_name = text_map.get_character_name(character_id, lang)
     count = 1
     result = []
 
     for build in element_builds_dict[character_name]["builds"]:
         stat_str = ""
         for stat, value in build["stats"].items():
-            stat_str += f"{cond_text.get_text(str(locale), 'build', stat)} ➜ {str(value).replace('任意', 'ANY')}\n"
+            stat_str += f"{cond_text.get_text(str(lang), 'build', stat)} ➜ {str(value).replace('任意', 'ANY')}\n"
         move_text = cond_text.get_text(
-            str(locale), "build", f"{character_name}_{build['move']}"
+            str(lang), "build", f"{character_name}_{build['move']}"
         )
         weapon_id = text_map.get_id_from_name(build["weapon"])
         if weapon_id is None:
             raise ValueError(f"Unknown weapon {build['weapon']}")
         embed = models.DefaultEmbed(
-            f"{translated_character_name} - {text_map.get(90, locale)}{count}",
-            f"{text_map.get(91, locale)} • {get_weapon_emoji(weapon_id)} {text_map.get_weapon_name(weapon_id, locale)}\n"
-            f"{text_map.get(92, locale)} • {cond_text.get_text(str(locale), 'build', build['artifacts'])}\n"
-            f"{text_map.get(93, locale)} • {translate_main_stat(build['main_stats'], locale)}\n"
-            f"{text_map.get(94, locale)} • {build['talents']}\n"
+            f"{translated_character_name} - {text_map.get(90, lang)}{count}",
+            f"{text_map.get(91, lang)} • {get_weapon_emoji(weapon_id)} {text_map.get_weapon_name(weapon_id, lang)}\n"
+            f"{text_map.get(92, lang)} • {cond_text.get_text(str(lang), 'build', build['artifacts'])}\n"
+            f"{text_map.get(93, lang)} • {translate_main_stat(build['main_stats'], lang)}\n"
+            f"{text_map.get(94, lang)} • {build['talents']}\n"
             f"{move_text} • {str(build['dmg']).replace('任意', 'ANY')}\n\n",
         )
-        embed.add_field(name=text_map.get(95, locale), value=stat_str)
+        embed.add_field(name=text_map.get(95, lang), value=stat_str)
         count += 1
         embed.set_thumbnail(url=get_character_icon(str(character_id)))
         result.append(
@@ -101,12 +100,12 @@ def get_character_builds(
 
     if "thoughts" in element_builds_dict[character_name]:
         count = 1
-        embed = models.DefaultEmbed(text_map.get(97, locale))
+        embed = models.DefaultEmbed(text_map.get(97, lang))
         for _ in element_builds_dict[character_name]["thoughts"]:
             embed.add_field(
                 name=f"#{count}",
                 value=cond_text.get_text(
-                    str(locale), "build", f"{character_name}_thoughts_{count-1}"
+                    str(lang), "build", f"{character_name}_thoughts_{count-1}"
                 ),
                 inline=False,
             )
@@ -203,111 +202,12 @@ def get_uid_tz(uid: Optional[int]) -> int:
     return region_map.get(str_uid[0], 0)
 
 
-async def get_shenhe_account(
-    user_id: int,
-    bot: models.BotModel,
-    *,
-    locale: Optional[discord.Locale | str] = None,
-    custom_cookie: Optional[Dict[str, Any]] = None,
-    custom_uid: Optional[int] = None,
-) -> models.ShenheAccount:
-    discord_user = bot.get_user(user_id) or await bot.fetch_user(user_id)
-
-    if custom_cookie and not custom_uid:
-        raise AssertionError
-
-    if not custom_cookie:
-        if custom_uid:
-            user_data = await bot.pool.fetchrow(
-                """
-                SELECT ltuid, ltoken, cookie_token, uid, china, daily_checkin
-                FROM user_accounts
-                WHERE user_id = $1 AND uid = $2
-                """,
-                user_id,
-                custom_uid,
-            )
-        else:
-            user_data = await bot.pool.fetchrow(
-                """
-                SELECT ltuid, ltoken, cookie_token, uid, china, daily_checkin
-                FROM user_accounts
-                WHERE user_id = $1
-                AND current = true
-                """,
-                user_id,
-            )
-    else:
-        user_data = await bot.pool.fetchrow(
-            """
-            SELECT china, daily_checkin
-            FROM user_accounts
-            WHERE user_id = $1
-            AND uid = $2
-            """,
-            user_id,
-            custom_uid,
-        )
-
-    if not user_data:
-        raise AccountNotFound
-
-    if custom_cookie:
-        client = genshin.Client()
-        client.set_cookies(
-            ltuid=custom_cookie["ltuid"],
-            ltoken=custom_cookie["ltoken"],
-            account_id=custom_cookie["ltuid"],
-            cookie_token=custom_cookie["cookie_token"],
-        )
-    else:
-        if user_data["ltuid"]:
-            client = genshin.Client()
-            client.set_cookies(
-                ltuid=user_data["ltuid"],
-                ltoken=user_data["ltoken"],
-                account_id=user_data["ltuid"],
-                cookie_token=user_data["cookie_token"],
-            )
-        else:
-            client = bot.genshin_client
-
-    final_locale = locale or (await get_user_lang(user_id, bot.pool))
-
-    client.lang = to_genshin_py(str(final_locale))
-    client.default_game = genshin.Game.GENSHIN
-    client.uid = custom_uid or user_data["uid"]
-
-    if user_data["china"]:
-        client.lang = "zh-cn"
-        client.region = genshin.Region.CHINESE
-    else:
-        client.region = genshin.Region.OVERSEAS
-
-    user_obj = models.ShenheAccount(
-        client=client,
-        uid=client.uid,
-        discord_user=discord_user,
-        user_locale=str(final_locale),
-        china=user_data["china"],
-        daily_checkin=user_data["daily_checkin"],
-    )
-    return user_obj
-
-
-async def get_uid(user_id: int, pool: asyncpg.Pool) -> Optional[int]:
-    return await pool.fetchval(
-        "SELECT uid FROM user_accounts WHERE user_id = $1 AND current = true",
-        user_id,
-    )
-
-
 async def get_farm_data(
-    locale: Locale | str, session: aiohttp.ClientSession, weekday: int
+    lang: Locale | str, session: aiohttp.ClientSession, weekday: int
 ) -> List[models.FarmData]:
     result: List[models.FarmData] = []
 
-    client = AmbrTopAPI(session, to_ambr_top(locale))
+    client = AmbrTopAPI(session, to_ambr_top(lang))
     domains = await client.get_domains()
     c_upgrades = await client.get_character_upgrade()
     w_upgrades = await client.get_weapon_upgrade()
@@ -353,12 +253,10 @@ async def get_farm_data(
     return result
 
 
-def get_domain_title(domain: Domain, locale: discord.Locale | str) -> str:
+def get_domain_title(domain: Domain, lang: discord.Locale | str) -> str:
     if "Forgery" in text_map.get_domain_name(domain.id, "en-US"):
-        return (
-            f"{get_city_name(domain.city.id, str(locale))} - {text_map.get(91, locale)}"
-        )
-    return f"{get_city_name(domain.city.id, str(locale))} - {text_map.get(105, locale).title()}"
+        return f"{get_city_name(domain.city.id, str(lang))} - {text_map.get(91, lang)}"
+    return f"{get_city_name(domain.city.id, str(lang))} - {text_map.get(105, lang).title()}"
 
 
 def convert_ar_to_wl(ar: int) -> int:
@@ -471,20 +369,25 @@ def get_abyss_season_date_range(season: int) -> str:
     return f"{season_start.strftime('%Y-%m-%d')} ~ {season_end.strftime('%Y-%m-%d')}"
 
 
-def get_account_select_options(
-    accounts: List[asyncpg.Record], locale: discord.Locale | str
+def get_account_options(
+    accounts: List[HoyoAccount],
 ) -> List[discord.SelectOption]:
-    options = []
+    GAME_EMOJIS = {
+        enum.GameType.GENSHIN: asset.genshin_emoji,
+        enum.GameType.HSR: asset.hsr_emoji,
+        enum.GameType.HONKAI: asset.honkai_emoji,
+    }
+
+    options: List[discord.SelectOption] = []
     for account in accounts:
-        emoji = asset.cookie_emoji if account["ltuid"] else asset.uid_emoji
-        nickname = f"{account['nickname']} | " if account["nickname"] else ""
-        if len(nickname) > 15:
-            nickname = nickname[:15] + "..."
+        label = str(account.uid)
+        if account.nickname:
+            label += f" ({account.nickname[:80]})"
         options.append(
             discord.SelectOption(
-                label=f"{nickname}{account['uid']} | {text_map.get(get_uid_region_hash(account['uid']), locale)}",
-                emoji=emoji,
-                value=str(account["uid"]),
+                label=label,
+                value=str(account.uid),
+                emoji=GAME_EMOJIS[account.game],
             )
         )
     return options

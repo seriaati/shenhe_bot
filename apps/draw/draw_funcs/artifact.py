@@ -45,7 +45,7 @@ def combine_artifact_images(images: List[Image.Image], dark_mode: bool) -> io.By
 def draw_artifact(
     artifact: enka.Equipments,
     character: enka.CharacterInfo,
-    locale: Locale | str,
+    lang: Locale | str,
     dark_mode: bool,
 ) -> Image.Image:
     im: Image.Image = Image.open(
@@ -66,28 +66,28 @@ def draw_artifact(
     draw = ImageDraw.Draw(im)
 
     # artifact name
-    font = get_font(locale, 26, "Medium")
+    font = get_font(lang, 26, "Medium")
     color = asset.white
     draw.text((42, 27), artifact.detail.name, font=font, fill=color)
 
     # slot name
-    font = get_font(locale, 20)
+    font = get_font(lang, 20)
     color = asset.white if dark_mode else asset.primary_text
     draw.text(
         (42, 84),
-        get_artifact_slot_name(artifact.detail.artifact_type, locale),
+        get_artifact_slot_name(artifact.detail.artifact_type, lang),
         font=font,
         fill=color,
     )
 
     # main stat name
-    font = get_font(locale, 20)
+    font = get_font(lang, 20)
     color = asset.white if dark_mode else asset.secondary_text
     main_stat = artifact.detail.mainstats
     draw.text((42, 177), main_stat.name, font=font, fill=color)
 
     # main stat value
-    font = get_font(locale, 36, "Medium")
+    font = get_font(lang, 36, "Medium")
     color = asset.white if dark_mode else asset.primary_text
     draw.text(
         (42, 206),
@@ -99,7 +99,7 @@ def draw_artifact(
     # sub stats
     cv_value = 0.0
     for index, substat in enumerate(artifact.detail.substats):
-        font = get_font(locale, 18)
+        font = get_font(lang, 18)
         color = asset.white if dark_mode else asset.primary_text
         draw.text(
             (42, 341 + index * 29),
@@ -124,7 +124,7 @@ def draw_artifact(
             cv_value += substat.value
 
     # level
-    font = get_font(locale, 16)
+    font = get_font(lang, 16)
     color = asset.white
     text = f"+{artifact.level}"
     text_size = font.getsize(text)
@@ -149,9 +149,9 @@ def draw_artifact(
     )
 
     # cv value
-    font = get_font(locale, 16)
+    font = get_font(lang, 16)
     color = asset.white
-    text = f"{text_map.get(747, locale)} {round(cv_value, 1)}"
+    text = f"{text_map.get(747, lang)} {round(cv_value, 1)}"
     text_size = font.getsize(text)
     width = 115 + 17 * 2 + text_size[0]
     height = 294 + text_size[1] + 8
@@ -174,11 +174,11 @@ def draw_artifact(
     )
 
     # equipper name
-    font = get_font(locale, 18)
+    font = get_font(lang, 18)
     color = asset.white if dark_mode else asset.primary_text
     draw.text(
         (102, 489),
-        text_map.get(79, locale).format(character_name=character.name),
+        text_map.get(79, lang).format(character_name=character.name),
         font=font,
         fill=color,
     )
@@ -189,11 +189,11 @@ def draw_artifact(
 def draw_artifact_image(
     character: enka.CharacterInfo,
     artifacts: List[enka.Equipments],
-    locale: Locale | str,
+    lang: Locale | str,
     dark_mode: bool,
 ) -> io.BytesIO:
     images = []
     for artifact in artifacts:
-        images.append(draw_artifact(artifact, character, locale, dark_mode))
+        images.append(draw_artifact(artifact, character, lang, dark_mode))
 
     return combine_artifact_images(images, dark_mode)

@@ -27,8 +27,8 @@ async def launch_browsers() -> Dict[str, Browser]:
     return result
 
 
-def get_browser(browsers: Dict[str, Browser], locale: str) -> Browser:
-    result = browsers.get(locale)
+def get_browser(browsers: Dict[str, Browser], lang: str) -> Browser:
+    result = browsers.get(lang)
     if result is None:
         return browsers["en-US"]
     return result

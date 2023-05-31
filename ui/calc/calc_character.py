@@ -9,9 +9,9 @@ import dev.asset as asset
 import dev.config as config
 import dev.models as models
 from ambr import AmbrTopAPI
+from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.enka.api_docs import get_character_skill_order
-from apps.genshin import check_cookie_predicate
 from apps.text_map import text_map, to_ambr_top
 from data.game.elements import get_element_color, get_element_emoji, get_element_list
 from data.game.upgrade_exp import get_exp_table
@@ -21,9 +21,6 @@ from ui.calc.add_to_todo import AddButton
 from utils import (
     get_character_emoji,
     get_character_suggested_talent_levels,
-    get_shenhe_account,
-    get_user_lang,
-    get_user_theme,
     image_gen_transition,
     level_to_ascension_phase,
 )
@@ -47,8 +44,8 @@ class ElementButton(ui.Button):
         self.element = element
 
     async def callback(self, i: models.Inter):
-        locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
-        ambr = AmbrTopAPI(i.client.session, to_ambr_top(locale))
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
+        ambr = AmbrTopAPI(i.client.session, to_ambr_top(lang))
         characters = await ambr.get_character()
         if not isinstance(characters, List):
             raise TypeError("characters is not a list")
@@ -63,7 +60,7 @@ class ElementButton(ui.Button):
                     )
                 )
         self.view.clear_items()
-        self.view.add_item(CharacterSelect(options, text_map.get(157, locale)))
+        self.view.add_item(CharacterSelect(options, text_map.get(157, lang)))
         await i.response.edit_message(view=self.view)
 
 
@@ -73,46 +70,39 @@ class CharacterSelect(ui.Select):
         self.view: View
 
     async def callback(self, i: models.Inter):
-        locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
         embed = models.DefaultEmbed().set_author(
-            name=text_map.get(608, locale), icon_url=asset.loader
+            name=text_map.get(608, lang), icon_url=asset.loader
         )
         await i.response.edit_message(embed=embed, view=None)
 
         # character level, a/q/e level, ascention level
         init_levels = models.InitLevels()
 
-        # get genshin calculator levels or enka talent levels
+        character_id = int(self.values[0].split("-")[0])
+        user = await i.client.db.users.get(i.user.id)
+        client = await user.client
+
+        calculator_characters = await client.get_calculator_characters(sync=True)
+        calculator_character = utils.get(calculator_characters, id=character_id)
+
+        if calculator_character:
+            init_levels.level = calculator_character.level
+
         try:
-            await check_cookie_predicate(i)
+            character = await client.get_character_details(character_id)
         except Exception:  # skipcq: PYL-W0703
             pass
         else:
-            character_id = int(self.values[0].split("-")[0])
-            shenhe_user = await get_shenhe_account(i.user.id, i.client)
+            skill_order = await get_character_skill_order(str(character_id))
 
-            calculator_characters = await shenhe_user.client.get_calculator_characters(
-                sync=True
-            )
-            calculator_character = utils.get(calculator_characters, id=character_id)
-
-            if calculator_character:
-                init_levels.level = calculator_character.level
-
-            try:
-                character = await shenhe_user.client.get_character_details(character_id)
-            except Exception:  # skipcq: PYL-W0703
-                pass
-            else:
-                skill_order = await get_character_skill_order(str(character_id))
-
-                if skill_order:
-                    skill_a = utils.get(character.talents, id=skill_order[0])
-                    init_levels.a_level = skill_a.level if skill_a else None
-                    skill_e = utils.get(character.talents, id=skill_order[1])
-                    init_levels.e_level = skill_e.level if skill_e else None
-                    skill_q = utils.get(character.talents, id=skill_order[2])
-                    init_levels.q_level = skill_q.level if skill_q else None
+            if skill_order:
+                skill_a = utils.get(character.talents, id=skill_order[0])
+                init_levels.a_level = skill_a.level if skill_a else None
+                skill_e = utils.get(character.talents, id=skill_order[1])
+                init_levels.e_level = skill_e.level if skill_e else None
+                skill_q = utils.get(character.talents, id=skill_order[2])
+                init_levels.q_level = skill_q.level if skill_q else None
 
         # change None levels in init_levels to 1
         for key, value in attr.asdict(init_levels).items():
@@ -126,24 +116,24 @@ class CharacterSelect(ui.Select):
                 else:
                     setattr(init_levels, key, 1)
 
-        modal = InitLevelModal(self.values[0], locale, init_levels)
+        modal = InitLevelModal(self.values[0], lang, init_levels)
         self.view.clear_items()
-        self.view.add_item(SpawnInitModal(locale, modal))
+        self.view.add_item(SpawnInitModal(lang, modal))
         await i.edit_original_response(embed=None, view=self.view)
 
 
 class SpawnTargetLevelModal(ui.Button):
     def __init__(
         self,
-        locale: discord.Locale | str,
+        lang: str,
         character_id: str,
         init_levels: List[int],
         suggested_levels: List[int],
     ):
         super().__init__(
-            label=text_map.get(17, locale), style=discord.ButtonStyle.blurple
+            label=text_map.get(17, lang), style=discord.ButtonStyle.blurple
         )
-        self.locale = locale
+        self.lang = lang
         self.character_id = character_id
         self.init_levels = init_levels
         self.suggested_levels = suggested_levels
@@ -151,7 +141,7 @@ class SpawnTargetLevelModal(ui.Button):
     async def callback(self, i: models.Inter):
         await i.response.send_modal(
             TargetLevelModal(
-                self.character_id, self.locale, self.init_levels, self.suggested_levels
+                self.character_id, self.lang, self.init_levels, self.suggested_levels
             )
         )
 
@@ -194,29 +184,29 @@ class InitLevelModal(BaseModal):
     def __init__(
         self,
         character_id: str,
-        locale: discord.Locale | str,
+        lang: str,
         init_levels: models.InitLevels,
     ) -> None:
         super().__init__(
-            title=text_map.get(181, locale),
+            title=text_map.get(181, lang),
             timeout=config.mid_timeout,
         )
-        level_type = text_map.get(168, locale)
+        level_type = text_map.get(168, lang)
 
-        self.init.label = text_map.get(169, locale).format(level_type=level_type)
-        self.init.placeholder = text_map.get(170, locale).format(a=1)
+        self.init.label = text_map.get(169, lang).format(level_type=level_type)
+        self.init.placeholder = text_map.get(170, lang).format(a=1)
 
-        self.ascension_phase.label = text_map.get(720, locale)
-        self.ascension_phase.placeholder = text_map.get(170, locale).format(a=4)
+        self.ascension_phase.label = text_map.get(720, lang)
+        self.ascension_phase.placeholder = text_map.get(170, lang).format(a=4)
 
-        self.a.label = text_map.get(171, locale).format(level_type=level_type)
-        self.a.placeholder = text_map.get(170, locale).format(a=9)
+        self.a.label = text_map.get(171, lang).format(level_type=level_type)
+        self.a.placeholder = text_map.get(170, lang).format(a=9)
 
-        self.e.label = text_map.get(173, locale).format(level_type=level_type)
-        self.e.placeholder = text_map.get(170, locale).format(a=8)
+        self.e.label = text_map.get(173, lang).format(level_type=level_type)
+        self.e.placeholder = text_map.get(170, lang).format(a=8)
 
-        self.q.label = text_map.get(174, locale).format(level_type=level_type)
-        self.q.placeholder = text_map.get(170, locale).format(a=10)
+        self.q.label = text_map.get(174, lang).format(level_type=level_type)
+        self.q.placeholder = text_map.get(170, lang).format(a=10)
 
         # fill in defaults
         self.init.default = str(init_levels.level)
@@ -226,7 +216,7 @@ class InitLevelModal(BaseModal):
         self.ascension_phase.default = str(init_levels.ascension_phase)
 
         self.character_id = character_id
-        self.locale = locale
+        self.lang = lang
 
     async def on_submit(self, i: models.Inter):
         await i.response.defer()
@@ -239,7 +229,7 @@ class InitLevelModal(BaseModal):
                 self.q.value,
                 self.ascension_phase.value,
                 i,
-                self.locale,
+                self.lang,
             )
         except InvalidWeaponCalcInput:
             return
@@ -252,7 +242,7 @@ class InitLevelModal(BaseModal):
         view.clear_items()
         view.add_item(
             SpawnTargetLevelModal(
-                self.locale,
+                self.lang,
                 self.character_id,
                 [
                     int(self.init.value),
@@ -266,16 +256,16 @@ class InitLevelModal(BaseModal):
         )
         embed = models.DefaultEmbed()
         embed.set_author(
-            name=text_map.get(18, self.locale), icon_url=i.user.display_avatar.url
+            name=text_map.get(18, self.lang), icon_url=i.user.display_avatar.url
         )
         await i.edit_original_response(embed=embed, view=view)
         view.message = await i.original_response()
 
 
 class SpawnInitModal(ui.Button):
-    def __init__(self, locale: discord.Locale | str, modal: InitLevelModal):
+    def __init__(self, lang: str, modal: InitLevelModal):
         super().__init__(
-            label=text_map.get(17, locale), style=discord.ButtonStyle.blurple
+            label=text_map.get(17, lang), style=discord.ButtonStyle.blurple
         )
         self.modal = modal
 
@@ -317,42 +307,42 @@ class TargetLevelModal(BaseModal):
     def __init__(
         self,
         character_id: str,
-        locale: discord.Locale | str,
+        lang: str,
         init_levels: List[int],
         suggested_levels: List[int],
     ) -> None:
         super().__init__(
-            title=text_map.get(181, locale),
+            title=text_map.get(181, lang),
             timeout=config.mid_timeout,
         )
-        level_type = text_map.get(182, locale)
+        level_type = text_map.get(182, lang)
 
-        self.target.label = text_map.get(169, locale).format(level_type=level_type)
-        self.target.placeholder = text_map.get(170, locale).format(a=90)
+        self.target.label = text_map.get(169, lang).format(level_type=level_type)
+        self.target.placeholder = text_map.get(170, lang).format(a=90)
         self.target.default = str(init_levels[0])
 
-        self.ascension_target.label = text_map.get(721, locale)
-        self.ascension_target.placeholder = text_map.get(170, locale).format(a=4)
+        self.ascension_target.label = text_map.get(721, lang)
+        self.ascension_target.placeholder = text_map.get(170, lang).format(a=4)
         self.ascension_target.default = str(init_levels[4])
 
-        self.a.label = text_map.get(171, locale).format(level_type=level_type)
-        self.a.placeholder = text_map.get(170, locale).format(a=9)
+        self.a.label = text_map.get(171, lang).format(level_type=level_type)
+        self.a.placeholder = text_map.get(170, lang).format(a=9)
         self.a.default = (
             str(init_levels[1])
             if init_levels[1] > suggested_levels[0]
             else str(suggested_levels[0])
         )
 
-        self.e.label = text_map.get(173, locale).format(level_type=level_type)
-        self.e.placeholder = text_map.get(170, locale).format(a=4)
+        self.e.label = text_map.get(173, lang).format(level_type=level_type)
+        self.e.placeholder = text_map.get(170, lang).format(a=4)
         self.e.default = (
             str(init_levels[2])
             if init_levels[2] > suggested_levels[1]
             else str(suggested_levels[1])
         )
 
-        self.q.label = text_map.get(174, locale).format(level_type=level_type)
-        self.q.placeholder = text_map.get(170, locale).format(a=10)
+        self.q.label = text_map.get(174, lang).format(level_type=level_type)
+        self.q.placeholder = text_map.get(170, lang).format(a=10)
         self.q.default = (
             str(init_levels[3])
             if init_levels[3] > suggested_levels[2]
@@ -361,7 +351,7 @@ class TargetLevelModal(BaseModal):
 
         self.character_id = character_id
         self.init_levels = init_levels
-        self.locale = locale
+        self.lang = lang
 
     async def on_submit(self, i: models.Inter) -> None:
         await i.response.defer()
@@ -374,7 +364,7 @@ class TargetLevelModal(BaseModal):
                 self.q.value,
                 self.ascension_target.value,
                 i,
-                self.locale,
+                self.lang,
             )
         except InvalidWeaponCalcInput:
             return
@@ -385,12 +375,12 @@ class TargetLevelModal(BaseModal):
         if view is None:
             await i.edit_original_response(
                 embed=models.DefaultEmbed().set_author(
-                    name=text_map.get(644, self.locale), icon_url=asset.loader
+                    name=text_map.get(644, self.lang), icon_url=asset.loader
                 ),
                 view=None,
             )
         else:
-            await image_gen_transition(i, view, self.locale)
+            await image_gen_transition(i, view, self.lang)
 
         target = int(self.target.value)
         ascension = int(self.ascension_target.value)
@@ -404,7 +394,7 @@ class TargetLevelModal(BaseModal):
         init_q = self.init_levels[3]
         init_ascension = self.init_levels[4]
 
-        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.locale))
+        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.lang))
         character = await ambr.get_character_detail(self.character_id)
         if not isinstance(character, ambr_models.CharacterDetail):
             raise TypeError("character is not a ambr_models.Character")
@@ -493,7 +483,7 @@ class TargetLevelModal(BaseModal):
         if not all_materials:
             await i.edit_original_response(
                 embed=models.DefaultEmbed().set_author(
-                    name=text_map.get(197, self.locale),
+                    name=text_map.get(197, self.lang),
                     icon_url=i.user.display_avatar.url,
                 )
             )
@@ -502,12 +492,14 @@ class TargetLevelModal(BaseModal):
         character = await ambr.get_character(self.character_id)
         if not isinstance(character, ambr_models.Character):
             raise TypeError("character is not a ambr_models.Character")
+
+        dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
         fp = await main_funcs.draw_material_card(
             models.DrawInput(
                 loop=i.client.loop,
                 session=i.client.session,
-                locale=self.locale,
-                dark_mode=await get_user_theme(i.user.id, i.client.pool),
+                lang=self.lang,
+                dark_mode=dark_mode,
             ),
             all_materials,
             "",
@@ -517,9 +509,9 @@ class TargetLevelModal(BaseModal):
         fp.seek(0)
         embed = models.DefaultEmbed()
         embed.add_field(
-            name=text_map.get(192, self.locale),
-            value=f"{text_map.get(183, self.locale)}: {init} ▸ {target}\n"
-            f"{text_map.get(722, self.locale)}: {init_ascension} ▸ {ascension}\n"
+            name=text_map.get(192, self.lang),
+            value=f"{text_map.get(183, self.lang)}: {init} ▸ {target}\n"
+            f"{text_map.get(722, self.lang)}: {init_ascension} ▸ {ascension}\n"
             f"{normal_attack.name}: {init_a} ▸ {a}\n"
             f"{elemental_skill.name}: {init_e} ▸ {e}\n"
             f"{elemental_burst.name}: {init_q} ▸ {q}",
@@ -528,7 +520,7 @@ class TargetLevelModal(BaseModal):
         embed.set_image(url="attachment://materials.jpeg")
         view = View()
         view.clear_items()
-        view.add_item(AddButton(items, self.locale))
+        view.add_item(AddButton(items, self.lang))
         view.author = i.user
         await i.edit_original_response(
             embed=embed, attachments=[discord.File(fp, "materials.jpeg")], view=view
@@ -543,10 +535,10 @@ async def validate_level_input(
     q: str,
     ascension: str,
     i: models.Inter,
-    locale: discord.Locale | str,
+    lang: str,
 ):
     embed = models.DefaultEmbed().set_author(
-        name=text_map.get(190, locale), icon_url=i.user.display_avatar.url
+        name=text_map.get(190, lang), icon_url=i.user.display_avatar.url
     )
     try:
         int_level = int(level)
@@ -555,7 +547,7 @@ async def validate_level_input(
         int_q = int(q)
         int_ascension = int(ascension)
     except ValueError:
-        embed.description = text_map.get(187, locale)
+        embed.description = text_map.get(187, lang)
         await i.followup.send(
             embed=embed,
             ephemeral=True,
@@ -563,7 +555,7 @@ async def validate_level_input(
         raise InvalidWeaponCalcInput
 
     if int_level < 1 or int_level > 90:
-        embed.description = text_map.get(172, locale).format(a=1, b=90)
+        embed.description = text_map.get(172, lang).format(a=1, b=90)
         await i.followup.send(
             embed=embed,
             ephemeral=True,
@@ -571,7 +563,7 @@ async def validate_level_input(
         raise InvalidWeaponCalcInput
 
     if int_a < 1 or int_a > 15 or int_e < 1 or int_e > 15 or int_q < 1 or int_q > 15:
-        embed.description = text_map.get(172, locale).format(a=1, b=15)
+        embed.description = text_map.get(172, lang).format(a=1, b=15)
         await i.followup.send(
             embed=embed,
             ephemeral=True,
@@ -580,7 +572,7 @@ async def validate_level_input(
 
     theoretical_ascension = level_to_ascension_phase(int_level)
     if int_ascension not in (theoretical_ascension, theoretical_ascension - 1):
-        embed.description = text_map.get(730, locale)
+        embed.description = text_map.get(730, lang)
         await i.followup.send(
             embed=embed,
             ephemeral=True,

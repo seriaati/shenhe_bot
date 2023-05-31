@@ -5,23 +5,24 @@ from discord import ui
 
 import dev.config as config
 from ambr import AmbrTopAPI, Material, Monster
+from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
 from dev.base_ui import BaseView
 from dev.models import AbyssHalf, DefaultEmbed, DrawInput, Inter
-from utils import divide_chunks, get_user_theme, image_gen_transition
+from utils import divide_chunks, image_gen_transition
 
 
 class View(BaseView):
     def __init__(
         self,
-        locale: discord.Locale | str,
+        lang: discord.Locale | str,
         halfs: Dict[str, List[AbyssHalf]],
         embeds: Dict[str, discord.Embed],
         buff_embed: discord.Embed,
     ):
         super().__init__(timeout=config.long_timeout)
-        self.locale = locale
+        self.lang = lang
         self.halfs = halfs
         self.embeds = embeds
         self.buff_embed = buff_embed
@@ -34,20 +35,20 @@ class View(BaseView):
 
         divided_options = list(divide_chunks(options, 25))
         for i, options in enumerate(divided_options):
-            self.add_item(ChamberSelect(locale, options, i))
+            self.add_item(ChamberSelect(lang, options, i))
 
-        self.add_item(BuffButton(text_map.get(732, locale), buff_embed))
+        self.add_item(BuffButton(text_map.get(732, lang), buff_embed))
 
 
 class ChamberSelect(ui.Select):
     def __init__(
         self,
-        locale: discord.Locale | str,
+        lang: discord.Locale | str,
         options: List[discord.SelectOption],
         index: int,
     ):
         super().__init__(
-            placeholder=text_map.get(314, locale) + f" ({index+1})",
+            placeholder=text_map.get(314, lang) + f" ({index+1})",
             options=options,
             row=index,
         )
@@ -78,8 +79,8 @@ class BuffButton(ui.Button):
 
 
 async def select_callback(i: Inter, view: View, value: str):
-    await image_gen_transition(i, view, view.locale)
-    ambr = AmbrTopAPI(i.client.session, to_ambr_top(view.locale))  # type: ignore
+    await image_gen_transition(i, view, view.lang)
+    ambr = AmbrTopAPI(i.client.session, to_ambr_top(view.lang))  # type: ignore
     halfs = view.halfs[value]
     embeds = []
     attachments = []
@@ -113,8 +114,8 @@ async def select_callback(i: Inter, view: View, value: str):
             DrawInput(
                 loop=i.client.loop,
                 session=i.client.session,
-                locale=view.locale,
-                dark_mode=await get_user_theme(i.user.id, i.client.pool),
+                lang=view.lang,
+                dark_mode=await i.client.db.settings.get(i.user.id, Settings.DARK_MODE),
             ),
             materials,
             "",
@@ -127,7 +128,7 @@ async def select_callback(i: Inter, view: View, value: str):
         if index == 0:
             embed = view.embeds[value]
         else:
-            embed = DefaultEmbed(text_map.get(708, view.locale))
+            embed = DefaultEmbed(text_map.get(708, view.lang))
             embed.set_image(url="attachment://enemies2.jpeg")
         embeds.append(embed)
 
@@ -136,6 +137,6 @@ async def select_callback(i: Inter, view: View, value: str):
             item.disabled = False
 
     if len(embeds) == 2:
-        embeds[0].set_footer(text=text_map.get(707, view.locale))
+        embeds[0].set_footer(text=text_map.get(707, view.lang))
 
     await i.edit_original_response(attachments=attachments, embeds=embeds, view=view)

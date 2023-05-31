@@ -16,11 +16,11 @@ class TodoPaginatorView(GeneralPaginatorView):
         self,
         embeds: List[Embed],
         materials: List[Tuple[Material, int | str]],
-        locale: Locale | str,
+        lang: Locale | str,
         dark_mode: bool,
         todo_items: List[TodoItem],
     ) -> None:
-        super().__init__(embeds, str(locale))
+        super().__init__(embeds, str(lang))
         self.materials = materials
         self.dark_mode = dark_mode
         self.todo_items = todo_items
@@ -30,7 +30,7 @@ class TodoPaginatorView(GeneralPaginatorView):
             DrawInput(
                 loop=i.client.loop,
                 session=i.client.session,
-                locale=self.locale,
+                lang=self.lang,
                 dark_mode=self.dark_mode,
             ),
             self.materials[self.current_page * 14 : (self.current_page + 1) * 14],
@@ -67,9 +67,9 @@ class TodoPaginator(GeneralPaginator):
         self.dark_mode = dark_mode
         self.first_fp = first_fp
 
-    def setup_view(self, locale: Locale | str) -> TodoPaginatorView:
+    def setup_view(self, lang: Locale | str) -> TodoPaginatorView:
         view = TodoPaginatorView(
-            self.embeds, self.materials, locale, self.dark_mode, self.todo_items
+            self.embeds, self.materials, lang, self.dark_mode, self.todo_items
         )
         return view
 

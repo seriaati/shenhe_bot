@@ -8,9 +8,10 @@ import sentry_sdk
 
 import dev.asset as asset
 import dev.exceptions as exceptions
+from apps.db.tables.user_settings import Settings
 from apps.text_map import text_map
-from dev.enum import GameType
-from utils import get_user_lang, log
+from utils import log
+from utils.text_map import get_game_name
 
 from .models import ErrorEmbed, Inter, OriginalInfo
 
@@ -19,9 +20,9 @@ async def global_error_handler(
     i: Inter,
     e: typing.Union[Exception, discord.app_commands.AppCommandError],
 ):
-    locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
-    embed = get_error_handle_embed(i.user, e, locale)
-    view = support_server_view(locale)
+    lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
+    embed = get_error_handle_embed(i.user, e, lang)
+    view = support_server_view(lang)
 
     try:
         await i.response.send_message(
@@ -39,11 +40,11 @@ async def global_error_handler(
         pass
 
 
-def support_server_view(locale: typing.Union[discord.Locale, str]):
+def support_server_view(lang: typing.Union[discord.Locale, str]):
     view = discord.ui.View()
     view.add_item(
         discord.ui.Button(
-            label=text_map.get(642, locale),
+            label=text_map.get(642, lang),
             url="https://discord.gg/ryfamUykRw",
             emoji="<:discord_icon:1032123254103621632>",
         )
@@ -55,7 +56,7 @@ def support_server_view(locale: typing.Union[discord.Locale, str]):
 def get_error_handle_embed(
     user: typing.Optional[typing.Union[discord.User, discord.Member]],
     e: Exception,
-    locale: typing.Union[discord.Locale, str],
+    lang: typing.Union[discord.Locale, str],
 ) -> ErrorEmbed:
     """Returns an error embed based on the givern error type."""
     embed = ErrorEmbed()
@@ -68,90 +69,95 @@ def get_error_handle_embed(
         10008,
         10015,
     ):
-        embed.description = text_map.get(624, locale)
-        embed.set_author(name=text_map.get(623, locale))
-    elif isinstance(e, exceptions.UIDNotFound):
-        embed.description = text_map.get(35, locale)
-        embed.set_author(name=text_map.get(672, locale))
+        embed.description = text_map.get(624, lang)
+        embed.set_author(name=text_map.get(623, lang))
     elif isinstance(e, exceptions.AccountNotFound):
-        embed.description = text_map.get(35, locale)
-        embed.set_author(name=text_map.get(545, locale))
+        embed.description = text_map.get(35, lang)
+        embed.set_author(name=text_map.get(545, lang))
     elif isinstance(e, exceptions.NoPlayerFound):
-        embed.set_author(name=text_map.get(367, locale))
+        embed.set_author(name=text_map.get(367, lang))
     elif isinstance(e, enkanetwork.EnkaServerMaintanance):
-        embed.description = text_map.get(519, locale)
-        embed.set_author(name=text_map.get(523, locale))
+        embed.description = text_map.get(519, lang)
+        embed.set_author(name=text_map.get(523, lang))
     elif isinstance(e, (enkanetwork.VaildateUIDError, enkanetwork.EnkaPlayerNotFound)):
-        embed.description = text_map.get(286, locale)
-        embed.set_author(name=text_map.get(523, locale))
+        embed.description = text_map.get(286, lang)
+        embed.set_author(name=text_map.get(523, lang))
     elif isinstance(e, (enkanetwork.EnkaServerError, enkanetwork.HTTPException)):
-        embed.set_author(name=text_map.get(523, locale))
+        embed.set_author(name=text_map.get(523, lang))
     elif isinstance(e, exceptions.NoCharacterFound):
-        embed.description = text_map.get(287, locale)
-        embed.set_author(
-            name=text_map.get(141, locale),
-        )
+        embed.description = text_map.get(287, lang)
+        embed.set_author(name=text_map.get(141, lang))
         embed.set_image(url="https://i.imgur.com/frMsGHO.gif")
-    elif isinstance(e, exceptions.NoUID):
-        embed.description = text_map.get(572, locale)
-        embed.set_author(name=text_map.get(571 if e.current_user else 579, locale))
-    elif isinstance(e, exceptions.NoCookie):
-        if e.current_account:
-            embed.description = f"{text_map.get(572, locale)}\n"
-            embed.description += text_map.get(563, locale)
-            embed.set_author(name=text_map.get(573 if e.current_user else 580, locale))
-        else:
-            embed.description = text_map.get(575, locale)
-            embed.set_author(name=text_map.get(574 if e.current_user else 581, locale))
     elif isinstance(e, exceptions.NoWishHistory):
-        embed.description = text_map.get(368, locale)
-        embed.set_author(name=text_map.get(683, locale))
+        embed.description = text_map.get(368, lang)
+        embed.set_author(name=text_map.get(683, lang))
     elif isinstance(e, exceptions.CardNotFound):
-        embed.set_author(name=text_map.get(719, locale))
+        embed.set_author(name=text_map.get(719, lang))
     elif isinstance(e, exceptions.ItemNotFound):
-        embed.set_author(name=text_map.get(542, locale))
+        embed.set_author(name=text_map.get(542, lang))
     elif isinstance(e, exceptions.NumbersOnly):
-        embed.set_author(name=text_map.get(187, locale))
+        embed.set_author(name=text_map.get(187, lang))
     elif isinstance(e, exceptions.AutocompleteError):
-        embed.set_author(name=text_map.get(310, locale))
+        embed.set_author(name=text_map.get(310, lang))
         embed.set_image(url="https://i.imgur.com/TRcvXCG.gif")
     elif isinstance(e, exceptions.CardNotReady):
-        embed.set_author(name=text_map.get(189, locale))
+        embed.set_author(name=text_map.get(189, lang))
     elif isinstance(e, exceptions.FeatureDisabled):
-        embed.set_author(name=text_map.get(758, locale))
-        embed.description = text_map.get(759, locale)
+        embed.set_author(name=text_map.get(758, lang))
+        embed.description = text_map.get(759, lang)
     elif isinstance(e, exceptions.Maintenance):
-        embed.set_author(name=text_map.get(760, locale))
-        embed.description = text_map.get(759, locale)
+        embed.set_author(name=text_map.get(760, lang))
+        embed.description = text_map.get(759, lang)
+    elif isinstance(e, exceptions.InvalidInput):
+        embed.set_author(name=text_map.get(190, lang))
+        embed.description = text_map.get(172, lang).format(a=e.a, b=e.b)
+    elif isinstance(e, exceptions.AbyssDataNotFound):
+        embed.set_author(name=text_map.get(76, lang))
+        embed.description = text_map.get(74, lang)
+    elif isinstance(e, exceptions.WishFileImportError):
+        embed.set_author(name=text_map.get(135, lang))
+        embed.description = text_map.get(567, lang)
+    elif isinstance(e, exceptions.GameNotSupported):
+        lang = str(lang)
+        current_game_name = get_game_name(e.current, lang)
+        embed.set_author(name=text_map.get(789, lang).format(current=current_game_name))
+        supported_games = ", ".join([get_game_name(g, lang) for g in e.supported])
+        embed.description = text_map.get(790, lang).format(
+            current=current_game_name, supported=supported_games
+        )
     elif isinstance(e, genshin.errors.GenshinException):
         if isinstance(e, genshin.errors.DataNotPublic):
-            embed.set_author(name=text_map.get(22, locale))
-            embed.description = f"{text_map.get(21, locale)}"
+            embed.set_author(name=text_map.get(22, lang))
+            embed.description = f"{text_map.get(21, lang)}"
         elif isinstance(e, genshin.errors.InvalidCookies):
-            embed.set_author(name=text_map.get(36, locale))
-            embed.description = text_map.get(767, locale)
+            embed.set_author(name=text_map.get(36, lang))
+            embed.description = text_map.get(767, lang)
         elif isinstance(e, genshin.errors.AlreadyClaimed):
-            embed.set_author(name=text_map.get(40, locale))
+            embed.set_author(name=text_map.get(40, lang))
         elif isinstance(e, genshin.errors.RedemptionClaimed):
-            embed.set_author(name=text_map.get(106, locale))
+            embed.set_author(name=text_map.get(106, lang))
         elif isinstance(e, genshin.errors.RedemptionInvalid):
-            embed.set_author(name=text_map.get(107, locale))
+            embed.set_author(name=text_map.get(107, lang))
         elif isinstance(e, genshin.errors.RedemptionCooldown):
-            embed.set_author(name=text_map.get(133, locale))
+            embed.set_author(name=text_map.get(133, lang))
+        elif isinstance(e, genshin.errors.InvalidAuthkey):
+            embed.set_author(name=text_map.get(363, lang))
+        elif isinstance(e, genshin.errors.AuthkeyTimeout):
+            embed.set_author(name=text_map.get(702, lang))
         elif e.retcode == -10002:
-            embed.set_author(name=text_map.get(772, locale))
+            embed.set_author(name=text_map.get(772, lang))
         elif e.retcode == -10001:
-            embed.set_author(name=text_map.get(778, locale))
+            embed.set_author(name=text_map.get(778, lang))
         else:
             embed.description = f"```\n[{e.retcode}]: {e.msg}\n```"
             if e.original:
                 embed.description += f"```\n{e.original}\n```"
-            embed.set_author(name=text_map.get(10, locale))
+            embed.set_author(name=text_map.get(10, lang))
     else:
         capture_exception(e)
 
         embed.description = f"```{type(e)}: {e}```"
-        embed.set_author(name=text_map.get(135, locale))
+        embed.set_author(name=text_map.get(135, lang))
         embed.set_thumbnail(url="https://i.imgur.com/Xi51hSe.gif")
 
     icon_url = user.display_avatar.url if user else None
@@ -200,11 +206,11 @@ class BaseView(discord.ui.View):
         if self.author is None:
             return True
 
-        user_locale = await get_user_lang(i.user.id, i.client.pool)
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
         if self.author.id != i.user.id:
             await i.response.send_message(
                 embed=ErrorEmbed().set_author(
-                    name=text_map.get(143, i.locale, user_locale),
+                    name=text_map.get(143, lang),
                     icon_url=i.user.display_avatar.url,
                 ),
                 ephemeral=True,
@@ -271,7 +277,7 @@ class EnkaView(BaseView):
     author: typing.Union[discord.User, discord.Member]
     message: discord.Message
     character_options: typing.List[discord.SelectOption]
-    locale: typing.Union[discord.Locale, str]
+    lang: typing.Union[discord.Locale, str]
 
     original_children: typing.List[discord.ui.Item] = []
     character_id: str = "0"
@@ -281,57 +287,56 @@ class EnkaView(BaseView):
         arbitrary_types_allowed = True
 
 
-class LoadingSelector(discord.ui.Select):
-    def __init__(self, locale: typing.Union[discord.Locale, str]):
-        super().__init__(
-            options=[
-                discord.SelectOption(
-                    label=text_map.get(773, locale),
-                    emoji=asset.loading_emoji,
-                    default=True,
-                )
-            ],
-        )
-
-
-class BaseGameSelector(discord.ui.Select):
-    def __init__(
-        self,
-        locale: typing.Union[discord.Locale, str],
-        default: GameType,
-        *,
-        honkai: bool = False,
-        **kwargs,
-    ):
-        super().__init__(
-            options=[
-                discord.SelectOption(
-                    label=text_map.get(313, locale),
-                    emoji=asset.genshin_emoji,
-                    value="genshin",
-                    default=default == GameType.GENSHIN,
-                ),
-                discord.SelectOption(
-                    label=text_map.get(770, locale),
-                    emoji=asset.hsr_emoji,
-                    value="hsr",
-                    default=default == GameType.HSR,
-                ),
-            ],
-            **kwargs,
-        )
-        if honkai:
-            self.add_option(
-                label=text_map.get(771, locale),
-                emoji=asset.honkai_emoji,
-                value="honkai",
-                default=default == GameType.HONKAI,
-            )
-
-        self.locale = locale
+class BaseSelect(discord.ui.Select):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.original_options: typing.List[discord.SelectOption]
         self.view: BaseView
 
     async def loading(self, i: Inter):
-        self.view.remove_item(self)
-        self.view.add_item(LoadingSelector(self.locale))
+        self.original_options = self.options
+
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG)
+        lang = lang or str(i.locale)
+
+        self.options = [
+            discord.SelectOption(
+                label=text_map.get(773, lang),
+                emoji=asset.loading_emoji,
+                default=True,
+            )
+        ]
         await i.response.edit_message(view=self.view)
+
+    async def restore(self, i: Inter):
+        self.options = self.original_options
+        await i.edit_original_response(view=self.view)
+
+
+class BaseButton(discord.ui.Button):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.view: BaseView
+        self.original_label: typing.Optional[str]
+        self.original_emoji: typing.Optional[typing.Union[str, discord.PartialEmoji]]
+        self.original_disabled: bool
+
+    async def loading(self, i: Inter):
+        self.original_label = self.label
+        self.original_emoji = self.emoji
+        self.original_disabled = self.disabled
+
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG)
+        lang = lang or str(i.locale)
+
+        self.emoji = asset.loading_emoji
+        self.label = text_map.get(773, lang)
+        self.disabled = True
+        await i.response.edit_message(view=self.view)
+
+    async def restore(self, i: Inter):
+        self.label = self.original_label
+        self.emoji = self.original_emoji
+        self.disabled = self.original_disabled
+
+        await i.edit_original_response(view=self.view)

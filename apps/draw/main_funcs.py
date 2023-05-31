@@ -13,6 +13,7 @@ import apps.draw.draw_funcs as funcs
 import dev.models as models
 from ambr import Material
 from apps.db.json import read_json, write_json
+from apps.db.tables.abyss_board import AbyssBoardEntry
 from apps.wish.models import RecentWish, WishData
 from utils import calculate_time, compress_image_util, download_images, extract_urls
 
@@ -30,7 +31,7 @@ async def draw_abyss_one_page(
         funcs.abyss.one_page,
         user_stats,
         abyss_data,
-        draw_input.locale,
+        draw_input.lang,
         draw_input.dark_mode,
         user_characters,
     )
@@ -40,18 +41,17 @@ async def draw_abyss_one_page(
 @calculate_time
 async def draw_single_strike_leaderboard(
     draw_input: models.DrawInput,
-    current_uid: int,
-    users: List[models.SingleStrikeLeaderboardUser],
+    user_uid: int,
+    users: List[models.BoardUser[AbyssBoardEntry]],
 ) -> io.BytesIO:
-    characters = [u.character for u in users]
-    urls = extract_urls(characters)
+    urls = [u.entry.character.icon for u in users]
     await download_images(urls, draw_input.session)
     func = functools.partial(
-        funcs.abyss.strike_leaderboard,
-        draw_input.locale,
+        funcs.abyss.strike_board,
+        draw_input.lang,
         draw_input.dark_mode,
         users,
-        current_uid,
+        user_uid,
     )
     return await draw_input.loop.run_in_executor(None, func)
 
@@ -59,17 +59,17 @@ async def draw_single_strike_leaderboard(
 @calculate_time
 async def draw_run_leaderboard(
     draw_input: models.DrawInput,
-    current_uid: int,
-    users: List[models.RunLeaderboardUser],
+    user_uid: int,
+    users: List[models.BoardUser[AbyssBoardEntry]],
 ) -> io.BytesIO:
-    urls = [u.icon_url for u in users]
+    urls = [u.entry.icon for u in users]
     await download_images(urls, draw_input.session)
     func = functools.partial(
-        funcs.abyss.run_leaderboard,
-        draw_input.locale,
+        funcs.abyss.full_clear_board,
+        draw_input.lang,
         draw_input.dark_mode,
         users,
-        current_uid,
+        user_uid,
     )
     return await draw_input.loop.run_in_executor(None, func)
 
@@ -90,7 +90,7 @@ async def draw_farm_domain_card(
     await download_images(urls, draw_input.session)
 
     func = functools.partial(
-        funcs.farm.draw_domain_card, farm_data, draw_input.locale, draw_input.dark_mode
+        funcs.farm.draw_domain_card, farm_data, draw_input.lang, draw_input.dark_mode
     )
     return await draw_input.loop.run_in_executor(None, func)
 
@@ -112,7 +112,7 @@ async def draw_profile_card_v1(
     func = functools.partial(
         funcs.profile.character_card,
         character,
-        draw_input.locale,
+        draw_input.lang,
         draw_input.dark_mode,
         custom_image_url,
     )
@@ -164,7 +164,7 @@ async def draw_profile_overview_card(
         funcs.profile.overview_and_characters,
         data,
         draw_input.dark_mode,
-        draw_input.locale,
+        draw_input.lang,
     )
     return await draw_input.loop.run_in_executor(None, func)
 
@@ -177,7 +177,7 @@ async def draw_realtime_card(
     urls = [e.character.icon for e in note.expeditions]
     await download_images(urls, draw_input.session)
     func = functools.partial(
-        funcs.check.card, note, draw_input.locale, draw_input.dark_mode
+        funcs.check.card, note, draw_input.lang, draw_input.dark_mode
     )
     return await draw_input.loop.run_in_executor(None, func)
 
@@ -191,7 +191,7 @@ async def draw_wish_overview_card(
     await download_images(urls, draw_input.session)
     func = functools.partial(
         funcs.wish.wish_overview,
-        draw_input.locale,
+        draw_input.lang,
         wish_data,
         draw_input.dark_mode,
     )
@@ -207,7 +207,7 @@ async def draw_wish_recents_card(
     await download_images(urls, draw_input.session)
     func = functools.partial(
         funcs.wish.draw_wish_recents_card,
-        draw_input.locale,
+        draw_input.lang,
         wish_recents,
         draw_input.dark_mode,
     )
@@ -240,7 +240,7 @@ async def draw_abyss_overview_card(
     await download_images(urls, draw_input.session)
     func = functools.partial(
         funcs.abyss.abyss_overview,
-        draw_input.locale,
+        draw_input.lang,
         draw_input.dark_mode,
         abyss_data,
         user_data,
@@ -266,7 +266,7 @@ async def draw_abyss_floor_card(
 async def draw_diary_card(
     draw_input: models.DrawInput,
     diary_data: genshin.models.Diary,
-    user_data: genshin.models.PartialGenshinUserStats,
+    mora_count: int,
     month: int,
 ) -> io.BytesIO:
     colors = (
@@ -306,8 +306,8 @@ async def draw_diary_card(
     func = functools.partial(
         funcs.diary.card,
         diary_data,
-        user_data,
-        draw_input.locale,
+        mora_count,
+        draw_input.lang,
         month,
         draw_input.dark_mode,
         plot,
@@ -330,7 +330,7 @@ async def draw_material_card(
         materials,
         title,
         draw_input.dark_mode,
-        draw_input.locale,
+        draw_input.lang,
         draw_title,
         background_color,
     )
@@ -345,7 +345,7 @@ async def abyss_character_usage_card(
     urls = extract_urls([c.character for c in uc_list])
     await download_images(urls, draw_input.session)
     func = functools.partial(
-        funcs.abyss.character_usage, uc_list, draw_input.dark_mode, draw_input.locale
+        funcs.abyss.character_usage, uc_list, draw_input.dark_mode, draw_input.lang
     )
     return await draw_input.loop.run_in_executor(None, func)
 
@@ -401,7 +401,7 @@ async def draw_lineup_card(
     func = functools.partial(
         funcs.lineup.card,
         draw_input.dark_mode,
-        draw_input.locale,
+        draw_input.lang,
         lineup_preview,
         character_id,
     )
@@ -421,7 +421,7 @@ async def draw_artifact_card(
         funcs.artifact.draw_artifact_image,
         character,
         arts,
-        draw_input.locale,
+        draw_input.lang,
         draw_input.dark_mode,
     )
     return await draw_input.loop.run_in_executor(None, func)
@@ -432,7 +432,7 @@ async def draw_banner_card(
     draw_input: models.DrawInput, banner_urls: List[str]
 ) -> io.BytesIO:
     await download_images(banner_urls, draw_input.session)
-    func = functools.partial(funcs.banners.card, banner_urls, draw_input.locale)
+    func = functools.partial(funcs.banners.card, banner_urls, draw_input.lang)
     return await draw_input.loop.run_in_executor(None, func)
 
 
@@ -460,7 +460,7 @@ async def draw_profile_card_v2(
 
     func = functools.partial(
         funcs.profile.card_v2,
-        draw_input.locale,
+        draw_input.lang,
         draw_input.dark_mode,
         character,
         image_url,

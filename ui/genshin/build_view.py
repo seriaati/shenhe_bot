@@ -7,6 +7,7 @@ from discord import ui
 
 import dev.asset as asset
 import dev.config as config
+from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.text_map import cond_text, text_map, to_genshin_py
 from data.game.elements import get_element_emoji, get_element_list
@@ -16,8 +17,6 @@ from utils import (
     disable_view_items,
     get_character_builds,
     get_character_emoji,
-    get_user_lang,
-    get_user_theme,
     image_gen_transition,
 )
 
@@ -66,8 +65,8 @@ class CharacterSelect(ui.Select):
         self.view: View
 
     async def callback(self, i: Inter):
-        locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
-        builds = get_character_builds(self.values[0], self.builds, locale)
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
+        builds = get_character_builds(self.values[0], self.builds, lang)
         embeds = []
         options = []
         for index, build in enumerate(builds):
@@ -83,18 +82,18 @@ class CharacterSelect(ui.Select):
                 continue
             options.append(
                 discord.SelectOption(
-                    label=f"{text_map.get(162, locale)} {index+1}",
-                    description=f"{text_map.get_weapon_name(weapon_id, locale)} | {cond_text.get_text(str(locale), 'build', build.artifact)}",
+                    label=f"{text_map.get(162, lang)} {index+1}",
+                    description=f"{text_map.get_weapon_name(weapon_id, lang)} | {cond_text.get_text(str(lang), 'build', build.artifact)}",
                     value=str(index),
                 )
             )
-        placeholder = text_map.get(163, locale)
+        placeholder = text_map.get(163, lang)
         self.view.clear_items()
         self.view.add_item(BuildSelect(options, placeholder, embeds))
         self.view.add_item(GoBack("character", self.element))
         self.view.add_item(
             ui.Button(
-                label=text_map.get(96, locale),
+                label=text_map.get(96, lang),
                 url="https://bbs.nga.cn/read.php?tid=25843014",
                 row=1,
             )
@@ -127,13 +126,13 @@ class TeamButton(ui.Button):
         self.view: View
 
     async def callback(self, i: Inter):
-        locale = await get_user_lang(i.user.id, i.client.pool) or i.locale
-        dark_mode = await get_user_theme(i.user.id, i.client.pool)
+        lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
+        dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
 
-        await image_gen_transition(i, self.view, locale)
+        await image_gen_transition(i, self.view, lang)
 
         client = genshin.Client()
-        client.lang = to_genshin_py(locale)
+        client.lang = to_genshin_py(lang)
 
         scenarios = await client.get_lineup_scenarios()
         scenarios_to_search = [
@@ -164,7 +163,7 @@ class TeamButton(ui.Button):
         if lineup is None:
             raise AssertionError
         embeds, attachments = await get_embeds_for_lineup(
-            i, locale, dark_mode, lineup, scenarios.abyss.spire.name, self.character_id
+            i, lang, dark_mode, lineup, scenarios.abyss.spire.name, self.character_id
         )
 
         disable_view_items(self.view)
@@ -173,9 +172,9 @@ class TeamButton(ui.Button):
         self.view.add_item(
             TeamSelect(
                 select_options,
-                text_map.get(140, locale),
+                text_map.get(140, lang),
                 lineup_dict,
-                locale,
+                lang,
                 dark_mode,
                 self.character_id,
             )
@@ -195,23 +194,23 @@ class TeamSelect(ui.Select):
         options: typing.List[discord.SelectOption],
         placeholder: str,
         lineup_dict: typing.Dict[str, genshin.models.LineupPreview],
-        locale: discord.Locale | str,
+        lang: discord.Locale | str,
         dark_mode: bool,
         character_id: int,
     ):
         super().__init__(options=options, placeholder=placeholder, row=0)
         self.lineup_dict = lineup_dict
-        self.locale = locale
+        self.lang = lang
         self.dark_mode = dark_mode
         self.character_id = character_id
         self.view: View
 
     async def callback(self, i: Inter):
-        await image_gen_transition(i, self.view, self.locale)
+        await image_gen_transition(i, self.view, self.lang)
 
         embeds, attachments = await get_embeds_for_lineup(
             i,
-            self.locale,
+            self.lang,
             self.dark_mode,
             self.lineup_dict[self.values[0]],
             self.values[0],
@@ -227,7 +226,7 @@ class TeamSelect(ui.Select):
 
 async def get_embeds_for_lineup(
     i: Inter,
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
     dark_mode: bool,
     lineup: genshin.models.LineupPreview,
     scenario_name: str,
@@ -240,16 +239,16 @@ async def get_embeds_for_lineup(
         DrawInput(
             loop=i.client.loop,
             session=i.client.session,
-            locale=locale,
+            lang=lang,
             dark_mode=dark_mode,
         ),
         lineup,
         character_id,
     )
 
-    embed = DefaultEmbed(f"{text_map.get(139, locale)} | {scenario_name}")
+    embed = DefaultEmbed(f"{text_map.get(139, lang)} | {scenario_name}")
     embed.set_footer(
-        text=f"{text_map.get(496, locale)}: {lineup.author_nickname} (AR {lineup.author_level})",
+        text=f"{text_map.get(496, lang)}: {lineup.author_nickname} (AR {lineup.author_level})",
         icon_url=lineup.author_icon,
     )
     embed.set_image(url="attachment://lineup.jpeg")
@@ -297,16 +296,13 @@ class GoBack(ui.Button):
 async def element_button_callback(i: Inter, element: str, view: View):
     with open(f"data/builds/{element.lower()}.yaml", "r", encoding="utf-8") as f:
         builds: typing.Dict[str, typing.Any] = yaml.full_load(f)  # type: ignore
-    user_locale = await get_user_lang(i.user.id, i.client.pool)
+    lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
     options = []
-    placeholder = text_map.get(157, i.locale, user_locale)
-    user_locale = await get_user_lang(i.user.id, i.client.pool)
+    placeholder = text_map.get(157, lang)
 
     for character_name, character_builds in builds.items():
         character_id = text_map.get_id_from_name(character_name)
-        localized_character_name = text_map.get_character_name(
-            str(character_id), user_locale or i.locale
-        )
+        localized_character_name = text_map.get_character_name(str(character_id), lang)
         if localized_character_name is None:
             continue
         options.append(
@@ -314,7 +310,7 @@ async def element_button_callback(i: Inter, element: str, view: View):
                 label=localized_character_name,
                 emoji=get_character_emoji(str(character_id)),
                 value=str(character_id),
-                description=f'{len(character_builds["builds"])} {text_map.get(164, i.locale, user_locale)}',
+                description=f'{len(character_builds["builds"])} {text_map.get(164, lang)}',
             )
         )
     view.clear_items()

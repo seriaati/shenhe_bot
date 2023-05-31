@@ -28,7 +28,7 @@ class View(BaseView):
         options: List[discord.SelectOption],
         placeholder: str,
         all_materials,
-        locale: discord.Locale | str,
+        lang: discord.Locale | str,
         dark_mode: bool,
         character_element: str,
     ):
@@ -36,7 +36,7 @@ class View(BaseView):
         self.add_item(QuickNavigation(options, placeholder))
         self.embeds = embeds
         self.all_materials = all_materials
-        self.locale = locale
+        self.lang = lang
         self.dark_mode = dark_mode
         self.character_element = character_element
 
@@ -53,11 +53,11 @@ class QuickNavigation(ui.Select):
                 DrawInput(
                     loop=i.client.loop,
                     session=i.client.session,
-                    locale=self.view.locale,
+                    lang=self.view.lang,
                     dark_mode=self.view.dark_mode,
                 ),
                 self.view.all_materials,
-                text_map.get(320, self.view.locale),
+                text_map.get(320, self.view.lang),
             )
             fp.seek(0)
             file_ = discord.File(fp, filename="ascension.jpeg")
@@ -98,7 +98,7 @@ class BookVolumeNav(ui.Select):
 async def parse_character_wiki(
     character: ambr_models.CharacterDetail,
     i: Inter,
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
     client: AmbrTopAPI,
     dark_mode: bool,
 ) -> None:
@@ -108,12 +108,12 @@ async def parse_character_wiki(
     embed = DefaultEmbed(title=character.name)
     embed.set_thumbnail(url=character.icon)
     embed.add_field(
-        name=text_map.get(315, locale),
-        value=f"{text_map.get(316, locale)}: {character.birthday}\n"
-        f"{text_map.get(317, locale)}: {character.info.title}\n"
-        f"{text_map.get(318, locale)}: {character.info.constellation}\n"
-        f"{text_map.get(467, locale).capitalize()}: {character.rarity} {asset.white_star_emoji}\n"
-        f"{text_map.get(703, locale)}: {get_element_emoji(character.element)}\n",
+        name=text_map.get(315, lang),
+        value=f"{text_map.get(316, lang)}: {character.birthday}\n"
+        f"{text_map.get(317, lang)}: {character.info.title}\n"
+        f"{text_map.get(318, lang)}: {character.info.constellation}\n"
+        f"{text_map.get(467, lang).capitalize()}: {character.rarity} {asset.white_star_emoji}\n"
+        f"{text_map.get(703, lang)}: {get_element_emoji(character.element)}\n",
         inline=False,
     )
     cv_str = ""
@@ -126,11 +126,11 @@ async def parse_character_wiki(
 
     # ascension
     embed = DefaultEmbed(
-        description=text_map.get(184, locale).format(
+        description=text_map.get(184, lang).format(
             command="</calc character:1020188057628065862>"
         )
     )
-    embed.set_author(name=text_map.get(320, locale), icon_url=character.icon)
+    embed.set_author(name=text_map.get(320, lang), icon_url=character.icon)
     embed.set_image(url="attachment://ascension.jpeg")
     all_materials = []
     for material in character.ascension_materials:
@@ -152,7 +152,7 @@ async def parse_character_wiki(
         embed.set_author(
             name=text_map.get(
                 323 if talent.type is ambr_models.CharacterTalentType.PASSIVE else 94,
-                locale,
+                lang,
             )
             + f" {passive_count if talent.type is ambr_models.CharacterTalentType.PASSIVE else count}",
             icon_url=character.icon,
@@ -166,7 +166,7 @@ async def parse_character_wiki(
         count += 1
         embed = DefaultEmbed(constellation.name, constellation.description)
         embed.set_author(
-            name=text_map.get(318, locale) + f" {count}",
+            name=text_map.get(318, lang) + f" {count}",
             icon_url=character.icon,
         )
         embed.set_thumbnail(url=constellation.icon)
@@ -179,7 +179,7 @@ async def parse_character_wiki(
             character.other.name_card.description,
         )
         embed.set_image(url=character.other.name_card.icon)
-        embed.set_author(name=text_map.get(319, locale), icon_url=character.icon)
+        embed.set_author(name=text_map.get(319, lang), icon_url=character.icon)
         embeds.append(embed)
 
     # select options
@@ -196,9 +196,9 @@ async def parse_character_wiki(
     view = View(
         embeds,
         options,
-        text_map.get(325, locale),
+        text_map.get(325, lang),
         all_materials,
-        locale,
+        lang,
         dark_mode,
         character.element,
     )
@@ -217,7 +217,7 @@ def format_stat(curve: float, initial_value: float, percentage: bool = False) ->
 async def parse_weapon_wiki(
     weapon: ambr_models.WeaponDetail,
     i: Inter,
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
     client: AmbrTopAPI,
     dark_mode: bool,
 ):
@@ -227,7 +227,7 @@ async def parse_weapon_wiki(
     embed = DefaultEmbed(weapon.name, f"{rarity_str}")
     embed.set_footer(text=weapon.description)
     embed.add_field(
-        name=text_map.get(529, locale),
+        name=text_map.get(529, lang),
         value=weapon.type,
         inline=False,
     )
@@ -254,7 +254,7 @@ async def parse_weapon_wiki(
         percentage = stat.prop_id in percentage_fight_props
 
         embed.add_field(
-            name=text_map.get(get_fight_prop(id=stat.prop_id).text_map_hash, locale),
+            name=text_map.get(get_fight_prop(id=stat.prop_id).text_map_hash, lang),
             value=f"""
             Lv.1: {format_stat(level_one_curve, stat.initial_value, percentage)}
             Lv.{max_level}: {format_stat(level_max_curve, stat.initial_value, percentage)}
@@ -276,17 +276,17 @@ async def parse_weapon_wiki(
         DrawInput(
             loop=i.client.loop,
             session=i.client.session,
-            locale=locale,
+            lang=lang,
             dark_mode=dark_mode,
         ),
         all_materials,
-        text_map.get(320, locale),
+        text_map.get(320, lang),
     )
     fp.seek(0)
 
     embed.add_field(
-        name=text_map.get(320, locale),
-        value=text_map.get(188, locale).format(
+        name=text_map.get(320, lang),
+        value=text_map.get(188, lang).format(
             command="</calc weapon:1020188057628065862>"
         ),
         inline=False,
@@ -297,7 +297,7 @@ async def parse_weapon_wiki(
 async def parse_material_wiki(
     material: ambr_models.MaterialDetail,
     i: Inter,
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
     client: AmbrTopAPI,
     dark_mode: bool,
 ):
@@ -306,7 +306,7 @@ async def parse_material_wiki(
         rarity_str += asset.white_star_emoji
     embed = DefaultEmbed(material.name, f"{rarity_str}\n\n{material.description}")
     embed.add_field(
-        name=text_map.get(529, locale),
+        name=text_map.get(529, lang),
         value=material.type,
         inline=False,
     )
@@ -318,14 +318,14 @@ async def parse_material_wiki(
             day_str = ""
             if len(source.days) != 0:
                 day_list = [
-                    get_weekday_name(get_weekday_int_with_name(day), locale)
+                    get_weekday_name(get_weekday_int_with_name(day), lang)
                     for day in source.days
                 ]
                 day_str = ", ".join(day_list)
             day_str = "" if len(source.days) == 0 else f"({day_str})"
             source_str += f"• {source.name} {day_str}\n"
         embed.add_field(
-            name=text_map.get(530, locale),
+            name=text_map.get(530, lang),
             value=source_str,
             inline=False,
         )
@@ -357,11 +357,11 @@ async def parse_material_wiki(
             DrawInput(
                 loop=i.client.loop,
                 session=i.client.session,
-                locale=locale,
+                lang=lang,
                 dark_mode=dark_mode,
             ),
             objects,
-            text_map.get(587, locale),
+            text_map.get(587, lang),
         )
         fp.seek(0)
         embed.set_image(url="attachment://characters.jpeg")
@@ -373,19 +373,19 @@ async def parse_material_wiki(
 async def parse_artifact_wiki(
     artifact: ambr_models.ArtifactDetail,
     i: Inter,
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
 ):
     rarity_str = ""
     for _ in range(artifact.rarities[-1]):
         rarity_str += asset.white_star_emoji
     embed = DefaultEmbed(artifact.name, rarity_str)
     embed.add_field(
-        name=text_map.get(640, locale),
+        name=text_map.get(640, lang),
         value=artifact.effects.two_piece,
         inline=False,
     )
     embed.add_field(
-        name=text_map.get(641, locale),
+        name=text_map.get(641, lang),
         value=artifact.effects.four_piece,
         inline=False,
     )
@@ -396,7 +396,7 @@ async def parse_artifact_wiki(
 async def parse_monster_wiki(
     monster: ambr_models.MonsterDetail,
     i: Inter,
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
     client: AmbrTopAPI,
     dark_mode: bool,
 ):
@@ -415,11 +415,11 @@ async def parse_monster_wiki(
             DrawInput(
                 loop=i.client.loop,
                 session=i.client.session,
-                locale=locale,
+                lang=lang,
                 dark_mode=dark_mode,
             ),
             materials,
-            text_map.get(622, locale),
+            text_map.get(622, lang),
         )
         fp.seek(0)
         discord_file = discord.File(fp, "monster_drop.jpeg")
@@ -431,7 +431,7 @@ async def parse_monster_wiki(
 async def parse_food_wiki(
     food: ambr_models.FoodDetail,
     i: Inter,
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
     client: AmbrTopAPI,
     dark_mode: bool,
 ):
@@ -445,7 +445,7 @@ async def parse_food_wiki(
     files = []
     if food.recipe is not None:
         effect_str = "\n".join([s.effect for s in food.recipe.effects])
-        embed.add_field(name=text_map.get(347, locale), value=effect_str)
+        embed.add_field(name=text_map.get(347, lang), value=effect_str)
         if food.recipe.input is not None and food.recipe.input:
             materials = []
             for ingredient in food.recipe.input:
@@ -457,11 +457,11 @@ async def parse_food_wiki(
                 DrawInput(
                     loop=i.client.loop,
                     session=i.client.session,
-                    locale=locale,
+                    lang=lang,
                     dark_mode=dark_mode,
                 ),
                 materials,
-                text_map.get(626, locale),
+                text_map.get(626, lang),
             )
             fp.seek(0)
             discord_file = discord.File(fp, "furniture_recipe.jpeg")
@@ -469,7 +469,7 @@ async def parse_food_wiki(
             files.append(discord_file)
     if food.sources is not None and food.sources:
         embed.add_field(
-            name=text_map.get(621, locale),
+            name=text_map.get(621, lang),
             value="\n".join([s.name for s in food.sources]),
         )
     await i.followup.send(embed=embed, files=files)
@@ -478,7 +478,7 @@ async def parse_food_wiki(
 async def parse_furniture_wiki(
     furniture: ambr_models.FurnitureDetail,
     i: Inter,
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
     client: AmbrTopAPI,
     dark_mode: bool,
 ):
@@ -486,8 +486,8 @@ async def parse_furniture_wiki(
     embed.description = f"""
         {furniture.description}
 
-        {asset.comfort_emoji} {text_map.get(255, locale)}: {furniture.comfort or 0}
-        {asset.load_emoji} {text_map.get(456, locale)}: {furniture.cost or 0}
+        {asset.comfort_emoji} {text_map.get(255, lang)}: {furniture.comfort or 0}
+        {asset.load_emoji} {text_map.get(456, lang)}: {furniture.cost or 0}
     """
     embed.set_thumbnail(url=furniture.icon)
     embed.set_author(name=f"{furniture.categories[0]} - {furniture.types[0]}")
@@ -503,11 +503,11 @@ async def parse_furniture_wiki(
             DrawInput(
                 loop=i.client.loop,
                 session=i.client.session,
-                locale=locale,
+                lang=lang,
                 dark_mode=dark_mode,
             ),
             materials,
-            text_map.get(626, locale),
+            text_map.get(626, lang),
         )
         fp.seek(0)
         discord_file = discord.File(fp, "furniture_recipe.jpeg")
@@ -519,7 +519,7 @@ async def parse_furniture_wiki(
 async def parse_namecard_wiki(
     namecard: ambr_models.NameCardDetail,
     i: Inter,
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
 ):
     rarity_str = ""
     for _ in range(namecard.rarity):
@@ -527,14 +527,14 @@ async def parse_namecard_wiki(
     embed = DefaultEmbed(namecard.name, rarity_str)
     embed.set_author(name=namecard.type)
     embed.set_image(url=namecard.icon)
-    embed.add_field(name=text_map.get(530, locale), value=namecard.source)
+    embed.add_field(name=text_map.get(530, lang), value=namecard.source)
     await i.followup.send(embed=embed)
 
 
 async def parse_book_wiki(
     book: ambr_models.BookDetail,
     i: Inter,
-    locale: discord.Locale | str,
+    lang: discord.Locale | str,
     client: AmbrTopAPI,
 ):
     rarity_str = ""
@@ -554,7 +554,7 @@ async def parse_book_wiki(
     view = BookVolView(
         book_embeds,
         options,
-        text_map.get(501, locale),
+        text_map.get(501, lang),
     )
     view.author = i.user
     await i.followup.send(embed=book_embed, view=view)

@@ -1,62 +1,9 @@
 import typing
 from datetime import datetime
 
-import asyncpg
-import genshin
 from pydantic import BaseModel
 
-
-class WishHistory(BaseModel):
-    id: int
-    user_id: int
-    uid: typing.Optional[int] = None
-
-    name: str
-    rarity: int
-    time: datetime
-    banner: int
-
-    item_id: typing.Optional[int] = None
-    pity: typing.Optional[int] = None
-
-    @staticmethod
-    def from_row(row: asyncpg.Record) -> "WishHistory":
-        return WishHistory(
-            id=row["wish_id"],
-            user_id=row["user_id"],
-            uid=row["uid"],
-            name=row["wish_name"],
-            rarity=row["wish_rarity"],
-            time=row["wish_time"],
-            banner=row["wish_banner_type"],
-            item_id=row["item_id"],
-            pity=row["pity_pull"],
-        )
-
-    @staticmethod
-    def from_genshin_wish(wish: genshin.models.Wish, user_id: int) -> "WishHistory":
-        return WishHistory(
-            id=wish.id,
-            user_id=user_id,
-            uid=wish.uid,
-            name=wish.name,
-            rarity=wish.rarity,
-            time=wish.time,
-            banner=wish.banner_type.value,
-        )
-
-    def to_dict(self) -> dict:
-        return {
-            "wish_id": self.id,
-            "user_id": self.user_id,
-            "uid": self.uid,
-            "wish_name": self.name,
-            "wish_rarity": self.rarity,
-            "wish_time": self.time,
-            "wish_banner_type": self.banner,
-            "item_id": self.item_id,
-            "pity_pull": self.pity,
-        }
+from apps.db.tables.wish_history import WishHistory
 
 
 class RecentWish(BaseModel):

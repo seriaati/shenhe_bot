@@ -8,69 +8,16 @@ import asyncpg
 import cachetools
 import discord
 import genshin
-from attr import define, field
+from attr import define
 from discord.ext import commands
 from enkanetwork.model.base import EnkaNetworkResponse
 from logingateway import HuTaoLoginAPI
+from logingateway.model import Player
 from pyppeteer.browser import Browser
 
 import ambr.models as ambr
 from apps.db.main import Database
 from apps.text_map import text_map
-
-
-@define
-class ShenheAccount:
-    client: genshin.Client
-    uid: int
-    discord_user: typing.Union[discord.User, discord.Member]
-    china: bool
-    daily_checkin: bool
-    user_locale: typing.Optional[str] = None
-
-
-@define
-class User:
-    uid: int
-    user_id: int
-
-    current: bool
-    daily_checkin: bool
-    china: bool
-    client: genshin.Client = field(init=False)
-
-    nickname: typing.Optional[str] = None
-    ltuid: typing.Optional[str] = None
-    ltoken: typing.Optional[str] = None
-    cookie_token: typing.Optional[str] = None
-    last_checkin_date: typing.Optional[datetime] = None
-
-    def __attrs_post_init__(self) -> None:
-        self.client = genshin.Client(
-            {
-                "ltuid": self.ltuid,
-                "ltoken": self.ltoken,
-                "cookie_token": self.cookie_token,
-            },
-            uid=self.uid,
-            game=genshin.Game.GENSHIN,
-            region=genshin.Region.CHINESE if self.china else genshin.Region.OVERSEAS,
-        )
-
-    @staticmethod
-    def from_row(row: asyncpg.Record) -> "User":
-        return User(
-            uid=row["uid"],
-            user_id=row["user_id"],
-            current=row["current"],
-            daily_checkin=row["daily_checkin"],
-            china=row["china"],
-            nickname=row["nickname"],
-            ltuid=row["ltuid"],
-            ltoken=row["ltoken"],
-            cookie_token=row["cookie_token"],
-            last_checkin_date=row["last_checkin_date"],
-        )
 
 
 @define
@@ -80,25 +27,21 @@ class DamageResult:
 
 
 @define
-class NotificationUser:
-    user_id: int
-    current: int
-    max: int
-    uid: int
-    threshold: int = 0
-    last_notif: typing.Optional[datetime] = None
-
-
-@define
 class DrawInput:
     loop: asyncio.AbstractEventLoop
     session: aiohttp.ClientSession
-    locale: discord.Locale | str = "en-US"
+    lang: discord.Locale | str = "en-US"
     dark_mode: bool = False
 
 
+@define
+class LoginInfo:
+    message: discord.Message
+    lang: str
+    author: typing.Union[discord.User, discord.Member]
+
+
 class BotModel(commands.AutoShardedBot):
-    genshin_client: genshin.Client
     session: aiohttp.ClientSession
     browsers: typing.Dict[str, Browser]
     gateway: HuTaoLoginAPI
@@ -118,7 +61,8 @@ class BotModel(commands.AutoShardedBot):
     abyss_overview_card_cache = cachetools.TTLCache(maxsize=512, ttl=120)
     abyss_floor_card_cache = cachetools.TTLCache(maxsize=512, ttl=120)
     abyss_one_page_cache = cachetools.TTLCache(maxsize=512, ttl=120)
-    tokenStore: typing.Dict[str, typing.Any] = {}
+    token_store: typing.Dict[str, LoginInfo] = {}
+    player_store: typing.Dict[int, Player] = {}
     disabled_commands: typing.List[str] = []
 
 
@@ -134,11 +78,11 @@ class ShenheEmbed(discord.Embed):
     def set_title(
         self,
         map_hash: int,
-        locale: typing.Union[discord.Locale, str],
+        lang: typing.Union[discord.Locale, str],
         user: typing.Union[discord.Member, discord.User],
     ) -> "ShenheEmbed":
         self.set_author(
-            name=text_map.get(map_hash, locale), icon_url=user.display_avatar.url
+            name=text_map.get(map_hash, lang), icon_url=user.display_avatar.url
         )
         return self
 
@@ -259,25 +203,13 @@ class DynamicBackgroundInput:
     draw_title: bool = True
 
 
-@define
-class SingleStrikeLeaderboardCharacter:
-    constellation: int
-    refinement: int
-    level: int
-    icon: str
+T = typing.TypeVar("T")
 
 
 @define
-class SingleStrikeLeaderboardUser:
-    user_name: str
+class BoardUser(typing.Generic[T]):
     rank: int
-    character: SingleStrikeLeaderboardCharacter
-    single_strike: int
-    floor: str
-    stars_collected: int
-    uid: int
-    rank: int
-    season: int
+    entry: T
 
 
 @define
@@ -292,24 +224,6 @@ class CharacterUsageResult:
 class UsageCharacter:
     character: ambr.Character
     usage_num: int
-
-
-@define
-class RunLeaderboardUser:
-    icon_url: str
-    user_name: str
-    level: int
-    wins_slash_runs: str
-    win_percentage: str
-    stars_collected: int
-    uid: int
-    rank: int
-
-
-@define
-class LeaderboardResult:
-    fp: io.BytesIO
-    current_user: typing.Union[RunLeaderboardUser, SingleStrikeLeaderboardUser]
 
 
 @define
@@ -371,3 +285,16 @@ class ConditionalResult:
 
 class Inter(discord.Interaction):
     client: BotModel
+
+
+@define
+class AbyssResult:
+    embed_title: str
+    abyss: genshin.models.SpiralAbyss
+    genshin_user: genshin.models.PartialGenshinUserStats
+    discord_user: discord.User | discord.Member | discord.ClientUser
+    overview_embed: discord.Embed
+    overview_file: io.BytesIO
+    abyss_floors: typing.List[genshin.models.Floor]
+    characters: typing.List[genshin.models.Character]
+    uid: int

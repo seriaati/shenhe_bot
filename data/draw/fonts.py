@@ -17,7 +17,7 @@ FONTS = {
 
 
 def get_font(
-    locale,
+    lang,
     variation: Literal[
         "Bold", "Light", "Thin", "Black", "Medium", "Regular"
     ] = "Regular",
@@ -25,9 +25,9 @@ def get_font(
     path = "data/draw/resources/fonts/"
     return (
         path
-        + FONTS.get(str(locale), {"extension": "ttf", "name": "NotoSans"})["name"]
+        + FONTS.get(str(lang), {"extension": "ttf", "name": "NotoSans"})["name"]
         + "-"
         + variation
         + "."
-        + FONTS.get(str(locale), {"extension": "ttf", "name": "NotoSans"})["extension"]
+        + FONTS.get(str(lang), {"extension": "ttf", "name": "NotoSans"})["extension"]
     )

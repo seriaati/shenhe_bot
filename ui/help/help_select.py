@@ -14,37 +14,37 @@ from utils.paginators import GeneralPaginator
 
 
 class Dropdown(ui.Select):
-    def __init__(self, locale: discord.Locale | str):
+    def __init__(self, lang: discord.Locale | str):
         options = [
             discord.SelectOption(
-                label=text_map.get(487, locale), emoji="🌟", value="genshin"
+                label=text_map.get(487, lang), emoji="🌟", value="genshin"
             ),
             discord.SelectOption(
-                label=text_map.get(488, locale),
-                description=text_map.get(489, locale),
+                label=text_map.get(488, lang),
+                description=text_map.get(489, lang),
                 emoji="🌠",
                 value="wish",
             ),
             discord.SelectOption(
-                label=text_map.get(490, locale),
-                description=text_map.get(491, locale),
+                label=text_map.get(490, lang),
+                description=text_map.get(491, lang),
                 emoji="<:CALCULATOR:999540912319369227>",
                 value="calc",
             ),
             discord.SelectOption(
-                label=text_map.get(202, locale), emoji="✅", value="todo"
+                label=text_map.get(202, lang), emoji="✅", value="todo"
             ),
             discord.SelectOption(
-                label=text_map.get(494, locale), emoji="❄️", value="others"
+                label=text_map.get(494, lang), emoji="❄️", value="others"
             ),
         ]
-        super().__init__(placeholder=text_map.get(495, locale), options=options)
+        super().__init__(placeholder=text_map.get(495, lang), options=options)
 
-        self.locale = locale
+        self.lang = lang
 
     async def callback(self, i: models.Inter):
         await i.response.defer()
-        locale = self.locale
+        lang = self.lang
 
         cog = i.client.get_cog(self.values[0])
         if not cog:
@@ -73,7 +73,7 @@ class Dropdown(ui.Select):
                     name=mention,
                     value=text_map.get(
                         command._locale_description.extras["hash"],  # skipcq: PYL-W0212
-                        locale,
+                        lang,
                     ),
                 )
             )
@@ -91,6 +91,6 @@ class Dropdown(ui.Select):
 
 
 class HelpView(BaseView):
-    def __init__(self, locale: Union[discord.Locale, str]):
+    def __init__(self, lang: Union[discord.Locale, str]):
         super().__init__(timeout=config.mid_timeout)
-        self.add_item(Dropdown(locale))
+        self.add_item(Dropdown(lang))

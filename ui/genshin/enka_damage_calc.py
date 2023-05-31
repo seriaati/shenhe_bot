@@ -11,13 +11,14 @@ import dev.asset as asset
 import dev.config as config
 import yelan.damage_calculator as damage_calc
 from apps.db.custom_image import get_user_custom_image
+from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.genshin import get_browser
 from apps.text_map import text_map
 from dev.base_ui import BaseView, EnkaView
 from dev.exceptions import CardNotReady, NoCharacterFound
 from dev.models import DrawInput, ErrorEmbed, Inter
-from utils import divide_chunks, get_character_fanarts, get_profile_ver, get_user_theme
+from utils import divide_chunks, get_character_fanarts
 from yelan.data.GO_modes import HIT_MODE_TEXTS
 
 
@@ -25,7 +26,7 @@ class View(BaseView):
     def __init__(
         self,
         enka_view: EnkaView,
-        locale: discord.Locale | str,
+        lang: discord.Locale | str,
         browsers: Dict[str, browser.Browser],
     ):
         super().__init__(timeout=config.long_timeout)
@@ -44,20 +45,20 @@ class View(BaseView):
             character_name,
             enka_view.en_data,
             enka_view.character_id,
-            locale,
+            lang,
             "critHit",
             enka_view.member,
-            get_browser(browsers, str(locale)),
+            get_browser(browsers, str(lang)),
         )
 
         # producing select options
         reaction_mode_options = [
-            discord.SelectOption(label=text_map.get(331, locale), value="none")
+            discord.SelectOption(label=text_map.get(331, lang), value="none")
         ]
         element = str(self.calculator.current_character.element.name)
         if element == "Cryo" or self.calculator.infusion_aura == "cryo":
             reaction_mode_options.append(
-                discord.SelectOption(label=text_map.get(332, locale), value="melt")
+                discord.SelectOption(label=text_map.get(332, lang), value="melt")
             )
         elif (
             element == "Pyro"
@@ -65,22 +66,22 @@ class View(BaseView):
             or element == "Anemo"
         ):
             reaction_mode_options.append(
-                discord.SelectOption(label=text_map.get(333, locale), value="vaporize")
+                discord.SelectOption(label=text_map.get(333, lang), value="vaporize")
             )
             reaction_mode_options.append(
-                discord.SelectOption(label=text_map.get(332, locale), value="melt")
+                discord.SelectOption(label=text_map.get(332, lang), value="melt")
             )
         elif element == "Hydro":
             reaction_mode_options.append(
-                discord.SelectOption(label=text_map.get(333, locale), value="vaporize")
+                discord.SelectOption(label=text_map.get(333, lang), value="vaporize")
             )
         elif element == "Dendro":
             reaction_mode_options.append(
-                discord.SelectOption(label=text_map.get(525, locale), value="spread")
+                discord.SelectOption(label=text_map.get(525, lang), value="spread")
             )
         elif element in ("Electro", "Anemo"):
             reaction_mode_options.append(
-                discord.SelectOption(label=text_map.get(526, locale), value="aggravate")
+                discord.SelectOption(label=text_map.get(526, lang), value="aggravate")
             )
 
         teammate_options: List[discord.SelectOption] = []
@@ -95,33 +96,33 @@ class View(BaseView):
 
         # adding items
         for hit_mode, text_hash in HIT_MODE_TEXTS.items():
-            self.add_item(HitModeButton(hit_mode, text_map.get(text_hash, locale)))
+            self.add_item(HitModeButton(hit_mode, text_map.get(text_hash, lang)))
         self.add_item(
-            ReactionModeSelect(reaction_mode_options, text_map.get(337, locale))
+            ReactionModeSelect(reaction_mode_options, text_map.get(337, lang))
         )
         options = [
-            discord.SelectOption(label=text_map.get(338, locale), value="none"),
+            discord.SelectOption(label=text_map.get(338, lang), value="none"),
             discord.SelectOption(
-                label=text_map.get(339, locale),
-                description=text_map.get(341, locale),
+                label=text_map.get(339, lang),
+                description=text_map.get(341, lang),
                 value="pyro",
             ),
             discord.SelectOption(
-                label=text_map.get(340, locale),
-                description=text_map.get(342, locale),
+                label=text_map.get(340, lang),
+                description=text_map.get(342, lang),
                 value="cryo",
             ),
             discord.SelectOption(
-                label=text_map.get(360, locale),
-                description=text_map.get(357, locale),
+                label=text_map.get(360, lang),
+                description=text_map.get(357, lang),
                 value="hydro",
             ),
         ]
-        self.add_item(InfusionAuraSelect(options, text_map.get(343, locale)))
+        self.add_item(InfusionAuraSelect(options, text_map.get(343, lang)))
         if teammate_options:
-            self.add_item(TeamSelectButton(teammate_options, text_map.get(344, locale)))
+            self.add_item(TeamSelectButton(teammate_options, text_map.get(344, lang)))
         self.add_item(GoBack())
-        self.add_item(RunCalc(text_map.get(502, locale)))
+        self.add_item(RunCalc(text_map.get(502, lang)))
 
 
 class GoBack(ui.Button):
@@ -151,8 +152,10 @@ async def go_back_callback(i: Inter, enka_view: EnkaView):
     if not character:
         raise AssertionError
 
-    dark_mode = await get_user_theme(i.user.id, i.client.pool)
-    version = await get_profile_ver(i.user.id, i.client.pool)
+    dark_mode = dark_mode = await i.client.db.settings.get(
+        i.user.id, Settings.DARK_MODE
+    )
+    version = await i.client.db.settings.get(i.user.id, Settings.PROFILE_VERSION)
     try:
         custom_image = await get_user_custom_image(
             i.user.id, int(enka_view.character_id), i.client.pool
@@ -170,7 +173,7 @@ async def go_back_callback(i: Inter, enka_view: EnkaView):
                 DrawInput(
                     loop=i.client.loop,
                     session=i.client.session,
-                    locale=enka_view.locale,
+                    lang=enka_view.lang,
                     dark_mode=dark_mode,
                 ),
                 character,
@@ -181,7 +184,7 @@ async def go_back_callback(i: Inter, enka_view: EnkaView):
                 DrawInput(
                     loop=i.client.loop,
                     session=i.client.session,
-                    locale=enka_view.locale,
+                    lang=enka_view.lang,
                     dark_mode=dark_mode,
                 ),
                 character,
@@ -192,7 +195,7 @@ async def go_back_callback(i: Inter, enka_view: EnkaView):
     except (aiohttp.InvalidURL, PIL.UnidentifiedImageError):
         return await i.edit_original_response(
             embed=ErrorEmbed().set_author(
-                name=text_map.get(274, enka_view.locale),
+                name=text_map.get(274, enka_view.lang),
                 icon_url=i.user.display_avatar.url,
             ),
             attachments=[],

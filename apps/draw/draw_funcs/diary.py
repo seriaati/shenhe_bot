@@ -7,19 +7,13 @@ from PIL import Image, ImageDraw
 
 import dev.asset as asset
 from apps.text_map import text_map
-from utils import (
-    convert_ar_to_wl,
-    convert_wl_to_mora,
-    get_font,
-    get_month_name,
-    human_format,
-)
+from utils import get_font, get_month_name, human_format
 
 
 def card(
     diary: genshin.models.Diary,
-    user: genshin.models.PartialGenshinUserStats,
-    locale: discord.Locale | str,
+    mora_count: int,
+    lang: discord.Locale | str,
     month: int,
     dark_mode: bool,
     plot_io: Optional[io.BytesIO],
@@ -29,16 +23,15 @@ def card(
     )
     draw = ImageDraw.Draw(im)
 
-    font = get_font(locale, 43, "Bold")
+    font = get_font(lang, 43, "Bold")
     fill = asset.primary_text if not dark_mode else asset.white
     draw.text(
         (52, 45),
-        f"{text_map.get(69, locale)} • {get_month_name(month, locale)}",
+        f"{text_map.get(69, lang)} • {get_month_name(month, lang)}",
         font=font,
         fill=fill,
     )
 
-    mora_count = convert_wl_to_mora(convert_ar_to_wl(user.info.level))
     data = [
         {diary.data.current_primogems: 663},
         {diary.data.current_primogems // 160: 664},
@@ -56,14 +49,14 @@ def card(
             key = f"{key:,}"
         elif col == 3:
             key = human_format(key)
-        font = get_font(locale, 36)
+        font = get_font(lang, 36)
         fill = asset.primary_text if not dark_mode else asset.white
         draw.text(offset, str(key), font=font, fill=fill)
-        font = get_font(locale, 24)
+        font = get_font(lang, 24)
         fill = asset.secondary_text if not dark_mode else asset.white
         draw.text(
             (offset[0], offset[1] + 55),
-            text_map.get(value, locale),
+            text_map.get(value, lang),
             font=font,
             fill=fill,
         )
@@ -78,21 +71,21 @@ def card(
         plot = plot.resize((550, int(plot.height * ratio)))
         im.paste(plot, (80, 391), plot)
 
-    font = get_font(locale, 24)
+    font = get_font(lang, 24)
     fill = asset.primary_text if not dark_mode else asset.white
     offset = (712, 425)
     for index, category in enumerate(x):
         draw.text(offset, f"{category} ({y[index]})", font=font, fill=fill)
         offset = (offset[0], offset[1] + 54)
 
-    font = get_font(locale, 36, "Bold")
-    draw.text((1171, 363), text_map.get(667, locale), font=font, fill=fill)
+    font = get_font(lang, 36, "Bold")
+    draw.text((1171, 363), text_map.get(667, lang), font=font, fill=fill)
 
-    font = get_font(locale, 34)
-    draw.text((1296, 461), text_map.get(668, locale), font=font, fill=fill)
-    draw.text((1296, 598), text_map.get(669, locale), font=font, fill=fill)
+    font = get_font(lang, 34)
+    draw.text((1296, 461), text_map.get(668, lang), font=font, fill=fill)
+    draw.text((1296, 598), text_map.get(669, lang), font=font, fill=fill)
 
-    font = get_font(locale, 25)
+    font = get_font(lang, 25)
     fill = "#3D3D3D" if not dark_mode else asset.white
     draw.text(
         (1296, 511),
@@ -107,7 +100,7 @@ def card(
         fill=fill,
     )
 
-    font = get_font(locale, 36, "Medium")
+    font = get_font(lang, 36, "Medium")
     rates = [diary.data.primogems_rate, diary.data.mora_rate]
     offset = (1722, 486)
     for rate in rates:

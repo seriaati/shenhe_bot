@@ -11,14 +11,14 @@ from dev.base_ui import BaseView
 class View(BaseView):
     def __init__(
         self,
-        locale: Locale | str,
+        lang: Locale | str,
     ):
         super().__init__(timeout=config.short_timeout)
         self.up: Optional[bool] = None
-        self.locale = locale
+        self.lang = lang
 
         self.add_item(IsUP())
-        self.add_item(IsStandard(locale))
+        self.add_item(IsStandard(lang))
 
 
 class IsUP(Button):
@@ -33,8 +33,8 @@ class IsUP(Button):
 
 
 class IsStandard(Button):
-    def __init__(self, locale: Locale | str):
-        super().__init__(label=text_map.get(387, locale))
+    def __init__(self, lang: Locale | str):
+        super().__init__(label=text_map.get(387, lang))
         self.view: View
 
     async def callback(self, i: Interaction):
