@@ -257,9 +257,10 @@ def update_search_status(view: View, embed: Embed) -> Embed:
     query_str = ""
     if view.characters:
         query_str += text_map.get(712, lang) + ": "
-        query_str += (
-            " ".join([get_character_emoji(str(c)) for c in view.characters]) + "\n"
-        )
+        for c in view.characters:
+            emoji = get_character_emoji(str(c))
+            if emoji:
+                query_str += f"{emoji} "
     if view.scenario is not None:
         query_str += text_map.get(713, lang) + ": "
         query_str += view.scenario.name
