@@ -247,7 +247,7 @@ class HoyoAccountTable:
             settings_db=self.settings_db,
             **account,
         )
-    
+
     async def get_by_row(self, row: Record) -> HoyoAccount:
         """Get a user's Hoyo account from a row"""
         return HoyoAccount(
