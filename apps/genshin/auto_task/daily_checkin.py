@@ -92,7 +92,7 @@ class DailyCheckin:
             """
         )
         for row in rows:
-            user = HoyoAccount(**row)
+            user = await self.bot.db.users.get_by_row(row)
             if (
                 self.bot.debug
                 or user.last_checkin is None
