@@ -336,9 +336,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         client = await user.client
         client.lang = convert_locale.to_genshin_py(lang)
-        genshin_user = await client.get_partial_genshin_user(
-            user.uid
-        )
+        genshin_user = await client.get_partial_genshin_user(user.uid)
         explorations = genshin_user.explorations
 
         fp = self.bot.area_card_cache.get(user.uid)
@@ -410,9 +408,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         client = await user.client
         client.lang = convert_locale.to_genshin_py(lang)
-        g_characters = await client.get_genshin_characters(
-            user.uid
-        )
+        g_characters = await client.get_genshin_characters(user.uid)
         g_characters = list(g_characters)
 
         talents = await read_json(self.bot.pool, f"talents/{user.uid}.json")
