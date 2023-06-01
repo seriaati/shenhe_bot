@@ -514,8 +514,6 @@
   目前 **尚未** 支援匯入由 paimon.moe 匯出的祈願紀錄，原因請查看 [這個 GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371)。
   目前唯一支援的檔案是申鶴匯出的 YAML 檔案。
 '568': 請提供一個 .png 或 .jpg 格式的圖像連結
-'569': 帳戶類型
-'573': 你的當前帳號並沒有連結 Cookie
 '576': "已擁有角色: {current}/{total}"
 '577': "已達最大好感度: {current}/{total}"
 '578': 好感度
@@ -747,3 +745,5 @@
 '790': |-
   你的當前遊戲：**{current}**
   支援的遊戲為：**{supported}**
+'791': account
+'792': Check data of your other accounts
