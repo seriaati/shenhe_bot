@@ -8,6 +8,7 @@ import sentry_sdk
 from apps.db.tables.hoyo_account import HoyoAccount
 from apps.text_map import text_map
 from dev.base_ui import get_error_handle_embed
+from dev.exceptions import AccountNotFound
 from dev.models import BotModel, DefaultEmbed
 from utils import log
 from utils.general import get_dc_user
@@ -63,7 +64,10 @@ class AutoRedeem:
             "SELECT user_id FROM user_settings WHERE auto_redeem = true"
         )
         for user in users:
-            account = await self.bot.db.users.get(user["user_id"])
+            try:
+                account = await self.bot.db.users.get(user["user_id"])
+            except AccountNotFound:
+                continue
             await queue.put(account)
             self._total += 1
         await queue.put(None)
