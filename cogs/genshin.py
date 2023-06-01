@@ -1,7 +1,7 @@
 import json
 import random
 from datetime import timedelta
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import aiofiles
 import discord
@@ -30,6 +30,7 @@ from dev.enum import GameType
 from ui.others import manage_accounts
 from utils import disable_view_items, get_character_emoji, get_uid_region_hash
 from utils.genshin import update_talents_json
+from utils.text_map import get_game_name
 
 load_dotenv()
 
@@ -137,14 +138,18 @@ class GenshinCog(commands.Cog, name="genshin"):
         name="check",
         description=_("Check resin, pot, and expedition status", hash=414),
     )
-    @app_commands.rename(member=_("user", hash=415))
-    @app_commands.describe(member=_("Check other user's data", hash=416))
+    @app_commands.rename(member=_("user", hash=415), acc=_("account", hash=791))
+    @app_commands.describe(
+        member=_("Check other user's data", hash=416),
+        acc=_("Check data of your other accounts", hash=792),
+    )
     async def slash_check(
         self,
         i: discord.Interaction,
         member: Optional[discord.User | discord.Member] = None,
+        acc: Optional[int] = None,
     ):
-        await self.check_command(i, member or i.user)
+        await self.check_command(i, member or i.user, acc=acc)
 
     async def check_ctx_menu(self, i: discord.Interaction, member: discord.User):
         await self.check_command(i, member, ephemeral=True)
@@ -154,11 +159,18 @@ class GenshinCog(commands.Cog, name="genshin"):
         i: discord.Interaction,
         member: Optional[discord.User | discord.Member] = None,
         ephemeral: bool = False,
+        acc: Optional[int] = None,
     ):
         await i.response.defer(ephemeral=ephemeral)
         member = member or i.user
 
-        user = await self.bot.db.users.get(member.id)
+        if acc:
+            try:
+                user = await self.bot.db.users.get(member.id, uid=acc)
+            except exceptions.AccountNotFound:
+                raise exceptions.AutocompleteError
+        else:
+            user = await self.bot.db.users.get(member.id)
         if user.game is not GameType.GENSHIN:
             raise exceptions.GameNotSupported(user.game, [GameType.GENSHIN])
 
@@ -216,9 +228,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         result = models.DefaultEmbed(
             text_map.get(24, lang),
             f"""
-                <:resin:1004648472995168326> {text_map.get(15, lang)}: {resin_recover_time}
-                <:realm:1004648474266062880> {text_map.get(15, lang)}: {realm_recover_time}
-                <:transformer:1004648470981902427> {text_map.get(8, lang)}: {transformer_recover_time}
+            {asset.resin_emoji} {text_map.get(15, lang)}: {resin_recover_time}
+            {asset.realm_currency_emoji} {text_map.get(15, lang)}: {realm_recover_time}
+            {asset.pt_emoji} {text_map.get(8, lang)}: {transformer_recover_time}
             """,
         )
         if notes.expeditions:
@@ -234,6 +246,25 @@ class GenshinCog(commands.Cog, name="genshin"):
                 )
         result.set_image(url="attachment://realtime_notes.jpeg")
         return result
+
+    @slash_check.autocomplete("acc")
+    async def acc_autocomplete(self, i: discord.Interaction, current: str):
+        choices: List[app_commands.Choice] = []
+        user: Optional[Union[discord.Member, discord.User]] = i.namespace.user
+        user = user or i.user
+        accs = await self.bot.db.users.get_all_of_user(user.id)
+        lang = await self.bot.db.settings.get(i.user.id, Settings.LANG)
+        lang = lang or str(i.locale)
+        for acc in accs:
+            if not current or str(acc.uid).startswith(current):
+                name = f"{acc.uid}"
+                if acc.nickname:
+                    name += f" ({acc.nickname})"
+                game_name = get_game_name(acc.game, lang)
+                name += f" - {game_name}"
+                choices.append(app_commands.Choice(name=name, value=str(acc.uid)))
+
+        return choices[:25]
 
     @app_commands.command(
         name="stats",
