@@ -712,12 +712,13 @@ class GenshinCog(commands.Cog, name="genshin"):
             else:
                 description = None
             label = f"{c.name} | Lv.{c.level} | C{c.constellations_unlocked}R{c.equipments[-1].refinement}"
+            emoji = get_character_emoji(str(c.id))
             options.append(
                 discord.SelectOption(
                     label=label,
                     description=description,
                     value=str(c.id),
-                    emoji=get_character_emoji(str(c.id)),
+                    emoji=emoji,
                 )
             )
 

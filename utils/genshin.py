@@ -116,16 +116,16 @@ def get_character_builds(
     return result
 
 
-def get_character_emoji(id: str) -> str:
-    return character_map.get(id, {}).get("emoji", "")
+def get_character_emoji(id: str) -> Optional[str]:
+    return character_map.get(id, {}).get("emoji")
 
 
-def get_weapon_emoji(id: int) -> str:
-    return weapon_map.get(str(id), {}).get("emoji", "")
+def get_weapon_emoji(id: int) -> Optional[str]:
+    return weapon_map.get(str(id), {}).get("emoji")
 
 
-def get_character_icon(id: str) -> str:
-    return character_map.get(id, {}).get("icon", "")
+def get_character_icon(id: str) -> Optional[str]:
+    return character_map.get(id, {}).get("icon")
 
 
 def get_artifact(id: Optional[int] = 0, name: str = ""):
