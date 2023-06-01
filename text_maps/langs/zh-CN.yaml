@@ -514,8 +514,6 @@
   目前 **没有** paimoe.moe 的导入支持，原因请查看 [这个 GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371)。
   目前唯一支持的文件是由申鹤导出的 YAML 文件。
 '568': 请提供一个 .png 或 .jpg 格式的图像链接
-'569': 账户类别
-'573': 你目前的账号并没有绑定 Cookie
 '576': "已拥有角色: {current}/{total}"
 '577': "已达最大好感度: {current}/{total}"
 '578': 好感度
@@ -748,3 +746,5 @@
 '790': |-
   你的当前游戏：**{current}**
   支持的游戏为：**{supported}**
+'791': account
+'792': Check data of your other accounts
