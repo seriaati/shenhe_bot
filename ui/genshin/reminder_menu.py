@@ -28,9 +28,9 @@ class View(BaseView):
 
     async def _init(self, i: Inter) -> None:
         """Initialize view attributes"""
+        self.user = await i.client.db.users.get(i.user.id)
         lang = (await self.user.settings).lang
         self.lang = lang or str(i.locale)
-        self.user = await i.client.db.users.get(i.user.id)
         if self.user.game is not GameType.GENSHIN:
             raise GameNotSupported(self.user.game, [GameType.GENSHIN])
 
