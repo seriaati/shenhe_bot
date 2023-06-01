@@ -226,7 +226,9 @@ class OthersCog(commands.Cog, name="others"):
             embed.set_title(274, lang, i.user)
             return await i.followup.send(embed=embed)
 
-        link = await upload_img(image_file.url, self.bot.session) # can raise a KeyError if the image is not valid
+        link = await upload_img(
+            image_file.url, self.bot.session
+        )  # can raise a KeyError if the image is not valid
         converted_character_id = int(character_id.split("-")[0])
         await custom_image.add_user_custom_image(
             i.user.id,
