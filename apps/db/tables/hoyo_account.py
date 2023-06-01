@@ -1,7 +1,7 @@
 import datetime
 from typing import Optional
 
-from asyncpg import Pool
+from asyncpg import Pool, Record
 from genshin import Client, Game, Region
 from pydantic import BaseModel, Field
 
@@ -246,6 +246,14 @@ class HoyoAccountTable:
             cookie_db=self.cookie_db,
             settings_db=self.settings_db,
             **account,
+        )
+
+    async def get_by_row(self, row: Record) -> HoyoAccount:
+        """Get a user's Hoyo account from a row"""
+        return HoyoAccount(
+            cookie_db=self.cookie_db,
+            settings_db=self.settings_db,
+            **row,
         )
 
     async def get_all_of_user(self, user_id: int) -> list[HoyoAccount]:
