@@ -25,11 +25,8 @@ from apps.db.main import Database
 from apps.genshin import launch_browsers, launch_debug_browser
 from apps.genshin_data.text_maps import load_text_maps
 from apps.text_map import text_map
-from dev.base_ui import (
-    get_error_handle_embed,
-    global_error_handler,
-    support_server_view,
-)
+from dev.base_ui import (get_error_handle_embed, global_error_handler,
+                         support_server_view)
 from dev.exceptions import FeatureDisabled, Maintenance
 from dev.models import BotModel
 from utils import log, sentry_logging
@@ -192,6 +189,8 @@ class Shenhe(BotModel):
                 )
 
         self.gd_text_map = load_text_maps()
+        
+        self.owner_id = 410036441129943050
 
     async def on_ready(self):
         tree = self.tree
