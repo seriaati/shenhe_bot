@@ -14,6 +14,7 @@ from apps.draw.main_funcs import draw_material_card
 from apps.text_map import text_map
 from apps.text_map.convert_locale import to_ambr_top
 from dev.enum import NotifType
+from dev.exceptions import AccountNotFound
 from dev.models import BotModel, DefaultEmbed, DrawInput
 from utils import log
 from utils.general import get_dt_now
@@ -129,7 +130,10 @@ class WTNotifs:
                 user_id = user.user_id
                 item_list = user.item_list
                 # Get the user's UID and time zone from the database
-                uid = await self.bot.db.users.get_uid(user_id)
+                try:
+                    uid = await self.bot.db.users.get_uid(user_id)
+                except AccountNotFound:
+                    uid = None
                 uid_tz = get_uid_tz(uid)
                 # If the user's time zone is not the same as the task's time zone, skip the user
                 if uid_tz != self.time_offset:
