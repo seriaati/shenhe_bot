@@ -7,6 +7,7 @@ from io import BytesIO
 from itertools import islice
 from typing import Dict, Generator, List, TypeVar, Union
 
+import aiohttp
 import discord
 import pytz
 from sentry_sdk.integrations.logging import LoggingIntegration
@@ -169,3 +170,15 @@ def convert_dict_to_zipped_json(data_dict: Dict[str, str]) -> BytesIO:
 async def get_dc_user(bot: discord.Client, user_id: int) -> discord.User:
     """Get a discord user from their id. If the user is not cached, fetch them from the discord API"""
     return bot.get_user(user_id) or await bot.fetch_user(user_id)
+
+
+async def upload_img(url: str, session: aiohttp.ClientSession) -> str:
+    payload = {
+        "key": "6d207e02198a847aa98d0a2a901485a5",
+        "source": url,
+    }
+    async with session.post(
+        "https://freeimage.host/api/1/upload", data=payload
+    ) as resp:
+        data = await resp.json()
+    return data["image"]["url"]

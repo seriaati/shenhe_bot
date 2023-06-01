@@ -8,7 +8,6 @@ from typing import Dict, List, Optional, Union
 import discord
 import psutil
 import pygit2
-from aioimgur import ImgurClient
 from discord import app_commands, utils
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -19,11 +18,11 @@ import dev.asset as asset
 from ambr import AmbrTopAPI, Character
 from apps.db import custom_image
 from apps.db.tables.user_settings import Settings
-from apps.draw.main_funcs import compress_image
 from apps.text_map import text_map, to_ambr_top
 from dev.exceptions import AutocompleteError
 from dev.models import BotModel, DefaultEmbed, ErrorEmbed, Inter
 from ui.others import feedback_menu, manage_accounts, settings, settings_menu
+from utils.general import upload_img
 
 load_dotenv()
 
@@ -221,18 +220,20 @@ class OthersCog(commands.Cog, name="others"):
         character = await ambr.get_character(character_id)
         if not isinstance(character, Character):
             raise AutocompleteError
+        valid = await custom_image.validate_image_url(image_file.url, self.bot.session)
+        if not valid:
+            embed = ErrorEmbed()
+            embed.set_title(274, lang, i.user)
+            return await i.followup.send(embed=embed)
 
-        imgur = ImgurClient(
-            os.getenv("IMGUR_CLIENT_ID"), os.getenv("IMGUR_CLIENT_SECRET")
-        )
-        byte_obj = await image_file.read()
-        compressed = await compress_image(self.bot.loop, byte_obj)
-        image = await imgur.upload(compressed)
+        link = await upload_img(
+            image_file.url, self.bot.session
+        )  # can raise a KeyError if the image is not valid
         converted_character_id = int(character_id.split("-")[0])
         await custom_image.add_user_custom_image(
             i.user.id,
             converted_character_id,
-            image["link"],
+            link,
             image_name,
             self.bot.pool,
         )
