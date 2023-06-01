@@ -1,6 +1,6 @@
 import asyncio
 import calendar
-from typing import Dict, Union
+from typing import Dict
 
 from discord import ButtonStyle, ui
 from discord.errors import InteractionResponded
