@@ -228,9 +228,7 @@ class SubmitLink(ui.Button):
         if authkey is None:
             embed = ErrorEmbed()
             embed.set_title(363, self.view.lang, i.user)
-            return await i.response.send_message(
-                embed=embed,
-            )
+            return await i.edit_original_response(embed=embed, view=None)
 
         await i.edit_original_response(
             embed=DefaultEmbed().set_author(
