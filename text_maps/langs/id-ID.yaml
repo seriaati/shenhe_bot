@@ -514,8 +514,6 @@
   There is **NO** support for paimon.moe, please view this [GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371) for the reason.
   The only file that is supported is the YAML file exported from Shenhe.
 '568': Berikan URL gambar dalam format .png atau .jpg
-'569': Tipe akun
-'573': Akunmu saat ini tidak ditautkan ke Cookie
 '576': "Karakter yang dimiliki: {current}/{total}"
 '577': "Tingkat pertemanan maksimal: {current}/{total}"
 '578': Friendship Lv.
@@ -748,3 +746,5 @@
 '790': |-
   Your curernt game: **{current}**
   Supported games are: **{supported}**
+'791': account
+'792': Check data of your other accounts
