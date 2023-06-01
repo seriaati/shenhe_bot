@@ -515,8 +515,6 @@
   There is **NO** support for paimon.moe, please view this [GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371) for the reason.
   The only file that is supported is the YAML file exported from Shenhe.
 '568': Please provide an Image URL in either .png or .jpg format
-'569': Account type
-'573': Your current account is not linked to a Cookie
 '576': "Owned characters: {current}/{total}"
 '577': "Maxed friendship level: {current}/{total}"
 '578': Friendship Lv.
