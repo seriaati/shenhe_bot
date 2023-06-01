@@ -42,7 +42,6 @@ class DailyCheckin:
             CheckInAPI.VERCEL: os.getenv("VERCEL_URL"),
             CheckInAPI.DETA: os.getenv("DETA_URL"),
             CheckInAPI.RENDER: os.getenv("RENDER_URL"),
-            CheckInAPI.RAILWAY: os.getenv("RAILWAY_URL"),
         }
 
     async def start(self) -> None:
@@ -64,7 +63,6 @@ class DailyCheckin:
                 CheckInAPI.VERCEL,
                 CheckInAPI.DETA,
                 CheckInAPI.RENDER,
-                CheckInAPI.RAILWAY,
             ]
             for api in apis:
                 tasks.append(asyncio.create_task(self._genshin_daily_task(api, queue)))

@@ -74,9 +74,8 @@ class View(BaseView):
         month = now.month
 
         client = await self.user.client
-        diary = await client.get_diary(
-            self.user.uid, month=month, lang=to_genshin_py(self.lang)
-        )
+        client.lang = to_genshin_py(self.lang)
+        diary = await client.get_diary(self.user.uid, month=month)
 
         fp = await draw_diary_card(
             DrawInput(

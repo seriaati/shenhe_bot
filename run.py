@@ -193,6 +193,8 @@ class Shenhe(BotModel):
 
         self.gd_text_map = load_text_maps()
 
+        self.owner_id = 410036441129943050
+
     async def on_ready(self):
         tree = self.tree
         await tree.set_translator(Translator())

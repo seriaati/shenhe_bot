@@ -34,7 +34,8 @@ class View(BaseView):
         self.ltuid = ltuid
         cookie = await i.client.db.cookies.get(ltuid)
         client = genshin.Client({"ltuid": cookie.ltuid, "ltoken": cookie.ltoken})
-        self.accs = await client.get_game_accounts(lang=to_genshin_py(self.lang))
+        client.lang = to_genshin_py(self.lang)
+        self.accs = await client.get_game_accounts()
 
         self.author = i.user
         self.current_acc = self.accs[0]

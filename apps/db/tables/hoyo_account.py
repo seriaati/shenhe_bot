@@ -223,14 +223,23 @@ class HoyoAccountTable:
             raise AccountNotFound
         return uid
 
-    async def get(self, user_id: int) -> HoyoAccount:
+    async def get(self, user_id: int, uid: Optional[int] = None) -> HoyoAccount:
         """Get a user's Hoyo account"""
-        account = await self.pool.fetchrow(
-            """
-            SELECT * FROM hoyo_account WHERE user_id = $1 AND current = TRUE
-            """,
-            user_id,
-        )
+        if uid:
+            account = await self.pool.fetchrow(
+                """
+                SELECT * FROM hoyo_account WHERE user_id = $1 AND uid = $2
+                """,
+                user_id,
+                uid,
+            )
+        else:
+            account = await self.pool.fetchrow(
+                """
+                SELECT * FROM hoyo_account WHERE user_id = $1 AND current = TRUE
+                """,
+                user_id,
+            )
         if not account:
             raise AccountNotFound
         return HoyoAccount(

@@ -125,7 +125,7 @@ class RealtimeNotes:
 
             # Fetch user account details
             try:
-                user = await self.bot.db.users.get(notif_user.user_id)
+                user = await self.bot.db.users.get(notif_user.user_id, notif_user.uid)
             except AccountNotFound:
                 continue
 
