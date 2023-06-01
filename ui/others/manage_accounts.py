@@ -125,9 +125,8 @@ class GenerateLink(ui.Button):
         )
 
         embed = DefaultEmbed(description=text_map.get(728, lang))
-        embed.set_author(
-            name=text_map.get(400, lang), icon_url=i.user.display_avatar.url
-        )
+        embed.set_title(400, lang, i.user)
+        embed.set_image(url="https://i.imgur.com/EJtdwoq.png")
 
         self.view.clear_items()
         self.view.add_item(GOBack())
