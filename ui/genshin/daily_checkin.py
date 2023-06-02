@@ -138,7 +138,7 @@ class ClaimToggle(ui.Button):
     async def callback(self, i: Inter):
         self.view.daily_checkin = self.toggle
         kwargs = self.view.create_kwargs(self.toggle)
-        await i.client.db.users.update(i.user.id, self.view.user.uid,**kwargs)
+        await i.client.db.users.update(i.user.id, self.view.user.uid, **kwargs)
         self.view.add_components()
 
         await i.response.edit_message(view=self.view)
