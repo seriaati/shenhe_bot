@@ -9,8 +9,7 @@ from apps.db.tables.abyss_board import AbyssBoardEntry
 from apps.text_map import text_map
 from dev.enum import Category
 from dev.models import BoardUser
-from utils import (circular_crop, get_cache, get_font, global_write,
-                   shorten_text)
+from utils import circular_crop, get_cache, get_font, global_write, shorten_text
 
 
 def board(
