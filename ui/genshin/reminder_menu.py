@@ -523,9 +523,7 @@ class ChangeSettings(ui.Button):
                 if int(h) < 0 or int(h) > 168:
                     raise InvalidInput(0, 168)
                 db = i.client.db.notifs.pt
-                await db.update(
-                    i.user.id, self.view.uid, max=m, hour_before=h
-                )
+                await db.update(i.user.id, self.view.uid, max=m, hour_before=h)
                 await self.view.pt_notif(i, responded=True)
 
 
