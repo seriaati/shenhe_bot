@@ -175,6 +175,7 @@ class DailyCheckin:
         if api is CheckInAPI.LOCAL:
             try:
                 client = await user.client
+                client.lang = to_genshin_py(lang)
                 reward = await client.claim_daily_reward(
                     game=convert_game_type(user.checkin_game)
                 )
@@ -182,6 +183,7 @@ class DailyCheckin:
                 data = {
                     "code": e.retcode,
                     "msg": e.msg,
+                    "game": user.checkin_game.value,
                 }
             else:
                 data = {
