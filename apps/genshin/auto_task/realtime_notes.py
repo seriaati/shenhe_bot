@@ -164,6 +164,7 @@ class RealtimeNotes:
 
                 # Check if the threshold is exceeded and reset the notification counter if necessary
                 check = await self._check_notes(notif_user)
+                print(check, notif_user.type)
                 now = get_dt_now()
                 if check and notif_user.current < notif_user.max:
                     if (
@@ -280,7 +281,7 @@ class RealtimeNotes:
             return False
         if isinstance(notif_user, PTNotif) and (
             notes.remaining_transformer_recovery_time is None
-            or notes.remaining_transformer_recovery_time.total_seconds() > 0
+            or notes.remaining_transformer_recovery_time.total_seconds() > notif_user.hour_before*3600
         ):
             return False
 
