@@ -85,25 +85,19 @@ class DailyCheckin:
     ) -> None:
         log.info("[DailyCheckin] Adding users to queue...")
 
-        rows = await self.bot.pool.fetch(
-            """
-            SELECT * FROM hoyo_account
-            WHERE (genshin_daily = true OR hsr_daily = true OR honkai_daily = true)
-            """
-        )
-        for row in rows:
-            user = await self.bot.db.users.get_by_row(row)
-            if (
-                self.bot.debug
-                or user.last_checkin is None
-                or user.last_checkin.day != get_dt_now().day
-            ):
-                if user.genshin_daily:
-                    self._genshin_count += 1
-                if user.honkai_daily:
-                    self._honkai_count += 1
-                if user.hsr_daily:
-                    self._hsr_count += 1
+        users = await self.bot.db.users.get_all()
+        for user in users:
+            last_checkin_check = (
+                user.last_checkin is None or user.last_checkin.day != get_dt_now().day
+            )
+            if user.genshin_daily and last_checkin_check:
+                self._genshin_count += 1
+                await queue.put(user)
+            if user.honkai_daily and last_checkin_check:
+                self._honkai_count += 1
+                await queue.put(user)
+            if user.hsr_daily and last_checkin_check:
+                self._hsr_count += 1
                 await queue.put(user)
 
         await queue.put(None)

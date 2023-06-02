@@ -231,14 +231,6 @@ class HoyoAccountTable:
             **account,
         )
 
-    async def get_by_row(self, row: Record) -> HoyoAccount:
-        """Get a user's Hoyo account from a row"""
-        return HoyoAccount(
-            cookie_db=self.cookie_db,
-            settings_db=self.settings_db,
-            **row,
-        )
-
     async def get_all_of_user(self, user_id: int) -> list[HoyoAccount]:
         """Get all of a user's accounts"""
         accounts = await self.pool.fetch(
