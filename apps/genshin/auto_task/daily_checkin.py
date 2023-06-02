@@ -161,7 +161,7 @@ class DailyCheckin:
                 self._total[api] += 1
                 if isinstance(embed, model.DefaultEmbed):
                     await self.bot.db.users.update(
-                        user.user_id, user.uid, last_checkin_date=get_dt_now()
+                        user.user_id, user.uid, last_checkin=get_dt_now()
                     )
                     self._success[api] += 1
             finally:
