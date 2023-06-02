@@ -100,16 +100,11 @@ class DailyCheckin:
             ):
                 if user.genshin_daily:
                     self._genshin_count += 1
-                    user = user.copy(update={"checkin_game": GameType.GENSHIN})
-                    await queue.put(user)
                 if user.honkai_daily:
                     self._honkai_count += 1
-                    user = user.copy(update={"checkin_game": GameType.HONKAI})
-                    await queue.put(user)
                 if user.hsr_daily:
                     self._hsr_count += 1
-                    user = user.copy(update={"checkin_game": GameType.HSR})
-                    await queue.put(user)
+                await queue.put(user)
 
         await queue.put(None)
 
@@ -177,13 +172,13 @@ class DailyCheckin:
                 client = await user.client
                 client.lang = to_genshin_py(lang)
                 reward = await client.claim_daily_reward(
-                    game=convert_game_type(user.checkin_game)
+                    game=convert_game_type(user.game)
                 )
             except GenshinException as e:
                 data = {
                     "code": e.retcode,
                     "msg": e.msg,
-                    "game": user.checkin_game.value,
+                    "game": user.game.value,
                 }
             else:
                 data = {
@@ -192,7 +187,7 @@ class DailyCheckin:
                         "amount": reward.amount,
                         "icon": reward.icon,
                     },
-                    "game": user.checkin_game.value,
+                    "game": user.game.value,
                 }
         else:
             api_link = self._api_links[api]
@@ -209,7 +204,7 @@ class DailyCheckin:
                     "cookie_token": cookie.cookie_token,
                 },
                 "lang": to_genshin_py(str(lang)),
-                "game": user.checkin_game.value,
+                "game": user.game.value,
             }
 
             async with self.bot.session.post(
@@ -231,11 +226,11 @@ class DailyCheckin:
         embed = self._create_embed(lang, data)
         if isinstance(embed, model.ErrorEmbed):
             kwargs = {}
-            if user.checkin_game is GameType.GENSHIN:
+            if user.game is GameType.GENSHIN:
                 kwargs["genshin_daily"] = False
-            elif user.checkin_game is GameType.HONKAI:
+            elif user.game is GameType.HONKAI:
                 kwargs["honkai_daily"] = False
-            elif user.checkin_game is GameType.HSR:
+            elif user.game is GameType.HSR:
                 kwargs["hsr_daily"] = False
             await self.bot.db.users.update(user.user_id, user.uid, **kwargs)
 

@@ -3,7 +3,7 @@ from typing import Optional
 
 from asyncpg import Pool, Record
 from genshin import Client, Game, Region
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from apps.text_map.convert_locale import to_genshin_py
 from dev.enum import GameType
@@ -53,8 +53,6 @@ class HoyoAccount(BaseModel):
     """Honkai Impact 3rd daily check-in toggle"""
     last_checkin: Optional[datetime.datetime] = None
     """Last daily check-in date"""
-    checkin_game: GameType = Field(GameType.GENSHIN)
-    """Last daily check-in game"""
 
     china: bool
     """Whether the account's region is in China"""
