@@ -742,9 +742,9 @@
 '786': Tambahkan akun ini
 '787': Batal
 '788': Akun kamu telah hancur berkeping-keping
-'789': '{current} is not supported for this feature yet'
+'789': '{current} belum didukung untuk fitur ini'
 '790': |-
-  Your curernt game: **{current}**
-  Supported games are: **{supported}**
-'791': account
-'792': Check data of your other accounts
+  Game kamu saat ini: **{current}**
+  Game yang didukung adalah: **{supported}**
+'791': akun
+'792': Periksa data akun kamu yang lain
