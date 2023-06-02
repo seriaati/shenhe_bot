@@ -116,8 +116,8 @@ class View(BaseView):
         )
 
         # Add the toggles to the view
-        self.add_item(ChangeSettings(text_map.get(594, self.lang)))
         self._add_toggles(user.toggle)
+        self.add_item(ChangeSettings(text_map.get(594, self.lang)))
         self.add_item(GOBack())
 
         # Edit the response message with the embed and the current view
@@ -143,8 +143,8 @@ class View(BaseView):
         )
         embed.add_field(name=text_map.get(591, self.lang), value=value)
 
-        self.add_item(ChangeSettings(text_map.get(594, self.lang)))
         self._add_toggles(user.toggle)
+        self.add_item(ChangeSettings(text_map.get(594, self.lang)))
         self.add_item(GOBack())
 
         if not responded:
@@ -161,6 +161,7 @@ class View(BaseView):
 
         value = f"""
         {text_map.get(103, self.lang)}: {user.max}
+        {text_map.get(793, self.lang)}: {user.hour_before}
         """
         embed = DefaultEmbed(description=text_map.get(512, self.lang))
         embed.add_field(name=text_map.get(591, self.lang), value=value)
@@ -168,8 +169,8 @@ class View(BaseView):
             name=text_map.get(704, self.lang), icon_url=i.user.display_avatar.url
         )
 
-        self.add_item(ChangeSettings(text_map.get(594, self.lang)))
         self._add_toggles(user.toggle)
+        self.add_item(ChangeSettings(text_map.get(594, self.lang)))
         self.add_item(GOBack())
 
         if not responded:
@@ -511,13 +512,20 @@ class ChangeSettings(ui.Button):
             await i.response.send_modal(modal)
             await modal.wait()
             m = modal.max_notif.value
+            h = modal.hour_before.value
             if m:
-                if not m.isdigit():
+                if not m.isdigit() or h.isdigit():
                     raise NumbersOnly
-                if int(m) < 0 or int(m) > 10:
+                m = int(m)
+                if m < 0 or m > 10:
                     raise InvalidInput(0, 10)
+                h = float(h)
+                if int(h) < 0 or int(h) > 168:
+                    raise InvalidInput(0, 168)
                 db = i.client.db.notifs.pt
-                await db.update(i.user.id, self.view.uid, max=int(m))
+                await db.update(
+                    i.user.id, self.view.uid, max=m, hour_before=h
+                )
                 await self.view.pt_notif(i, responded=True)
 
 
@@ -570,11 +578,14 @@ class PotModal(BaseModal):
 
 class PTModal(BaseModal):
     max_notif = ui.TextInput(label="MAX_NOTIF", max_length=2)
+    hour_before = ui.TextInput(label="HOUR_BEFORE", max_length=4)
 
     def __init__(self, lang: str):
         super().__init__(title=text_map.get(515, lang))
         self.max_notif.label = text_map.get(103, lang)
         self.max_notif.placeholder = text_map.get(155, lang)
+        self.hour_before.label = text_map.get(793, lang)
+        self.hour_before.placeholder = text_map.get(794, lang)
 
     async def on_submit(self, i: discord.Interaction) -> None:
         await i.response.defer()
