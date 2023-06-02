@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List
 
 import discord
 from PIL import Image, ImageDraw
@@ -9,7 +9,8 @@ from apps.db.tables.abyss_board import AbyssBoardEntry
 from apps.text_map import text_map
 from dev.enum import Category
 from dev.models import BoardUser
-from utils import circular_crop, get_cache, get_font, global_write, shorten_text
+from utils import (circular_crop, get_cache, get_font, global_write,
+                   shorten_text)
 
 
 def board(
@@ -166,7 +167,10 @@ def run_user_card(
     )
 
     # write win percentage
-    win_percent = round(user.entry.wins / user.entry.runs * 100, 2)
+    if user.entry.runs == 0:
+        win_percent = 0.00
+    else:
+        win_percent = round(user.entry.wins / user.entry.runs * 100, 2)
     draw.text((1061, 84), f"{win_percent}%", font=font, fill=fill, anchor="mm")
 
     # write stars collected
