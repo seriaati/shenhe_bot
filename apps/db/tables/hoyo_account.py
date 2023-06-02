@@ -246,6 +246,7 @@ class HoyoAccountTable:
         accounts = await self.pool.fetch(
             """
             SELECT * FROM hoyo_account WHERE user_id = $1
+            ORDER BY uid ASC
             """,
             user_id,
         )
@@ -263,6 +264,7 @@ class HoyoAccountTable:
         accounts = await self.pool.fetch(
             """
             SELECT * FROM hoyo_account
+            ORDER BY user_id ASC, uid ASC
             """
         )
         return [
