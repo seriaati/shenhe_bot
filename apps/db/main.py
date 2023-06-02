@@ -55,3 +55,4 @@ class Database:
         await self.users.create()
         await self.cookies.migrate()
         await self.users.migrate()
+        await self.notifs.pt.alter()

@@ -41,6 +41,8 @@ class PTNotif(NotifBase):
 
     type: NotifType = Field(default=NotifType.PT)
     """Notification type"""
+    hour_before: float
+    """Hour before notifying"""
 
 
 class ResinNotif(NotifBase):
@@ -118,6 +120,14 @@ class PotNotifTable(NotifTable):
 class PTNotifTable(NotifTable):
     def __init__(self, pool: Pool):
         super().__init__(pool, NotifType.PT)
+
+    async def alter(self) -> None:
+        await self.pool.execute(
+            """
+            ALTER TABLE pt_notification
+            ADD COLUMN IF NOT EXISTS hour_before float NOT NULL DEFAULT 1.0
+            """
+        )
 
     async def get(self, user_id: int, uid: int) -> PTNotif:
         return PTNotif(**await super().get(user_id, uid))
