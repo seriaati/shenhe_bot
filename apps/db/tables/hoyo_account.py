@@ -132,7 +132,7 @@ class HoyoAccountTable:
     async def create(self) -> None:
         """Create the table"""
         await self.pool.execute(
-        """
+            """
         CREATE TABLE IF NOT EXISTS hoyo_account (
             user_id BIGINT NOT NULL,
             uid INT NOT NULL,
@@ -147,12 +147,11 @@ class HoyoAccountTable:
         )
         """
         )
-    
+
     async def alter(self) -> None:
         await self.pool.execute(
             "ALTER TABLE hoyo_account ADD COLUMN IF NOT EXISTS last_checkin TIMESTAMP DEFAULT NULL"
         )
-
 
     async def insert(
         self,
