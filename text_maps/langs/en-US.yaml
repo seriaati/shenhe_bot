@@ -457,7 +457,6 @@
 '511': The caches have been wiped due to cache changes, if you really need the data, please DM seria#5334
 '512': |-
   • Notify you when your parametric transformer is ready
-  • 1 notification per day
 '515': Notification settings
 '518': Realm currency is almost full!
 '519': |-
@@ -749,3 +748,5 @@
   Supported games are: **{supported}**
 '791': account
 '792': Check data of your other accounts
+'793': Hour before notifying
+'794': (Decimals are allowed)
