@@ -188,7 +188,9 @@ class DailyCheckin:
                     "reward": {
                         "name": reward.name,
                         "amount": reward.amount,
-                    }
+                        "icon": reward.icon,
+                    },
+                    "game": user.checkin_game.value,
                 }
         else:
             api_link = self._api_links[api]

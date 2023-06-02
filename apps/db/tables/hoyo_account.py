@@ -148,25 +148,10 @@ class HoyoAccountTable:
         """
         )
 
-    async def migrate(self) -> None:
-        rows = await self.pool.fetch(
-            """
-            SELECT user_id, uid, ltuid, nickname
-            FROM user_accounts
-            WHERE ltuid IS NOT NULL
-            AND ltoken IS NOT NULL
-            AND cookie_token IS NOT NULL
-            """
+    async def alter(self) -> None:
+        await self.pool.execute(
+            "ALTER TABLE hoyo_account ADD COLUMN IF NOT EXISTS last_checkin TIMESTAMP DEFAULT NULL"
         )
-        for row in rows:
-            nickname = row["nickname"]
-            await self.insert(
-                game=GameType.GENSHIN,
-                nickname=None if len(str(nickname)) > 15 else nickname,
-                user_id=row["user_id"],
-                uid=row["uid"],
-                ltuid=row["ltuid"],
-            )
 
     async def insert(
         self,
