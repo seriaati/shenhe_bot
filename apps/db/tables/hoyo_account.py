@@ -222,15 +222,25 @@ class HoyoAccountTable:
             **account,
         )
 
-    async def get_all_of_user(self, user_id: int) -> list[HoyoAccount]:
+    async def get_all_of_user(self, user_id: int, game: Optional[GameType] = None) -> list[HoyoAccount]:
         """Get all of a user's accounts"""
-        accounts = await self.pool.fetch(
-            """
-            SELECT * FROM hoyo_account WHERE user_id = $1
-            ORDER BY uid ASC
-            """,
-            user_id,
-        )
+        if game:
+            accounts = await self.pool.fetch(
+                """
+                SELECT * FROM hoyo_account WHERE user_id = $1 AND game = $2
+                ORDER BY uid ASC
+                """,
+                user_id,
+                game.value,
+            )
+        else:
+            accounts = await self.pool.fetch(
+                """
+                SELECT * FROM hoyo_account WHERE user_id = $1
+                ORDER BY uid ASC
+                """,
+                user_id,
+            )
         return [
             HoyoAccount(
                 cookie_db=self.cookie_db,
@@ -256,6 +266,7 @@ class HoyoAccountTable:
             )
             for account in accounts
         ]
+    
 
     async def get_total(self) -> int:
         """Get the total number of accounts"""
