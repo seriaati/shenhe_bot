@@ -24,8 +24,9 @@ load_dotenv()
 
 
 class DailyCheckin:
-    def __init__(self, bot: model.BotModel) -> None:
+    def __init__(self, bot: model.BotModel, no_date_check: bool = False) -> None:
         self.bot = bot
+        self.no_date_check = no_date_check
 
         self._success: Dict[CheckInAPI, int] = {}
         self._total: Dict[CheckInAPI, int] = {}
@@ -50,74 +51,81 @@ class DailyCheckin:
             self._start_time = get_dt_now()
 
             # initialize the queue
-            queue: asyncio.Queue[Optional[HoyoAccount]] = asyncio.Queue()
+            queue: asyncio.Queue[HoyoAccount] = asyncio.Queue()
 
             # add users to queue
-            tasks: List[asyncio.Task] = [
-                asyncio.create_task(self._add_users_to_queue(queue))
-            ]
+            await self._add_users(queue)
 
             # add checkin tasks
-            apis = [
+            tasks: List[asyncio.Task] = []
+            apis = (
                 CheckInAPI.LOCAL,
                 CheckInAPI.VERCEL,
                 CheckInAPI.DETA,
                 CheckInAPI.RENDER,
-            ]
+            )
             for api in apis:
                 tasks.append(asyncio.create_task(self._genshin_daily_task(api, queue)))
 
-            # wait for all tasks to finish
-            await asyncio.gather(*tasks)
-            self._end_time = get_dt_now()
+            # wait until the queue is fully processed
+            await queue.join()
 
+            # cancel all checkin tasks
+            for task in tasks:
+                task.cancel()
+            # wait until all check-in tasks are cancelled.
+            await asyncio.gather(*tasks, return_exceptions=True)
+
+            self._end_time = get_dt_now()
             await self._send_report()
         except Exception as e:  # skipcq: PYL-W0703
             sentry_sdk.capture_exception(e)
-            log.warning(f"[DailyCheckin] {e}")
+            log.exception(f"[DailyCheckin] {e}")
             owner = await get_dc_user(self.bot, self.bot.owner_id)
             await owner.send(f"An error occurred in DailyCheckin:\n```\n{e}\n```")
         finally:
             log.info("[DailyCheckin] Finished")
 
-    async def _add_users_to_queue(
-        self, queue: asyncio.Queue[Optional[HoyoAccount]]
-    ) -> None:
-        log.info("[DailyCheckin] Adding users to queue...")
-
+    async def _add_users(self, queue: asyncio.Queue[HoyoAccount]) -> None:
         users = await self.bot.db.users.get_all()
         for user in users:
-            last_checkin_check = (
-                user.last_checkin is None or user.last_checkin.day != get_dt_now().day
-            )
-            if user.genshin_daily and last_checkin_check:
-                self._genshin_count += 1
+            if self.no_date_check:
+                last_checkin_check = True
+            else:
+                last_checkin_check = (
+                    user.last_checkin is None
+                    or user.last_checkin.day != get_dt_now().day
+                )
+            if user.daily_checkin and last_checkin_check:
                 await queue.put(user)
-            if user.honkai_daily and last_checkin_check:
-                self._honkai_count += 1
-                await queue.put(user)
-            if user.hsr_daily and last_checkin_check:
-                self._hsr_count += 1
-                await queue.put(user)
+                self._add_count(user)
+        log.info("[DailyCheckin] Users added to queue")
 
-        await queue.put(None)
+    def _add_count(self, user: HoyoAccount) -> None:
+        if user.game is GameType.GENSHIN:
+            self._genshin_count += 1
+        elif user.game is GameType.HONKAI:
+            self._honkai_count += 1
+        elif user.game is GameType.HSR:
+            self._hsr_count += 1
 
     async def _genshin_daily_task(
-        self, api: CheckInAPI, queue: asyncio.Queue[Optional[HoyoAccount]]
+        self, api: CheckInAPI, queue: asyncio.Queue[HoyoAccount]
     ) -> None:
         log.info(f"[DailyCheckin] Starting {api.name} task...")
 
         if api is not CheckInAPI.LOCAL:
             link = self._api_links[api]
             if link is None:
-                return log.warning(f"[DailyCheckin] {api.name} link is not set")
+                log.warning(f"[DailyCheckin] {api.name} link is not set")
+                raise ValueError(f"{api.name} link is not set")
 
             async with self.bot.session.get(link) as resp:
                 if resp.status != 200:
                     log.warning(
                         f"[DailyCheckin] {api.name} returned {resp.status} status code"
                     )
-                    return
+                    raise CheckInAPIError(api, resp.status)
 
         self._total[api] = 0
         self._success[api] = 0
@@ -126,8 +134,6 @@ class DailyCheckin:
 
         while True:
             user = await queue.get()
-            if user is None:
-                break
             try:
                 embed = await self._do_genshin_daily(api, user)
                 notif = await self.bot.db.settings.get(
@@ -142,10 +148,9 @@ class DailyCheckin:
                 await queue.put(user)
 
                 if api_error_count >= MAX_API_ERROR:
-                    log.warning(
+                    return log.warning(
                         f"[DailyCheckin] {api.name} has reached {MAX_API_ERROR} API errors"
                     )
-                    return
             else:
                 self._total[api] += 1
                 if isinstance(embed, model.DefaultEmbed):
@@ -219,14 +224,7 @@ class DailyCheckin:
 
         embed = self._create_embed(lang, data)
         if isinstance(embed, model.ErrorEmbed):
-            kwargs = {}
-            if user.game is GameType.GENSHIN:
-                kwargs["genshin_daily"] = False
-            elif user.game is GameType.HONKAI:
-                kwargs["honkai_daily"] = False
-            elif user.game is GameType.HSR:
-                kwargs["hsr_daily"] = False
-            await self.bot.db.users.update(user.user_id, user.uid, **kwargs)
+            await self.bot.db.users.update(user.user_id, user.uid, daily_checkin=False)
 
             error_id = f"{data['code']} {data['msg']}"
             if error_id not in self._errors:
@@ -310,7 +308,8 @@ class DailyCheckin:
             owner = await self.bot.fetch_user(410036441129943050)
 
         each_api = "\n".join(
-            f"{api.name}: {self._success[api]}/{self._total[api]}" for api in CheckInAPI
+            f"{api.name}: {self._success[api]}/{self._total[api]}"
+            for api in self._total
         )
         embed = model.DefaultEmbed(
             "Daily Checkin Report",

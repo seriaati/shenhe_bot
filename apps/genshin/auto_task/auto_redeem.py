@@ -1,5 +1,5 @@
 import asyncio
-from typing import List, Optional
+from typing import List
 
 import discord
 import genshin
@@ -8,6 +8,7 @@ import sentry_sdk
 from apps.db.tables.hoyo_account import HoyoAccount
 from apps.text_map import text_map
 from dev.base_ui import get_error_handle_embed
+from dev.enum import GameType
 from dev.exceptions import AccountNotFound
 from dev.models import BotModel, DefaultEmbed
 from utils import log
@@ -28,23 +29,25 @@ class AutoRedeem:
         self._success = 0
 
     async def exec(self) -> None:
-        """
-        Executes the auto-redeem process.
+        """Execute the AutoRedeem process.
+
+        This function retrieves all codes from the database and processes them for all users.
+        If no codes are found, the function will exit early.
+
+        Raises:
+            Exception: If an error occurs during the process.
+
+        Returns:
+            None
         """
         try:
             log.info("[AutoRedeem] Starting")
             codes = await self.bot.db.codes.get_all()
             if not codes:
-                log.info("[AutoRedeem] No codes found, skipping")
-                return
+                return log.info("[AutoRedeem] No codes found, skipping")
 
-            # create a queue of users with auto-redeem enabled
-            queue: asyncio.Queue[Optional[HoyoAccount]] = asyncio.Queue()
-            tasks = [
-                asyncio.create_task(self._make_queue(queue)),
-                asyncio.create_task(self._process_queue(queue, codes)),
-            ]
-            await asyncio.gather(*tasks)
+            users = await self._get_users()
+            await self._process_users(users, codes)
         except Exception as e:  # skipcq: PYL-W0703
             log.exception(f"[AutoRedeem] {e}")
             sentry_sdk.capture_exception(e)
@@ -53,40 +56,55 @@ class AutoRedeem:
         finally:
             log.info("[AutoRedeem] Finished")
 
-    async def _make_queue(self, queue: asyncio.Queue[Optional[HoyoAccount]]) -> None:
-        """
-        Adds all users with auto-redeem enabled to the queue.
+    async def _get_users(self) -> List[HoyoAccount]:
+        """Retrieve all users with auto-redeem enabled and their associated accounts.
 
-        Args:
-            queue (asyncio.Queue[Optional[HoyoAccount]]): The queue of users.
+        This function queries the database for all users with auto-redeem enabled and retrieves
+        all of their associated accounts for the Genshin Impact game type. If an account is not found
+        for a user, the user is skipped.
+
+        Returns:
+            A list of HoyoAccount objects representing all accounts associated with users with
+            auto-redeem enabled.
+
+        Raises:
+            None
         """
+        result: List[HoyoAccount] = []
         users = await self.bot.pool.fetch(
             "SELECT user_id FROM user_settings WHERE auto_redeem = true"
         )
         for user in users:
             try:
-                account = await self.bot.db.users.get(user["user_id"])
+                accounts = await self.bot.db.users.get_all_of_user(
+                    user["user_id"], GameType.GENSHIN
+                )
             except AccountNotFound:
                 continue
-            await queue.put(account)
-            self._total += 1
-        await queue.put(None)
+            else:
+                result.extend(accounts)
+                self._total += 1
 
-    async def _process_queue(
-        self, queue: asyncio.Queue[Optional[HoyoAccount]], codes: List[str]
-    ) -> None:
-        """
-        Processes the queue of users and redeems codes for each user.
+        return result
+
+    async def _process_users(self, users: List[HoyoAccount], codes: List[str]) -> None:
+        """Process the given codes for the given users.
+
+        This function attempts to redeem the given codes for each user in the list of users.
+        If a code is successfully redeemed, an embed is created and sent to the user via Discord.
+        If an error occurs during the process, the error is logged and the exception is captured by Sentry.
 
         Args:
-            queue (asyncio.Queue[Optional[HoyoAccount]]): The queue of users.
-            codes (List[str]): The list of codes to redeem.
-        """
-        while True:
-            user = await queue.get()
-            if user is None:
-                break
+            users: A list of HoyoAccount objects representing the users to process.
+            codes: A list of strings representing the codes to redeem.
 
+        Returns:
+            None
+
+        Raises:
+            None
+        """
+        for user in users:
             try:
                 dc_user = await get_dc_user(self.bot, user.user_id)
                 embeds = await self._redeem_codes(user, codes, dc_user)
@@ -96,8 +114,6 @@ class AutoRedeem:
             else:
                 await self.notify_user(dc_user, embeds)
                 self._success += 1
-            finally:
-                queue.task_done()
 
     async def _redeem_codes(
         self, account: HoyoAccount, codes: List[str], discord_user: discord.User

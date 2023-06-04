@@ -71,7 +71,7 @@ class Schedule(commands.Cog):
                 21: -7,  # Europe
             }
             asyncio.create_task(
-                auto_task.WTNotifs(self.bot, hour_dict[now.hour]).exec()
+                auto_task.WTNotifs(self.bot, hour_dict[now.hour]).start()
             )
 
         if now.hour == 10 and now.minute < self.loop_interval:  # 10am
@@ -308,6 +308,24 @@ class Schedule(commands.Cog):
         message = await ctx.send(f"Function {func_name} ran")
         await asyncio.create_task(func(*args))
         await message.edit(content=f"Function {func_name} ended")
+
+    @commands.is_owner()
+    @commands.command(name="auto-task")
+    async def daily_checkin(self, ctx: commands.Context, task: str):
+        if task == "daily-checkin":
+            await ctx.send("Starting daily check-in...")
+            await auto_task.DailyCheckin(self.bot, True).start()
+            await ctx.send("Daily check-in ended")
+        elif task == "realtime-notes":
+            await ctx.send("Starting realtime notes...")
+            await auto_task.RealtimeNotes(self.bot).start()
+            await ctx.send("Realtime notes ended")
+        elif task == "wt-notifs":
+            await ctx.send("Starting weapon talent notifs...")
+            await auto_task.WTNotifs(self.bot, 0).start()
+            await ctx.send("Weapon talent notifs ended")
+        else:
+            await ctx.send(f"Task {task} not found")
 
 
 async def setup(bot: commands.AutoShardedBot) -> None:

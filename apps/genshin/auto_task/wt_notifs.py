@@ -1,7 +1,7 @@
 import asyncio
 from datetime import timedelta
 from io import BytesIO
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union
 
 import sentry_sdk
 from discord import File, Forbidden
@@ -38,29 +38,14 @@ class WTNotifs:
         self._success: Dict[NotifType, int] = {}
         self._total: Dict[NotifType, int] = {}
 
-    async def exec(self):
-        """
-        Executes the WTNotifs task.
-
-        This function creates a queue of weapon and talent notifications and sends them to the user.
-        If an error occurs, it sends a message to the bot owner with the error details.
-
-        :return: None
-        """
+    async def start(self) -> None:
         try:
             log.info(f"[WTNotifs] Executing with time offset {self.time_offset}")
-            queue: asyncio.Queue[Union[WeaponNotif, TalentNotif]] = asyncio.Queue()
-            tasks = [
-                asyncio.create_task(
-                    self._make_queue(queue)
-                ),  # Create a task to make the notification queue
-                asyncio.create_task(
-                    self._make_notify(queue)
-                ),  # Create a task to send the notifications
-            ]
-            await asyncio.gather(*tasks)  # Wait for all tasks to complete
+
+            users = await self._get_users()
+            await self._make_notify(users)
         except Exception as e:  # skipcq: PYL-W0703
-            log.exception("[WTNotifs] Failed to execute", exc_info=e)
+            log.exception("[WTNotifs] Failed to execute")
             sentry_sdk.capture_exception(e)
             owner = self.bot.get_user(self.bot.owner_id) or await self.bot.fetch_user(
                 self.bot.owner_id
@@ -75,19 +60,7 @@ class WTNotifs:
         finally:
             log.info("[WTNotifs] Finished")
 
-    async def _make_queue(
-        self, queue: asyncio.Queue[Optional[Union[WeaponNotif, TalentNotif]]]
-    ):
-        """
-        Creates a queue of weapon and talent notifications.
-
-        This function retrieves all the talent and weapon notifications from the database and adds them to a queue.
-        It also keeps track of the total number of notifications for each type.
-
-        :param queue: The queue to add the notifications to.
-        :return: None
-        """
-
+    async def _get_users(self):
         # Get all talent notifications from the database
         talents = await self.bot.db.notifs.talent.get_all()
 
@@ -97,35 +70,15 @@ class WTNotifs:
         # Combine the talent and weapon notifications
         users = talents + weapons
 
-        # Add each user to the queue and increment the total count for their type
+        return users
+
+    async def _make_notify(self, users: List[Union[WeaponNotif, TalentNotif]]):
         for user in users:
-            await queue.put(user)
-            self._total[user.type] = self._total.get(user.type, 0) + len(user.item_list)
-
-        # Add a None value to the queue to signal the end of the notifications
-        await queue.put(None)
-
-    async def _make_notify(
-        self, queue: asyncio.Queue[Optional[Union[WeaponNotif, TalentNotif]]]
-    ):
-        """
-        Sends weapon and talent notifications to the user.
-
-        This function retrieves the notifications from the queue and sends them to the user.
-        It also retrieves the user's language and time zone from the database and uses them to format the notifications.
-
-        :param queue: The queue containing the notifications to send.
-        :return: None
-        """
-        # Loop through the queue of notifications
-        while True:
-            # Get the next user from the queue
-            user = await queue.get()
-            # If the user is None, break out of the loop
-            if user is None:
-                break
-
             try:
+                # Add value to the total dict
+                self._total[user.type] = self._total.get(user.type, 0) + len(
+                    user.item_list
+                )
                 # Get the user's ID and item list
                 user_id = user.user_id
                 item_list = user.item_list
@@ -200,9 +153,8 @@ class WTNotifs:
                 log.exception("[WTNotifs] Failed to get notify", exc_info=e)
                 sentry_sdk.capture_exception(e)
             finally:
-                # Sleep for 0.5 seconds to avoid rate limiting and mark the task as done in the queue
+                # Sleep for 0.5 seconds to avoid rate limiting
                 await asyncio.sleep(0.5)
-                queue.task_done()
 
     async def _get_domains(self, lang: str):
         client = AmbrTopAPI(self.bot.session, to_ambr_top(lang))

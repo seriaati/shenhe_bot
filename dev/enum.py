@@ -21,7 +21,6 @@ class CheckInAPI(Enum):
     VERCEL = "vercel"
     RENDER = "render"
     DETA = "deta"
-    RAILWAY = "railway"
 
 
 class NotifType(Enum):

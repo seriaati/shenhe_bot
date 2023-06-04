@@ -1,6 +1,6 @@
 import asyncio
 from datetime import timedelta
-from typing import Dict, Optional, Union
+from typing import Dict, List, Optional, Union
 
 import genshin
 import sentry_sdk
@@ -26,28 +26,25 @@ class RealtimeNotes:
         self._notes_dict: Dict[int, genshin.models.Notes] = {}
 
     async def start(self) -> None:
+        """Start the RealtimeNotes process.
+
+        This function retrieves all users with notifications enabled and their associated accounts,
+        and checks for new Genshin Impact API notes for each user. If a new note is found and the
+        notification threshold has been exceeded, a notification is sent to the user via Discord.
+        If an error occurs during the process, the error is logged and the exception is captured by Sentry.
+
+        Raises:
+            None
+
+        Returns:
+            None
+        """
         log.info("[RealtimeNotes] Starting...")
-
         try:
-            # Create the queue of notifications
-            queue: asyncio.Queue[
-                Optional[
-                    Union[
-                        ResinNotif,
-                        PotNotif,
-                        PTNotif,
-                    ]
-                ]
-            ] = asyncio.Queue()
-
-            # Make the queue
-            tasks = [
-                asyncio.create_task(self._make_queue(queue)),
-                asyncio.create_task(self._get_realtime_notes(queue)),
-            ]
-            await asyncio.gather(*tasks)
+            users = await self._get_users()
+            await self._check_realtime_notes(users)
         except Exception as e:  # skipcq: PYL-W0703
-            log.warning(f"[RealtimeNotes] {e}", exc_info=True)
+            log.exception(f"[RealtimeNotes] Error: {e}")
             sentry_sdk.capture_exception(e)
             owner = self.bot.get_user(self.bot.owner_id) or await self.bot.fetch_user(
                 self.bot.owner_id
@@ -59,70 +56,50 @@ class RealtimeNotes:
                 log.info(f"[RealtimeNotes] {notif_type.name}: {success}/{total} sent")
             log.info("[RealtimeNotes] Finished")
 
-    async def _make_queue(
-        self,
-        queue: asyncio.Queue[
-            Optional[
-                Union[
-                    ResinNotif,
-                    PotNotif,
-                    PTNotif,
-                ]
-            ]
-        ],
-    ) -> None:
+    async def _get_users(self) -> List[NotifBase]:
         """
-        Retrieves users from the database for each notification type that is toggled on,
-        creates the corresponding notification objects, and adds them to the provided queue.
+        Retrieve users from the database.
 
         Args:
-            queue (asyncio.Queue): An asyncio queue that stores ResinNotification, PotNotification,
-                or PtNotification objects.
+            None
 
         Returns:
-            None.
+            List[NotifBase]: A list of notification objects to process.
         """
+        result = []
         # Retrieve users from the database
         resin = await self.bot.db.notifs.resin.get_all()
         pot = await self.bot.db.notifs.pot.get_all()
         pt = await self.bot.db.notifs.pt.get_all()
 
-        # Add notification objects to the queue
+        # Add notification objects to the result list
         users = resin + pot + pt
         for user in users:
+            result.append(user)
             self._total[user.type] = self._total.get(user.type, 0) + 1
-            await queue.put(user)
 
-        await queue.put(None)
+        return result
 
-    async def _get_realtime_notes(
+    async def _check_realtime_notes(
         self,
-        queue: asyncio.Queue[
-            Optional[
-                Union[
-                    ResinNotif,
-                    PotNotif,
-                    PTNotif,
-                ]
-            ]
-        ],
+        users: List[NotifBase],
     ) -> None:
-        """
-        Retrieve and send Genshin Impact realtime notes to users.
+        """Check for new Genshin Impact API notes and send notifications to users if necessary.
+
+        This function checks for new notes from the Genshin Impact API for each user in the given list.
+        If a user has notifications enabled for the type of note being checked and the notification
+        threshold has been exceeded, a notification is sent to the user via Discord.
 
         Args:
-            queue: An asyncio queue of notification objects to process.
+            users: A list of NotifBase objects representing the users to check for notifications.
 
         Returns:
             None
+
+        Raises:
+            ValueError: If an invalid notification type is encountered.
         """
-
-        # Process notifications in the queue
-        while True:
-            notif_user = await queue.get()
-            if notif_user is None:
-                break
-
+        for notif_user in users:
             # Fetch user account details
             try:
                 user = await self.bot.db.users.get(notif_user.user_id, notif_user.uid)
@@ -136,7 +113,7 @@ class RealtimeNotes:
             elif notif_user.type is NotifType.PT:
                 db = self.bot.db.notifs.pt
             else:
-                raise AssertionError("Invalid notification type")
+                raise ValueError("Invalid notification type")
 
             # Fetch user's language preference
             lang = (await user.settings).lang or "en-US"
@@ -189,7 +166,6 @@ class RealtimeNotes:
             finally:
                 # Wait for 1.5 seconds before processing the next notification
                 await asyncio.sleep(1.5)
-                queue.task_done()
 
     @staticmethod
     async def _create_error_embed(
