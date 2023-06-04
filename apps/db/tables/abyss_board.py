@@ -96,7 +96,7 @@ class AbyssBoard:
             if category is Category.FULL_CLEAR:
                 query += " WHERE stars_collected = 36"
             return [AbyssBoardEntry(**i) for i in await self.pool.fetch(query)]
-        
+
         query = f"SELECT * FROM abyss_leaderboard ORDER BY {order} WHERE season = $1 "
         if category is Category.FULL_CLEAR:
             query += "AND stars_collected = 36"
