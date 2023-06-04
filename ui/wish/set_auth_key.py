@@ -247,13 +247,13 @@ class SubmitLink(ui.Button):
         permanent_banner = 0
         novice_banner = 0
         for wish in wish_history:
-            if wish.banner_type is genshin.models.BannerType.CHARACTER:
+            if wish.banner_type is genshin.models.GenshinBannerType.CHARACTER:
                 character_banner += 1
-            elif wish.banner_type is genshin.models.BannerType.WEAPON:
+            elif wish.banner_type is genshin.models.GenshinBannerType.WEAPON:
                 weapon_banner += 1
-            elif wish.banner_type is genshin.models.BannerType.PERMANENT:
+            elif wish.banner_type is genshin.models.GenshinBannerType.PERMANENT:
                 permanent_banner += 1
-            elif wish.banner_type is genshin.models.BannerType.NOVICE:
+            elif wish.banner_type is genshin.models.GenshinBannerType.NOVICE:
                 novice_banner += 1
 
         wish_info = WishInfo(
