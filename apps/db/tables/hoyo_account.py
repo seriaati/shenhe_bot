@@ -131,7 +131,7 @@ class HoyoAccountTable:
             users = await self.pool.fetch(
                 "SELECT user_id FROM hoyo_account WHERE genshin_daily = TRUE or honkai_daily = TRUE or hsr_daily = TRUE"
             )
-        except Exception as e:  # skipcq: PYL-W0703
+        except Exception:  # skipcq: PYL-W0703
             return
         for user in users:
             await self.pool.execute(
