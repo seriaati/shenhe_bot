@@ -51,41 +51,42 @@ class DailyCheckin:
             self._start_time = get_dt_now()
 
             # initialize the queue
-            queue: asyncio.Queue[Optional[HoyoAccount]] = asyncio.Queue()
+            queue: asyncio.Queue[HoyoAccount] = asyncio.Queue()
 
             # add users to queue
-            tasks: List[asyncio.Task] = [
-                asyncio.create_task(self._add_users_to_queue(queue))
-            ]
+            await self._add_users(queue)
 
             # add checkin tasks
-            apis = [
+            tasks: List[asyncio.Task] = []
+            apis = (
                 CheckInAPI.LOCAL,
                 CheckInAPI.VERCEL,
                 CheckInAPI.DETA,
                 CheckInAPI.RENDER,
-            ]
+            )
             for api in apis:
                 tasks.append(asyncio.create_task(self._genshin_daily_task(api, queue)))
 
-            # wait for all tasks to finish
-            await asyncio.gather(*tasks)
-            self._end_time = get_dt_now()
+            # wait until the queue is fully processed
+            await queue.join()
 
+            # cancel all checkin tasks
+            for task in tasks:
+                task.cancel()
+            # wait until all check-in tasks are cancelled.
+            await asyncio.gather(*tasks, return_exceptions=True)
+
+            self._end_time = get_dt_now()
             await self._send_report()
         except Exception as e:  # skipcq: PYL-W0703
             sentry_sdk.capture_exception(e)
-            log.warning(f"[DailyCheckin] {e}")
+            log.exception(f"[DailyCheckin] {e}")
             owner = await get_dc_user(self.bot, self.bot.owner_id)
             await owner.send(f"An error occurred in DailyCheckin:\n```\n{e}\n```")
         finally:
             log.info("[DailyCheckin] Finished")
 
-    async def _add_users_to_queue(
-        self, queue: asyncio.Queue[Optional[HoyoAccount]]
-    ) -> None:
-        log.info("[DailyCheckin] Adding users to queue...")
-
+    async def _add_users(self, queue: asyncio.Queue[Optional[HoyoAccount]]) -> None:
         users = await self.bot.db.users.get_all()
         for user in users:
             if self.no_date_check:
@@ -115,14 +116,15 @@ class DailyCheckin:
         if api is not CheckInAPI.LOCAL:
             link = self._api_links[api]
             if link is None:
-                return log.warning(f"[DailyCheckin] {api.name} link is not set")
+                log.warning(f"[DailyCheckin] {api.name} link is not set")
+                raise ValueError(f"{api.name} link is not set")
 
             async with self.bot.session.get(link) as resp:
                 if resp.status != 200:
                     log.warning(
                         f"[DailyCheckin] {api.name} returned {resp.status} status code"
                     )
-                    return
+                    raise CheckInAPIError(api, resp.status)
 
         self._total[api] = 0
         self._success[api] = 0
@@ -131,8 +133,6 @@ class DailyCheckin:
 
         while True:
             user = await queue.get()
-            if user is None:
-                break
             try:
                 embed = await self._do_genshin_daily(api, user)
                 notif = await self.bot.db.settings.get(
@@ -147,10 +147,9 @@ class DailyCheckin:
                 await queue.put(user)
 
                 if api_error_count >= MAX_API_ERROR:
-                    log.warning(
+                    return log.warning(
                         f"[DailyCheckin] {api.name} has reached {MAX_API_ERROR} API errors"
                     )
-                    return
             else:
                 self._total[api] += 1
                 if isinstance(embed, model.DefaultEmbed):
