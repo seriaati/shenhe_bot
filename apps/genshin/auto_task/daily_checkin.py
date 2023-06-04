@@ -308,7 +308,7 @@ class DailyCheckin:
             owner = await self.bot.fetch_user(410036441129943050)
 
         each_api = "\n".join(
-            f"{api.name}: {self._success[api]}/{self._total[api]}" for api in CheckInAPI
+            f"{api.name}: {self._success[api]}/{self._total[api]}" for api in self._total
         )
         embed = model.DefaultEmbed(
             "Daily Checkin Report",
