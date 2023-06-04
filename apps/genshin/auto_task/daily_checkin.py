@@ -24,8 +24,9 @@ load_dotenv()
 
 
 class DailyCheckin:
-    def __init__(self, bot: model.BotModel) -> None:
+    def __init__(self, bot: model.BotModel, no_date_check: bool = False) -> None:
         self.bot = bot
+        self.no_date_check = no_date_check
 
         self._success: Dict[CheckInAPI, int] = {}
         self._total: Dict[CheckInAPI, int] = {}

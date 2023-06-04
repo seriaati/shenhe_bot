@@ -309,6 +309,13 @@ class Schedule(commands.Cog):
         await asyncio.create_task(func(*args))
         await message.edit(content=f"Function {func_name} ended")
 
+    @commands.is_owner()
+    @commands.command(name="daily-checkin")
+    async def daily_checkin(self, ctx: commands.Context):
+        await ctx.send("Starting daily check-in...")
+        await auto_task.DailyCheckin(self.bot, True).start()
+        await ctx.send("Daily check-in ended")
+
 
 async def setup(bot: commands.AutoShardedBot) -> None:
     await bot.add_cog(Schedule(bot))
