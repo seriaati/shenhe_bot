@@ -86,7 +86,7 @@ class DailyCheckin:
         finally:
             log.info("[DailyCheckin] Finished")
 
-    async def _add_users(self, queue: asyncio.Queue[Optional[HoyoAccount]]) -> None:
+    async def _add_users(self, queue: asyncio.Queue[HoyoAccount]) -> None:
         users = await self.bot.db.users.get_all()
         for user in users:
             if self.no_date_check:
@@ -110,7 +110,7 @@ class DailyCheckin:
             self._hsr_count += 1
 
     async def _genshin_daily_task(
-        self, api: CheckInAPI, queue: asyncio.Queue[Optional[HoyoAccount]]
+        self, api: CheckInAPI, queue: asyncio.Queue[HoyoAccount]
     ) -> None:
         log.info(f"[DailyCheckin] Starting {api.name} task...")
 
