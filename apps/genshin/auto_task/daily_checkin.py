@@ -93,7 +93,8 @@ class DailyCheckin:
                 last_checkin_check = True
             else:
                 last_checkin_check = (
-                    user.last_checkin is None or user.last_checkin.day != get_dt_now().day
+                    user.last_checkin is None
+                    or user.last_checkin.day != get_dt_now().day
                 )
             if user.daily_checkin and last_checkin_check:
                 await queue.put(user)
@@ -307,7 +308,8 @@ class DailyCheckin:
             owner = await self.bot.fetch_user(410036441129943050)
 
         each_api = "\n".join(
-            f"{api.name}: {self._success[api]}/{self._total[api]}" for api in self._total
+            f"{api.name}: {self._success[api]}/{self._total[api]}"
+            for api in self._total
         )
         embed = model.DefaultEmbed(
             "Daily Checkin Report",
