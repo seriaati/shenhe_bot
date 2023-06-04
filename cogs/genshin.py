@@ -564,16 +564,18 @@ class GenshinCog(commands.Cog, name="genshin"):
             embed=abyss_result.overview_embed, view=view, files=[image]
         )
         view.message = await i.original_response()
-        await leaderboard.update_user_abyss_leaderboard(
-            abyss_result.abyss,
-            abyss_result.genshin_user,
-            abyss_result.characters,
-            abyss_result.uid,
-            abyss_result.genshin_user.info.nickname,
-            i.user.id,
-            previous,
-            self.bot.pool,
-        )
+        
+        if abyss_result.abyss.max_floor != "0-0":
+            await leaderboard.update_user_abyss_leaderboard(
+                abyss_result.abyss,
+                abyss_result.genshin_user,
+                abyss_result.characters,
+                abyss_result.uid,
+                abyss_result.genshin_user.info.nickname,
+                i.user.id,
+                previous,
+                self.bot.pool,
+            )
 
     @app_commands.command(name="stuck", description=_("Data not public?", hash=149))
     async def stuck(self, i: discord.Interaction):

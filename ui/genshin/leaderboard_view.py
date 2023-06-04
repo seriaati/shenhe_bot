@@ -97,6 +97,18 @@ class View(BaseView):
 
         return entries
 
+    @staticmethod
+    async def _filter_invalid_entries(
+        entries: Union[List[AbyssBoardEntry], List[AbyssCharaBoardEntry]],
+        db: models.Database,
+    ):
+        for e in entries:
+            if isinstance(e, AbyssBoardEntry) and e.runs == 0:
+                entries.remove(e) # type: ignore
+                await db.leaderboard.abyss.delete(e.uid, e.season)
+
+        return entries
+
     async def return_leaderboard(self, i: models.Inter):
         """Draw the leaderboard image and return leaderboard interaction"""
         if i.guild and not i.guild.chunked:
@@ -112,6 +124,9 @@ class View(BaseView):
             entries = await i.client.db.leaderboard.abyss.get_all(self.category, season)
         else:
             entries = []
+        
+        # filter out invalid entries
+        entries = await self._filter_invalid_entries(entries, i.client.db)
 
         # filter out users that are not in the guild
         if i.guild and self.area is Area.SERVER:
