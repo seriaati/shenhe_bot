@@ -2,16 +2,15 @@ import asyncio
 import datetime
 import io
 import os
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Union
 
 import discord
 import sentry_sdk
 from dotenv import load_dotenv
-from genshin import GenshinException
 
 import dev.asset as asset
 import dev.models as model
-from apps.db.tables.hoyo_account import HoyoAccount, convert_game_type
+from apps.db.tables.hoyo_account import HoyoAccount
 from apps.db.tables.user_settings import Settings
 from apps.text_map import text_map
 from apps.text_map.convert_locale import to_genshin_py
@@ -59,7 +58,6 @@ class DailyCheckin:
             # add checkin tasks
             tasks: List[asyncio.Task] = []
             apis = (
-                CheckInAPI.LOCAL,
                 CheckInAPI.VERCEL,
                 CheckInAPI.DETA,
                 CheckInAPI.RENDER,
@@ -114,18 +112,17 @@ class DailyCheckin:
     ) -> None:
         log.info(f"[DailyCheckin] Starting {api.name} task...")
 
-        if api is not CheckInAPI.LOCAL:
-            link = self._api_links[api]
-            if link is None:
-                log.warning(f"[DailyCheckin] {api.name} link is not set")
-                raise ValueError(f"{api.name} link is not set")
+        link = self._api_links[api]
+        if link is None:
+            log.warning(f"[DailyCheckin] {api.name} link is not set")
+            raise ValueError(f"{api.name} link is not set")
 
-            async with self.bot.session.get(link) as resp:
-                if resp.status != 200:
-                    log.warning(
-                        f"[DailyCheckin] {api.name} returned {resp.status} status code"
-                    )
-                    raise CheckInAPIError(api, resp.status)
+        async with self.bot.session.get(link) as resp:
+            if resp.status != 200:
+                log.warning(
+                    f"[DailyCheckin] {api.name} returned {resp.status} status code"
+                )
+                raise CheckInAPIError(api, resp.status)
 
         self._total[api] = 0
         self._success[api] = 0
@@ -158,79 +155,58 @@ class DailyCheckin:
                         user.user_id, user.uid, last_checkin=get_dt_now()
                     )
                     self._success[api] += 1
+                else:
+                    await self.bot.db.users.update(
+                        user.user_id, user.uid, daily_checkin=False
+                    )
             finally:
-                await asyncio.sleep(1.5)
+                await asyncio.sleep(2.0)
                 queue.task_done()
 
     async def _do_genshin_daily(
         self, api: CheckInAPI, user: HoyoAccount, retry_count: int = 0
     ) -> model.ShenheEmbed:
         lang = (await user.settings).lang or "en-US"
-        if api is CheckInAPI.LOCAL:
-            try:
-                client = await user.client
-                client.lang = to_genshin_py(lang)
-                reward = await client.claim_daily_reward(
-                    game=convert_game_type(user.game)
-                )
-            except GenshinException as e:
-                data = {
-                    "code": e.retcode,
-                    "msg": e.msg,
-                    "game": user.game.value,
-                }
+        api_link = self._api_links[api]
+        if api_link is None:
+            raise CheckInAPIError(api, 404)
+
+        MAX_RETRY = 3
+
+        cookie = await user.cookie
+        payload = {
+            "cookie": {
+                "ltuid": cookie.ltuid,
+                "ltoken": cookie.ltoken,
+                "cookie_token": cookie.cookie_token,
+            },
+            "lang": to_genshin_py(str(lang)),
+            "game": user.game.value,
+        }
+
+        async with self.bot.session.post(
+            url=f"{api_link}/checkin/", json=payload
+        ) as resp:
+            if resp.status == 200:
+                data = await resp.json()
             else:
-                data = {
-                    "reward": {
-                        "name": reward.name,
-                        "amount": reward.amount,
-                        "icon": reward.icon,
-                    },
-                    "game": user.game.value,
-                }
-        else:
-            api_link = self._api_links[api]
-            if api_link is None:
-                raise CheckInAPIError(api, 404)
+                raise CheckInAPIError(api, resp.status)
 
-            MAX_RETRY = 3
-
-            cookie = await user.cookie
-            payload = {
-                "cookie": {
-                    "ltuid": cookie.ltuid,
-                    "ltoken": cookie.ltoken,
-                    "cookie_token": cookie.cookie_token,
-                },
-                "lang": to_genshin_py(str(lang)),
-                "game": user.game.value,
-            }
-
-            async with self.bot.session.post(
-                url=f"{api_link}/checkin/", json=payload
-            ) as resp:
-                if resp.status == 200:
-                    data = await resp.json()
-                    if "msg" in data and "Too many" in data["msg"]:
-                        if retry_count >= MAX_RETRY:
-                            sentry_sdk.capture_message(
-                                f"[DailyCheckin] {api.name} retry limit reached, user: {user}"
-                            )
-                            raise CheckInAPIError(api, 429)
-                        await asyncio.sleep(5 * (retry_count + 1))
-                        return await self._do_genshin_daily(api, user, retry_count + 1)
-                else:
-                    raise CheckInAPIError(api, resp.status)
-
-        embed = self._create_embed(lang, data)
-        if isinstance(embed, model.ErrorEmbed):
-            await self.bot.db.users.update(user.user_id, user.uid, daily_checkin=False)
-
+        if "msg" in data:
             error_id = f"{data['code']} {data['msg']}"
             if error_id not in self._errors:
                 self._errors[error_id] = 0
             self._errors[error_id] += 1
+            if "Too many" in data["msg"] or str(data["code"]) == "-1004":
+                if retry_count >= MAX_RETRY:
+                    sentry_sdk.capture_message(
+                        f"[DailyCheckin] {api.name} retry limit reached, user: {user}"
+                    )
+                    raise CheckInAPIError(api, 429)
+                await asyncio.sleep(5 * (retry_count + 1))
+                return await self._do_genshin_daily(api, user, retry_count + 1)
 
+        embed = self._create_embed(lang, data)
         return embed
 
     @staticmethod

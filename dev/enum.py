@@ -17,7 +17,6 @@ class CardType(Enum):
 
 
 class CheckInAPI(Enum):
-    LOCAL = "local"
     VERCEL = "vercel"
     RENDER = "render"
     DETA = "deta"
