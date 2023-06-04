@@ -222,7 +222,9 @@ class HoyoAccountTable:
             **account,
         )
 
-    async def get_all_of_user(self, user_id: int, game: Optional[GameType] = None) -> list[HoyoAccount]:
+    async def get_all_of_user(
+        self, user_id: int, game: Optional[GameType] = None
+    ) -> list[HoyoAccount]:
         """Get all of a user's accounts"""
         if game:
             accounts = await self.pool.fetch(
@@ -266,7 +268,6 @@ class HoyoAccountTable:
             )
             for account in accounts
         ]
-    
 
     async def get_total(self) -> int:
         """Get the total number of accounts"""

@@ -76,7 +76,9 @@ class WTNotifs:
         for user in users:
             try:
                 # Add value to the total dict
-                self._total[user.type] = self._total.get(user.type, 0) + len(user.item_list)
+                self._total[user.type] = self._total.get(user.type, 0) + len(
+                    user.item_list
+                )
                 # Get the user's ID and item list
                 user_id = user.user_id
                 item_list = user.item_list
