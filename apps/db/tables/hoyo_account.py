@@ -1,7 +1,7 @@
 import datetime
 from typing import Optional
 
-from asyncpg import Pool, Record
+from asyncpg import Pool
 from genshin import Client, Game, Region
 from pydantic import BaseModel
 
@@ -45,12 +45,8 @@ class HoyoAccount(BaseModel):
     nickname: Optional[str]
     """Account nickname"""
 
-    genshin_daily: bool
-    """Genshin Impact daily check-in toggle"""
-    hsr_daily: bool
-    """Honkai Star Rail daily check-in toggle"""
-    honkai_daily: bool
-    """Honkai Impact 3rd daily check-in toggle"""
+    daily_checkin: bool
+    """Daily check-in toggle"""
     last_checkin: Optional[datetime.datetime] = None
     """Last daily check-in date"""
 
@@ -127,28 +123,23 @@ class HoyoAccountTable:
         self.cookie_db = cookie_db
         self.settings_db = settings_db
 
-    async def create(self) -> None:
-        """Create the table"""
-        await self.pool.execute(
-            """
-        CREATE TABLE IF NOT EXISTS hoyo_account (
-            user_id BIGINT NOT NULL,
-            uid INT NOT NULL,
-            ltuid INT NOT NULL,
-            current BOOLEAN NOT NULL,
-            game TEXT NOT NULL,
-            nickname TEXT,
-            genshin_daily BOOLEAN NOT NULL DEFAULT FALSE,
-            hsr_daily BOOLEAN NOT NULL DEFAULT FALSE,
-            honkai_daily BOOLEAN NOT NULL DEFAULT FALSE,
-            UNIQUE (user_id, uid)
-        )
-        """
-        )
-
     async def alter(self) -> None:
         await self.pool.execute(
-            "ALTER TABLE hoyo_account ADD COLUMN IF NOT EXISTS last_checkin TIMESTAMP DEFAULT NULL"
+            "ALTER TABLE hoyo_account ADD COLUMN IF NOT EXISTS daily_checkin BOOLEAN DEFAULT FALSE"
+        )
+        try:
+            users = await self.pool.fetch(
+                "SELECT user_id FROM hoyo_account WHERE genshin_daily = TRUE or honkai_daily = TRUE or hsr_daily = TRUE"
+            )
+        except Exception as e: # skipcq: PYL-W0703
+            return
+        for user in users:
+            await self.pool.execute(
+                "UPDATE hoyo_account SET daily_checkin = TRUE WHERE user_id = $1",
+                user["user_id"],
+            )
+        await self.pool.execute(
+            "ALTER TABLE hoyo_account DROP COLUMN IF EXISTS genshin_daily, DROP COLUMN IF EXISTS honkai_daily, DROP COLUMN IF EXISTS hsr_daily"
         )
 
     async def insert(

@@ -87,20 +87,24 @@ class DailyCheckin:
 
         users = await self.bot.db.users.get_all()
         for user in users:
-            last_checkin_check = (
-                user.last_checkin is None or user.last_checkin.day != get_dt_now().day
-            )
-            if user.genshin_daily and last_checkin_check:
-                self._genshin_count += 1
+            if self.no_date_check:
+                last_checkin_check = True
+            else:
+                last_checkin_check = (
+                    user.last_checkin is None or user.last_checkin.day != get_dt_now().day
+                )
+            if user.daily_checkin and last_checkin_check:
                 await queue.put(user)
-            if user.honkai_daily and last_checkin_check:
-                self._honkai_count += 1
-                await queue.put(user)
-            if user.hsr_daily and last_checkin_check:
-                self._hsr_count += 1
-                await queue.put(user)
+                self._add_count(user)
+        log.info("[DailyCheckin] Users added to queue")
 
-        await queue.put(None)
+    def _add_count(self, user: HoyoAccount) -> None:
+        if user.game is GameType.GENSHIN:
+            self._genshin_count += 1
+        elif user.game is GameType.HONKAI:
+            self._honkai_count += 1
+        elif user.game is GameType.HSR:
+            self._hsr_count += 1
 
     async def _genshin_daily_task(
         self, api: CheckInAPI, queue: asyncio.Queue[Optional[HoyoAccount]]
@@ -219,14 +223,7 @@ class DailyCheckin:
 
         embed = self._create_embed(lang, data)
         if isinstance(embed, model.ErrorEmbed):
-            kwargs = {}
-            if user.game is GameType.GENSHIN:
-                kwargs["genshin_daily"] = False
-            elif user.game is GameType.HONKAI:
-                kwargs["honkai_daily"] = False
-            elif user.game is GameType.HSR:
-                kwargs["hsr_daily"] = False
-            await self.bot.db.users.update(user.user_id, user.uid, **kwargs)
+            await self.bot.db.users.update(user.user_id, user.uid, daily_checkin=False)
 
             error_id = f"{data['code']} {data['msg']}"
             if error_id not in self._errors:

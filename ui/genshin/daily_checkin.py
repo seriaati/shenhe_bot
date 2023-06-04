@@ -32,7 +32,7 @@ class View(BaseView):
 
         self.user = await i.client.db.users.get(i.user.id)
         self.game = self.user.game
-        self.recognize_daily_checkin()
+        self.daily_checkin = self.user.daily_checkin
 
         lang = (await self.user.settings).lang
         self.lang = lang or str(i.locale)
@@ -42,14 +42,6 @@ class View(BaseView):
 
         self.author = i.user
         self.message = await i.original_response()
-
-    def recognize_daily_checkin(self) -> None:
-        if self.game is GameType.HONKAI:
-            self.daily_checkin = self.user.honkai_daily
-        elif self.game is GameType.HSR:
-            self.daily_checkin = self.user.hsr_daily
-        else:
-            self.daily_checkin = self.user.genshin_daily
 
     def add_components(self) -> None:
         self.clear_items()
@@ -90,17 +82,6 @@ class View(BaseView):
 
         await i.edit_original_response(embed=embed, view=self)
 
-    def create_kwargs(self, toggle: bool) -> Dict[str, bool]:
-        kwargs = {}
-        if self.game is GameType.HSR:
-            kwargs["hsr_daily"] = toggle
-        elif self.game is GameType.HONKAI:
-            kwargs["honkai_daily"] = toggle
-        elif self.game is GameType.GENSHIN:
-            kwargs["genshin_daily"] = toggle
-
-        return kwargs
-
 
 class ClaimReward(ui.Button):
     def __init__(self, lang: str):
@@ -137,8 +118,9 @@ class ClaimToggle(ui.Button):
 
     async def callback(self, i: Inter):
         self.view.daily_checkin = self.toggle
-        kwargs = self.view.create_kwargs(self.toggle)
-        await i.client.db.users.update(i.user.id, self.view.user.uid, **kwargs)
+        await i.client.db.users.update(
+            i.user.id, self.view.user.uid, daily_checkin=self.toggle
+        )
         self.view.add_components()
 
         await i.response.edit_message(view=self.view)
