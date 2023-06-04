@@ -61,10 +61,33 @@ class AbyssBoard:
     def __init__(self, pool: Pool):
         self.pool = pool
 
+    async def delete(self, uid: int, season: int) -> None:
+        """
+        Delete abyss leaderboard entry
+
+        Args:
+            uid (int): Genshin Impact UID
+            season (int): Abyss season
+        """
+        await self.pool.execute(
+            "DELETE FROM abyss_leaderboard WHERE uid = $1 AND season = $2",
+            uid,
+            season,
+        )
+
     async def get_all(
         self, category: Category, season: Optional[int] = None
     ) -> List[AbyssBoardEntry]:
-        """Get abyss leaderboard entries"""
+        """
+        Get abyss leaderboard entries
+
+        Args:
+            category (Category): Abyss category
+            season (int): Abyss season
+
+        Returns:
+            List[AbyssBoardEntry]: List of abyss leaderboard entries
+        """
         order = (
             "single_strike DESC" if category == Category.SINGLE_STRIKE else "runs ASC"
         )
