@@ -564,7 +564,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             embed=abyss_result.overview_embed, view=view, files=[image]
         )
         view.message = await i.original_response()
-        
+
         if abyss_result.abyss.max_floor != "0-0":
             await leaderboard.update_user_abyss_leaderboard(
                 abyss_result.abyss,

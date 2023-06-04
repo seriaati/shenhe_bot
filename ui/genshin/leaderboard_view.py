@@ -104,7 +104,7 @@ class View(BaseView):
     ):
         for e in entries:
             if isinstance(e, AbyssBoardEntry) and e.runs == 0:
-                entries.remove(e) # type: ignore
+                entries.remove(e)  # type: ignore
                 await db.leaderboard.abyss.delete(e.uid, e.season)
 
         return entries
@@ -124,7 +124,7 @@ class View(BaseView):
             entries = await i.client.db.leaderboard.abyss.get_all(self.category, season)
         else:
             entries = []
-        
+
         # filter out invalid entries
         entries = await self._filter_invalid_entries(entries, i.client.db)
 
