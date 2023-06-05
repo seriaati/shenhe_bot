@@ -101,7 +101,9 @@ class AbyssBoard:
         if category is Category.FULL_CLEAR:
             query = f"SELECT * FROM abyss_leaderboard WHERE stars_collected = 36 AND season = $1 ORDER BY {order}"
         else:
-            query = f"SELECT * FROM abyss_leaderboard ORDER BY {order} WHERE season = $1 "
+            query = (
+                f"SELECT * FROM abyss_leaderboard ORDER BY {order} WHERE season = $1 "
+            )
         return [
             AbyssBoardEntry(**i)
             for i in await self.pool.fetch(
