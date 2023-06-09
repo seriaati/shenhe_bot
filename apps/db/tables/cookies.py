@@ -28,19 +28,6 @@ class CookieTable:
             """
         )
 
-    async def migrate(self) -> None:
-        rows = await self.pool.fetch(
-            """
-            SELECT ltuid, ltoken, cookie_token
-            FROM user_accounts
-            WHERE ltuid IS NOT NULL
-            AND ltoken IS NOT NULL
-            AND cookie_token IS NOT NULL
-            """
-        )
-        for row in rows:
-            await self.insert(Cookie(**row))
-
     async def insert(self, cookie: Cookie) -> None:
         """Insert a new cookie"""
         await self.pool.execute(
