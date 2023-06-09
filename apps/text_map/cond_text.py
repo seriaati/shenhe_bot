@@ -16,7 +16,7 @@ class CondText:
                         self.data[lang] = {}
                     try:
                         self.data[lang][file] = yaml.safe_load(f)
-                    except:
+                    except Exception:  # skipcq: PYL-W0703
                         print(f"Error loading {lang}/{file}.yaml")
 
     def get_text(self, lang: str | Locale, file: str, key: str) -> str:
