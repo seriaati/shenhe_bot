@@ -3,7 +3,6 @@
 import argparse
 import asyncio
 import json
-import logging
 import os
 import platform
 import sys
@@ -41,7 +40,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     "--env",
     choices=("production", "testing", "development"),
-    required=True,
+    required=False,
+    default="development",
     help="The environment to run the application in",
 )
 args = parser.parse_args()

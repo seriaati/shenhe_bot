@@ -12,7 +12,7 @@ def load_text_maps() -> Dict[str, Dict[str, str]]:
         if j_file.endswith(".json")
     ]
     for json_file in json_files:
-        with open(f"GenshinData/TextMap/{json_file}") as f:
+        with open(f"GenshinData/TextMap/{json_file}", encoding="utf-8") as f:
             data: Dict[str, str] = json.load(f)
         result[json_file.split("TextMap")[-1].replace(".json", "")] = data
 
