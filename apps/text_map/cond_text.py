@@ -11,10 +11,13 @@ class CondText:
         langs = ["en-US", "zh-TW"]
         for lang in langs:
             for file in files:
-                with open(f"shenhe_external/{lang}/{file}.yaml") as f:
+                with open(f"shenhe_external/{lang}/{file}.yaml", encoding="utf-8") as f:
                     if lang not in self.data:
                         self.data[lang] = {}
-                    self.data[lang][file] = yaml.safe_load(f)
+                    try:
+                        self.data[lang][file] = yaml.safe_load(f)
+                    except:
+                        print(f"Error loading {lang}/{file}.yaml")
 
     def get_text(self, lang: str | Locale, file: str, key: str) -> str:
         lang = to_paths(lang)

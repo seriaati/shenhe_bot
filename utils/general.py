@@ -17,9 +17,10 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
     handlers=[
-        logging.FileHandler("log.log"),
+        logging.FileHandler("log.log", encoding="utf-8"),
         logging.StreamHandler(),
     ],
+    encoding="utf-8",
 )
 log = logging
 sentry_logging = LoggingIntegration(level=logging.INFO, event_level=logging.ERROR)
