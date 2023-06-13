@@ -83,6 +83,6 @@ async def return_farm_interaction(i: Inter, weekday: Optional[int] = None):
     view.author = i.user
 
     await i.edit_original_response(
-        embed=None, attachments=[discord.File(fp, "farm.jpeg")], view=view
+        embed=None, attachments=[discord.File(fp, "farm.png")], view=view
     )
     view.message = await i.original_response()

@@ -517,13 +517,13 @@ class TargetLevelModal(BaseModal):
             f"{elemental_burst.name}: {init_q} ▸ {q}",
         )
         embed.set_author(icon_url=character.icon, name=character.name)
-        embed.set_image(url="attachment://materials.jpeg")
+        embed.set_image(url="attachment://materials.png")
         view = View()
         view.clear_items()
         view.add_item(AddButton(items, self.lang))
         view.author = i.user
         await i.edit_original_response(
-            embed=embed, attachments=[discord.File(fp, "materials.jpeg")], view=view
+            embed=embed, attachments=[discord.File(fp, "materials.png")], view=view
         )
         view.message = await i.original_response()
 

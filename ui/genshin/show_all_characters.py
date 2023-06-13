@@ -70,9 +70,9 @@ class View(BaseView):
 
         await i.edit_original_response(
             view=self,
-            attachments=[discord.File(fp, "characters.jpeg")],
+            attachments=[discord.File(fp, "characters.png")],
             embed=DefaultEmbed(f"{len(self.character_copy)}/{total}").set_image(
-                url="attachment://characters.jpeg"
+                url="attachment://characters.png"
             ),
         )
         self.message = await i.original_response()

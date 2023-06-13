@@ -203,7 +203,7 @@ async def go_back_callback(i: Inter, enka_view: EnkaView):
         )
 
     card.seek(0)
-    file_ = discord.File(card, "card.jpeg")
+    file_ = discord.File(card, "card.png")
     await i.edit_original_response(embed=None, attachments=[file_], view=enka_view)
 
 

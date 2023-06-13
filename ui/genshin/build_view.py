@@ -251,9 +251,9 @@ async def get_embeds_for_lineup(
         text=f"{text_map.get(496, lang)}: {lineup.author_nickname} (AR {lineup.author_level})",
         icon_url=lineup.author_icon,
     )
-    embed.set_image(url="attachment://lineup.jpeg")
+    embed.set_image(url="attachment://lineup.png")
     fp.seek(0)
-    attachments.append(discord.File(fp, filename="lineup.jpeg"))
+    attachments.append(discord.File(fp, filename="lineup.png"))
     embeds.append(embed)
 
     return embeds, attachments

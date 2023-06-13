@@ -82,8 +82,8 @@ class OverviewButton(ui.Button):
         fp.seek(0)
         fp_two.seek(0)
         attachments = [
-            discord.File(fp, filename="profile.jpeg"),
-            discord.File(fp_two, filename="character.jpeg"),
+            discord.File(fp, filename="profile.png"),
+            discord.File(fp_two, filename="character.png"),
         ]
         await i.response.edit_message(
             embeds=self.view.overview_embeds,

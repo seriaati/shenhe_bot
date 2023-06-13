@@ -104,7 +104,7 @@ async def get_user_custom_image_embed(
 
 
 async def validate_image_url(url: str, session: aiohttp.ClientSession) -> bool:
-    image_extensions = ["jpg", "png", "jpeg", "gif", "webp"]
+    image_extensions = ("jpg", "png", "jpeg", "gif", "webp")
     if not any(url.endswith(ext) for ext in image_extensions):
         return False
 

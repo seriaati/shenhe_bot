@@ -176,7 +176,7 @@ class View(BaseView):
         # send leaderboard
         fp.seek(0)
         await i.edit_original_response(
-            embed=embed, attachments=[discord.File(fp, "board.jpeg")], view=self
+            embed=embed, attachments=[discord.File(fp, "board.png")], view=self
         )
 
     def get_board_users(
@@ -233,7 +233,7 @@ class View(BaseView):
             icon_url=self.author.display_avatar.url,
         )
         embed.set_footer(text=text_map.get(619, self.lang).format(command="abyss"))
-        embed.set_image(url="attachment://board.jpeg")
+        embed.set_image(url="attachment://board.png")
 
         return embed, fp
 
@@ -267,7 +267,7 @@ class View(BaseView):
             icon_url=self.author.display_avatar.url,
         )
         embed.set_footer(text=text_map.get(619, self.lang).format(command="/abyss"))
-        embed.set_image(url="attachment://board.jpeg")
+        embed.set_image(url="attachment://board.png")
 
         return embed, fp
 
@@ -319,7 +319,7 @@ class View(BaseView):
             icon_url=self.author.display_avatar.url,
         )
         embed.set_footer(text=text_map.get(619, self.lang).format(command="/abyss"))
-        embed.set_image(url="attachment://board.jpeg")
+        embed.set_image(url="attachment://board.png")
 
         return embed, result.fp
 

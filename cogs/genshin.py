@@ -196,7 +196,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         await i.followup.send(
             embed=self.parse_notes_embed(notes, lang),
-            files=[discord.File(fp, filename="realtime_notes.jpeg")],
+            files=[discord.File(fp, filename="realtime_notes.png")],
             ephemeral=ephemeral,
         )
 
@@ -244,7 +244,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                     value=expedition_str,
                     inline=False,
                 )
-        result.set_image(url="attachment://realtime_notes.jpeg")
+        result.set_image(url="attachment://realtime_notes.png")
         return result
 
     @slash_check.autocomplete("acc")
@@ -338,7 +338,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             self.bot.stats_card_cache[user.uid] = fp
 
         fp.seek(0)
-        _file = discord.File(fp, "stat_card.jpeg")
+        _file = discord.File(fp, "stat_card.png")
         await i.followup.send(
             ephemeral=context_command,
             file=_file,
@@ -383,7 +383,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
         fp.seek(0)
 
-        file_ = discord.File(fp, "area.jpeg")
+        file_ = discord.File(fp, "area.png")
         await i.followup.send(file=file_)
 
     @app_commands.command(
@@ -527,7 +527,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         characters = await client.get_genshin_characters(user.uid)
 
         overview = models.DefaultEmbed()
-        overview.set_image(url="attachment://overview_card.jpeg")
+        overview.set_image(url="attachment://overview_card.png")
         overview.set_author(
             name=f"{text_map.get(85, lang)} | {text_map.get(77, lang)} {abyss_data.season}",
             icon_url=member.display_avatar.url,
@@ -562,7 +562,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         )
         view = ui.abyss_view.View(i.user, abyss_result, lang)
         fp.seek(0)
-        image = discord.File(fp, "overview_card.jpeg")
+        image = discord.File(fp, "overview_card.png")
         await i.followup.send(
             embed=abyss_result.overview_embed, view=view, files=[image]
         )
@@ -797,9 +797,9 @@ class GenshinCog(commands.Cog, name="genshin"):
                 {asset.time_emoji} {text_map.get(589, lang).format(in_x_seconds=in_x_seconds)}
                 """,
             )
-            embed.set_image(url="attachment://profile.jpeg")
+            embed.set_image(url="attachment://profile.png")
             embed_two = models.DefaultEmbed(text_map.get(145, lang))
-            embed_two.set_image(url="attachment://character.jpeg")
+            embed_two.set_image(url="attachment://character.png")
             embed_two.set_footer(text=text_map.get(511, lang))
 
             dark_mode = await self.bot.db.settings.get(i.user.id, Settings.DARK_MODE)
@@ -825,8 +825,8 @@ class GenshinCog(commands.Cog, name="genshin"):
             view.author = i.user
             view.lang = lang
 
-            file_one = discord.File(fp, filename="profile.jpeg")
-            file_two = discord.File(fp_two, filename="character.jpeg")
+            file_one = discord.File(fp, filename="profile.png")
+            file_two = discord.File(fp_two, filename="character.png")
             await i.edit_original_response(
                 embeds=[embed, embed_two],
                 view=view,
@@ -1056,8 +1056,8 @@ class GenshinCog(commands.Cog, name="genshin"):
                         "R",
                     )
                 ),
-            ).set_image(url="attachment://banner.jpeg"),
-            file=discord.File(fp, "banner.jpeg"),
+            ).set_image(url="attachment://banner.png"),
+            file=discord.File(fp, "banner.png"),
         )
 
     @app_commands.command(
@@ -1093,7 +1093,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                     value=chamber.enemy_level,
                     inline=False,
                 )
-                embed.set_image(url="attachment://enemies.jpeg")
+                embed.set_image(url="attachment://enemies.png")
                 embeds[f"{floor.num}-{chamber.num}"] = embed
                 enemies[f"{floor.num}-{chamber.num}"] = chamber.halfs
 
