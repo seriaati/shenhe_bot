@@ -25,6 +25,7 @@ class NoCharacterFound(Exception):
 
 class CardNotFound(Exception):
     """When a TCG card in Genshin Impact is not found"""
+
     def __str__(self):
         return "Card not found"
 

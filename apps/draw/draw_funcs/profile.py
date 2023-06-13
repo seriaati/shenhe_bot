@@ -211,7 +211,9 @@ def character_card(
 
     if custom_image_url is not None:
         image_ = draw_utility.get_cache(custom_image_url)
-        custom_image = draw_utility.resize_and_crop_image(image_, 1663, 629, dark_mode=dark_mode)
+        custom_image = draw_utility.resize_and_crop_image(
+            image_, 1663, 629, dark_mode=dark_mode
+        )
         if custom_image is not None:
             element = Image.open(
                 f"yelan/templates/element/[{'dark' if dark_mode else 'light'}] {character.element.name}.png"
