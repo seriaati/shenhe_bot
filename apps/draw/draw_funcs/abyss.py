@@ -399,7 +399,7 @@ def floor_card(
         offset = (154, offset[1] + 484)
         text_offset = (240, text_offset[1] + 484)
         floor_offset = (1287, floor_offset[1] + 484)
-        
+
     fp = io.BytesIO()
     im.save(fp, "PNG", optimize=True)
     return fp

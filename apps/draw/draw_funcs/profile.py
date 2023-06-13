@@ -276,7 +276,7 @@ def overview_and_characters(
             offset = (offset[0] + 378, 48)
         else:
             offset = (offset[0], offset[1] + 344)
-            
+
     fp = io.BytesIO()
     profile_card.save(fp, format="PNG", optimize=True)
     fp_two = io.BytesIO()
