@@ -453,7 +453,7 @@ def draw_profile_card_v1(
             )
 
         # main stat
-        icon = Image.open(f"yelan/star_rail/profile/1/icon/{r.main_property.field}.png")
+        icon = Image.open(f"yelan/star_rail/profile/1/icon/{r.main_affix.field}.png")
         icon = icon.resize((50, 50))
         icon = utils.mask_image_with_color(icon, dark)
         icon_y = y + 25
@@ -461,7 +461,7 @@ def draw_profile_card_v1(
         main_stat_icon_right_pos = icon_right_pos + icon.width
         # text
         font = utils.get_font(lang, 36, "Medium")
-        text = r.main_property.displayed_value
+        text = r.main_affix.displayed_value
         draw.text(
             (main_stat_icon_right_pos + 5, icon_y + 1), text, font=font, fill=dark
         )
@@ -499,7 +499,7 @@ def draw_profile_card_v1(
         stat_y = icon_y + icon.height + 10  # main stat icon bottom pos
         stat_y_padding = 10
         font = utils.get_font(lang, 24)
-        for i, stat in enumerate(r.sub_properties):
+        for i, stat in enumerate(r.sub_affixes):
             icon = Image.open(f"yelan/star_rail/profile/1/icon/{stat.field}.png")
             icon = icon.resize((40, 40))
             icon = utils.mask_image_with_color(icon, dark)
