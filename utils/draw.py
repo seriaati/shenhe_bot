@@ -1,4 +1,3 @@
-import io
 import os
 import time
 import typing
@@ -8,7 +7,7 @@ import aiohttp
 import discord
 import enkanetwork as enka
 from fontTools.ttLib import TTFont
-from PIL import Image, ImageEnhance, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont
 import yaml
 
 import dev.asset as asset

@@ -1,15 +1,14 @@
 from typing import List
 from apps.db.tables.user_settings import Settings
+from apps.draw.main_funcs import draw_hsr_profile_card_v1
+from apps.text_map import text_map, MIHOMO_LANGS
 from dev.base_ui import BaseSelect, BaseView
 from dev.config import mid_timeout
 from dev.asset import overview_emoji, trailblazer_ids
+from dev.models import DefaultEmbed, DrawInput, Inter
 from discord import ui
 import discord
 import mihomo
-from apps.text_map import text_map, MIHOMO_LANGS
-from apps.draw.main_funcs import draw_hsr_profile_card_v1
-
-from dev.models import DefaultEmbed, DrawInput, Inter
 
 
 class View(BaseView):
@@ -42,22 +41,6 @@ class View(BaseView):
         embed.add_field(name="UID", value=str(player.uid))
         embed.add_field(name=text_map.get(794, self.lang), value=str(player.level))
         embed.add_field(name=text_map.get(795, self.lang), value=player.world_level)
-        # embed.add_field(
-        #     name=text_map.get(46, self.lang),
-        #     value=str(player.achievements),
-        # )
-        # embed.add_field(
-        #     name=text_map.get(796, self.lang),
-        #     value=str(player.characters),
-        # )
-        # embed.add_field(
-        #     name=text_map.get(798, self.lang),
-        #     value=str(player.light_cones),
-        # )
-        # embed.add_field(
-        #     name=text_map.get(797, self.lang),
-        #     value=str(player.simulated_universes),
-        # )
         embed.set_thumbnail(url=self.data.player.avatar.icon)
 
         return embed
