@@ -5,6 +5,7 @@ import discord
 import enkanetwork
 import genshin
 import sentry_sdk
+import mihomo
 
 import dev.asset as asset
 import dev.exceptions as exceptions
@@ -125,6 +126,12 @@ def get_error_handle_embed(
         embed.description = text_map.get(790, lang).format(
             current=current_game_name, supported=supported_games
         )
+    elif isinstance(e, mihomo.errors.BaseException):
+        embed.set_author(name=text_map.get(801, lang))
+        if isinstance(e, mihomo.errors.UserNotFound):
+            embed.description = text_map.get(802, lang)
+        elif isinstance(e, mihomo.errors.HttpRequestError):
+            embed.description = text_map.get(803, lang)
     elif isinstance(e, genshin.errors.GenshinException):
         if isinstance(e, genshin.errors.DataNotPublic):
             embed.set_author(name=text_map.get(22, lang))
