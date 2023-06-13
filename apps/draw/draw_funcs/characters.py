@@ -52,8 +52,7 @@ def character_card(
             background.paste(icon, (x, y - 29), icon)
 
     fp = io.BytesIO()
-    background = background.convert("RGB")
-    background.save(fp, format="JPEG", quality=95, optimize=True)
+    background.save(fp, format="PNG", optimize=True)
     return fp
 
 

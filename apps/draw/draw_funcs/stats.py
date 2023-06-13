@@ -62,9 +62,8 @@ def stats_card(
             x += 514
         count += 1
 
-    stat_card = stat_card.convert("RGB")
     fp = io.BytesIO()
-    stat_card.save(fp, "JPEG", optimize=True, quality=40)
+    stat_card.save(fp, "PNG", optimize=True)
     return fp
 
 
@@ -105,7 +104,7 @@ def area_card(explorations: List[genshin.models.Exploration], dark_mode: bool):
         im = Image.composite(im, empty, mask)
         card.paste(im, pos, im)
         pos = pos[0], pos[1] + 350
+
     fp = io.BytesIO()
-    card = card.convert("RGB")
-    card.save(fp, "JPEG", optimize=True)
+    card.save(fp, "PNG", optimize=True)
     return fp

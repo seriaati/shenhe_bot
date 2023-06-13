@@ -205,7 +205,7 @@ def draw_dynamic_background(
         max_card_num = card_num
     height += dynamic_input.card_height * max_card_num  # height of the cards
     height += dynamic_input.card_y_padding * (max_card_num - 1)  # padding between cards
-    im = Image.new("RGB", (width, height), dynamic_input.background_color)  # type: ignore
+    im = Image.new("RGBA", (width, height), dynamic_input.background_color)  # type: ignore
 
     return im, max_card_num
 
@@ -332,7 +332,7 @@ def mask_image_with_color(image: Image.Image, color, recur: int = 0) -> Image.Im
     """Apply a color mask to an image"""
     if recur < 1:
         image = mask_image_with_color(image, color, recur + 1)
-    color_bk = Image.new("RGB", image.size, color)
+    color_bk = Image.new("RGBA", image.size, color)
     return Image.composite(color_bk, image, image)
 
 

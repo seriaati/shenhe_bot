@@ -219,9 +219,8 @@ def character_card(
             card.paste(custom_image, (58, 61), custom_image)
             card.paste(element, (1652, 595), element)
 
-    card = card.convert("RGB")
     fp = io.BytesIO()
-    card.save(fp, "JPEG", optimize=True)
+    card.save(fp, "PNG", optimize=True)
     return fp
 
 
@@ -275,12 +274,11 @@ def overview_and_characters(
             offset = (offset[0] + 378, 48)
         else:
             offset = (offset[0], offset[1] + 344)
-    profile_card = profile_card.convert("RGB")
+            
     fp = io.BytesIO()
-    profile_card.save(fp, format="JPEG", quality=95, optimize=True)
-    character_bg = character_bg.convert("RGB")
+    profile_card.save(fp, format="PNG", optimize=True)
     fp_two = io.BytesIO()
-    character_bg.save(fp_two, format="JPEG", quality=95, optimize=True)
+    character_bg.save(fp_two, format="PNG", optimize=True)
     return fp, fp_two
 
 
@@ -642,7 +640,6 @@ def card_v2(
                 font=font,
             )
 
-    im = im.convert("RGB")
     fp = io.BytesIO()
-    im.save(fp, format="JPEG", quality=95, optimize=True)
+    im.save(fp, format="PNG", optimize=True)
     return fp
