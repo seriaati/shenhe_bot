@@ -335,8 +335,8 @@ def mask_image_with_color(image: Image.Image, color, recur: int = 0) -> Image.Im
     return Image.composite(color_bk, image, image)
 
 
-with open("yelan/star_rail/profile/1/data.yaml") as f:
-    hsr_card_data = yaml.safe_load(f)
+with open("yelan/star_rail/profile/1/data.yaml") as data_file:
+    hsr_card_data = yaml.safe_load(data_file)
 
 
 def get_hsr_card_data(id: str) -> typing.Optional[typing.Dict[str, typing.Any]]:
