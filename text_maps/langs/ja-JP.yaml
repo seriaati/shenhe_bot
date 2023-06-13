@@ -388,7 +388,7 @@
 '446': 今日の周回可能な素材を表示
 '447': 'キャラクターのビルドを表示: 武器、聖遺物、天賦レベル、ステータス'
 '448': ユーザーの UID を検索
-'449': キャラクターの聖遺物、統計、武器、天賦、ダメージ計算
+'449': View your in-game profile with UID
 '450': 交換コードを引き換える (/register が必要)
 '451': コード
 '452': 原神で開催中のイベントを表示
@@ -741,3 +741,11 @@
   サポートされているゲーム: **{supported}**
 '791': アカウント
 '792': 他のアカウントのデータを確認する
+'793': Trailblazer
+'794': Trailblaze Level
+'795': Equilibrium Level
+'796': Characters Unlocked
+'797': Max Simulated Universe Stage
+'798': Light Cones Unlocked
+'799': Specify the UID to search the profile with
+'800': Specify the game to search the profile with
