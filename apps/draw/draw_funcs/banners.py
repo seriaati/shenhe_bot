@@ -10,7 +10,7 @@ from utils import get_cache, get_font
 
 
 def card(banner_image_urls: List[str], lang: Locale | str) -> io.BytesIO:
-    im = Image.new("RGB", (2180 if len(banner_image_urls) > 3 else 1080, 1908))
+    im = Image.new("RGBA", (2180 if len(banner_image_urls) > 3 else 1080, 1908))
     draw = ImageDraw.Draw(im)
 
     # draw titles
@@ -40,5 +40,5 @@ def card(banner_image_urls: List[str], lang: Locale | str) -> io.BytesIO:
             offset = (offset[0], offset[1] + banner.height + padding)
 
     fp = io.BytesIO()
-    im.save(fp, format="JPEG", quality=100, optimize=True)
+    im.save(fp, format="PNG", optimize=True)
     return fp

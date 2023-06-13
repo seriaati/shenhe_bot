@@ -60,7 +60,7 @@ class QuickNavigation(ui.Select):
                 text_map.get(320, self.view.lang),
             )
             fp.seek(0)
-            file_ = discord.File(fp, filename="ascension.jpeg")
+            file_ = discord.File(fp, filename="ascension.png")
             await i.edit_original_response(
                 embed=self.view.embeds[1], attachments=[file_]
             )
@@ -131,7 +131,7 @@ async def parse_character_wiki(
         )
     )
     embed.set_author(name=text_map.get(320, lang), icon_url=character.icon)
-    embed.set_image(url="attachment://ascension.jpeg")
+    embed.set_image(url="attachment://ascension.png")
     all_materials = []
     for material in character.ascension_materials:
         full_material = await client.get_material(int(material.id))
@@ -265,7 +265,7 @@ async def parse_weapon_wiki(
     embed.set_thumbnail(url=weapon.icon)
 
     # ascension
-    embed.set_image(url="attachment://ascension.jpeg")
+    embed.set_image(url="attachment://ascension.png")
     all_materials = []
     for material in weapon.ascension_materials:
         full_material = await client.get_material(int(material.id))
@@ -291,7 +291,7 @@ async def parse_weapon_wiki(
         ),
         inline=False,
     )
-    await i.followup.send(embed=embed, file=discord.File(fp, "ascension.jpeg"))
+    await i.followup.send(embed=embed, file=discord.File(fp, "ascension.png"))
 
 
 async def parse_material_wiki(
@@ -364,8 +364,8 @@ async def parse_material_wiki(
             text_map.get(587, lang),
         )
         fp.seek(0)
-        embed.set_image(url="attachment://characters.jpeg")
-        files = [discord.File(fp, "characters.jpeg")]
+        embed.set_image(url="attachment://characters.png")
+        files = [discord.File(fp, "characters.png")]
     embed.set_thumbnail(url=material.icon)
     await i.followup.send(embed=embed, files=files)
 
@@ -422,8 +422,8 @@ async def parse_monster_wiki(
             text_map.get(622, lang),
         )
         fp.seek(0)
-        discord_file = discord.File(fp, "monster_drop.jpeg")
-        embed.set_image(url="attachment://monster_drop.jpeg")
+        discord_file = discord.File(fp, "monster_drop.png")
+        embed.set_image(url="attachment://monster_drop.png")
         files.append(discord_file)
     await i.followup.send(embed=embed, files=files)
 
@@ -464,8 +464,8 @@ async def parse_food_wiki(
                 text_map.get(626, lang),
             )
             fp.seek(0)
-            discord_file = discord.File(fp, "furniture_recipe.jpeg")
-            embed.set_image(url="attachment://furniture_recipe.jpeg")
+            discord_file = discord.File(fp, "furniture_recipe.png")
+            embed.set_image(url="attachment://furniture_recipe.png")
             files.append(discord_file)
     if food.sources is not None and food.sources:
         embed.add_field(
@@ -510,8 +510,8 @@ async def parse_furniture_wiki(
             text_map.get(626, lang),
         )
         fp.seek(0)
-        discord_file = discord.File(fp, "furniture_recipe.jpeg")
-        embed.set_image(url="attachment://furniture_recipe.jpeg")
+        discord_file = discord.File(fp, "furniture_recipe.png")
+        embed.set_image(url="attachment://furniture_recipe.png")
         files.append(discord_file)
     await i.followup.send(embed=embed, files=files)
 

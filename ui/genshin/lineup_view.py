@@ -213,7 +213,7 @@ class LineupSelector(Select):
             text=f"{text_map.get(496, self.view.lang)}: {lineup.author_nickname} (AR {lineup.author_level})",
             icon_url=lineup.author_icon,
         )
-        embed.set_image(url="attachment://lineup.jpeg")
+        embed.set_image(url="attachment://lineup.png")
 
         fp = await main_funcs.draw_lineup_card(
             DrawInput(
@@ -233,7 +233,7 @@ class LineupSelector(Select):
         self.view.add_item(GoBack(self.embed, items))
 
         await i.edit_original_response(
-            embed=embed, attachments=[File(fp, filename="lineup.jpeg")], view=self.view
+            embed=embed, attachments=[File(fp, filename="lineup.png")], view=self.view
         )
 
 

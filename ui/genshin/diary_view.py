@@ -54,7 +54,7 @@ class View(BaseView):
         fp.seek(0)
 
         self.author = i.user
-        await i.followup.send(view=self, file=File(fp, "diary.jpeg"))
+        await i.followup.send(view=self, file=File(fp, "diary.png"))
         self.message = await i.original_response()
 
     def _add_items(self):
@@ -161,7 +161,7 @@ class MonthSelect(BaseSelect):
         fp = await self.view.get_diary(i, int(self.values[0]))
         fp.seek(0)
         await self.restore(i)
-        await i.edit_original_response(attachments=[File(fp, filename="diary.jpeg")])
+        await i.edit_original_response(attachments=[File(fp, filename="diary.png")])
 
 
 class Primo(BaseButton):

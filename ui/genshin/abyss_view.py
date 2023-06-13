@@ -46,7 +46,7 @@ class FloorSelect(ui.Select):
         if self.values[0] == "overview":
             fp = self.abyss_result.overview_file
             fp.seek(0)
-            image = discord.File(fp, filename="overview_card.jpeg")
+            image = discord.File(fp, filename="overview_card.png")
             await i.edit_original_response(
                 embed=self.abyss_result.overview_embed,
                 attachments=[image],
@@ -75,9 +75,9 @@ class FloorSelect(ui.Select):
                 )
                 cache[key] = fp
             fp.seek(0)
-            image = discord.File(fp, filename="abyss_one_page.jpeg")
+            image = discord.File(fp, filename="abyss_one_page.png")
             embed = DefaultEmbed()
-            embed.set_image(url="attachment://abyss_one_page.jpeg")
+            embed.set_image(url="attachment://abyss_one_page.png")
             embed.set_author(
                 name=self.abyss_result.embed_title,
                 icon_url=self.abyss_result.discord_user.display_avatar.url,
@@ -91,7 +91,7 @@ class FloorSelect(ui.Select):
             )
             await i.edit_original_response(embed=embed, attachments=[])
             embed = DefaultEmbed()
-            embed.set_image(url="attachment://floor.jpeg")
+            embed.set_image(url="attachment://floor.png")
             embed.set_author(
                 name=self.abyss_result.embed_title,
                 icon_url=self.abyss_result.discord_user.display_avatar.url,
@@ -111,5 +111,5 @@ class FloorSelect(ui.Select):
                 )
                 cache[key] = fp
             fp.seek(0)
-            image = discord.File(fp, filename="floor.jpeg")
+            image = discord.File(fp, filename="floor.png")
             await i.edit_original_response(embed=embed, attachments=[image])

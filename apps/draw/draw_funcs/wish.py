@@ -87,10 +87,9 @@ def wish_overview(
     )
 
     fp = io.BytesIO()
-    im = im.convert("RGB")
     im = im.resize((im.width * 3, im.height * 3))
     im = im.crop((0, 240, im.width, im.height))
-    im.save(fp, "JPEG", quality=95, optimize=True)
+    im.save(fp, "PNG", optimize=True)
     return fp
 
 
@@ -107,10 +106,9 @@ def draw_wish_recents_card(
 
     draw_wish_recents(lang, recents, dark_mode, im, draw, CardType.RECENTS)
 
-    im = im.convert("RGB")
     im = im.resize((im.width * 3, im.height * 3))
     fp = io.BytesIO()
-    im.save(fp, "JPEG", quality=95, optimize=True)
+    im.save(fp, "PNG", optimize=True)
     return fp
 
 

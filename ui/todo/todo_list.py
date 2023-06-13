@@ -291,7 +291,7 @@ async def return_todo(i: models.Inter):
             "",
             False,
         )
-        embed.set_image(url="attachment://todo.jpeg")
+        embed.set_image(url="attachment://todo.png")
         embeds = [embed]
 
         for _ in range(14, len(todo_items), 14):
@@ -300,7 +300,7 @@ async def return_todo(i: models.Inter):
                 .set_author(
                     name=text_map.get(202, lang), icon_url=i.user.display_avatar.url
                 )
-                .set_image(url="attachment://todo.jpeg")
+                .set_image(url="attachment://todo.png")
             )
 
         await TodoPaginator(

@@ -297,13 +297,13 @@ class LevelModal(BaseModal):
             """,
         )
         embed.set_author(icon_url=weapon.icon, name=weapon.name)
-        embed.set_image(url="attachment://materials.jpeg")
+        embed.set_image(url="attachment://materials.png")
 
         view = BaseView(timeout=config.mid_timeout)
         view.add_item(AddButton(items, self.lang))
         view.author = i.user
 
         await i.edit_original_response(
-            embed=embed, attachments=[discord.File(fp, "materials.jpeg")], view=view
+            embed=embed, attachments=[discord.File(fp, "materials.png")], view=view
         )
         view.message = await i.original_response()

@@ -214,7 +214,7 @@ class WTNotifs:
             icon_url=item.icon,
         )
         embed.set_footer(text=text_map.get(134, lang))
-        embed.set_image(url="attachment://reminder_card.jpeg")
+        embed.set_image(url="attachment://reminder_card.png")
         return embed
 
     async def _send_notif(
@@ -222,7 +222,7 @@ class WTNotifs:
     ):
         try:
             user = self.bot.get_user(user_id) or await self.bot.fetch_user(user_id)
-            await user.send(embed=embed, file=File(fp, "reminder_card.jpeg"))
+            await user.send(embed=embed, file=File(fp, "reminder_card.png"))
         except Forbidden:
             if notif_type is NotifType.TALENT:
                 await self.bot.db.notifs.talent.update(user_id, toggle=False)

@@ -76,7 +76,7 @@ def material_card(
         draw.text((95, 121), text, font=font, fill=fill, anchor="ls")
 
     fp = io.BytesIO()
-    im.save(fp, "JPEG", quality=95, optimize=True)
+    im.save(fp, "PNG", optimize=True)
     return fp
 
 

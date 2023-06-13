@@ -38,7 +38,7 @@ class TodoPaginatorView(GeneralPaginatorView):
             False,
         )
         fp.seek(0)
-        file_ = File(fp, filename="todo.jpeg")
+        file_ = File(fp, filename="todo.png")
 
         await i.response.edit_message(
             embed=self.embeds[self.current_page], view=self, attachments=[file_]
@@ -77,5 +77,5 @@ class TodoPaginator(GeneralPaginator):
         kwargs = super().setup_kwargs(view)
 
         self.first_fp.seek(0)
-        kwargs["attachments"] = [File(self.first_fp, filename="todo.jpeg")]
+        kwargs["attachments"] = [File(self.first_fp, filename="todo.png")]
         return kwargs

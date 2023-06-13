@@ -99,7 +99,7 @@ def draw_domain_card(
         background_height += card.height + card_height_offset + y_padding_between_cards
 
     background = Image.new(
-        "RGB", (background_width, background_height), background_color  # type: ignore
+        "RGBA", (background_width, background_height), background_color  # type: ignore
     )
 
     x = right_left_margin
@@ -118,5 +118,5 @@ def draw_domain_card(
         y += card.height + card_height_offset + y_padding_between_cards
 
     fp = io.BytesIO()
-    background.save(fp, format="JPEG", quality=100, optimize=True)
+    background.save(fp, format="PNG", optimize=True)
     return fp

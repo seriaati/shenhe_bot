@@ -122,14 +122,14 @@ async def select_callback(i: Inter, view: View, value: str):
             draw_title=False,
         )
         fp.seek(0)
-        attachment = discord.File(fp, f"enemies{'' if index == 0 else '2'}.jpeg")
+        attachment = discord.File(fp, f"enemies{'' if index == 0 else '2'}.png")
         attachments.append(attachment)
 
         if index == 0:
             embed = view.embeds[value]
         else:
             embed = DefaultEmbed(text_map.get(708, view.lang))
-            embed.set_image(url="attachment://enemies2.jpeg")
+            embed.set_image(url="attachment://enemies2.png")
         embeds.append(embed)
 
     for item in view.children:

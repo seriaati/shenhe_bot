@@ -191,9 +191,8 @@ def one_page(
                 offset = (offset[0], offset[1] + 244)
             offset = (offset[0] + 1503, offset[1] - 732)
 
-    im = im.convert("RGB")
     fp = io.BytesIO()
-    im.save(fp, "JPEG", quality=95, optimize=True)
+    im.save(fp, "PNG", optimize=True)
     return fp
 
 
@@ -214,8 +213,7 @@ def strike_board(
         Category.SINGLE_STRIKE,
     )
     fp = io.BytesIO()
-    im = im.convert("RGB")
-    im.save(fp, format="JPEG", quality=95, optimize=True)
+    im.save(fp, format="PNG", optimize=True)
     return fp
 
 
@@ -236,8 +234,7 @@ def full_clear_board(
         Category.FULL_CLEAR,
     )
     fp = io.BytesIO()
-    im = im.convert("RGB")
-    im.save(fp, format="JPEG", quality=95, optimize=True)
+    im.save(fp, format="PNG", optimize=True)
     return fp
 
 
@@ -333,9 +330,8 @@ def abyss_overview(
             icon_offset = (icon_offset[0] + 1670, icon_offset[1])
         count += 1
 
-    card = card.convert("RGB")
     fp = io.BytesIO()
-    card.save(fp, "JPEG", optimize=True, quality=40)
+    card.save(fp, "PNG", optimize=True)
     return fp
 
 
@@ -403,9 +399,9 @@ def floor_card(
         offset = (154, offset[1] + 484)
         text_offset = (240, text_offset[1] + 484)
         floor_offset = (1287, floor_offset[1] + 484)
-    im = im.convert("RGB")
+
     fp = io.BytesIO()
-    im.save(fp, "JPEG", optimize=True, quality=40)
+    im.save(fp, "PNG", optimize=True)
     return fp
 
 
@@ -458,7 +454,7 @@ def character_usage(
     first_character = uc_list[0]
 
     fp = io.BytesIO()
-    im.save(fp, "JPEG", quality=95, optimize=True)
+    im.save(fp, "PNG", optimize=True)
     return CharacterUsageResult(
         fp=fp,
         first_character=first_character.character,

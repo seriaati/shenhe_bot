@@ -41,7 +41,7 @@ class WishOverviewPaginatorView(GeneralPaginatorView):
         await i.response.edit_message(
             view=self,
             attachments=[
-                discord.File(fp, filename=f"wish_overview_{current_page}.jpeg")
+                discord.File(fp, filename=f"wish_overview_{current_page}.png")
             ],
         )
 
@@ -133,7 +133,7 @@ class WishOverviewPaginator(GeneralPaginator):
         kwargs = {
             "view": view,
             "attachments": [
-                discord.File(self.first_fp, filename="wish_overview_0.jpeg")
+                discord.File(self.first_fp, filename="wish_overview_0.png")
             ],
         }
         return kwargs

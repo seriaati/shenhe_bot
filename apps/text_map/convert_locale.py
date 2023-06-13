@@ -1,4 +1,20 @@
 from discord import Locale
+from mihomo import Language
+
+MIHOMO_LANGS = {
+    "zh-CN": Language.CHS,
+    "zh-TW": Language.CHT,
+    "de": Language.DE,
+    "en-US": Language.EN,
+    "es-ES": Language.ES,
+    "fr": Language.FR,
+    "ja": Language.JP,
+    "ko": Language.KR,
+    "th": Language.TH,
+    "pt-BR": Language.PT,
+    "ru": Language.RU,
+    "vi": Language.VI,
+}
 
 ENKA_LANGS = {
     "zh-CN": "chs",

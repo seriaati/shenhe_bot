@@ -114,7 +114,6 @@ def card(
         )
         offset = (offset[0], offset[1] + 137)
 
-    im = im.convert("RGB")
     fp = io.BytesIO()
-    im.save(fp, "JPEG", optimize=True, quality=40)
+    im.save(fp, "PNG", optimize=True)
     return fp

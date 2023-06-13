@@ -1,9 +1,5 @@
-import importlib
 import pickle
 import platform
-import sys
-import traceback
-from pathlib import Path
 
 from discord.ext import commands
 from diskcache import FanoutCache
@@ -16,7 +12,7 @@ class AdminCog(commands.Cog, name="admin"):
     def __init__(self, bot):
         self.bot: BotModel = bot
         if platform.system() == "Linux":
-            import pm2py
+            import pm2py  # type: ignore
 
             self.pm2 = pm2py.PM2()
 
@@ -47,59 +43,6 @@ class AdminCog(commands.Cog, name="admin"):
     async def maintenance(self, ctx: commands.Context):
         self.bot.maintenance = not self.bot.maintenance
         await ctx.send(f"maintenance mode is now {self.bot.maintenance}")
-
-    @commands.is_owner()
-    @commands.command(name="reload")
-    async def reload(self, ctx: commands.Context):
-        message = await ctx.send("Reloading...")
-
-        modules_to_reload = (
-            "ambr",
-            "apps",
-            "data",
-            "dev",
-            "text_maps",
-            "ui",
-            "utility",
-        )
-        copy_ = sys.modules.copy()
-
-        for _ in range(2):
-            for module_name, module in copy_.items():
-                if any(module_name.startswith(name) for name in modules_to_reload):
-                    try:
-                        importlib.reload(module)
-                    except ImportError:
-                        continue
-                    except Exception:  # skipcq: PYL-W0703
-                        await ctx.send(
-                            f"""
-                            Error reloading module: {module_name}
-                            ```py
-                            {traceback.format_exc()}
-                            ```
-                            """
-                        )
-                        return
-
-        for cog in Path("cogs").glob("*.py"):
-            if cog.stem in ("login", "grafana", "schedule"):
-                continue
-
-            try:
-                await self.bot.reload_extension(f"cogs.{cog.stem}")
-            except Exception:  # skipcq: PYL-W0703
-                await ctx.send(
-                    f"""
-                    Error reloading cog: {cog.stem}
-                    ```py
-                    {traceback.format_exc()}
-                    ```
-                    """
-                )
-                return
-
-        await message.edit(content="Reloaded")
 
     @commands.is_owner()
     @commands.command(name="sync")

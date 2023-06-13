@@ -24,6 +24,8 @@ class NoCharacterFound(Exception):
 
 
 class CardNotFound(Exception):
+    """When a TCG card in Genshin Impact is not found"""
+
     def __str__(self):
         return "Card not found"
 
@@ -51,7 +53,7 @@ class AutocompleteError(Exception):
 
 
 class CardNotReady(Exception):
-    pass
+    """When a profile card design for a character is not ready yet"""
 
 
 class FeatureDisabled(Exception):

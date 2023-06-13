@@ -1,4 +1,3 @@
-import io
 import os
 import time
 import typing
@@ -8,7 +7,8 @@ import aiohttp
 import discord
 import enkanetwork as enka
 from fontTools.ttLib import TTFont
-from PIL import Image, ImageChops, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont
+import yaml
 
 import dev.asset as asset
 from apps.text_map import text_map
@@ -35,7 +35,7 @@ def extract_urls(objects: typing.List[typing.Any]) -> typing.List[str]:
 
 
 async def download_images(
-    urls: typing.List[str], session: aiohttp.ClientSession
+    urls: typing.Sequence[str], session: aiohttp.ClientSession
 ) -> None:
     """Download images from urls."""
     for url in urls:
@@ -204,7 +204,7 @@ def draw_dynamic_background(
         max_card_num = card_num
     height += dynamic_input.card_height * max_card_num  # height of the cards
     height += dynamic_input.card_y_padding * (max_card_num - 1)  # padding between cards
-    im = Image.new("RGB", (width, height), dynamic_input.background_color)  # type: ignore
+    im = Image.new("RGBA", (width, height), dynamic_input.background_color)  # type: ignore
 
     return im, max_card_num
 
@@ -276,14 +276,15 @@ def has_glyph(font: TTFont, glyph: str):
 
 
 def resize_and_crop_image(
-    im: Image.Image, version: int = 1, dark_mode: bool = False
+    im: Image.Image,
+    target_width: int,
+    target_height: int,
+    *,
+    dark_mode: bool = False,
+    radius: int = 25,
 ) -> Image.Image:
     """Resize and crop an image to fit the card template"""
     im = im.convert("RGBA")
-
-    # Define the target width and height
-    target_width = 1663 if version == 1 else 472
-    target_height = 629 if version == 1 else 839
 
     # Get the original width and height
     width, height = im.size
@@ -310,7 +311,6 @@ def resize_and_crop_image(
         im = Image.alpha_composite(im, Image.new("RGBA", im.size, (0, 0, 0, 50)))  # type: ignore
 
     # make rounded corners
-    radius = 20 if version == 1 else 25
     mask = Image.new("L", im.size, 0)
     draw = ImageDraw.Draw(mask)
     draw.rounded_rectangle((0, 0, im.width, im.height), radius=radius, fill=255)
@@ -327,18 +327,18 @@ def format_stat(stat: enka.EquipmentsStats) -> str:
     return value
 
 
-def mask_image_with_color(image: Image.Image, color) -> Image.Image:
+def mask_image_with_color(image: Image.Image, color, recur: int = 0) -> Image.Image:
     """Apply a color mask to an image"""
-    image = image.convert("RGBA")
-    mask = Image.new("RGBA", image.size, color)
-    return ImageChops.multiply(image, mask)
+    if recur < 1:
+        image = mask_image_with_color(image, color, recur + 1)
+    color_bk = Image.new("RGBA", image.size, color)
+    return Image.composite(color_bk, image, image)
 
 
-def compress_image_util(fp_input: bytes) -> bytes:
-    """Compress an image to a byte array"""
-    im = Image.open(io.BytesIO(fp_input))
-    fp = io.BytesIO()
-    im = im.convert("RGB")
-    im.save(fp, format="JPEG", optimize=True, quality=50)
-    fp.seek(0)
-    return fp.read()
+with open("yelan/star_rail/profile/1/data.yaml") as data_file:
+    hsr_card_data = yaml.safe_load(data_file)
+
+
+def get_hsr_card_data(id: str) -> typing.Optional[typing.Dict[str, typing.Any]]:
+    """Get the data for a card"""
+    return hsr_card_data.get(id)

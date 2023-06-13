@@ -196,7 +196,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         await i.followup.send(
             embed=self.parse_notes_embed(notes, lang),
-            files=[discord.File(fp, filename="realtime_notes.jpeg")],
+            files=[discord.File(fp, filename="realtime_notes.png")],
             ephemeral=ephemeral,
         )
 
@@ -244,10 +244,13 @@ class GenshinCog(commands.Cog, name="genshin"):
                     value=expedition_str,
                     inline=False,
                 )
-        result.set_image(url="attachment://realtime_notes.jpeg")
+        result.set_image(url="attachment://realtime_notes.png")
         return result
 
     @slash_check.autocomplete("acc")
+    async def autocomplete(self, i: discord.Interaction, current: str):
+        return await self.acc_autocomplete(i, current)
+
     async def acc_autocomplete(self, i: discord.Interaction, current: str):
         choices: List[app_commands.Choice] = []
         user: Optional[Union[discord.Member, discord.User]] = i.namespace.user
@@ -335,7 +338,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             self.bot.stats_card_cache[user.uid] = fp
 
         fp.seek(0)
-        _file = discord.File(fp, "stat_card.jpeg")
+        _file = discord.File(fp, "stat_card.png")
         await i.followup.send(
             ephemeral=context_command,
             file=_file,
@@ -380,7 +383,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
         fp.seek(0)
 
-        file_ = discord.File(fp, "area.jpeg")
+        file_ = discord.File(fp, "area.png")
         await i.followup.send(file=file_)
 
     @app_commands.command(
@@ -524,7 +527,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         characters = await client.get_genshin_characters(user.uid)
 
         overview = models.DefaultEmbed()
-        overview.set_image(url="attachment://overview_card.jpeg")
+        overview.set_image(url="attachment://overview_card.png")
         overview.set_author(
             name=f"{text_map.get(85, lang)} | {text_map.get(77, lang)} {abyss_data.season}",
             icon_url=member.display_avatar.url,
@@ -559,7 +562,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         )
         view = ui.abyss_view.View(i.user, abyss_result, lang)
         fp.seek(0)
-        image = discord.File(fp, "overview_card.jpeg")
+        image = discord.File(fp, "overview_card.png")
         await i.followup.send(
             embed=abyss_result.overview_embed, view=view, files=[image]
         )
@@ -652,133 +655,186 @@ class GenshinCog(commands.Cog, name="genshin"):
     @app_commands.command(
         name="profile",
         description=_(
-            "View your genshin profile: Character stats, artifacts, and perform damage calculations",
+            "View your in-game profile with UID",
             hash=449,
         ),
     )
-    @app_commands.rename(member=_("user", hash=415))
+    @app_commands.choices(
+        game=[
+            app_commands.Choice(name=_("Genshin Impact", hash=313), value="genshin"),
+            app_commands.Choice(name=_("Honkai: Star Rail", hash=770), value="hsr"),
+        ]
+    )
+    @app_commands.rename(
+        member=_("user", hash=415),
+        custom_uid="uid",
+        game=_("game", hash=784),
+        account=_("account", hash=791),
+    )
     @app_commands.describe(
         member=_("Check other user's data", hash=416),
+        custom_uid=_("Specify the UID to search the profile with", hash=799),
+        game=_("Specify the game to search the profile with", hash=800),
+        account=_("Check data of your other accounts", hash=792),
     )
     async def profile(
         self,
-        i: discord.Interaction,
+        inter: discord.Interaction,
         member: Optional[discord.User | discord.Member] = None,
-        uid: Optional[int] = None,
+        custom_uid: Optional[int] = None,
+        game: Optional[str] = None,
+        account: Optional[str] = None,
     ):
-        await self.profile_command(i, member, False, uid)
+        i: models.Inter = inter  # type: ignore
+        await self.profile_command(
+            i,
+            member=member,
+            custom_uid=custom_uid,
+            game=game,
+            account=account,
+            ephemeral=False,
+        )
 
-    async def profile_ctx_menu(self, i: discord.Interaction, member: discord.User):
-        await self.profile_command(i, member)
+    @profile.autocomplete("account")
+    async def profile_account_autocomplete(self, i: discord.Interaction, current: str):
+        return await self.acc_autocomplete(i, current)
+
+    async def profile_ctx_menu(self, inter: discord.Interaction, member: discord.User):
+        i: models.Inter = inter  # type: ignore
+        await self.profile_command(i, member=member, ephemeral=False)
 
     async def profile_command(
         self,
-        i: discord.Interaction,
-        member: Optional[discord.User | discord.Member] = None,
-        ephemeral: bool = True,
+        i: models.Inter,
+        *,
+        member: Optional[Union[discord.User, discord.Member]] = None,
         custom_uid: Optional[int] = None,
+        game: Optional[str] = None,
+        account: Optional[str] = None,
+        ephemeral: bool = True,
     ):
         await i.response.defer(ephemeral=ephemeral)
         member = member or i.user
 
-        uid = custom_uid or await self.bot.db.users.get_uid(member.id)
+        uid = custom_uid
+        game_ = GameType(game) if game else GameType.GENSHIN
+
+        if uid is None:
+            try:
+                if account:
+                    user = await self.bot.db.users.get(member.id, uid=int(account))
+                else:
+                    user = await self.bot.db.users.get(member.id)
+            except exceptions.AccountNotFound as e:
+                if account:
+                    raise exceptions.AutocompleteError
+                raise e
+            else:
+                uid = user.uid
+                game_ = user.game
         lang = await self.bot.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
 
-        data, en_data, card_data = await enka.get_enka_data(
-            uid, convert_locale.to_enka(lang), self.bot.pool
-        )
-
-        embeds = [
-            models.DefaultEmbed()
-            .set_author(
-                name=text_map.get(644, lang),
-                icon_url=asset.loader,
+        if game_ is GameType.HSR:
+            view = ui.mihomo_profile.View()
+            await view.start(i, uid, lang)
+        elif game_ is GameType.GENSHIN:
+            data, en_data, card_data = await enka.get_enka_data(
+                uid, convert_locale.to_enka(lang), self.bot.pool
             )
-            .set_image(url="https://i.imgur.com/3U1bJ0Z.gif"),
-            models.DefaultEmbed()
-            .set_author(
-                name=text_map.get(644, lang),
-                icon_url=asset.loader,
-            )
-            .set_image(url="https://i.imgur.com/25pdyUG.gif"),
-        ]
 
-        options: List[discord.SelectOption] = []
-        non_cache_ids: List[int] = []
-        if card_data and card_data.characters:
-            non_cache_ids = [c.id for c in card_data.characters]
-
-        for c in data.characters:
-            if c.id not in non_cache_ids:
-                description = text_map.get(543, lang)
-            else:
-                description = None
-            label = f"{c.name} | Lv.{c.level} | C{c.constellations_unlocked}R{c.equipments[-1].refinement}"
-            emoji = get_character_emoji(str(c.id))
-            options.append(
-                discord.SelectOption(
-                    label=label,
-                    description=description,
-                    value=str(c.id),
-                    emoji=emoji,
+            embeds = [
+                models.DefaultEmbed()
+                .set_author(
+                    name=text_map.get(644, lang),
+                    icon_url=asset.loader,
                 )
+                .set_image(url="https://i.imgur.com/3U1bJ0Z.gif"),
+                models.DefaultEmbed()
+                .set_author(
+                    name=text_map.get(644, lang),
+                    icon_url=asset.loader,
+                )
+                .set_image(url="https://i.imgur.com/25pdyUG.gif"),
+            ]
+
+            options: List[discord.SelectOption] = []
+            non_cache_ids: List[int] = []
+            if card_data and card_data.characters:
+                non_cache_ids = [c.id for c in card_data.characters]
+
+            for c in data.characters:
+                if c.id not in non_cache_ids:
+                    description = text_map.get(543, lang)
+                else:
+                    description = None
+                label = f"{c.name} | Lv.{c.level} | C{c.constellations_unlocked}R{c.equipments[-1].refinement}"
+                emoji = get_character_emoji(str(c.id))
+                options.append(
+                    discord.SelectOption(
+                        label=label,
+                        description=description,
+                        value=str(c.id),
+                        emoji=emoji,
+                    )
+                )
+
+            view = ui.enka_profile.View([], lang)
+            disable_view_items(view)
+
+            await i.edit_original_response(
+                embeds=embeds,
+                attachments=[],
+                view=view,
             )
 
-        view = ui.enka_profile.View([], lang)
-        disable_view_items(view)
+            in_x_seconds = format_dt(
+                general.get_dt_now() + timedelta(seconds=data.ttl), "R"
+            )
+            embed = models.DefaultEmbed(
+                text_map.get(144, lang),
+                f"""
+                {asset.link_emoji} [{text_map.get(588, lang)}](https://enka.cc/u/{uid})
+                {asset.time_emoji} {text_map.get(589, lang).format(in_x_seconds=in_x_seconds)}
+                """,
+            )
+            embed.set_image(url="attachment://profile.png")
+            embed_two = models.DefaultEmbed(text_map.get(145, lang))
+            embed_two.set_image(url="attachment://character.png")
+            embed_two.set_footer(text=text_map.get(511, lang))
 
-        await i.edit_original_response(
-            embeds=embeds,
-            attachments=[],
-            view=view,
-        )
+            dark_mode = await self.bot.db.settings.get(i.user.id, Settings.DARK_MODE)
+            fp, fp_two = await main_funcs.draw_profile_overview_card(
+                models.DrawInput(
+                    loop=self.bot.loop,
+                    session=self.bot.session,
+                    lang=lang,
+                    dark_mode=dark_mode,
+                ),
+                card_data or data,
+            )
+            fp.seek(0)
+            fp_two.seek(0)
 
-        in_x_seconds = format_dt(
-            general.get_dt_now() + timedelta(seconds=data.ttl), "R"
-        )
-        embed = models.DefaultEmbed(
-            text_map.get(144, lang),
-            f"""
-            {asset.link_emoji} [{text_map.get(588, lang)}](https://enka.cc/u/{uid})
-            {asset.time_emoji} {text_map.get(589, lang).format(in_x_seconds=in_x_seconds)}
-            """,
-        )
-        embed.set_image(url="attachment://profile.jpeg")
-        embed_two = models.DefaultEmbed(text_map.get(145, lang))
-        embed_two.set_image(url="attachment://character.jpeg")
-        embed_two.set_footer(text=text_map.get(511, lang))
+            view = ui.enka_profile.View(options, lang)
+            view.overview_embeds = [embed, embed_two]
+            view.overview_fps = [fp, fp_two]
+            view.data = data
+            view.en_data = en_data
+            view.card_data = card_data
+            view.member = member
+            view.author = i.user
+            view.lang = lang
 
-        dark_mode = await self.bot.db.settings.get(i.user.id, Settings.DARK_MODE)
-        fp, fp_two = await main_funcs.draw_profile_overview_card(
-            models.DrawInput(
-                loop=self.bot.loop,
-                session=self.bot.session,
-                lang=lang,
-                dark_mode=dark_mode,
-            ),
-            card_data or data,
-        )
-        fp.seek(0)
-        fp_two.seek(0)
-
-        view = ui.enka_profile.View(options, lang)
-        view.overview_embeds = [embed, embed_two]
-        view.overview_fps = [fp, fp_two]
-        view.data = data
-        view.en_data = en_data
-        view.card_data = card_data
-        view.member = member
-        view.author = i.user
-        view.lang = lang
-
-        file_one = discord.File(fp, filename="profile.jpeg")
-        file_two = discord.File(fp_two, filename="character.jpeg")
-        await i.edit_original_response(
-            embeds=[embed, embed_two],
-            view=view,
-            attachments=[file_one, file_two],
-        )
-        view.message = await i.original_response()
+            file_one = discord.File(fp, filename="profile.png")
+            file_two = discord.File(fp_two, filename="character.png")
+            await i.edit_original_response(
+                embeds=[embed, embed_two],
+                view=view,
+                attachments=[file_one, file_two],
+            )
+            view.message = await i.original_response()
+        else:
+            raise exceptions.GameNotSupported(game_, [GameType.GENSHIN, GameType.HSR])
 
     @app_commands.command(name="redeem", description=_("Redeem a gift code", hash=450))
     async def redeem(self, inter: discord.Interaction):
@@ -998,8 +1054,8 @@ class GenshinCog(commands.Cog, name="genshin"):
                         "R",
                     )
                 ),
-            ).set_image(url="attachment://banner.jpeg"),
-            file=discord.File(fp, "banner.jpeg"),
+            ).set_image(url="attachment://banner.png"),
+            file=discord.File(fp, "banner.png"),
         )
 
     @app_commands.command(
@@ -1035,7 +1091,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                     value=chamber.enemy_level,
                     inline=False,
                 )
-                embed.set_image(url="attachment://enemies.jpeg")
+                embed.set_image(url="attachment://enemies.png")
                 embeds[f"{floor.num}-{chamber.num}"] = embed
                 enemies[f"{floor.num}-{chamber.num}"] = chamber.halfs
 
