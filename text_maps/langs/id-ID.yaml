@@ -391,7 +391,7 @@
 '446': Lihat item farmable hari ini
 '447': 'Lihat build karakter: Senjata, Artefak, Level Talenta, Statistik'
 '448': Cari UID pengguna
-'449': Lihat Artefak, Statistik, Senjata, dan Talenta Karakter, serta hitung damage
+'449': View your in-game profile with UID
 '450': Redeem kode gift (perlu /register)
 '451': kode
 '452': Lihat event yang sedang berlangsung di genshin
@@ -748,3 +748,11 @@
   Game yang didukung adalah: **{supported}**
 '791': akun
 '792': Periksa data akun kamu yang lain
+'793': Trailblazer
+'794': Trailblaze Level
+'795': Equilibrium Level
+'796': Characters Unlocked
+'797': Max Simulated Universe Stage
+'798': Light Cones Unlocked
+'799': Specify the UID to search the profile with
+'800': Specify the game to search the profile with
