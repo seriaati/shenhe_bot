@@ -1,134 +1,134 @@
-'1': Đầy
-'2': Tiền Động Tiên
-'4': Nhựa
-'5': Giảm tiêu hao nhựa
-'6': Ủy thác hằng ngày
-'7': phút
-'8': P.T. remaining time
-'9': Có thể sử dụng
-'10': Có lỗi xảy ra với Genshin's API
-'11': P.T. not found
-'12': giây
-'13': Hôm nay
-'14': Không có sẵn dữ liệu về tháng bạn đã chọn trong nhật ký
-'15': Thời gian phục hồi
-'16': Lệnh /check được khuyên dùng
-'17': Hãy nhấn chọn tôi để tiếp tục
-'18': Discord doesn't allow modal after a modal, so you have to click on the button to continue ¯\_(ツ)_/¯
-'19': Tất cả nhân vật
-'20': Thám hiểm
-'21': </stuck:1006486283725590536> để biết thêm thông tin
-'22': Dữ liệu không được công khai
-'23': Lỗi
-'24': Ghi chép thời gian thực
-'25': Thứ 2.
-'26': Thứ Ba.
-'27': Thứ Tư.
-'28': Thứ Năm.
-'29': Thứ Sáu.
-'30': Thứ Bảy.
-'31': Chủ Nhật.
-'32': Hãy chọn ngôn ngữ
-'33': Vũ khí
-'34': Ngôn ngữ hiện tại
-'35': Use </register:1044926380242120744> for more information
-'36': Invalid Cookie
-'37': Bộ Thánh Di Vật
-'38': Search Genshin lineups with Hoyolab's lineup simulator
-'39': Đã thêm tài khoản
-'40': You've already claimed today's daily check-in reward!
-'41': Obtained {reward}
-'42': Daily check-in reward claimed
-'43': Tổng quan
-'44': Số ngày hoạt động
-'45': Type a nickname for the custom image
-'46': Thành tựu
-'47': La Hoàn Thâm Cảnh
-'52': "Nhân vật hệ {element}"
-'56': Genshin stats
-'58': Thám hiểm thế giới
-'59': Set custom image for {character_name}
-'60': URL hình ảnh
-'61': Gỡ bỏ hình ảnh
-'62': Set custom image
-'63': Xem thông tin của bot
-'64': image-file
-'65': The image file to upload
-'66': Biệt danh của hình ảnh
-'67': The character to use the image
-'68': Upload a custom image for /profile character cards
-'69': Nhật ký của Nhà Lữ Hành
-'70': Primo Log
-'71': nguyên thạch
-'72': Mora Log
-'73': mora
-'74': |-
+"1": Đầy
+"2": Tiền Động Tiên
+"4": Nhựa
+"5": Giảm tiêu hao nhựa
+"6": Ủy thác hằng ngày
+"7": phút
+"8": P.T. remaining time
+"9": Có thể sử dụng
+"10": Có lỗi xảy ra với Genshin's API
+"11": P.T. not found
+"12": giây
+"13": Hôm nay
+"14": Không có sẵn dữ liệu về tháng bạn đã chọn trong nhật ký
+"15": Thời gian phục hồi
+"16": Lệnh /check được khuyên dùng
+"17": Hãy nhấn chọn tôi để tiếp tục
+"18": Discord doesn't allow modal after a modal, so you have to click on the button to continue ¯\_(ツ)_/¯
+"19": Tất cả nhân vật
+"20": Thám hiểm
+"21": </stuck:1006486283725590536> để biết thêm thông tin
+"22": Dữ liệu không được công khai
+"23": Lỗi
+"24": Ghi chép thời gian thực
+"25": Thứ 2.
+"26": Thứ Ba.
+"27": Thứ Tư.
+"28": Thứ Năm.
+"29": Thứ Sáu.
+"30": Thứ Bảy.
+"31": Chủ Nhật.
+"32": Hãy chọn ngôn ngữ
+"33": Vũ khí
+"34": Ngôn ngữ hiện tại
+"35": Use </register:1044926380242120744> for more information
+"36": Invalid Cookie
+"37": Bộ Thánh Di Vật
+"38": Search Genshin lineups with Hoyolab's lineup simulator
+"39": Đã thêm tài khoản
+"40": You've already claimed today's daily check-in reward!
+"41": Obtained {reward}
+"42": Daily check-in reward claimed
+"43": Tổng quan
+"44": Số ngày hoạt động
+"45": Type a nickname for the custom image
+"46": Thành tựu
+"47": La Hoàn Thâm Cảnh
+"52": "Nhân vật hệ {element}"
+"56": Genshin stats
+"58": Thám hiểm thế giới
+"59": Set custom image for {character_name}
+"60": URL hình ảnh
+"61": Gỡ bỏ hình ảnh
+"62": Set custom image
+"63": Xem thông tin của bot
+"64": image-file
+"65": The image file to upload
+"66": Biệt danh của hình ảnh
+"67": The character to use the image
+"68": Upload a custom image for /profile character cards
+"69": Nhật ký của Nhà Lữ Hành
+"70": Primo Log
+"71": nguyên thạch
+"72": Mora Log
+"73": mora
+"74": |-
   Use the </stats:1006486283725590530> to check your abyss progress,
   this command only shows data above floor 9.
-'75': No wish data found for this filter
-'76': Spiral abyss data not found
-'77': Lunar phase
-'79': Equipped by {character_name}
-'80': Strongest single strike
-'81': Most kills
-'82': Most damage taken
-'83': Most bursts used
-'84': Most skills used
-'85': Spiral Abyss Overview
-'86': image-name
-'88': Spiral Abyss Leaderboard ({phase}{num})
-'89': rank
-'90': 'Build #'
-'91': Vũ khí
-'92': Thánh Di Vật
-'93': Main Stats
-'94': Thiên phú
-'95': Thông tin nhân vật
-'96': Source
-'97': Artifact Thoughts
-'99': 'ON'
-'100': 'OFF'
-'101': Toggle
-'102': Tiền Động Tiên hiện tại
-'103': Max notification number
-'105': Nhân vật
-'106': Code has been redeemed already
-'107': Code is invalid
-'108': Code
-'109': Code redeemed successfully
-'124': Trở về mặc định
-'125': |-
+"75": No wish data found for this filter
+"76": Spiral abyss data not found
+"77": Lunar phase
+"79": Equipped by {character_name}
+"80": Strongest single strike
+"81": Most kills
+"82": Most damage taken
+"83": Most bursts used
+"84": Most skills used
+"85": Spiral Abyss Overview
+"86": image-name
+"88": Spiral Abyss Leaderboard ({phase}{num})
+"89": rank
+"90": "Build #"
+"91": Vũ khí
+"92": Thánh Di Vật
+"93": Main Stats
+"94": Thiên phú
+"95": Thông tin nhân vật
+"96": Source
+"97": Artifact Thoughts
+"99": "ON"
+"100": "OFF"
+"101": Toggle
+"102": Tiền Động Tiên hiện tại
+"103": Max notification number
+"105": Nhân vật
+"106": Code has been redeemed already
+"107": Code is invalid
+"108": Code
+"109": Code redeemed successfully
+"124": Trở về mặc định
+"125": |-
   • By default, shenhe responds to you with the same language your discord uses
   • Changing language will override the default language
   • If any text is not translated yet, shenhe will respond to you with English
   • Names of genshin characters, weapons, and other game elements will be translated automatically
   • Interested in translating Shenhe to your language? Check out the [crowdin](https://crowdin.com/project/shenhe-bot) page
-'126': Auto code redemption
-'127': Code redemption failed
-'128': Ngôn ngữ
-'129': Mondstat
-'130': Liyue
-'131': Inazuma
-'132': Me too!
-'133': Redemption is on cooldown, please try again later
-'134': Wrong timing? Add your UID using /accounts so Shenhe knows which server you're in
-'135': Có lỗi xảy ra
-'136': Select an account
-'137': Notification
-'138': |-
+"126": Auto code redemption
+"127": Code redemption failed
+"128": Ngôn ngữ
+"129": Mondstat
+"130": Liyue
+"131": Inazuma
+"132": Me too!
+"133": Redemption is on cooldown, please try again later
+"134": Wrong timing? Add your UID using /accounts so Shenhe knows which server you're in
+"135": Có lỗi xảy ra
+"136": Select an account
+"137": Notification
+"138": |-
   Turn off direct messages sent by Shenhe other than the </remind:1044926380242120753> ones.
-'139': Đội hình Nhân vật
-'140': Select a lineup scenario
-'141': No character found in your in-game showcase!
-'142': Hãy chọn một nguyên tố
-'143': You are not the issuer of this command
-'144': Tóm tắt hồ sơ
-'145': Character showcase
-'146': Tầng {a}
-'147': Uptime
-'148': Hãy chọn tầng La Hoàn Thâm Cảnh
-'149': Dữ liệu không được công khai?
-'150': |-
+"139": Đội hình Nhân vật
+"140": Select a lineup scenario
+"141": No character found in your in-game showcase!
+"142": Hãy chọn một nguyên tố
+"143": You are not the issuer of this command
+"144": Tóm tắt hồ sơ
+"145": Character showcase
+"146": Tầng {a}
+"147": Uptime
+"148": Hãy chọn tầng La Hoàn Thâm Cảnh
+"149": Dữ liệu không được công khai?
+"150": |-
   Please go to https://www.hoyolab.com/home and login
   Follow the steps in the image below
 
@@ -137,623 +137,626 @@
   3. Click `Genshin` on the top right corner
   4. Click the gear icon
   5. Toggle all the switches
-'151': Last last phase
-'152': Resin threshold
-'153': Select an abyss phase
-'154': All time
-'155': DM will stop after this number of times
-'157': Hãy chọn một nhân vật
-'158': Hiện tại không có thông báo được cài đặt cho nhân vật nào
-'159': Current characters
-'160': Least runs taken to full clear abyss
-'161': Choosing this character will turn OFF its notifications
-'162': Build
-'163': Choose a build
-'164': builds
-'167': "{name}'s UID"
-'168': current level
-'169': Character {level_type}
-'170': 'For Example: {a}'
-'171': Auto attack target (A) {level_type}
-'172': The number needs to be between {a} and {b}
-'173': Elemental skill (E) {level_type}
-'174': Elemental burst (Q) {level_type}
-'175': Add to todo list
-'176': Page {num}
-'177': Chamber {a}
-'178': Use </todo:1020188057628065863> to view your todo list
-'179': Success
-'180': Choose a weapon
-'181': Input calculation data
-'182': target level
-'183': Character level
-'184': Use the {command} command to calculate the number of materials needed to level up this character
-'185': Weapon {level_type}
-'186': "wins/runs"
-'187': Please enter numbers only
-'188': Use the {command} command to calculate the number of materials needed to level up this weapon
-'189': No card for this character yet, check back later!
-'190': Invalid Input
-'192': Calculation content
-'193': Powered by Genshin Optimizer
-'195': Loại file không hợp lệ
-'196': Tổng quan nhân vật Genshin
-'197': No materials needed
-'198': người chơi
-'199': single strike
-'200': Weapon Level
-'201': tầng
-'202': Todo list
-'203': Thêm vật phẩm
-'204': |-
+"151": Last last phase
+"152": Resin threshold
+"153": Select an abyss phase
+"154": All time
+"155": DM will stop after this number of times
+"157": Hãy chọn một nhân vật
+"158": Hiện tại không có thông báo được cài đặt cho nhân vật nào
+"159": Current characters
+"160": Least runs taken to full clear abyss
+"161": Choosing this character will turn OFF its notifications
+"162": Build
+"163": Choose a build
+"164": builds
+"167": "{name}'s UID"
+"168": current level
+"169": Character {level_type}
+"170": "For Example: {a}"
+"171": Auto attack target (A) {level_type}
+"172": The number needs to be between {a} and {b}
+"173": Elemental skill (E) {level_type}
+"174": Elemental burst (Q) {level_type}
+"175": Add to todo list
+"176": Page {num}
+"177": Chamber {a}
+"178": Use </todo:1020188057628065863> to view your todo list
+"179": Success
+"180": Choose a weapon
+"181": Input calculation data
+"182": target level
+"183": Character level
+"184": Use the {command} command to calculate the number of materials needed to level up this character
+"185": Weapon {level_type}
+"186": "wins/runs"
+"187": Please enter numbers only
+"188": Use the {command} command to calculate the number of materials needed to level up this weapon
+"189": No card for this character yet, check back later!
+"190": Invalid Input
+"192": Calculation content
+"193": Powered by Genshin Optimizer
+"195": Loại file không hợp lệ
+"196": Tổng quan nhân vật Genshin
+"197": No materials needed
+"198": người chơi
+"199": single strike
+"200": Weapon Level
+"201": tầng
+"202": Todo list
+"203": Thêm vật phẩm
+"204": |-
   Your todo list is empty, use </calc character:1020188057628065862> or </calc weapon:1020188057628065862> to calculate materials for characters and weapons, or use the green button below to add custom items.
-'205': Xóa vật phẩm
-'206': Clear items
-'207': Chọn vật phẩm
-'208': Tên vật phẩm
-'209': 'For example: mora'
-'210': Amount of {item}
-'211': |-
+"205": Xóa vật phẩm
+"206": Clear items
+"207": Chọn vật phẩm
+"208": Tên vật phẩm
+"209": "For example: mora"
+"210": Amount of {item}
+"211": |-
   Don't want to see this message again? Use /settings
   Don't want auto check-in anymore? Use /claim
-'213': Cryo
-'214': Geo
-'215': Pyro
-'216': Anemo
-'217': Hydro
-'218': Dendro
-'219': Electro
-'221': January
-'222': February
-'223': March
-'224': April
-'225': May
-'226': June
-'227': July
-'228': August
-'229': September
-'230': October
-'231': November
-'232': December
-'234': Monday
-'235': Tuesday
-'236': Wednesday
-'237': Thursday
-'238': Friday
-'239': Saturday
-'240': Sunday
-'252': The Shenhe leaderboard
-'253': Compete with other Shenhe users and try to get the highest ranks in different categories!
-'254': Use /leaderboard to view the leaderboard
-'255': Comfort
-'258': HP
-'259': HP%
-'260': Atk.
-'261': Atk.%
-'262': Def.
-'263': Def.%
-'264': Crit Rate
-'265': Crit DMG
-'266': Elem. Mastery
-'267': Energy Recharge
-'268': Base HP
-'269': Base Atk.
-'270': Base Def.
-'271': Healing Bonus
-'272': Physic DMG Bonus
-'273': Elem. DMG Bonus
-'274': Invalid image URL
-'275': Custom Image
-'276': |-
+"213": Cryo
+"214": Geo
+"215": Pyro
+"216": Anemo
+"217": Hydro
+"218": Dendro
+"219": Electro
+"221": January
+"222": February
+"223": March
+"224": April
+"225": May
+"226": June
+"227": July
+"228": August
+"229": September
+"230": October
+"231": November
+"232": December
+"234": Monday
+"235": Tuesday
+"236": Wednesday
+"237": Thursday
+"238": Friday
+"239": Saturday
+"240": Sunday
+"252": The Shenhe leaderboard
+"253": Compete with other Shenhe users and try to get the highest ranks in different categories!
+"254": Use /leaderboard to view the leaderboard
+"255": Comfort
+"258": HP
+"259": HP%
+"260": Atk.
+"261": Atk.%
+"262": Def.
+"263": Def.%
+"264": Crit Rate
+"265": Crit DMG
+"266": Elem. Mastery
+"267": Energy Recharge
+"268": Base HP
+"269": Base Atk.
+"270": Base Def.
+"271": Healing Bonus
+"272": Physic DMG Bonus
+"273": Elem. DMG Bonus
+"274": Invalid image URL
+"275": Custom Image
+"276": |-
   • You can set custom images for the character cards in </profile:1020580644419551336>
   • You can have up to 125 images for each character
   • Please provide an image URL, a good tool to use [imgur](https://imgur.com/)
   • Alternatively, upload an image using </img-upload:1041966109533929522>
   • For version 1, Use [this](https://croppola.com/) to crop image, choose the ratio of 2.64:1
-'277': Current Image
-'278': Sort by...
-'279': Filter by...
-'280': Base Speed
-'281': Speed%
-'282': Go back
-'285': |-
+"277": Current Image
+"278": Sort by...
+"279": Filter by...
+"280": Base Speed
+"281": Speed%
+"282": Go back
+"285": |-
   • Automatically redeem Genshin Impact codes found in [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)
   • You can also redeem codes manually using </redeem:1044926380456017924>
-'286': UID is invalid or not found in enka.network
-'287': Please turn on the character showcase toggle in-game
-'292': Max HP
-'293': win %
-'294': View the list of enemies in the current abyss phase
-'295': Enemy level
-'296': Latest Changes
-'297': Meet the awesome people that helped me!
-'298': Translators
-'299': Yêu thích
-'301': Stats
-'302': Threshold
-'303': Current resin
-'305': Use /remind to change the settings
-'306': Resin is almost full!!
-'308': Item amount
-'309': Everything is farmable on Sunday! ヾ(≧▽≦*)o
-'310': Please select an option from the autocomplete instead of typing your own
-'311': How to unblock DM from servers
-'312': Time to farm materials for {name}!
-'313': Genshin Impact
-'314': Select an abyss chamber
-'315': Basic information
-'316': Birthday
-'317': Affiliation
-'318': Constellation
-'319': Name card
-'320': Ascension materials
-'321': Ascension to
-'322': Talent level-up materials
-'323': Passive Talents
-'324': Level-up to
-'325': Quick Navigation
-'326': Normal Atk.
-'327': Charged Atk.
-'328': Plunging Atk.
-'329': Calculating damage...
-'330': This requires around 5 to 10 seconds
-'331': No reaction
-'332': Melt
-'333': Vaporize
-'334': Avg. DMG
-'335': Non-Crit DMG
-'336': Crit Hit DMG
-'337': Select elemental reaction
-'338': No team melee infusion
-'339': Pyro infusion
-'340': Cryo infusion
-'341': Bennett C6
-'342': Chongyun Skill
-'343': Select team melee infusion
-'344': Select teammates
-'345': Team
-'346': Conditions
-'347': Effects
-'348': Calculate Damage
-'349': Resources Used
-'350': melt
-'351': vaporize
-'352': Authkey URL
-'353': Importing wish history
-'354': Please paste the link here
-'355': Please wait while Shenhe is processing your wish history...
-'357': Candace Q
-'360': Hydro infusion
-'361': Choose your information source
-'363': The link you have provided is invalid
-'366': Your P.T. is ready to use!
-'367': This UID has no player data in it
-'368': Use </wish import:1000187021635104890> to import your wish history
-'369': Wish history
-'370': Automatic HoYoLAB daily check-in
-'374': Choosing this filter will remove it
-'375': View ongoing Genshin banners
-'376': There are currently no ongoing banners
-'381': "Changes {time}"
-'388': 'Yes'
-'389': 'No'
-'396': "{pull} pulls"
-'397': Transformative Reactions
-'398': |-
+"286": UID is invalid or not found in enka.network
+"287": Please turn on the character showcase toggle in-game
+"292": Max HP
+"293": win %
+"294": View the list of enemies in the current abyss phase
+"295": Enemy level
+"296": Latest Changes
+"297": Meet the awesome people that helped me!
+"298": Translators
+"299": Yêu thích
+"301": Stats
+"302": Threshold
+"303": Current resin
+"305": Use /remind to change the settings
+"306": Resin is almost full!!
+"308": Item amount
+"309": Everything is farmable on Sunday! ヾ(≧▽≦*)o
+"310": Please select an option from the autocomplete instead of typing your own
+"311": How to unblock DM from servers
+"312": Time to farm materials for {name}!
+"313": Genshin Impact
+"314": Select an abyss chamber
+"315": Basic information
+"316": Birthday
+"317": Affiliation
+"318": Constellation
+"319": Name card
+"320": Ascension materials
+"321": Ascension to
+"322": Talent level-up materials
+"323": Passive Talents
+"324": Level-up to
+"325": Quick Navigation
+"326": Normal Atk.
+"327": Charged Atk.
+"328": Plunging Atk.
+"329": Calculating damage...
+"330": This requires around 5 to 10 seconds
+"331": No reaction
+"332": Melt
+"333": Vaporize
+"334": Avg. DMG
+"335": Non-Crit DMG
+"336": Crit Hit DMG
+"337": Select elemental reaction
+"338": No team melee infusion
+"339": Pyro infusion
+"340": Cryo infusion
+"341": Bennett C6
+"342": Chongyun Skill
+"343": Select team melee infusion
+"344": Select teammates
+"345": Team
+"346": Conditions
+"347": Effects
+"348": Calculate Damage
+"349": Resources Used
+"350": melt
+"351": vaporize
+"352": Authkey URL
+"353": Importing wish history
+"354": Please paste the link here
+"355": Please wait while Shenhe is processing your wish history...
+"357": Candace Q
+"360": Hydro infusion
+"361": Choose your information source
+"363": The link you have provided is invalid
+"366": Your P.T. is ready to use!
+"367": This UID has no player data in it
+"368": Use </wish import:1000187021635104890> to import your wish history
+"369": Wish history
+"370": Automatic HoYoLAB daily check-in
+"374": Choosing this filter will remove it
+"375": View ongoing Genshin banners
+"376": There are currently no ongoing banners
+"381": "Changes {time}"
+"388": "Yes"
+"389": "No"
+"396": "{pull} pulls"
+"397": Transformative Reactions
+"398": |-
   The number of ley line outcrops is converted from the number of mora you obtained this month.
   You didn't farm that many ley line outcrops, it just makes numbers easier to understand.
-'399': |-
+"399": |-
   Characters are automatically cached when you use this command.
   Even if you switch off characters from your showcase in-game,
   they will still appear here. To update the showcase, place the characters back
   and use this command again. Theoretically, you can have all of your characters
   in your /profile and use them in the damage calculator.
-'400': Link generated, click on the button below to login
-'401': Generate login link
-'404': Update talent levels
-'406': Start time
-'407': End time
-'408': Details
-'409': Choose event type
-'410': Register your genshin account to use commands that require one
-'411': options
-'412': Manage your custom images in </settings:1020580644478275614>
-'413': Add image
-'414': 'View real-time notes: Current resin, pot, expedition status (need /register)'
-'415': user
-'416': Check other user's data
-'417': 'View genshin stats: Active days, oculis, number of chests'
-'418': A user's genshin UID
-'419': View area exploration rates
-'420': Claim hoyolab daily login reward
-'421': View all owned characters (need /register)
-'422': View traveler's diary (need /register)
-'423': month
-'424': Choose a month to view
-'425': This month
-'427': The month before last month
-'428': View abyss data (need /register)
-'430': phase
-'431': The type of data you wish to view
-'432': Which abyss phase?
-'433': Detailed
-'434': View the list of current beta items in Genshin
-'435': This phase
-'436': Last phase
-'437': Beta Items
-'438': Set notification features
-'439': function
-'440': toggle
-'441': Resin notification (need /register)
-'442': Talent notification
-'443': Check privacy settings
-'444': You can use this command with /search to get more information about a beta item
-'445': There are currently no beta items, check back later
-'446': View farmable items today
-'447': 'View character builds: Weapons, artifacts, talent levels, stats'
-'448': Search a user's UID
-'449': View your in-game profile with UID
-'450': Redeem gift codes (need /register)
-'451': code
-'452': View ongoing events in genshin
-'453': Global
-'454': Read More
-'455': Server
-'456': Load
-'457': You are currently not in the leaderboard
-'458': character
-'460': Calculate materials needed for upgrading a character
-'461': sync
-'462': sync with in-game data (autofill the levels)
-'463': Main stat
-'464': Sub stat
-'465': Calculate materials needed for upgrading a weapon
-'466': Developers that helped me
-'467': rarity
-'468': sword
-'469': catalyst
-'470': claymore
-'471': bow
-'472': polearm
-'473': View the todo list
-'474': Import wish history
-'475': Huge thank you to these people!
-'477': Submit link
-'478': View wish history
-'479': And you!
-'480': Predict the chance of pulling a 5-star banner character
-'481': number
-'482': How many 5-star banner characters do you wish to pull?
-'483': Predict the chance of pulling a 5-star banner weapon
-'484': View wish overview
-'485': Change the language shenhe responds to you with
-'486': View a list of all commands
-'487': Genshin
-'488': Genshin wish
-'489': Requires wish history import using /wish import
-'490': Enhancement progress calculator
-'491': Calculate upgrade materials
-'492': Video tutorial
-'494': Others
-'495': Choose your category
-'496': Author
-'497': |-
+"400": Link generated, click on the button below to login
+"401": Generate login link
+"404": Update talent levels
+"406": Start time
+"407": End time
+"408": Details
+"409": Choose event type
+"410": Register your genshin account to use commands that require one
+"411": options
+"412": Manage your custom images in </settings:1020580644478275614>
+"413": Add image
+"414": "View real-time notes: Current resin, pot, expedition status (need /register)"
+"415": user
+"416": Check other user's data
+"417": "View genshin stats: Active days, oculis, number of chests"
+"418": A user's genshin UID
+"419": View area exploration rates
+"420": Claim hoyolab daily login reward
+"421": View all owned characters (need /register)
+"422": View traveler's diary (need /register)
+"423": month
+"424": Choose a month to view
+"425": This month
+"427": The month before last month
+"428": View abyss data (need /register)
+"430": phase
+"431": The type of data you wish to view
+"432": Which abyss phase?
+"433": Detailed
+"434": View the list of current beta items in Genshin
+"435": This phase
+"436": Last phase
+"437": Beta Items
+"438": Set notification features
+"439": function
+"440": toggle
+"441": Resin notification (need /register)
+"442": Talent notification
+"443": Check privacy settings
+"444": You can use this command with /search to get more information about a beta item
+"445": There are currently no beta items, check back later
+"446": View farmable items today
+"447": "View character builds: Weapons, artifacts, talent levels, stats"
+"448": Search a user's UID
+"449": View your in-game profile with UID
+"450": Redeem gift codes (need /register)
+"451": code
+"452": View ongoing events in genshin
+"453": Global
+"454": Read More
+"455": Server
+"456": Load
+"457": You are currently not in the leaderboard
+"458": character
+"460": Calculate materials needed for upgrading a character
+"461": sync
+"462": sync with in-game data (autofill the levels)
+"463": Main stat
+"464": Sub stat
+"465": Calculate materials needed for upgrading a weapon
+"466": Developers that helped me
+"467": rarity
+"468": sword
+"469": catalyst
+"470": claymore
+"471": bow
+"472": polearm
+"473": View the todo list
+"474": Import wish history
+"475": Huge thank you to these people!
+"477": Submit link
+"478": View wish history
+"479": And you!
+"480": Predict the chance of pulling a 5-star banner character
+"481": number
+"482": How many 5-star banner characters do you wish to pull?
+"483": Predict the chance of pulling a 5-star banner weapon
+"484": View wish overview
+"485": Change the language shenhe responds to you with
+"486": View a list of all commands
+"487": Genshin
+"488": Genshin wish
+"489": Requires wish history import using /wish import
+"490": Enhancement progress calculator
+"491": Calculate upgrade materials
+"492": Video tutorial
+"494": Others
+"495": Choose your category
+"496": Author
+"497": |-
   Thank you so much for using Shenhe, especially those who gave suggestions and reported bugs.
   I really appreciate all of you and I hope you enjoy using Shenhe.
   DM me for any feature requests, imporvements, and bug reports!
-'498': View profile
-'499': View all characters
-'500': An error occured while trying to do daily check-in
-'501': Select a chapter of the book
-'502': Run calculator
-'503': Number of guilds
-'504': 'Made by seria#5334, DM me if you have any questions'
-'505': An error has occured while trying to send you a notification
-'506': Last month
-'507': How many 5-star banner weapons do you wish to pull?
-'508': Search anything genshin related
-'509': query
-'510': Sumeru
-'511': 'The caches have been wiped due to cache changes, if you really need the data, please DM seria#5334'
-'512': |-
+"498": View profile
+"499": View all characters
+"500": An error occured while trying to do daily check-in
+"501": Select a chapter of the book
+"502": Run calculator
+"503": Number of guilds
+"504": 'Made by seria#5334, DM me if you have any questions'
+"505": An error has occured while trying to send you a notification
+"506": Last month
+"507": How many 5-star banner weapons do you wish to pull?
+"508": Search anything genshin related
+"509": query
+"510": Sumeru
+"511": 'The caches have been wiped due to cache changes, if you really need the data, please DM seria#5334'
+"512": |-
   • Notify you when your parametric transformer is ready
   • 1 notification per day
-'515': Notification settings
-'518': Realm currency is almost full!
-'519': |-
+"515": Notification settings
+"518": Realm currency is almost full!
+"519": |-
   [Enka.network](https://enka.network/) is currently down, please try again later.
   Check their [twitter](https://twitter.com/EnkaNetwork) for updates.
-'520': Dendroculus
-'523': Enka.network API error
-'524': Registered Users
-'525': Spread
-'526': Aggravate
-'527': Hydro infusion
-'528': Members
-'529': Item type
-'530': Sources
-'531': Weapon effect
-'532': "{num} custom images"
-'533': Error while calculating damage
-'534': View and change your user settings in Shenhe
-'535': Appearance
-'536': Dark mode
-'537': Light mode
-'538': |
+"520": Dendroculus
+"523": Enka.network API error
+"524": Registered Users
+"525": Spread
+"526": Aggravate
+"527": Hydro infusion
+"528": Members
+"529": Item type
+"530": Sources
+"531": Weapon effect
+"532": "{num} custom images"
+"533": Error while calculating damage
+"534": View and change your user settings in Shenhe
+"535": Appearance
+"536": Dark mode
+"537": Light mode
+"538": |
   • This setting changes the appearance of your cards
   • If there is no dark mode version of the card, it will be displayed in light mode
   • Default is light mode
   • See below for an example
-'539': Settings
-'542': Item not found
-'543': Data is from cache
-'544': Manage your accounts in Shenhe
-'545': You don't have any account registered
-'546': |-
+"539": Settings
+"542": Item not found
+"543": Data is from cache
+"544": Manage your accounts in Shenhe
+"545": You don't have any account registered
+"546": |-
   • You can register multiple accounts in Shenhe
   • You can switch between accounts using the dropdown menu
-'547': TW, HK, MO
-'548': Celestia
-'549': Irminsul
-'550': America
-'551': Europe
-'552': Asia
-'553': Unknown region
-'554': (Internal)
-'556': Add an account
-'557': Remove current account
-'559': Switch account
-'562': Choose a custom image
-'563': |-
+"547": TW, HK, MO
+"548": Celestia
+"549": Irminsul
+"550": America
+"551": Europe
+"552": Asia
+"553": Unknown region
+"554": (Internal)
+"556": Add an account
+"557": Remove current account
+"559": Switch account
+"562": Choose a custom image
+"563": |-
   • Read [the docs](https://bit.ly/shenhe-docs) regarding account security
-'564': Latency
-'565': Credits
-'566': |-
+"564": Latency
+"565": Credits
+"566": |-
   {total} total
   {unique} unique
-'567': |-
+"567": |-
   There is **NO** support for paimon.moe, please view this [GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371) for the reason.
   The only file that is supported is the YAML file exported from Shenhe.
-'568': Please provide an Image URL in either .png or .jpg format
-'576': "Owned characters: {current}/{total}"
-'577': "Maxed friendship level: {current}/{total}"
-'578': Friendship Lv.
-'582': Resin notification
-'583': Select a weekday
-'584': Realm currency notification
-'585': Test DM
-'586': Notify you when your resin exceeds a certain amount
-'587': Can be used to ugprade
-'588': View on Enka.network
-'589': Refreshes {in_x_seconds}
-'590': |-
+"568": Please provide an Image URL in either .png or .jpg format
+"576": "Owned characters: {current}/{total}"
+"577": "Maxed friendship level: {current}/{total}"
+"578": Friendship Lv.
+"582": Resin notification
+"583": Select a weekday
+"584": Realm currency notification
+"585": Test DM
+"586": Notify you when your resin exceeds a certain amount
+"587": Can be used to ugprade
+"588": View on Enka.network
+"589": Refreshes {in_x_seconds}
+"590": |-
   • Notify you when a character's talent domain is farmable
   • Selecting a character that already has notification enabled will disable it
-'591': Current settings
-'592': |-
+"591": Current settings
+"592": |-
   • Set reminders to do the homework provided by Genshin on-time
   • Reminder settings are separate for each account you have registered, except talent and weapon notification
   • Click on the buttons below for more information on each feature
-'593': Reminders
-'594': Change settings
-'595': |-
+"593": Reminders
+"594": Change settings
+"595": |-
   Shenhe needs to be able to DM you to send you the notifications, if it is disabled, please follow the steps below to enable it.
   1. Right-click any server that has Shenhe in it
   2. Click on "Privacy Settings"
   3. Turn on the toggle of "Direct Messages"
-'596': Test it out!
-'597': Shenhe has failed to DM you
-'598': Add/Remove characters
-'599': Remove all characters
-'600': Change nickname
-'601': Nickname
-'602': Select the account you want to change the nickname of
-'603': Claim reward
-'604': Hoyolab daily check in
-'605': Claimed rewards
-'606': Current status
-'608': Please wait while Shenhe is processing your character data...
-'609': Domain
-'610': stars collected
-'611': It is recommended to do the check-in by yourself today
-'612': Used {num} times
-'613': Most used characters
-'614': "Your current rank is **#{rank}**"
-'615': "**{num}** people has participated in this leaderboard"
-'616': Select a leaderboard category
-'617': Character usage rate in abyss
-'618': The most used character is **{name}** with **{num}** uses ({percent}%)
-'619': To update or add your data in the leaderboard, use {command}
-'620': This leaderboard is currently empty
-'621': Food effect
-'622': Drops
-'623': Interaction timed out
-'624': Please try again
-'625': Date published
-'626': Ingredients
-'627': Toggle daily check-in
-'630': Shenhe has automatically disabled the auto daily check-in feature for you, to enable it back, please use </claim:1020580644365021250>
-'631': Shenhe has automatically disabled this remind feature for you, to enable it back, please use </remind:1020580644365021255>
-'632': Weapon notification
-'633': |-
+"596": Test it out!
+"597": Shenhe has failed to DM you
+"598": Add/Remove characters
+"599": Remove all characters
+"600": Change nickname
+"601": Nickname
+"602": Select the account you want to change the nickname of
+"603": Claim reward
+"604": Hoyolab daily check in
+"605": Claimed rewards
+"606": Current status
+"608": Please wait while Shenhe is processing your character data...
+"609": Domain
+"610": stars collected
+"611": It is recommended to do the check-in by yourself today
+"612": Used {num} times
+"613": Most used characters
+"614": "Your current rank is **#{rank}**"
+"615": "**{num}** people has participated in this leaderboard"
+"616": Select a leaderboard category
+"617": Character usage rate in abyss
+"618": The most used character is **{name}** with **{num}** uses ({percent}%)
+"619": To update or add your data in the leaderboard, use {command}
+"620": This leaderboard is currently empty
+"621": Food effect
+"622": Drops
+"623": Interaction timed out
+"624": Please try again
+"625": Date published
+"626": Ingredients
+"627": Toggle daily check-in
+"630": Shenhe has automatically disabled the auto daily check-in feature for you, to enable it back, please use </claim:1020580644365021250>
+"631": Shenhe has automatically disabled this remind feature for you, to enable it back, please use </remind:1020580644365021255>
+"632": Weapon notification
+"633": |-
   • Notify you when a weapon's domain is farmable
   • Selecting a weapon that already has notification enabled will disable its notification
-'634': Add/Remove weapons
-'635': Remove all weapons
-'636': Current weapons
-'637': There are currently no notifications set for any weapons
-'638': Choosing this weapon will turn OFF its notifications
-'639': Notif you when your realm currency exceeds a certain amount
-'640': Two-piece effect
-'641': Four-piece effect
-'642': Support server
-'643': One-page image
-'644': Please wait while Shenhe is generating the image...
-'645': Character Banner
-'646': Weapon Banner
-'647': Novice Banner
-'648': Search failed
-'649': "{a} primogems spent"
-'650': Total Wishes
-'651': 5-star Pity
-'652': Four Stars
-'653': Five Stars
-'654': Recent 5 star pulls
-'655': Permanent Banner
-'656': Choose a banner
-'659': You can only perform this action once every {hour} hour
-'661': Choose a rarity filter
-'662': Choose a banner filter
-'663': Total primogems
-'664': Intertwined fates
-'665': Total mora
-'666': Ley line outcrops
-'667': Compared to last month
-'668': Primogems
-'669': Mora
-'670': Go to login page
-'671': Wish History
-'673': You currently have **{a}** wishes stored in Shenhe's database
-'674': Please link a UID before importing new wishes
-'675': Newest wish
-'676': Oldest wish
-'677': Link UID
-'678': Import
-'679': Export
-'680': Clear wish history
-'681': |-
+"634": Add/Remove weapons
+"635": Remove all weapons
+"636": Current weapons
+"637": There are currently no notifications set for any weapons
+"638": Choosing this weapon will turn OFF its notifications
+"639": Notif you when your realm currency exceeds a certain amount
+"640": Two-piece effect
+"641": Four-piece effect
+"642": Support server
+"643": One-page image
+"644": Please wait while Shenhe is generating the image...
+"645": Character Banner
+"646": Weapon Banner
+"647": Novice Banner
+"648": Search failed
+"649": "{a} primogems spent"
+"650": Total Wishes
+"651": 5-star Pity
+"652": Four Stars
+"653": Five Stars
+"654": Recent 5 star pulls
+"655": Permanent Banner
+"656": Choose a banner
+"659": You can only perform this action once every {hour} hour
+"661": Choose a rarity filter
+"662": Choose a banner filter
+"663": Total primogems
+"664": Intertwined fates
+"665": Total mora
+"666": Ley line outcrops
+"667": Compared to last month
+"668": Primogems
+"669": Mora
+"670": Go to login page
+"671": Wish History
+"673": You currently have **{a}** wishes stored in Shenhe's database
+"674": Please link a UID before importing new wishes
+"675": Newest wish
+"676": Oldest wish
+"677": Link UID
+"678": Import
+"679": Export
+"680": Clear wish history
+"681": |-
   You can now have separate wish history for each account you have registered.
   For past wishes, you have to choose an account from below to link them to
-'682': Select an account
-'683': No wish history found for this account
-'684': Shenhe
-'685': Select a method of importing wishes
-'686': 'Import your Genshin wish history from a file'
-'687': |-
+"682": Select an account
+"683": No wish history found for this account
+"684": Shenhe
+"685": Select a method of importing wishes
+"686": "Import your Genshin wish history from a file"
+"687": |-
   You can use the </wish file-import:123123> command to import wishes from a file
   Only support YAML files exported from Shenhe
-'688': Are you sure?
-'689': |-
+"688": Are you sure?
+"689": |-
   • You are about to clear your wish history for this account, this action cannot be undone.
   • It is recommended to export your wish history before clearing it.
   • You may have wishes stored in Shenhe that is no longer saved in-game, if you clear your wish history, you will lose those wishes.
-'690': Shenhe has found **{a}** wishes in this link/file
-'691': Confirm wish import
-'692': Import your Genshin wish history from a YAML file exported by Shenhe
-'694': Ongoing
-'695': Finished
-'696': Remaining
-'697': Completed
-'698': Today
-'699': Tomorrow
-'700': Unknown
-'701': All
-'702': The link you have provided has expired, please generate a new one
-'703': Element
-'704': PT notification
-'705': Spiral abyss enemies
-'706': Ley line disorder of this floor
-'707': First Half
-'708': Second Half
-'709': Lineup Simulator
-'710': Dice cost
-'711': Select a lineup to view its details
-'712': Include characters
-'713': Applicable scenario
-'714': Select characters
-'715': Search
-'716': Clear character
-'717': Search a card in the Genshin TCG
-'718': card
-'719': Card not found
-'720': current ascension phase (0~6)
-'721': target ascension phase (0~6)
-'722': Ascension phase
-'723': Send feedback to the bot developer
-'724': Feedback
-'725': Feedback sent, thank you! 🥰
-'726': Copy UID
-'727': Server region
-'728': Once you see a green checkmark on the website, click the green button below to confirm
-'729': Edit item's current amount
-'730': Invalid ascension phase number
-'731': No wish data found
-'732': Blessing
-'733': Blessing of the Abyssal Moon
-'734': Flower of Life
-'735': Plume of Death
-'736': Sands of Eon
-'737': Goblet of Eonothem
-'738': Circlet of Logos
-'739': View the bot's source code
-'740': Command not found
-'741': Could not find source for this command
-'742': command
-'743': Name of command to view the source code of
-'744': Current Banners
-'745': Future Banners
-'746': Current Wish Banners
-'747': CV
-'748': Provided by Shenhe
-'749': Select a profile card version
-'750': Version {version}
-'751': Current version
-'752': Card version
-'753': Manage cache
-'754': Select characters that you want to remove from the cache
-'755': Profile settings
-'756': Cache modified, please re-run the /profile command
-'757': You have no characters in the cache
-'758': This command/feature is currently disabled
-'759': If you have any questions, please join the support server
-'760': Shenhe is currently under maintenance, please try again later
-'761': Talent levels updated
-'762': Upading talent levels...
-'763': Please re-use the command to see the changes
-'764': Default
-'765': |-
+"690": Shenhe has found **{a}** wishes in this link/file
+"691": Confirm wish import
+"692": Import your Genshin wish history from a YAML file exported by Shenhe
+"694": Ongoing
+"695": Finished
+"696": Remaining
+"697": Completed
+"698": Today
+"699": Tomorrow
+"700": Unknown
+"701": All
+"702": The link you have provided has expired, please generate a new one
+"703": Element
+"704": PT notification
+"705": Spiral abyss enemies
+"706": Ley line disorder of this floor
+"707": First Half
+"708": Second Half
+"709": Lineup Simulator
+"710": Dice cost
+"711": Select a lineup to view its details
+"712": Include characters
+"713": Applicable scenario
+"714": Select characters
+"715": Search
+"716": Clear character
+"717": Search a card in the Genshin TCG
+"718": card
+"719": Card not found
+"720": current ascension phase (0~6)
+"721": target ascension phase (0~6)
+"722": Ascension phase
+"723": Send feedback to the bot developer
+"724": Feedback
+"725": Feedback sent, thank you! 🥰
+"726": Copy UID
+"727": Server region
+"728": Once you see a green checkmark on the website, click the green button below to confirm
+"729": Edit item's current amount
+"730": Invalid ascension phase number
+"731": No wish data found
+"732": Blessing
+"733": Blessing of the Abyssal Moon
+"734": Flower of Life
+"735": Plume of Death
+"736": Sands of Eon
+"737": Goblet of Eonothem
+"738": Circlet of Logos
+"739": View the bot's source code
+"740": Command not found
+"741": Could not find source for this command
+"742": command
+"743": Name of command to view the source code of
+"744": Current Banners
+"745": Future Banners
+"746": Current Wish Banners
+"747": CV
+"748": Provided by Shenhe
+"749": Select a profile card version
+"750": Version {version}
+"751": Current version
+"752": Card version
+"753": Manage cache
+"754": Select characters that you want to remove from the cache
+"755": Profile settings
+"756": Cache modified, please re-run the /profile command
+"757": You have no characters in the cache
+"758": This command/feature is currently disabled
+"759": If you have any questions, please join the support server
+"760": Shenhe is currently under maintenance, please try again later
+"761": Talent levels updated
+"762": Upading talent levels...
+"763": Please re-use the command to see the changes
+"764": Default
+"765": |-
   If this is your first time using this command,
   this process will take a while, please be patient.
-'767': |-
+"767": |-
   Your Cookie has either expired or is invalid.
   Please use the </register:1044926380242120744> command to reload your Cookie manually by adding your account again.
   If you want to avoid this issue in the future, you can register your account using the e-mail and password method, which will refresh your Cookie automatically.
-'768': Redeem on website
-'769': Toggle auto daily check-in with the buttons below
-'770': "Honkai: Star Rail"
-'771': "Honkai Impact 3rd"
-'772': You don't have any accounts in this game
-'773': Loading...
-'774': Select a code to redeem
-'775': Enter code
-'776': Redeem code
-'777': |-
+"768": Redeem on website
+"769": Toggle auto daily check-in with the buttons below
+"770": "Honkai: Star Rail"
+"771": "Honkai Impact 3rd"
+"772": You don't have any accounts in this game
+"773": Loading...
+"774": Select a code to redeem
+"775": Enter code
+"776": Redeem code
+"777": |-
   • If anything is not working, you can redeem on the website:
   • [Genshin Impact](https://genshin.hoyoverse.com/en/gift) | [Honkai Star Rail](https://hsr.hoyoverse.com/gift)
   • The code selector gathers currently available Genshin codes from [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes), select to redeem
   • The code input method allows you to enter up to 3 codes (at least 1) manually
-'778': Code redemption service is currently busy, please try again later
-'779': See [Shenhe's documentation](https://bit.ly/shenhe-docs) for how to get the wish history link
-'780': Account Manager
-'781': Confirm
-'782': Account information
-'783': Account level
-'784': Game
-'785': Select an account to add
-'786': Add this account
-'787': Cancel
-'788': Your accounts have been shattered into pieces
-'789': '{current} is not supported for this feature yet'
-'790': |-
+"778": Code redemption service is currently busy, please try again later
+"779": See [Shenhe's documentation](https://bit.ly/shenhe-docs) for how to get the wish history link
+"780": Account Manager
+"781": Confirm
+"782": Account information
+"783": Account level
+"784": Game
+"785": Select an account to add
+"786": Add this account
+"787": Cancel
+"788": Your accounts have been shattered into pieces
+"789": "{current} is not supported for this feature yet"
+"790": |-
   Your curernt game: **{current}**
   Supported games are: **{supported}**
-'791': account
-'792': Check data of your other accounts
-'793': Trailblazer
-'794': Trailblaze Level
-'795': Equilibrium Level
-'796': Characters Unlocked
-'797': Max Simulated Universe Stage
-'798': Light Cones Unlocked
-'799': Specify the UID to search the profile with
-'800': Specify the game to search the profile with
+"791": account
+"792": Check data of your other accounts
+"793": Trailblazer
+"794": Trailblaze Level
+"795": Equilibrium Level
+"796": Characters Unlocked
+"797": Max Simulated Universe Stage
+"798": Light Cones Unlocked
+"799": Specify the UID to search the profile with
+"800": Specify the game to search the profile with
+"801": Mihomo API Error
+"802": User with this UID is Not Found
+"803": Request Error, API may be unavailable
