@@ -1,134 +1,134 @@
-'1': Penuh
-'2': Realm Currency
-'4': Resin
-'5': Resin Discounts
-'6': Daily Comission
-'7': menit
-'8': Sisa Waktu P.T
-'9': Siap Digunakan
-'10': Ada kesalahan di API Genshin
-'11': P.T. tidak ditemukan
-'12': detik
-'13': Hari ini
-'14': Buku harian bulanan yang kamu coba lihat tidak tersedia
-'15': Waktu Pemulihan
-'16': Disarankan untuk menggunakan /check command
-'17': Klik saya untuk melanjutkan
-'18': Discord tidak mengizinkan 'modal after a modal', jadi kamu harus mengklik tombol untuk melanjutkan ¯\_(ツ)_/¯
-'19': Semua Karakter
-'20': Ekspedisi
-'21': </stuck:1006486283725590536> tidak ada informasi
-'22': Data tidak muncul
-'23': Kesalahan
-'24': Catatan Waktu
-'25': Sen.
-'26': Sel.
-'27': Rab.
-'28': Kam.
-'29': Jum.
-'30': Sab.
-'31': Min.
-'32': Pilih Bahasa
-'33': Senjata
-'34': Bahasa saat ini
-'35': Gunakan </register:1044926380242120744> untuk informasi lebih lanjut
-'36': Cookie Tidak Valid
-'37': Set Artefak
-'38': Cari lineup Genshin dengan simulator lineup Hoyolab
-'39': Akun Ditambahkan
-'40': Knda telah mengklaim hadiah check-in harian hari ini!
-'41': Memperoleh {reward}
-'42': Hadiah check-in harian diklaim
-'43': Overview
-'44': Hari Aktif
-'45': Ketik nickname untuk kustom gambar
-'46': Achievements
-'47': Spiral Abyss
-'52': "{element} karakter"
-'56': Statistik Genshin
-'58': Eksplorasi Dunia
-'59': Tetapkan Gambar Kustom untuk {character_name}
-'60': Image URL
-'61': Hapus gambar
-'62': Terapkan Gambar Kustom
-'63': Lihat info bot
-'64': file-gambar
-'65': File gambar untuk unggah
-'66': Nickname untuk gambar
-'67': Karakter untuk menggunakan gambar
-'68': Unggah gambar kustom untuk /profile character cards
-'69': Buku Harian Traveler
-'70': Log Primo
-'71': primo
-'72': Log Mora
-'73': mora
-'74': |-
+"1": Penuh
+"2": Realm Currency
+"4": Resin
+"5": Resin Discounts
+"6": Daily Comission
+"7": menit
+"8": Sisa Waktu P.T
+"9": Siap Digunakan
+"10": Ada kesalahan di API Genshin
+"11": P.T. tidak ditemukan
+"12": detik
+"13": Hari ini
+"14": Buku harian bulanan yang kamu coba lihat tidak tersedia
+"15": Waktu Pemulihan
+"16": Disarankan untuk menggunakan /check command
+"17": Klik saya untuk melanjutkan
+"18": Discord tidak mengizinkan 'modal after a modal', jadi kamu harus mengklik tombol untuk melanjutkan ¯\_(ツ)_/¯
+"19": Semua Karakter
+"20": Ekspedisi
+"21": </stuck:1006486283725590536> tidak ada informasi
+"22": Data tidak muncul
+"23": Kesalahan
+"24": Catatan Waktu
+"25": Sen.
+"26": Sel.
+"27": Rab.
+"28": Kam.
+"29": Jum.
+"30": Sab.
+"31": Min.
+"32": Pilih Bahasa
+"33": Senjata
+"34": Bahasa saat ini
+"35": Gunakan </register:1044926380242120744> untuk informasi lebih lanjut
+"36": Cookie Tidak Valid
+"37": Set Artefak
+"38": Cari lineup Genshin dengan simulator lineup Hoyolab
+"39": Akun Ditambahkan
+"40": Knda telah mengklaim hadiah check-in harian hari ini!
+"41": Memperoleh {reward}
+"42": Hadiah check-in harian diklaim
+"43": Overview
+"44": Hari Aktif
+"45": Ketik nickname untuk kustom gambar
+"46": Achievements
+"47": Spiral Abyss
+"52": "{element} karakter"
+"56": Statistik Genshin
+"58": Eksplorasi Dunia
+"59": Tetapkan Gambar Kustom untuk {character_name}
+"60": Image URL
+"61": Hapus gambar
+"62": Terapkan Gambar Kustom
+"63": Lihat info bot
+"64": file-gambar
+"65": File gambar untuk unggah
+"66": Nickname untuk gambar
+"67": Karakter untuk menggunakan gambar
+"68": Unggah gambar kustom untuk /profile character cards
+"69": Buku Harian Traveler
+"70": Log Primo
+"71": primo
+"72": Log Mora
+"73": mora
+"74": |-
   Gunakan </stats:1006486283725590530> untuk memeriksa kemajuan abyss kamu,
   command ini hanya menampilkan data di atas lantai 9.
-'75': Tidak ada data keinginan yang ditemukan untuk filter ini
-'76': Data Spiral abyss tidak ditemukan
-'77': Lunar Phase
-'79': Digunakan oleh {character_name}
-'80': Serangan Terkuat
-'81': Membunuh Terbanyak
-'82': Menerima DMG Terbanyak
-'83': Memakai Burst Terbanyak
-'84': Memakai Skill Terbanyak
-'85': Spiral Abyss Overview
-'86': nama-gambar
-'88': Spiral Abyss Leaderboard ({phase}{num})
-'89': Rank
-'90': 'Build #'
-'91': Senjata
-'92': Artefak
-'93': Main Stats
-'94': Talenta
-'95': Stats Karakter
-'96': Source
-'97': Artifact Thoughts
-'99': 'Nyala'
-'100': 'Mati'
-'101': Beralih
-'102': Realm currency saat ini
-'103': Nomor notifikasi maks
-'105': Karakter
-'106': Kode sudah ditukarkan
-'107': Kode tidak valid
-'108': Kode
-'109': Kode berhasil ditukarkan
-'124': Kembali ke default
-'125': |-
+"75": Tidak ada data keinginan yang ditemukan untuk filter ini
+"76": Data Spiral abyss tidak ditemukan
+"77": Lunar Phase
+"79": Digunakan oleh {character_name}
+"80": Serangan Terkuat
+"81": Membunuh Terbanyak
+"82": Menerima DMG Terbanyak
+"83": Memakai Burst Terbanyak
+"84": Memakai Skill Terbanyak
+"85": Spiral Abyss Overview
+"86": nama-gambar
+"88": Spiral Abyss Leaderboard ({phase}{num})
+"89": Rank
+"90": "Build #"
+"91": Senjata
+"92": Artefak
+"93": Main Stats
+"94": Talenta
+"95": Stats Karakter
+"96": Source
+"97": Artifact Thoughts
+"99": "Nyala"
+"100": "Mati"
+"101": Beralih
+"102": Realm currency saat ini
+"103": Nomor notifikasi maks
+"105": Karakter
+"106": Kode sudah ditukarkan
+"107": Kode tidak valid
+"108": Kode
+"109": Kode berhasil ditukarkan
+"124": Kembali ke default
+"125": |-
   • Secara default, shenhe meresponmu dengan bahasa yang sama dengan yang digunakan discord kamu
   • Mengubah bahasa akan menggantikan bahasa default
   • Jika ada teks yang belum diterjemahkan, shenhe akan membalas kamu dengan bahasa Inggris
   • Nama karakter genshin, senjata, dan elemen game lainnya akan diterjemahkan secara otomatis
   • Tertarik menerjemahkan Shenhe ke dalam bahasa kamu? Lihat halaman [crowdin](https://crowdin.com/project/shenhe-bot).
-'126': Penukaran kode otomatis
-'127': Penukaran kode gagal
-'128': Bahasa
-'129': Mondstat
-'130': Liyue
-'131': Inazuma
-'132': Aku juga!
-'133': Penukaran sedang dalam masa cooldown, silakan coba lagi nanti
-'134': Kesalahan waktu? Tambahkan UID kamu menggunakan /accounts sehingga Shenhe tahu di server mana kamu berada
-'135': Ada kesalahan
-'136': Pilih Akun
-'137': Notifikasi
-'138': |-
+"126": Penukaran kode otomatis
+"127": Penukaran kode gagal
+"128": Bahasa
+"129": Mondstat
+"130": Liyue
+"131": Inazuma
+"132": Aku juga!
+"133": Penukaran sedang dalam masa cooldown, silakan coba lagi nanti
+"134": Kesalahan waktu? Tambahkan UID kamu menggunakan /accounts sehingga Shenhe tahu di server mana kamu berada
+"135": Ada kesalahan
+"136": Pilih Akun
+"137": Notifikasi
+"138": |-
   Matikan pesan langsung yang dikirim oleh Shenhe selain yang </remind:1044926380242120753>.
-'139': Lineup Karakter
-'140': Pilih Skenario Lineup
-'141': Tidak ada karakter yang ditemukan di "Tampilan Rincian" di dalam game kamu!
-'142': Pilih Element
-'143': kamu bukan penerbit perintah ini
-'144': Profil Overview
-'145': Karakter Showcase
-'146': Lantai {a}
-'147': Waktu Aktif
-'148': Pilih Lantai Abyss
-'149': Data tidak muncul?
-'150': |-
+"139": Lineup Karakter
+"140": Pilih Skenario Lineup
+"141": Tidak ada karakter yang ditemukan di "Tampilan Rincian" di dalam game kamu!
+"142": Pilih Element
+"143": kamu bukan penerbit perintah ini
+"144": Profil Overview
+"145": Karakter Showcase
+"146": Lantai {a}
+"147": Waktu Aktif
+"148": Pilih Lantai Abyss
+"149": Data tidak muncul?
+"150": |-
   Silakan buka https://www.hoyolab.com/home dan login
   Ikuti langkah-langkah pada gambar di bawah ini
 
@@ -137,614 +137,625 @@
   3. Klik `Genshin` di pojok kanan atas
   4. Klik ikon roda gigi
   5. Alihkan semua sakelar
-'151': Fase Terakhir
-'152': Ambang Batas Resin
-'153': Pilih Fase Abyss
-'154': Semua Waktu
-'155': DM akan berhenti setelah beberapa kali
-'157': Pilih Karakter
-'158': Saat ini tidak ada notifikasi yang disetel untuk karakter apa pun
-'159': Karakter Saat Ini
-'160': Menyelesaikan Abyss Tercepat
-'161': Memilih karakter ini akan MENONAKTIFKAN notifikasinya
-'162': Build
-'163': Pilih Build
-'164': Build
-'167': "{name} UID"
-'168': Level Saat Ini
-'169': Karakter {level_type}
-'170': 'Contoh: {a}'
-'171': Serangan Auto Target (A) {level_type}
-'172': Angka harus antara {a} dan {b}
-'173': Elemental Skill (E) {level_type}
-'174': Elemental Burst (Q) {level_type}
-'175': Tambahkan ke daftar tugas
-'176': Halaman {num}
-'177': Ruangan {a}
-'178': Gunakan </todo:1020188057628065863> untuk melihat daftar tugas
-'179': Berhasil
-'180': Pilih Senjata
-'181': Masukan Kalkulasi Data
-'182': Target Level
-'183': Karakter level
-'184': Gunakan command {command} untuk menghitung jumlah material yang dibutuhkan untuk menaikkan level karakter ini
-'185': Senjata {level_type}
-'186': "menang/berjalan"
-'187': Harap masukkan angka saja
-'188': Gunakan command {command} untuk menghitung jumlah material yang dibutuhkan untuk menaikkan level senjata ini
-'189': Belum ada kartu untuk karakter ini, periksa lagi nanti!
-'190': Masukan Tidak Valid
-'192': Konten Perhitungan
-'193': Didukung oleh Genshin Optimizer
-'195': Jenis file tidak valid
-'196': Ringkasan Karakter Genshin
-'197': Tidak Perlu Material
-'198': Player
-'199': Single Strike
-'200': Level Senjata
-'201': Lantai
-'202': Daftar Tugas
-'203': Tambahkan Item
-'204': |-
+"151": Fase Terakhir
+"152": Ambang Batas Resin
+"153": Pilih Fase Abyss
+"154": Semua Waktu
+"155": DM akan berhenti setelah beberapa kali
+"157": Pilih Karakter
+"158": Saat ini tidak ada notifikasi yang disetel untuk karakter apa pun
+"159": Karakter Saat Ini
+"160": Menyelesaikan Abyss Tercepat
+"161": Memilih karakter ini akan MENONAKTIFKAN notifikasinya
+"162": Build
+"163": Pilih Build
+"164": Build
+"167": "{name} UID"
+"168": Level Saat Ini
+"169": Karakter {level_type}
+"170": "Contoh: {a}"
+"171": Serangan Auto Target (A) {level_type}
+"172": Angka harus antara {a} dan {b}
+"173": Elemental Skill (E) {level_type}
+"174": Elemental Burst (Q) {level_type}
+"175": Tambahkan ke daftar tugas
+"176": Halaman {num}
+"177": Ruangan {a}
+"178": Gunakan </todo:1020188057628065863> untuk melihat daftar tugas
+"179": Berhasil
+"180": Pilih Senjata
+"181": Masukan Kalkulasi Data
+"182": Target Level
+"183": Karakter level
+"184": Gunakan command {command} untuk menghitung jumlah material yang dibutuhkan untuk menaikkan level karakter ini
+"185": Senjata {level_type}
+"186": "menang/berjalan"
+"187": Harap masukkan angka saja
+"188": Gunakan command {command} untuk menghitung jumlah material yang dibutuhkan untuk menaikkan level senjata ini
+"189": Belum ada kartu untuk karakter ini, periksa lagi nanti!
+"190": Masukan Tidak Valid
+"192": Konten Perhitungan
+"193": Didukung oleh Genshin Optimizer
+"195": Jenis file tidak valid
+"196": Ringkasan Karakter Genshin
+"197": Tidak Perlu Material
+"198": Player
+"199": Single Strike
+"200": Level Senjata
+"201": Lantai
+"202": Daftar Tugas
+"203": Tambahkan Item
+"204": |-
   Daftar tugas kamu kosong, gunakan </calc character:1020188057628065862> atau </calc weapon:1020188057628065862> untuk menghitung material untuk karakter dan senjata, atau gunakan tombol hijau di bawah untuk menambahkan item khusus.
-'205': Hapus Item
-'206': Bersihkan Item
-'207': Pilih Item
-'208': Nama Item
-'209': 'Contoh: mora'
-'210': Jumlah {item}
-'211': |-
+"205": Hapus Item
+"206": Bersihkan Item
+"207": Pilih Item
+"208": Nama Item
+"209": "Contoh: mora"
+"210": Jumlah {item}
+"211": |-
   Tidak ingin melihat pesan ini lagi? Gunakan /settings
   Tidak ingin check-in otomatis lagi? Gunakan /claim
-'213': Cryo
-'214': Geo
-'215': Pyro
-'216': Anemo
-'217': Hydro
-'218': Dendro
-'219': Electro
-'221': Januari
-'222': Februari
-'223': Maret
-'224': April
-'225': Mei
-'226': Juni
-'227': Juli
-'228': Agustus
-'229': September
-'230': Oktober
-'231': November
-'232': Desember
-'234': Senin
-'235': Selasa
-'236': Rabu
-'237': Kamis
-'238': Jumat
-'239': Sabtu
-'240': Minggu
-'252': The Shenhe leaderboard
-'253': Bersaing dengan pengguna Shenhe lainnya dan cobalah untuk mendapatkan peringkat tertinggi dalam berbagai kategori!
-'254': Gunakan /leaderboard untuk melihat leaderboard
-'255': Kenyamanan
-'258': HP
-'259': HP%
-'260': Atk.
-'261': Atk.%
-'262': Def.
-'263': Def.%
-'264': Crit Rate
-'265': Crit DMG
-'266': Elem. Mastery
-'267': Energy Recharge
-'268': Base HP
-'269': Base Atk.
-'270': Base Def.
-'271': Healing Bonus
-'272': Physic DMG Bonus
-'273': Elem. DMG Bonus
-'274': Invalid image URL
-'275': Kustom Gambar
-'276': |-
+"213": Cryo
+"214": Geo
+"215": Pyro
+"216": Anemo
+"217": Hydro
+"218": Dendro
+"219": Electro
+"221": Januari
+"222": Februari
+"223": Maret
+"224": April
+"225": Mei
+"226": Juni
+"227": Juli
+"228": Agustus
+"229": September
+"230": Oktober
+"231": November
+"232": Desember
+"234": Senin
+"235": Selasa
+"236": Rabu
+"237": Kamis
+"238": Jumat
+"239": Sabtu
+"240": Minggu
+"252": The Shenhe leaderboard
+"253": Bersaing dengan pengguna Shenhe lainnya dan cobalah untuk mendapatkan peringkat tertinggi dalam berbagai kategori!
+"254": Gunakan /leaderboard untuk melihat leaderboard
+"255": Kenyamanan
+"258": HP
+"259": HP%
+"260": Atk.
+"261": Atk.%
+"262": Def.
+"263": Def.%
+"264": Crit Rate
+"265": Crit DMG
+"266": Elem. Mastery
+"267": Energy Recharge
+"268": Base HP
+"269": Base Atk.
+"270": Base Def.
+"271": Healing Bonus
+"272": Physic DMG Bonus
+"273": Elem. DMG Bonus
+"274": Invalid image URL
+"275": Kustom Gambar
+"276": |-
   • Kamu dapat mengatur gambar kustom untuk kartu karakter di </profile:1020580644419551336>
   • Kamu dapat memiliki hingga 125 gambar untuk setiap karakter
   • Berikan URL gambar, disarankan untuk menggunakan [imgur](https://imgur.com/)
   • Atau, unggah gambar menggunakan </img-upload:1041966109533929522>
   • Untuk versi 1, Gunakan [this](https://croppola.com/) untuk memangkas gambar, pilih rasio 2.64:1
-'277': Gambar Saat Ini
-'278': Urut berdasarkan...
-'279': Filter berdasarkan...
-'280': Base Speed
-'281': Speed%
-'282': Kambali
-'285': |-
+"277": Gambar Saat Ini
+"278": Urut berdasarkan...
+"279": Filter berdasarkan...
+"280": Base Speed
+"281": Speed%
+"282": Kambali
+"285": |-
   • Otomatis tukarkan kode Genshin Impact yang ada di [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)
   • Kamu juga dapat menukarkan kode secara manual menggunakan </redeem:1044926380456017924>
-'286': UID tidak valid atau tidak ditemukan di enka.network
-'287': Silakan aktifkan "Tampilkan Rincian" karakter di dalam game kamu
-'292': Max HP
-'293': win %
-'294': Lihat daftar musuh di fase abyss saat ini
-'295': Level Musuh
-'296': Perubahan Terbaru
-'297': Temui orang-orang hebat yang membantu saya!
-'298': Translators
-'299': Friendship Level
-'301': Stats
-'302': Ambang Batas
-'303': Resin Saat Ini
-'305': Gunakan /remind untuk mengubah pengaturan
-'306': Resin hampir penuh!!
-'308': Jumlah Item
-'309': Semuanya bisa kamu farming di hari Minggu lho! ヾ(≧▽≦*)o
-'310': Harap pilih opsi dari pelengkapan otomatis alih-alih mengetik sendiri
-'311': Cara membuka blokir DM dari server
-'312': Saatnya farm material untuk {name}!
-'313': Genshin Impact
-'314': Pilih Ruang Abyss
-'315': Informasi Dasar
-'316': Tanggal Lahir
-'317': Afiliasi
-'318': Konstelasi
-'319': Kartu Nama
-'320': Ascension Material
-'321': Ascension Ke
-'322': Material peningkatan level talent
-'323': Passive Talents
-'324': Naik level ke
-'325': Navigasi Cepat
-'326': Normal Atk.
-'327': Charged Atk.
-'328': Plunging Atk.
-'329': Menghitung damage...
-'330': Ini membutuhkan sekitar 5 hingga 10 detik
-'331': Tidak Ada Reaksi
-'332': Melt
-'333': Vaporize
-'334': Avg. DMG
-'335': Non-Crit DMG
-'336': Crit Hit DMG
-'337': Pilih Reaksi Elemental 
-'338': Tidak ada tim infusion jarak dekat
-'339': Pyro infusion
-'340': Cryo infusion
-'341': Bennett C6
-'342': Chongyun Skill
-'343': Pilih Tim infusion Jarak Dekat
-'344': Pilih Tim Party
-'345': Tim
-'346': Kondisi
-'347': Efek
-'348': Kalkulasi Damage
-'349': Sumber Daya yang Digunakan
-'350': melt
-'351': vaporize
-'352': Authkey URL
-'353': Mengimpor riwayat wish
-'354': Silakan tempel tautannya di sini
-'355': Harap tunggu sementara Shenhe sedang memproses riwayat wish kamu...
-'357': Candace Q
-'360': Hydro infusion
-'361': Pilih sumber informasimu
-'363': Tautan yang kamu berikan tidak valid
-'366': P.T. kamu siap digunakan!
-'367': UID ini tidak memiliki data pemain di dalamnya
-'368': Gunakan </wish import:1000187021635104890> untuk mengimpor riwayat wish kamu
-'369': Riwayat Wish
-'370': Check-in harian HoYoLAB otomatis
-'374': Memilih filter ini akan menghapusnya
-'375': Lihat banner Genshin yang sedang berlangsung
-'376': Saat ini tidak ada banner yang sedang berlangsung
-'381': "Perubahan {time}"
-'388': 'Ya'
-'389': 'Tidak'
-'396': "{pull} pulls"
-'397': Transformative Reactions
-'398': |-
+"286": UID tidak valid atau tidak ditemukan di enka.network
+"287": Silakan aktifkan "Tampilkan Rincian" karakter di dalam game kamu
+"292": Max HP
+"293": win %
+"294": Lihat daftar musuh di fase abyss saat ini
+"295": Level Musuh
+"296": Perubahan Terbaru
+"297": Temui orang-orang hebat yang membantu saya!
+"298": Translators
+"299": Friendship Level
+"301": Stats
+"302": Ambang Batas
+"303": Resin Saat Ini
+"305": Gunakan /remind untuk mengubah pengaturan
+"306": Resin hampir penuh!!
+"308": Jumlah Item
+"309": Semuanya bisa kamu farming di hari Minggu lho! ヾ(≧▽≦*)o
+"310": Harap pilih opsi dari pelengkapan otomatis alih-alih mengetik sendiri
+"311": Cara membuka blokir DM dari server
+"312": Saatnya farm material untuk {name}!
+"313": Genshin Impact
+"314": Pilih Ruang Abyss
+"315": Informasi Dasar
+"316": Tanggal Lahir
+"317": Afiliasi
+"318": Konstelasi
+"319": Kartu Nama
+"320": Ascension Material
+"321": Ascension Ke
+"322": Material peningkatan level talent
+"323": Passive Talents
+"324": Naik level ke
+"325": Navigasi Cepat
+"326": Normal Atk.
+"327": Charged Atk.
+"328": Plunging Atk.
+"329": Menghitung damage...
+"330": Ini membutuhkan sekitar 5 hingga 10 detik
+"331": Tidak Ada Reaksi
+"332": Melt
+"333": Vaporize
+"334": Avg. DMG
+"335": Non-Crit DMG
+"336": Crit Hit DMG
+"337": Pilih Reaksi Elemental 
+"338": Tidak ada tim infusion jarak dekat
+"339": Pyro infusion
+"340": Cryo infusion
+"341": Bennett C6
+"342": Chongyun Skill
+"343": Pilih Tim infusion Jarak Dekat
+"344": Pilih Tim Party
+"345": Tim
+"346": Kondisi
+"347": Efek
+"348": Kalkulasi Damage
+"349": Sumber Daya yang Digunakan
+"350": melt
+"351": vaporize
+"352": Authkey URL
+"353": Mengimpor riwayat wish
+"354": Silakan tempel tautannya di sini
+"355": Harap tunggu sementara Shenhe sedang memproses riwayat wish kamu...
+"357": Candace Q
+"360": Hydro infusion
+"361": Pilih sumber informasimu
+"363": Tautan yang kamu berikan tidak valid
+"366": P.T. kamu siap digunakan!
+"367": UID ini tidak memiliki data pemain di dalamnya
+"368": Gunakan </wish import:1000187021635104890> untuk mengimpor riwayat wish kamu
+"369": Riwayat Wish
+"370": Check-in harian HoYoLAB otomatis
+"374": Memilih filter ini akan menghapusnya
+"375": Lihat banner Genshin yang sedang berlangsung
+"376": Saat ini tidak ada banner yang sedang berlangsung
+"381": "Perubahan {time}"
+"388": "Ya"
+"389": "Tidak"
+"396": "{pull} pulls"
+"397": Transformative Reactions
+"398": |-
   Jumlah singkapan ley line dikonversi dari jumlah mora yang kamu peroleh bulan ini.
   Kamu tidak farm banyak singkapan ley line, itu hanya membuat angka lebih mudah dipahami.
-'399': |-
+"399": |-
   Karakter di-cache secara otomatis saat kamu menggunakan command ini.
   Bahkan jika kamu menonaktifkan karakter di "Tampilan Rincian" karakter di dalam game, mereka akan tetap muncul di sini.
   Untuk memperbarui Karakter Showcase di bot shenhe, tempatkan kembali karakter di "Tampilan Rincian" di dalam game dan gunakan perintah /profile lagi.
   Secara teoritis, kamu dapat memiliki semua karaktermu di /profile kamu dan dapat digunakan di Kalkulator Damage.
-'400': Tautan dihasilkan, klik tombol di bawah untuk masuk
-'401': Hasilkan tautan masuk
-'404': Pebarui level talenta
-'406': Mulai Waktu
-'407': Akhir Waktu
-'408': Detail
-'409': Pilih Jenis Event
-'410': Daftarkan akun genshinmu untuk menggunakan command yang diperlukan
-'411': opsi
-'412': Kelola gambar kustom kamu di </settings:1020580644478275614>
-'413': Tambahkan Gambar
-'414': 'Lihat catatan real-time: Resin saat ini, pot, status ekspedisi (perlu /register)'
-'415': pengguna
-'416': Cek data pengguna lain
-'417': 'Lihat statistik genshin: Hari aktif, oculus, jumlah chest'
-'418': UID pengguna genshin
-'419': Lihat tingkat eksplorasi area
-'420': Lihat info hadiah check-in harian Hoyolab kamu
-'421': Lihat semua karakter yang dimiliki (perlu /register)
-'422': Lihat buku harian traveler (perlu /register)
-'423': bulan
-'424': Pilih Bulan Untuk Dilihat
-'425': Bulan Ini
-'427': Bulan sebelum bulan lalu
-'428': Lihat Data Abyss (perlu /register)
-'430': Fase
-'431': Jenis data yang ingin kamu lihat
-'432': Fase Abyss Yang Mana?
-'433': Detail
-'434': Lihat daftar item beta saat ini di Genshin
-'435': Fase Ini
-'436': Fase Terakhir
-'437': Item Beta
-'438': Atur fitur notifikasi
-'439': fungsi
-'440': beralih
-'441': Notifikasi resin (perlu /register)
-'442': Notifikasi talenta
-'443': Cek pengaturan privasi
-'444': Kamu dapat menggunakan command /search untuk mendapat informasi lebih lanjut tentang item beta
-'445': Saat ini tidak ada item beta, periksa lagi nanti
-'446': Lihat item farmable hari ini
-'447': 'Lihat build karakter: Senjata, Artefak, Level Talenta, Statistik'
-'448': Cari UID pengguna
-'449': Lihat Artefak, Statistik, Senjata, dan Talenta Karakter, serta hitung damage
-'450': Redeem kode gift (perlu /register)
-'451': kode
-'452': Lihat event yang sedang berlangsung di genshin
-'453': Global
-'454': Read More
-'455': Server
-'456': Load
-'457': Saat ini kamu tidak ada di leaderboard
-'458': Karakter
-'460': Hitung bahan yang dibutuhkan untuk meningkatkan karakter
-'461': sinkronisasi
-'462': sinkronkan dengan data dalam game (isi otomatis level)
-'463': Main stat
-'464': Sub stat
-'465': Hitung bahan yang dibutuhkan untuk meningkatkan senjata
-'466': Developer yang membantu saya
-'467': Rarity
-'468': Sword
-'469': Catalyst
-'470': Claymore
-'471': Bow
-'472': Polearm
-'473': Lihat Daftar Tugas
-'474': Impor Riwayat Wish
-'475': Terima kasih banyak untuk orang-orang ini!
-'477': Kirim Tautan
-'478': Lihat Riwayat Wish
-'479': Dan kamu!
-'480': Prediksi peluang pull banner karakter bintang-5
-'481': nomor
-'482': Berapa banyak karakter banner bintang-5 yang ingin kamu pull?
-'483': Prediksi peluang pull banner senjata bintang-5
-'484': Lihat Wish Overview
-'485': Ubah bahasa yang shenhe gunakan untuk meresponmu
-'486': Lihat daftar semua command
-'487': Genshin
-'488': Genshin Wish
-'489': Memerlukan impor riwayat wish menggunakan /wish import
-'490': Kalkulator Enhancement Material
-'491': Hitung bahan material untuk upgrade
-'492': Video Tutorial
-'494': Lainnya
-'495': Pilih Kategori Bantuan
-'496': Author
-'497': |-
+"400": Tautan dihasilkan, klik tombol di bawah untuk masuk
+"401": Hasilkan tautan masuk
+"404": Pebarui level talenta
+"406": Mulai Waktu
+"407": Akhir Waktu
+"408": Detail
+"409": Pilih Jenis Event
+"410": Daftarkan akun genshinmu untuk menggunakan command yang diperlukan
+"411": opsi
+"412": Kelola gambar kustom kamu di </settings:1020580644478275614>
+"413": Tambahkan Gambar
+"414": "Lihat catatan real-time: Resin saat ini, pot, status ekspedisi (perlu /register)"
+"415": pengguna
+"416": Cek data pengguna lain
+"417": "Lihat statistik genshin: Hari aktif, oculus, jumlah chest"
+"418": UID pengguna genshin
+"419": Lihat tingkat eksplorasi area
+"420": Lihat info hadiah check-in harian Hoyolab kamu
+"421": Lihat semua karakter yang dimiliki (perlu /register)
+"422": Lihat buku harian traveler (perlu /register)
+"423": bulan
+"424": Pilih Bulan Untuk Dilihat
+"425": Bulan Ini
+"427": Bulan sebelum bulan lalu
+"428": Lihat Data Abyss (perlu /register)
+"430": Fase
+"431": Jenis data yang ingin kamu lihat
+"432": Fase Abyss Yang Mana?
+"433": Detail
+"434": Lihat daftar item beta saat ini di Genshin
+"435": Fase Ini
+"436": Fase Terakhir
+"437": Item Beta
+"438": Atur fitur notifikasi
+"439": fungsi
+"440": beralih
+"441": Notifikasi resin (perlu /register)
+"442": Notifikasi talenta
+"443": Cek pengaturan privasi
+"444": Kamu dapat menggunakan command /search untuk mendapat informasi lebih lanjut tentang item beta
+"445": Saat ini tidak ada item beta, periksa lagi nanti
+"446": Lihat item farmable hari ini
+"447": "Lihat build karakter: Senjata, Artefak, Level Talenta, Statistik"
+"448": Cari UID pengguna
+"449": View your in-game profile with UID
+"450": Redeem kode gift (perlu /register)
+"451": kode
+"452": Lihat event yang sedang berlangsung di genshin
+"453": Global
+"454": Read More
+"455": Server
+"456": Load
+"457": Saat ini kamu tidak ada di leaderboard
+"458": Karakter
+"460": Hitung bahan yang dibutuhkan untuk meningkatkan karakter
+"461": sinkronisasi
+"462": sinkronkan dengan data dalam game (isi otomatis level)
+"463": Main stat
+"464": Sub stat
+"465": Hitung bahan yang dibutuhkan untuk meningkatkan senjata
+"466": Developer yang membantu saya
+"467": Rarity
+"468": Sword
+"469": Catalyst
+"470": Claymore
+"471": Bow
+"472": Polearm
+"473": Lihat Daftar Tugas
+"474": Impor Riwayat Wish
+"475": Terima kasih banyak untuk orang-orang ini!
+"477": Kirim Tautan
+"478": Lihat Riwayat Wish
+"479": Dan kamu!
+"480": Prediksi peluang pull banner karakter bintang-5
+"481": nomor
+"482": Berapa banyak karakter banner bintang-5 yang ingin kamu pull?
+"483": Prediksi peluang pull banner senjata bintang-5
+"484": Lihat Wish Overview
+"485": Ubah bahasa yang shenhe gunakan untuk meresponmu
+"486": Lihat daftar semua command
+"487": Genshin
+"488": Genshin Wish
+"489": Memerlukan impor riwayat wish menggunakan /wish import
+"490": Kalkulator Enhancement Material
+"491": Hitung bahan material untuk upgrade
+"492": Video Tutorial
+"494": Lainnya
+"495": Pilih Kategori Bantuan
+"496": Author
+"497": |-
   Terima kasih telah menggunakan Shenhe, terutama yang memberi saran dan melaporkan bug.
   Saya sangat menghargaimu semua dan saya harap kamu menikmati menggunakan Shenhe.
   DM saya untuk setiap permintaan fitur, improvisasi, dan laporan bug!
-'498': Lihat Profil
-'499': Lihat Semua Karakter
-'500': Terjadi kesalahan saat mencoba melakukan check-in harian
-'501': Pilih Bab Buku
-'502': Jalankan Kalkulator
-'503': Jumlah Guild
-'504': 'Dibuat oleh seria#5334, DM saya jika ada pertanyaan'
-'505': Terjadi kesalahan saat mencoba mengirimkan notfikasi kepadamu
-'506': Bulan Lalu
-'507': Berapa banyak banner senjata bintang-5 yang ingin kamu pull?
-'508': Cari apapun yang berhubungan dengan genshin
-'509': pertanyaan
-'510': Sumeru
-'511': 'Cache telah dihapus karena perubahan cache, jika kamu benar-benar membutuhkan datanya, silakan DM seria#5334'
-'512': |-
+"498": Lihat Profil
+"499": Lihat Semua Karakter
+"500": Terjadi kesalahan saat mencoba melakukan check-in harian
+"501": Pilih Bab Buku
+"502": Jalankan Kalkulator
+"503": Jumlah Guild
+"504": 'Dibuat oleh seria#5334, DM saya jika ada pertanyaan'
+"505": Terjadi kesalahan saat mencoba mengirimkan notfikasi kepadamu
+"506": Bulan Lalu
+"507": Berapa banyak banner senjata bintang-5 yang ingin kamu pull?
+"508": Cari apapun yang berhubungan dengan genshin
+"509": pertanyaan
+"510": Sumeru
+"511": 'Cache telah dihapus karena perubahan cache, jika kamu benar-benar membutuhkan datanya, silakan DM seria#5334'
+"512": |-
   • Memberitahumu saat parametric transformer kamu sudah siap
   • 1 notifikasi per hari
-'515': Pengaturan Notifikasi
-'518': Realm Currency hampir penuh!
-'519': |-
+"515": Pengaturan Notifikasi
+"518": Realm Currency hampir penuh!
+"519": |-
   [Enka.network](https://enka.network/) sedang tidak aktif, silakan coba lagi nanti.
   Periksa [twitter](https://twitter.com/EnkaNetwork) mereka untuk pembaruan.
-'520': Dendroculus
-'523': Enka.network API error
-'524': Pengguna Terdaftar
-'525': Spread
-'526': Aggravate
-'527': Hydro infusion
-'528': Member
-'529': tipe item
-'530': Sources
-'531': Efek Senjata
-'532': "{num} kustom gambar"
-'533': Error ketika menghitung damage
-'534': Lihat dan ubah pengaturan pengguna kamu di Shenhe
-'535': Tampilan
-'536': Mode Gelap
-'537': Mode Terang
-'538': |
+"520": Dendroculus
+"523": Enka.network API error
+"524": Pengguna Terdaftar
+"525": Spread
+"526": Aggravate
+"527": Hydro infusion
+"528": Member
+"529": tipe item
+"530": Sources
+"531": Efek Senjata
+"532": "{num} kustom gambar"
+"533": Error ketika menghitung damage
+"534": Lihat dan ubah pengaturan pengguna kamu di Shenhe
+"535": Tampilan
+"536": Mode Gelap
+"537": Mode Terang
+"538": |
   • Pengaturan ini mengubah tampilan kartu kamu
   • Jika tidak ada versi mode gelap dari kartu, maka akan ditampilkan dalam mode terang
   • Standarnya adalah mode terang
   • Lihat di bawah untuk contoh
-'539': Pengaturan
-'542': item tidak ditemukan
-'543': Data dari cache
-'544': Kelola akun kamu di Shenhe
-'545': Kamu tidak memiliki akun yang terdaftar
-'546': |-
+"539": Pengaturan
+"542": item tidak ditemukan
+"543": Data dari cache
+"544": Kelola akun kamu di Shenhe
+"545": Kamu tidak memiliki akun yang terdaftar
+"546": |-
   • Kamu dapat mendaftarkan banyak akun di Shenhe
   • Kamu dapat beralih antar akun menggunakan menu dropdown
-'547': TW, HK, MO
-'548': Celestia
-'549': Irminsul
-'550': America
-'551': Europe
-'552': Asia
-'553': Region tidak dikenal
-'554': (Internal)
-'556': Tambahkan Akun
-'557': Hapus akun saat ini
-'559': Ganti Akun
-'562': Pilih Gambar Kustom
-'563': |-
+"547": TW, HK, MO
+"548": Celestia
+"549": Irminsul
+"550": America
+"551": Europe
+"552": Asia
+"553": Region tidak dikenal
+"554": (Internal)
+"556": Tambahkan Akun
+"557": Hapus akun saat ini
+"559": Ganti Akun
+"562": Pilih Gambar Kustom
+"563": |-
   • Baca [the docs](https://bit.ly/shenhe-docs) terkait keamanan akun
-'564': Latensi
-'565': Kredit
-'566': |-
+"564": Latensi
+"565": Kredit
+"566": |-
   {total} total
   {unique} unique
-'567': |-
+"567": |-
   Disini **TIDAK** ada dukungan untuk paimon.moe, harap lihat [GitHub issue](https://github.com/seriaati/shenhe_bot/issues/371) ini untuk alasannya.
   Satu-satunya file yang didukung adalah file YAML yang diekspor dari Shenhe.
-'568': Berikan URL gambar dalam format .png atau .jpg
-'576': "Karakter yang dimiliki: {current}/{total}"
-'577': "Tingkat pertemanan maksimal: {current}/{total}"
-'578': Friendship Lv.
-'582': Notifikasi resin
-'583': Pilih Hari
-'584': Notifikasi realm currency
-'585': Test DM
-'586': Memberitahumu ketika realm currency kamu melebihi jumlah tertentu
-'587': Dapat digunakan untuk ugprade
-'588': Lihat di Enka.network
-'589': merefresh {in_x_seconds}
-'590': |-
+"568": Berikan URL gambar dalam format .png atau .jpg
+"576": "Karakter yang dimiliki: {current}/{total}"
+"577": "Tingkat pertemanan maksimal: {current}/{total}"
+"578": Friendship Lv.
+"582": Notifikasi resin
+"583": Pilih Hari
+"584": Notifikasi realm currency
+"585": Test DM
+"586": Memberitahumu ketika realm currency kamu melebihi jumlah tertentu
+"587": Dapat digunakan untuk ugprade
+"588": Lihat di Enka.network
+"589": merefresh {in_x_seconds}
+"590": |-
   • Memberitahumu saat domain talenta karakter dapat difarming
   • Memilih karakter yang telah mengaktifkan notifikasi akan menonaktifkannya
-'591': Pengaturan saat ini
-'592': |-
+"591": Pengaturan saat ini
+"592": |-
   • Atur pengingat untuk mengerjakan tugas yang diberikan oleh Genshin agar tepat waktu
   • Pengaturan pengingat terpisah untuk setiap akun yang telah kamu daftarkan, kecuali Notifikasi Talenta dan Senjata
   • Klik tombol di bawah untuk informasi lebih lanjut tentang setiap fitur
-'593': Pengingat
-'594': Ubah pengaturan
-'595': |-
+"593": Pengingat
+"594": Ubah pengaturan
+"595": |-
   Shenhe harus bisa DM kamu untuk mengirimkan notifikasi. Jika dinonaktifkan, ikuti langkah-langkah di bawah ini untuk mengaktifkannya.
   1. Klik kanan server mana pun yang terdapat Shenhe di dalamnya
   2. Klik "Privacy Settings"
   3. Aktifkan "Direct Messages"
-'596': Tes itu!
-'597': Shenhe gagal DM kamu
-'598': Tambah/Hapus karakter
-'599': Hapus semua karakter
-'600': Ubah nickname
-'601': Nickname
-'602': Pilih akun yang ingin kamu ubah nicknamenya
-'603': Klaim hadiah
-'604': Check-in harian Hoyolab
-'605': Hadiah yang diklaim
-'606': Status saat ini
-'608': Harap tunggu Shenhe sedang memproses data karaktermu...
-'609': Domain
-'610': Bintang Terkumpul
-'611': Kamu disarankan untuk melakukan check-in sendiri hari ini
-'612': Digunakan {num} kali
-'613': Karakter yang sering digunakan
-'614': "Peingkatmu saat ini **#{rank}**"
-'615': "**{num}** orang telah berpartisipasi dalam leaderboard ini"
-'616': Pilih Kategori Leaderboard
-'617': Tingkat penggunaan karakter di abyss
-'618': Karakter yang sering digunakan **{name}** dengan penggunaan **{num}** ({percent}%)
-'619': Untuk memperbarui atau menambahkan datamu di leaderboard, gunakan {command}
-'620': leaderboard ini saat ini kosong
-'621': Food efek
-'622': Drops
-'623': Waktu interaksi habis
-'624': Silakan coba lagi
-'625': Tanggal dipublish
-'626': Bahan-bahan
-'627': Alihkan check-in harian
-'630': Shenhe telah secara otomatis menonaktifkan fitur check-in harian otomatis untukmu, untuk mengaktifkannya kembali, silakan gunakan </claim:1020580644365021250>
-'631': Shenhe telah menonaktifkan fitur pengingat ini secara otomatis untuk kamu, untuk mengaktifkannya kembali, harap gunakan </remind:1020580644365021255>
-'632': Notifikasi senjata
-'633': |-
+"596": Tes itu!
+"597": Shenhe gagal DM kamu
+"598": Tambah/Hapus karakter
+"599": Hapus semua karakter
+"600": Ubah nickname
+"601": Nickname
+"602": Pilih akun yang ingin kamu ubah nicknamenya
+"603": Klaim hadiah
+"604": Check-in harian Hoyolab
+"605": Hadiah yang diklaim
+"606": Status saat ini
+"608": Harap tunggu Shenhe sedang memproses data karaktermu...
+"609": Domain
+"610": Bintang Terkumpul
+"611": Kamu disarankan untuk melakukan check-in sendiri hari ini
+"612": Digunakan {num} kali
+"613": Karakter yang sering digunakan
+"614": "Peingkatmu saat ini **#{rank}**"
+"615": "**{num}** orang telah berpartisipasi dalam leaderboard ini"
+"616": Pilih Kategori Leaderboard
+"617": Tingkat penggunaan karakter di abyss
+"618": Karakter yang sering digunakan **{name}** dengan penggunaan **{num}** ({percent}%)
+"619": Untuk memperbarui atau menambahkan datamu di leaderboard, gunakan {command}
+"620": leaderboard ini saat ini kosong
+"621": Food efek
+"622": Drops
+"623": Waktu interaksi habis
+"624": Silakan coba lagi
+"625": Tanggal dipublish
+"626": Bahan-bahan
+"627": Alihkan check-in harian
+"630": Shenhe telah secara otomatis menonaktifkan fitur check-in harian otomatis untukmu, untuk mengaktifkannya kembali, silakan gunakan </claim:1020580644365021250>
+"631": Shenhe telah menonaktifkan fitur pengingat ini secara otomatis untuk kamu, untuk mengaktifkannya kembali, harap gunakan </remind:1020580644365021255>
+"632": Notifikasi senjata
+"633": |-
   • Memberitahumu saat domain senjata dapat difarming
   • Memilih senjata yang notifikasinya sudah diaktifkan akan menonaktifkan notifikasi
-'634': Tambah/Hapus senjata
-'635': Hapus semua senjata
-'636': Senjata saat ini
-'637': Saat ini tidak ada notifikasi yang disetel untuk senjata apa pun
-'638': Memilih senjata ini akan mematikan notifikasinya
-'639': Memberitahumu ketika realm currency kamu melebihi jumlah tertentu
-'640': Two-piece efek
-'641': Four-piece efek
-'642': Support server
-'643': Tampilan Lantai Ringkas
-'644': Harap tunggu sementara Shenhe membuat gambar...
-'645': Banner Karakter
-'646': Banner Senjata
-'647': Banner Pemula
-'648': Pencarian gagal
-'649': "{a} primogem dihabiskan"
-'650': Total Wishes
-'651': Pity Bintang-5
-'652': Bintang 4
-'653': Bintang 5
-'654': Pull bintang 5 terbaru
-'655': Banner Permanen
-'656': Pilih Banner
-'659': Kamu hanya dapat melakukan tindakan ini sekali setiap {hour} jam
-'661': Pilih filter rarity
-'662': Pilih filter banner
-'663': Total primogem
-'664': Intertwined fate
-'665': Total mora
-'666': Singkapan Ley Line
-'667': Dibandingkan dengan bulan lalu
-'668': Primogem
-'669': Mora
-'670': Pergi ke halaman login
-'671': Riwayat Wish
-'673': Saat ini kamu memiliki **{a}** wish yang disimpan di database Shenhe
-'674': Harap tautkan UID sebelum mengimpor wish baru
-'675': Wish terbaru
-'676': Wish terdahulu
-'677': Link UID
-'678': Impor
-'679': Ekspor
-'680': Hapus riwayat wish
-'681': |-
+"634": Tambah/Hapus senjata
+"635": Hapus semua senjata
+"636": Senjata saat ini
+"637": Saat ini tidak ada notifikasi yang disetel untuk senjata apa pun
+"638": Memilih senjata ini akan mematikan notifikasinya
+"639": Memberitahumu ketika realm currency kamu melebihi jumlah tertentu
+"640": Two-piece efek
+"641": Four-piece efek
+"642": Support server
+"643": Tampilan Lantai Ringkas
+"644": Harap tunggu sementara Shenhe membuat gambar...
+"645": Banner Karakter
+"646": Banner Senjata
+"647": Banner Pemula
+"648": Pencarian gagal
+"649": "{a} primogem dihabiskan"
+"650": Total Wishes
+"651": Pity Bintang-5
+"652": Bintang 4
+"653": Bintang 5
+"654": Pull bintang 5 terbaru
+"655": Banner Permanen
+"656": Pilih Banner
+"659": Kamu hanya dapat melakukan tindakan ini sekali setiap {hour} jam
+"661": Pilih filter rarity
+"662": Pilih filter banner
+"663": Total primogem
+"664": Intertwined fate
+"665": Total mora
+"666": Singkapan Ley Line
+"667": Dibandingkan dengan bulan lalu
+"668": Primogem
+"669": Mora
+"670": Pergi ke halaman login
+"671": Riwayat Wish
+"673": Saat ini kamu memiliki **{a}** wish yang disimpan di database Shenhe
+"674": Harap tautkan UID sebelum mengimpor wish baru
+"675": Wish terbaru
+"676": Wish terdahulu
+"677": Link UID
+"678": Impor
+"679": Ekspor
+"680": Hapus riwayat wish
+"681": |-
   Kamu sekarang dapat memiliki riwayat wish terpisah untuk setiap akun yang telah kamu daftarkan.
   Untuk wish sebelumnya, kamu harus memilih akun dari bawah untuk menautkannya
-'682': Pilih Akun
-'683': Tidak ada riwayat wish yang ditemukan untuk akun ini
-'684': Shenhe
-'685': Pilih metode mengimpor wish
-'686': 'Impor riwayat wish Genshinmu dari file'
-'687': |-
+"682": Pilih Akun
+"683": Tidak ada riwayat wish yang ditemukan untuk akun ini
+"684": Shenhe
+"685": Pilih metode mengimpor wish
+"686": "Impor riwayat wish Genshinmu dari file"
+"687": |-
   Kamu dapat menggunakan perintah </wish file-import:123123> untuk mengimpor wish dari sebuah file
   Hanya mendukung file YAML yang diekspor dari Shenhe
-'688': Apa kamu yakin?
-'689': |-
+"688": Apa kamu yakin?
+"689": |-
   • Kamu akan menghapus riwayat wish untuk akun ini, tindakan ini tidak dapat diurungkan.
   • Disarankan untuk mengekspor riwayat wish kamu sebelum menghapusnya.
   • Kamu mungkin memiliki wish yang disimpan di Shenhe yang tidak lagi disimpan dalam game, jika kamu menghapus riwayat wish, kamu akan kehilangan wish tersebut.
-'690': Shenhe telah menemukan **{a}** wish di tautan/file ini
-'691': Konfirmasi impor wish
-'692': Impor riwayat keinginan Genshin kamu dari file YAML yang diekspor oleh Shenhe
-'694': Sedang berlangsung
-'695': Selesai
-'696': Tersisa
-'697': Selesai
-'698': Hari ini
-'699': Besok
-'700': Tidak diketahui
-'701': Semua
-'702': Tautan yang kamu berikan telah kedaluwarsa, harap buat yang baru
-'703': Elemen
-'704': Notifikasi P.T
-'705': Musuh spiral abyss
-'706': Gangguan ley line di lantai ini
-'707': Babak Pertama
-'708': Babak Kedua
-'709': Lineup Simulator
-'710': Biaya dadu
-'711': Pilih lineup untuk melihat detailnya
-'712': Sertakan karakter
-'713': Skenario yang berlaku
-'714': Pilih Karakter
-'715': Pencarian
-'716': Hapus karakter
-'717': Cari kartu di TCG Genshin
-'718': kartu
-'719': Kartu tidak ditemukan
-'720': Fase Ascension Saat Ini (0~6)
-'721': Fase Ascension Target (0~6)
-'722': Fase Ascension
-'723': Kirim feedback ke developer bot
-'724': Feedback
-'725': Feedback terkirim, terima kasih! 🥰
-'726': Salin UID
-'727': Server region
-'728': Setelah kamu melihat tanda centang hijau di situs web, klik tombol hijau di bawah untuk mengonfirmasi
-'729': Edit jumlah item saat ini
-'730': Nomor fase ascension tidak valid
-'731': Tidak ada data wish ditemukan
-'732': Blessing
-'733': Blessing of the Abyssal Moon
-'734': Flower of Life
-'735': Plume of Death
-'736': Sands of Eon
-'737': Goblet of Eonothem
-'738': Circlet of Logos
-'739': Lihat kode source bot
-'740': Command tidak ditemukan
-'741': Tidak dapat menemukan sumber untuk perintah ini
-'742': command
-'743': Nama command untuk melihat kode sumber
-'744': Banner saat ini
-'745': Banner yang akan datang
-'746': Banner Wish Saat ini
-'747': CV
-'748': Disediakan oleh Shenhe
-'749': Pilih Versi Kartu Profil
-'750': Versi {version}
-'751': Versi Saat Ini
-'752': Versi Kartu
-'753': Kelola Cache
-'754': Pilih karakter yang ingin kamu hapus dari cache
-'755': Setelan Profil
-'756': Cache dimodifikasi, jalankan kembali perintah /profile
-'757': Kamu tidak memiliki karakter di cache
-'758': Perintah/fitur ini saat ini dinonaktifkan
-'759': Jika kamu memiliki pertanyaan, silakan bergabung dengan server dukungan
-'760': Shenhe sedang dalam maintenance, silakan coba lagi nanti
-'761': Level talenta diperbarui
-'762': Pebarui level talenta...
-'763': Silakan gunakan-kembali perintah untuk melihat perubahan
-'764': Default
-'765': |-
+"690": Shenhe telah menemukan **{a}** wish di tautan/file ini
+"691": Konfirmasi impor wish
+"692": Impor riwayat keinginan Genshin kamu dari file YAML yang diekspor oleh Shenhe
+"694": Sedang berlangsung
+"695": Selesai
+"696": Tersisa
+"697": Selesai
+"698": Hari ini
+"699": Besok
+"700": Tidak diketahui
+"701": Semua
+"702": Tautan yang kamu berikan telah kedaluwarsa, harap buat yang baru
+"703": Elemen
+"704": Notifikasi P.T
+"705": Musuh spiral abyss
+"706": Gangguan ley line di lantai ini
+"707": Babak Pertama
+"708": Babak Kedua
+"709": Lineup Simulator
+"710": Biaya dadu
+"711": Pilih lineup untuk melihat detailnya
+"712": Sertakan karakter
+"713": Skenario yang berlaku
+"714": Pilih Karakter
+"715": Pencarian
+"716": Hapus karakter
+"717": Cari kartu di TCG Genshin
+"718": kartu
+"719": Kartu tidak ditemukan
+"720": Fase Ascension Saat Ini (0~6)
+"721": Fase Ascension Target (0~6)
+"722": Fase Ascension
+"723": Kirim feedback ke developer bot
+"724": Feedback
+"725": Feedback terkirim, terima kasih! 🥰
+"726": Salin UID
+"727": Server region
+"728": Setelah kamu melihat tanda centang hijau di situs web, klik tombol hijau di bawah untuk mengonfirmasi
+"729": Edit jumlah item saat ini
+"730": Nomor fase ascension tidak valid
+"731": Tidak ada data wish ditemukan
+"732": Blessing
+"733": Blessing of the Abyssal Moon
+"734": Flower of Life
+"735": Plume of Death
+"736": Sands of Eon
+"737": Goblet of Eonothem
+"738": Circlet of Logos
+"739": Lihat kode source bot
+"740": Command tidak ditemukan
+"741": Tidak dapat menemukan sumber untuk perintah ini
+"742": command
+"743": Nama command untuk melihat kode sumber
+"744": Banner saat ini
+"745": Banner yang akan datang
+"746": Banner Wish Saat ini
+"747": CV
+"748": Disediakan oleh Shenhe
+"749": Pilih Versi Kartu Profil
+"750": Versi {version}
+"751": Versi Saat Ini
+"752": Versi Kartu
+"753": Kelola Cache
+"754": Pilih karakter yang ingin kamu hapus dari cache
+"755": Setelan Profil
+"756": Cache dimodifikasi, jalankan kembali perintah /profile
+"757": Kamu tidak memiliki karakter di cache
+"758": Perintah/fitur ini saat ini dinonaktifkan
+"759": Jika kamu memiliki pertanyaan, silakan bergabung dengan server dukungan
+"760": Shenhe sedang dalam maintenance, silakan coba lagi nanti
+"761": Level talenta diperbarui
+"762": Pebarui level talenta...
+"763": Silakan gunakan-kembali perintah untuk melihat perubahan
+"764": Default
+"765": |-
   Jika ini adalah pertama kalinya kamu menggunakan perintah ini,
   proses ini akan memakan waktu cukup lama, harap bersabar.
-'767': |-
+"767": |-
   Cookie kamu telah kedaluwarsa atau tidak valid.
    Harap gunakan perintah </register:1044926380242120744> untuk memuat ulang Cookie kamu secara manual dengan menambahkan kembali akun kamu.
    Jika kamu ingin menghindari masalah ini di masa mendatang, kamu dapat mendaftarkan akun kamu menggunakan metode email dan kata sandi, yang akan menyegarkan Cookie kamu secara otomatis.
-'768': Redeem di situs web
-'769': Alihkan check-in harian otomatis dengan tombol di bawah ini
-'770': "Honkai: Star Rail"
-'771': "Honkai Impact 3rd"
-'772': Kamu tidak memiliki akun yang terdaftar
-'773': Memuat...
-'774': Pilih kode untuk redeem
-'775': Masukkan kode
-'776': Redeem kode
-'777': |-
+"768": Redeem di situs web
+"769": Alihkan check-in harian otomatis dengan tombol di bawah ini
+"770": "Honkai: Star Rail"
+"771": "Honkai Impact 3rd"
+"772": Kamu tidak memiliki akun yang terdaftar
+"773": Memuat...
+"774": Pilih kode untuk redeem
+"775": Masukkan kode
+"776": Redeem kode
+"777": |-
   • Jika ada yang tidak berfungsi, kamu dapat redeem di situs web:
   • [Genshin Impact](https://genshin.hoyoverse.com/en/gift) | [Honkai Star Rail](https://hsr.hoyoverse.com/gift)
   • Pemilih kode mengumpulkan kode Genshin yang tersedia saat ini dari [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes), pilih untuk ditukarkan
   • Metode input kode memungkinkan kamu memasukkan hingga 3 kode (setidaknya 1) secara manual
-'778': Layanan penukaran kode sedang sibuk, silakan coba lagi nanti
-'779': Lihat [Shenhe's documentation](https://bit.ly/shenhe-docs) untuk cara mendapatkan tautan riwayat keinginan
-'780': Manager Akun
-'781': Konfirmasi
-'782': Informasi akun
-'783': Level akun
-'784': Game
-'785': Pilih akun untuk ditambahkan
-'786': Tambahkan akun ini
-'787': Batal
-'788': Akun kamu telah hancur berkeping-keping
-'789': '{current} belum didukung untuk fitur ini'
-'790': |-
+"778": Layanan penukaran kode sedang sibuk, silakan coba lagi nanti
+"779": Lihat [Shenhe's documentation](https://bit.ly/shenhe-docs) untuk cara mendapatkan tautan riwayat keinginan
+"780": Manager Akun
+"781": Konfirmasi
+"782": Informasi akun
+"783": Level akun
+"784": Game
+"785": Pilih akun untuk ditambahkan
+"786": Tambahkan akun ini
+"787": Batal
+"788": Akun kamu telah hancur berkeping-keping
+"789": "{current} belum didukung untuk fitur ini"
+"790": |-
   Game kamu saat ini: **{current}**
   Game yang didukung adalah: **{supported}**
-'791': akun
-'792': Periksa data akun kamu yang lain
+"791": akun
+"792": Periksa data akun kamu yang lain
+"793": Trailblazer
+"794": Trailblaze Level
+"795": Equilibrium Level
+"796": Characters Unlocked
+"797": Max Simulated Universe Stage
+"798": Light Cones Unlocked
+"799": Specify the UID to search the profile with
+"800": Specify the game to search the profile with
+"801": Mihomo API Error
+"802": User with this UID is Not Found
+"803": Request Error, API may be unavailable
