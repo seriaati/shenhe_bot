@@ -12,7 +12,7 @@ class AdminCog(commands.Cog, name="admin"):
     def __init__(self, bot):
         self.bot: BotModel = bot
         if platform.system() == "Linux":
-            import pm2py # type: ignore
+            import pm2py  # type: ignore
 
             self.pm2 = pm2py.PM2()
 

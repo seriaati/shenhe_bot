@@ -718,7 +718,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         uid = custom_uid
         game_ = GameType(game) if game else GameType.GENSHIN
-        
+
         if uid is None:
             try:
                 if account:
@@ -834,9 +834,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
             view.message = await i.original_response()
         else:
-            raise exceptions.GameNotSupported(
-                game_, [GameType.GENSHIN, GameType.HSR]
-            )
+            raise exceptions.GameNotSupported(game_, [GameType.GENSHIN, GameType.HSR])
 
     @app_commands.command(name="redeem", description=_("Redeem a gift code", hash=450))
     async def redeem(self, inter: discord.Interaction):

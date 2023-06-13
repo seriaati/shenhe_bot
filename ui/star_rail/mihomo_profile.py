@@ -66,7 +66,9 @@ class View(BaseView):
         self.add_item(OverviewButton(text_map.get(43, self.lang)))
         options: List[discord.SelectOption] = []
         for c in self.data.characters:
-            name = c.name if c.id not in trailblazer_ids else text_map.get(793, self.lang)
+            name = (
+                c.name if c.id not in trailblazer_ids else text_map.get(793, self.lang)
+            )
             options.append(discord.SelectOption(label=name, value=str(c.id)))
         self.add_item(CharacterSelect(text_map.get(157, self.lang), options))
 
