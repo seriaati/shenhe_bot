@@ -104,3 +104,4 @@ game_emojis = {
     "honkai": honkai_emoji,
     "hsr": hsr_emoji,
 }
+trailblazer_ids = ("8003", "8004", "8001", "8002")

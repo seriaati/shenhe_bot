@@ -3,7 +3,7 @@ import random
 from typing import Optional, Dict, Any
 from PIL import Image, ImageDraw
 import mihomo
-from dev.asset import traiblazer_ids
+from dev.asset import trailblazer_ids
 from apps.text_map import text_map
 import discord.utils as dutils
 from data.star_rail.hsr_maps import tree_info
@@ -64,7 +64,7 @@ def draw_profile_card_v1(
     # character name
     font = utils.get_font(lang, 128, "Bold")
     name = character.name.upper()
-    if character.id in traiblazer_ids:
+    if character.id in trailblazer_ids:
         name = text_map.get(793, lang).upper()
     draw.text((770, 52), name, font=font, fill=primary)
     text_right_pos = 770 + font.getlength(name)

@@ -2,7 +2,7 @@ from typing import List
 from apps.db.tables.user_settings import Settings
 from dev.base_ui import BaseSelect, BaseView
 from dev.config import mid_timeout
-from dev.asset import overview_emoji, traiblazer_ids
+from dev.asset import overview_emoji, trailblazer_ids
 from discord import ui
 import discord
 import mihomo
@@ -66,7 +66,7 @@ class View(BaseView):
         self.add_item(OverviewButton(text_map.get(43, self.lang)))
         options: List[discord.SelectOption] = []
         for c in self.data.characters:
-            name = c.name if c.id not in traiblazer_ids else text_map.get(793, self.lang)
+            name = c.name if c.id not in trailblazer_ids else text_map.get(793, self.lang)
             options.append(discord.SelectOption(label=name, value=str(c.id)))
         self.add_item(CharacterSelect(text_map.get(157, self.lang), options))
 
