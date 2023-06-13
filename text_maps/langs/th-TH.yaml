@@ -392,7 +392,7 @@
 '446': View farmable items today
 '447': 'View character builds: Weapons, artifacts, talent levels, stats'
 '448': Search a user's UID
-'449': View characters' artifacts, stats, weapons, and talents, and calculate damage
+'449': View your in-game profile with UID
 '450': Redeem gift codes (need /register)
 '451': code
 '452': View ongoing events in genshin
@@ -749,3 +749,11 @@
   Supported games are: **{supported}**
 '791': account
 '792': Check data of your other accounts
+'793': Trailblazer
+'794': Trailblaze Level
+'795': Equilibrium Level
+'796': Characters Unlocked
+'797': Max Simulated Universe Stage
+'798': Light Cones Unlocked
+'799': Specify the UID to search the profile with
+'800': Specify the game to search the profile with
