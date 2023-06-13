@@ -294,7 +294,7 @@ def draw_profile_card_v1(
                 field_names.append(s.field)
             else:
                 element = character.element
-                field_names.append(f"{element.name.lower()}_dmg")
+                field_names.append(f"{element.id.lower()}_dmg")
         else:
             add = dutils.get(character.additions, field=field_names[i])
             if add:
