@@ -10,3 +10,6 @@
 [submodule "API-docs"]
 	path = API-docs
 	url = https://github.com/EnkaNetwork/API-docs
+[submodule "HSRMaps"]
+	path = HSRMaps
+	url = https://github.com/FortOfFans/HSRMaps
