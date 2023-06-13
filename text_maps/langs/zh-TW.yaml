@@ -391,7 +391,7 @@
 "446": 查看原神今日可刷素材
 "447": "查看角色配置: 聖遺物、畢業面板、裝備選擇、聖遺物思路"
 "448": 查詢特定使用者的 UID
-"449": View your in-game profile with UID
+"449": 使用 UID 查看你在遊戲內的資料 
 "450": 兌換禮物碼 (需註冊)
 "451": 兌換碼
 "452": 查看原神目前進行中的活動
@@ -747,14 +747,14 @@
   支援的遊戲為：**{supported}**
 "791": 帳戶
 "792": 查看其他帳戶的資料
-"793": Trailblazer
-"794": Trailblaze Level
-"795": Equilibrium Level
-"796": Characters Unlocked
-"797": Max Simulated Universe Stage
-"798": Light Cones Unlocked
-"799": Specify the UID to search the profile with
-"800": Specify the game to search the profile with
-"801": Mihomo API Error
-"802": User with this UID is Not Found
-"803": Request Error, API may be unavailable
+"793": 開拓者
+"794": 開拓等級
+"795": 均衡等級
+"796": 已解鎖角色
+"797": 最高模擬宇宙階段
+"798": 已解鎖光錐
+"799": 指定要搜尋的 UID
+"800": 指定要搜尋的遊戲
+"801": Mihomo API 錯誤
+"802": 找不到擁有此 UID 的用戶
+"803": 請求錯誤，API 目前可能不可用
