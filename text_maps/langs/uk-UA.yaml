@@ -393,7 +393,7 @@
 '446': View farmable items today
 '447': 'Перегляд персонажів: зброя, артефакти, рівні талантів, статистика'
 '448': Пошук UID користувача
-'449': Перегляд артефактів персонажів, статистики, зброї, талантів і обчислення пошкоджень
+'449': View your in-game profile with UID
 '450': Активувати подарункові коди (потребує /register)
 '451': код
 '452': Переглядати поточні події в геншині
@@ -750,3 +750,11 @@
   Supported games are: **{supported}**
 '791': account
 '792': Check data of your other accounts
+'793': Trailblazer
+'794': Trailblaze Level
+'795': Equilibrium Level
+'796': Characters Unlocked
+'797': Max Simulated Universe Stage
+'798': Light Cones Unlocked
+'799': Specify the UID to search the profile with
+'800': Specify the game to search the profile with
