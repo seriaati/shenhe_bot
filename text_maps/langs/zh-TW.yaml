@@ -391,7 +391,7 @@
 '446': 查看原神今日可刷素材
 '447': '查看角色配置: 聖遺物、畢業面板、裝備選擇、聖遺物思路'
 '448': 查詢特定使用者的 UID
-'449': 查看原神角色聖遺物、屬性、武器、天賦等級、進行傷害計算
+'449': View your in-game profile with UID
 '450': 兌換禮物碼 (需註冊)
 '451': 兌換碼
 '452': 查看原神目前進行中的活動
@@ -747,3 +747,11 @@
   支援的遊戲為：**{supported}**
 '791': 帳戶
 '792': 查看其他帳戶的資料
+'793': Trailblazer
+'794': Trailblaze Level
+'795': Equilibrium Level
+'796': Characters Unlocked
+'797': Max Simulated Universe Stage
+'798': Light Cones Unlocked
+'799': Specify the UID to search the profile with
+'800': Specify the game to search the profile with
