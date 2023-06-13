@@ -105,3 +105,4 @@ game_emojis = {
     "hsr": hsr_emoji,
 }
 trailblazer_ids = ("8003", "8004", "8001", "8002")
+right_emoji = "<:right:982588993122238524>"

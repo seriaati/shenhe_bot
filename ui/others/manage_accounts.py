@@ -131,7 +131,7 @@ class GenerateLink(ui.Button):
         self.view.clear_items()
         self.view.add_item(GOBack())
         self.view.add_item(ui.Button(label=text_map.get(670, lang), url=url))
-        self.view.add_item(Confirm(str(i.user.id), token, text_map.get(781, lang)))
+        self.view.add_item(NextStep(str(i.user.id), token, text_map.get(781, lang)))
 
         await i.response.edit_message(embed=embed, view=self.view)
         message = await i.original_response()
@@ -139,9 +139,13 @@ class GenerateLink(ui.Button):
         i.client.token_store[token] = LoginInfo(message, self.view.lang, i.user)
 
 
-class Confirm(BaseButton):
+class NextStep(BaseButton):
     def __init__(self, user_id: str, token: str, label: str):
-        super().__init__(style=discord.ButtonStyle.green, label=label)
+        super().__init__(
+            style=discord.ButtonStyle.blurple,
+            label=label,
+            emoji=asset.right_emoji,
+        )
         self.user_id = user_id
         self.token = token
         self.view: View
