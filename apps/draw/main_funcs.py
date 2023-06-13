@@ -1,4 +1,5 @@
-import asyncio
+import random
+import mihomo
 import functools
 import io
 from typing import Dict, List, Optional, Tuple
@@ -10,12 +11,15 @@ import genshin
 import matplotlib.pyplot as plt
 
 import apps.draw.draw_funcs as funcs
+import apps.draw.draw_funcs.star_rail as star_rail
+from dev.exceptions import CardNotReady
 import dev.models as models
 from ambr import Material
 from apps.db.json import read_json, write_json
 from apps.db.tables.abyss_board import AbyssBoardEntry
 from apps.wish.models import RecentWish, WishData
-from utils import calculate_time, compress_image_util, download_images, extract_urls
+from utils import calculate_time, download_images, extract_urls
+from utils.draw import get_hsr_card_data
 
 
 @calculate_time
@@ -469,6 +473,31 @@ async def draw_profile_card_v2(
 
 
 @calculate_time
-async def compress_image(loop: asyncio.AbstractEventLoop, fp: bytes) -> bytes:
-    func = functools.partial(compress_image_util, fp)
-    return await loop.run_in_executor(None, func)
+async def draw_hsr_profile_card_v1(
+    draw_input: models.DrawInput, character: mihomo.Character
+) -> io.BytesIO:
+    card_data = get_hsr_card_data(character.id)
+    if card_data is None:
+        raise CardNotReady
+    image_url = random.choice(card_data["arts"])
+    urls: set[str] = set()
+    for t in character.traces:
+        urls.add(t.icon)
+    for t in character.trace_tree:
+        urls.add(t.icon)
+    if character.light_cone:
+        urls.add(character.light_cone.portrait)
+    for r in character.relics:
+        urls.add(r.icon)
+    urls.add(image_url)
+    await download_images(list(urls), draw_input.session)
+
+    func = functools.partial(
+        star_rail.draw_profile_card_v1,
+        character,
+        str(draw_input.lang),
+        draw_input.dark_mode,
+        image_url,
+        card_data,
+    )
+    return await draw_input.loop.run_in_executor(None, func)
