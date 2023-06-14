@@ -759,3 +759,8 @@
 "801": Mihomo API Error
 "802": Pengguna dengan UID ini Tidak Ditemukan
 "803": Kesalahan Permintaan, API mungkin tidak tersedia
+"804": Image Download Failed
+"805": |-
+  Image of URL {url} failed to download with status code {status}.
+  If this is a custom image, check if the URL is correct.
+  If not, Shenhe may be rate limited by the image host, please try again later.
