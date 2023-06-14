@@ -91,3 +91,11 @@ class GameNotSupported(Exception):
     def __init__(self, current: GameType, supported: List[GameType]) -> None:
         self.current = current
         self.supported = supported
+
+
+class ImageDownloadError(Exception):
+    """Image failed to download while saving it for cache."""
+
+    def __init__(self, url: str, status: int) -> None:
+        self.url = url
+        self.status = status

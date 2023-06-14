@@ -118,6 +118,9 @@ def get_error_handle_embed(
     elif isinstance(e, exceptions.WishFileImportError):
         embed.set_author(name=text_map.get(135, lang))
         embed.description = text_map.get(567, lang)
+    elif isinstance(e, exceptions.ImageDownloadError):
+        embed.set_author(name=text_map.get(804, lang))
+        embed.description = text_map.get(805, lang).format(url=e.url, status=e.status)
     elif isinstance(e, exceptions.GameNotSupported):
         lang = str(lang)
         current_game_name = get_game_name(e.current, lang)
