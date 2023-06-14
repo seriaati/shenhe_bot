@@ -87,11 +87,11 @@ class Schedule(commands.Cog):
 
     @schedule_error_handler
     async def save_codes(self) -> None:
-        codes = await genshin_app.find_codes(self.bot.session)
+        codes = await self.find_codes(self.bot.session)
         if codes:
             await self.bot.db.codes.update_codes(codes)
 
-    async def find_codes(session: aiohttp.ClientSession) -> List[str]:
+    async def find_codes(self, session: aiohttp.ClientSession) -> List[str]:
         """Find redeem codes from Gaurav's API."""
         url = "https://genshin-redeem-code.vercel.app/codes"
         async with session.get(url) as r:
