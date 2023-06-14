@@ -673,7 +673,7 @@
 "725": Feedback terkirim, terima kasih! 🥰
 "726": Salin UID
 "727": Server region
-"728": Once you see a green checkmark on the website, click the blue button below to go to the next step.
+"728": Setelah kamu melihat tanda centang hijau di situs web, klik tombol biru di bawah untuk melanjutkan ke langkah berikutnya.
 "729": Edit jumlah item saat ini
 "730": Nomor fase ascension tidak valid
 "731": Tidak ada data wish ditemukan
@@ -734,7 +734,7 @@
 "778": Layanan penukaran kode sedang sibuk, silakan coba lagi nanti
 "779": Lihat [Shenhe's documentation](https://bit.ly/shenhe-docs) untuk cara mendapatkan tautan riwayat keinginan
 "780": Manager Akun
-"781": Next Step
+"781": Langkah Selanjutnya
 "782": Informasi akun
 "783": Level akun
 "784": Game
@@ -759,8 +759,8 @@
 "801": Mihomo API Error
 "802": Pengguna dengan UID ini Tidak Ditemukan
 "803": Kesalahan Permintaan, API mungkin tidak tersedia
-"804": Image Download Failed
+"804": Gagal Mengunduh Gambar
 "805": |-
-  Image of URL {url} failed to download with status code {status}.
-  If this is a custom image, check if the URL is correct.
-  If not, Shenhe may be rate limited by the image host, please try again later.
+  Gambar URL {url} gagal diunduh dengan kode status {status}.
+  Jika ini adalah gambar kustom, periksa apakah URL sudah benar.
+  Jika tidak, Shenhe mungkin dibatasi oleh host gambar, silakan coba lagi nanti.
