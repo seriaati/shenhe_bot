@@ -758,8 +758,8 @@
 "801": Mihomo API 錯誤
 "802": 找不到擁有此 UID 的用戶
 "803": 請求錯誤，API 目前可能不可用
-"804": Image Download Failed
+"804": 圖片下載失敗
 "805": |-
-  Image of URL {url} failed to download with status code {status}.
-  If this is a custom image, check if the URL is correct.
-  If not, Shenhe may be rate limited by the image host, please try again later.
+  連結為 {url} 的圖片下載失敗，狀態碼為 {status}。
+  如果這是一個自定義圖片，請確認連結是否正確。
+  如果不是，申鶴可能被圖片託管商進行了請求限制，請稍後再試。
