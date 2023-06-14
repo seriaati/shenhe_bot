@@ -13,6 +13,7 @@ import yaml
 import dev.asset as asset
 from apps.text_map import text_map
 from data.draw.fonts import FONTS
+from dev.exceptions import ImageDownloadError
 from dev.models import DefaultEmbed, DynamicBackgroundInput
 
 from .general import log
@@ -47,6 +48,8 @@ async def download_images(
             if resp.status == 200:
                 async with aiofiles.open(path, "wb") as f:
                     await f.write(await resp.read())
+            else:
+                raise ImageDownloadError(url, resp.status)
 
 
 def get_cache(url: str) -> Image.Image:

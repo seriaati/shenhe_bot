@@ -3,6 +3,7 @@ import json
 from typing import Any, Dict, List
 
 import aiofiles
+import aiohttp
 import discord
 import genshin
 from discord import utils
@@ -86,8 +87,19 @@ class Schedule(commands.Cog):
 
     @schedule_error_handler
     async def save_codes(self) -> None:
-        codes = await genshin_app.find_codes(self.bot.session)
-        await self.bot.db.codes.update_codes(codes)
+        codes = await self.find_codes(self.bot.session)
+        if codes:
+            await self.bot.db.codes.update_codes(codes)
+
+    @staticmethod
+    async def find_codes(session: aiohttp.ClientSession) -> List[str]:
+        """Find redeem codes from Gaurav's API."""
+        url = "https://genshin-redeem-code.vercel.app/codes"
+        async with session.get(url) as r:
+            if r.status != 200:
+                return []
+            data = await r.json()
+            return [d["code"] for d in data]
 
     @schedule_error_handler
     async def generate_abyss_json(self) -> None:
