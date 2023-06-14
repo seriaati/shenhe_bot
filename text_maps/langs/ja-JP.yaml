@@ -727,7 +727,7 @@
 "778": コード引き換えサービスは現在ビジー状態です。後でもう一度お試しください
 "779": 祈願履歴のURLを取得する方法は[申鶴のドキュメント](https://bit.ly/shenhe-docs)から確認できます
 "780": アカウントマネージャー
-"781": Next Step
+"781": 次の手順
 "782": アカウント情報
 "783": アカウントレベル
 "784": ゲーム
@@ -741,19 +741,19 @@
   サポートされているゲーム: **{supported}**
 "791": アカウント
 "792": 他のアカウントのデータを確認する
-"793": Trailblazer
-"794": Trailblaze Level
-"795": Equilibrium Level
-"796": Characters Unlocked
-"797": Max Simulated Universe Stage
-"798": Light Cones Unlocked
-"799": Specify the UID to search the profile with
-"800": Specify the game to search the profile with
-"801": Mihomo API Error
-"802": User with this UID is Not Found
-"803": Request Error, API may be unavailable
-"804": Image Download Failed
+"793": 開拓者
+"794": 開拓者
+"795": 均衡レベル
+"796": アンロックしたキャラクター
+"797": 到達した模擬宇宙のステージ
+"798": アンロックした光円錐
+"799": UIDを指定してプロフィールを検索
+"800": プロファイルを検索するゲームを指定
+"801": Mihomo API エラー
+"802": この UID を持つユーザーは見つかりません
+"803": リクエストエラー　APIが利用できない可能性があります
+"804": 画像のダウンロードに失敗しました
 "805": |-
-  Image of URL {url} failed to download with status code {status}.
-  If this is a custom image, check if the URL is correct.
-  If not, Shenhe may be rate limited by the image host, please try again later.
+  URL{url}の画像はステータスコード{status}でダウンロードに失敗しました。
+  これがカスタム画像である場合、URLが正しいかどうかを確認してください。
+  もしそうでなければ、申鶴は画像ホストによってレート制限されている可能性があるので、後でもう一度試してください。
