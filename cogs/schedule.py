@@ -91,7 +91,8 @@ class Schedule(commands.Cog):
         if codes:
             await self.bot.db.codes.update_codes(codes)
 
-    async def find_codes(self, session: aiohttp.ClientSession) -> List[str]:
+    @staticmethod
+    async def find_codes(session: aiohttp.ClientSession) -> List[str]:
         """Find redeem codes from Gaurav's API."""
         url = "https://genshin-redeem-code.vercel.app/codes"
         async with session.get(url) as r:
