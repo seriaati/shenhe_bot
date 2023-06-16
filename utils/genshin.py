@@ -480,9 +480,8 @@ async def update_talents_json(
 def get_checkin_url(game: enum.GameType) -> str:
     if game is enum.GameType.GENSHIN:
         return asset.genshin_checkin_url
-    elif game is enum.GameType.HSR:
+    if game is enum.GameType.HSR:
         return asset.hsr_checkin_url
-    elif game is enum.GameType.HONKAI:
+    if game is enum.GameType.HONKAI:
         return asset.honkai_checkin_url
-    else:
-        raise ValueError("Invalid game type")
+    raise ValueError("Invalid game type")
