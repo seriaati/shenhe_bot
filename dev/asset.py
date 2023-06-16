@@ -106,3 +106,12 @@ game_emojis = {
 }
 trailblazer_ids = ("8003", "8004", "8001", "8002")
 right_emoji = "<:right:982588993122238524>"
+genshin_checkin_url = (
+    "https://act.hoyolab.com/ys/event/signin-sea-v3/index.html?act_id=e202102251931481"
+)
+hsr_checkin_url = (
+    "https://act.hoyolab.com/bbs/event/signin/hkrpg/index.html?act_id=e202303301540311"
+)
+honkai_checkin_url = (
+    "https://act.hoyolab.com/bbs/event/signin-bh3/index.html?act_id=e202110291205111"
+)

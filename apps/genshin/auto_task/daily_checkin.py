@@ -18,6 +18,7 @@ from dev.enum import CheckInAPI, GameType
 from dev.exceptions import CheckInAPIError
 from utils import get_dt_now, log
 from utils.general import get_dc_user
+from utils.genshin import get_checkin_url
 
 load_dotenv()
 
@@ -230,15 +231,16 @@ class DailyCheckin:
                 embed = model.DefaultEmbed()
                 embed.title = text_map.get(40, lang)
             elif retcode == -100:  # Invalid cookie
-                embed = model.ErrorEmbed()
-                embed.title = text_map.get(36, lang)
-                embed.description = f"""
-                {text_map.get(767, lang)}
-                """
+                embed = model.ErrorEmbed(
+                    text_map.get(36, lang), text_map.get(767, lang)
+                )
                 embed.set_footer(text=text_map.get(630, lang))
             elif retcode == -10002:  # No game account found
-                embed = model.ErrorEmbed()
-                embed.title = text_map.get(772, lang)
+                embed = model.ErrorEmbed(text_map.get(772, lang))
+            elif retcode == -9999:  # GeetestTriggered
+                embed = model.ErrorEmbed(
+                    text_map.get(809, lang), text_map.get(807, lang)
+                )
             else:
                 embed = model.ErrorEmbed()
                 embed.title = text_map.get(135, lang)
@@ -272,7 +274,18 @@ class DailyCheckin:
         dc_user = await get_dc_user(self.bot, user.user_id)
         embed.set_user_footer(dc_user, user.uid)
         try:
-            await dc_user.send(embed=embed)
+            if isinstance(embed, model.ErrorEmbed):
+                view = discord.ui.View()
+                view.add_item(
+                    discord.ui.Button(
+                        label="HoYoLAB",
+                        url=get_checkin_url(user.game),
+                        emoji=asset.hoyolab_emoji,
+                    )
+                )
+                await dc_user.send(embed=embed, view=view)
+            else:
+                await dc_user.send(embed=embed)
         except discord.Forbidden:
             pass
         except Exception as e:  # skipcq: PYL-W0703

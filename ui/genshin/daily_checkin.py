@@ -1,18 +1,19 @@
-import asyncio
 import calendar
-from typing import Dict
 
-from discord import ButtonStyle, ui
+from discord import ButtonStyle, Embed, ui
 from discord.errors import InteractionResponded
+from genshin import GeetestTriggered
 
 import dev.asset as asset
 import dev.config as config
 from apps.db.tables.hoyo_account import HoyoAccount, convert_game_type
 from apps.text_map import text_map
-from dev.base_ui import BaseView
+from dev.base_ui import BaseButton, BaseView
 from dev.enum import GameType
-from dev.models import DefaultEmbed, Inter
+from dev.models import DefaultEmbed, ErrorEmbed, Inter
 from utils import divide_chunks, get_dt_now
+from utils.genshin import get_checkin_url
+from utils.text_map import get_game_name
 
 
 class View(BaseView):
@@ -38,7 +39,8 @@ class View(BaseView):
         self.lang = lang or str(i.locale)
 
         self.add_components()
-        await self.update(i)
+        embed = await self.fetch_embed(i)
+        await i.edit_original_response(embed=embed, view=self)
 
         self.author = i.user
         self.message = await i.original_response()
@@ -49,7 +51,7 @@ class View(BaseView):
         self.add_item(ClaimRewardOff(self.lang, self.daily_checkin))
         self.add_item(ClaimReward(self.lang))
 
-    async def update(self, i: Inter) -> None:
+    async def fetch_embed(self, i: Inter) -> Embed:
         now = get_dt_now()
         day_in_month = calendar.monthrange(now.year, now.month)[1]
 
@@ -58,11 +60,12 @@ class View(BaseView):
             game=convert_game_type(self.game)
         )
 
+        game_name = get_game_name(self.game, self.lang)
         embed = DefaultEmbed(
             description=f"{text_map.get(606, self.lang)}: {claimed_rewards}/{day_in_month}\n"
         )
         embed.set_author(
-            name=text_map.get(604, self.lang),
+            name=f"{text_map.get(604, self.lang)} - {game_name}",
             icon_url=i.user.display_avatar.url,
         )
         embed.set_footer(text=text_map.get(769, self.lang))
@@ -80,34 +83,49 @@ class View(BaseView):
             r = "".join(val)
             embed.add_field(name=f"{text_map.get(605, self.lang)} ({index+1})", value=r)
 
-        await i.edit_original_response(embed=embed, view=self)
+        return embed
 
 
-class ClaimReward(ui.Button):
+class ClaimReward(BaseButton):
     def __init__(self, lang: str):
         super().__init__(style=ButtonStyle.green, label=text_map.get(603, lang))
         self.view: View
 
     async def callback(self, i: Inter):
-        await i.response.defer()
+        await self.loading(i)
 
         client = await self.view.user.client
-        reward = await client.claim_daily_reward(game=convert_game_type(self.view.game))
-        reward_str = f"{reward.amount}x {reward.name}"
-        embed = DefaultEmbed(
-            description=text_map.get(41, self.view.lang).format(reward=reward_str)
-        )
-        embed.set_author(
-            name=text_map.get(42, self.view.lang),
-            icon_url=i.user.display_avatar.url,
-        )
-        embed.set_thumbnail(url=reward.icon)
+        try:
+            reward = await client.claim_daily_reward(
+                game=convert_game_type(self.view.game)
+            )
+        except GeetestTriggered:
+            self.restore_state()
+            await i.edit_original_response(view=self.view)
 
-        self.view.disable_items()
-        await i.edit_original_response(embed=embed, view=self.view)
-        self.view.enable_items()
-        await asyncio.sleep(1.5)
-        await self.view.update(i)
+            embed = ErrorEmbed(description=text_map.get(807, self.view.lang))
+            embed.set_author(name=text_map.get(806, self.view.lang))
+            view = BaseView()
+            url = get_checkin_url(self.view.game)
+            view.add_item(
+                ui.Button(emoji=asset.hoyolab_emoji, url=url, label="HoYoLAB")
+            )
+            await i.followup.send(embed=embed, view=view, ephemeral=True)
+        else:
+            self.restore_state()
+            r_embed = await self.view.fetch_embed(i)
+            await i.edit_original_response(embed=r_embed, view=self.view)
+
+            reward_str = f"{reward.amount}x {reward.name}"
+            embed = DefaultEmbed(
+                description=text_map.get(41, self.view.lang).format(reward=reward_str)
+            )
+            embed.set_author(
+                name=text_map.get(42, self.view.lang),
+                icon_url=i.user.display_avatar.url,
+            )
+            embed.set_thumbnail(url=reward.icon)
+            await i.followup.send(embed=embed)
 
 
 class ClaimToggle(ui.Button):
