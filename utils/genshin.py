@@ -475,3 +475,14 @@ async def update_talents_json(
 
     talents_["last_updated"] = get_dt_now().strftime("%Y-%m-%d %H:%M:%S")
     await write_json(pool, f"talents/{uid}.json", talents_)
+
+
+def get_checkin_url(game: enum.GameType) -> str:
+    if game is enum.GameType.GENSHIN:
+        return asset.genshin_checkin_url
+    elif game is enum.GameType.HSR:
+        return asset.hsr_checkin_url
+    elif game is enum.GameType.HONKAI:
+        return asset.honkai_checkin_url
+    else:
+        raise ValueError("Invalid game type")
