@@ -4,7 +4,6 @@ asqlite @ git+https://github.com/Rapptz/asqlite
 asyncpg==0.27.0
 attrs==23.1.0
 cachetools==5.3.1
-discord-ext-prometheus @ git+https://github.com/Apollo-Roboto/discord.py-ext-prometheus
 discord.py==2.3.0
 diskcache==5.6.1
 enkanetwork.py @ git+https://github.com/mrwan200/EnkaNetwork.py

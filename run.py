@@ -16,7 +16,6 @@ import discord
 import sentry_sdk
 from discord import app_commands
 from discord.ext import commands
-from discord.ext.prometheus import PrometheusLoggingHandler
 from dotenv import load_dotenv
 
 import dev.models as models
@@ -34,7 +33,6 @@ from dev.models import BotModel
 from utils import log, sentry_logging
 
 load_dotenv()
-log.getLogger().addHandler(PrometheusLoggingHandler())
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
