@@ -364,7 +364,7 @@
 "417": "查看原神資料: 活躍時間、神瞳數量、寶箱數量"
 "418": 欲查詢使用者的 UID, 已註冊過則不用填
 "419": 查看區域探索度
-"420": 領取 hoyolab 網頁登入獎勵 (需註冊)
+"420": View info about your HoYoLAB daily check-in rewards
 "421": 展示自己擁有的所有角色 (需註冊)
 "422": 查看旅行者日記 (需註冊)
 "423": 月份
@@ -548,7 +548,7 @@
 "601": 暱稱
 "602": 選擇你想要更換暱稱的帳戶
 "603": 簽到
-"604": Hoyolab 每日簽到
+"604": HoYoLAB daily check in
 "605": 已獲得的獎勵
 "606": 當前狀態
 "608": 請稍等，申鶴正在處理你的角色資訊...
@@ -763,3 +763,5 @@
   連結為 {url} 的圖片下載失敗，狀態碼為 {status}。
   如果這是一個自定義圖片，請確認連結是否正確。
   如果不是，申鶴可能被圖片託管商進行了請求限制，請稍後再試。
+"806": Human verification required
+"807": A human verification was triggered upon check-in, please check-in manually on the HoYoLAB website.
