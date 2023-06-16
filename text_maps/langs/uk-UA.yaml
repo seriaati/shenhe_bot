@@ -366,7 +366,7 @@
 "417": "Переглянути статистику Genshin: активні дні, окули, кількість скринь"
 "418": Genshin UID користувача
 "419": View area exploration rates
-"420": View info about your Hoyolab daily check-in rewards
+"420": View info about your HoYoLAB daily check-in rewards
 "421": View all owned characters (need /register)
 "422": View traveler's diary (need /register)
 "423": місяць
@@ -550,7 +550,7 @@
 "601": Nickname
 "602": Select the account you want to change the nickname of
 "603": Claim reward
-"604": Hoyolab daily check in
+"604": HoYoLAB daily check in
 "605": Claimed rewards
 "606": Current status
 "608": Please wait while Shenhe is processing your character data...
@@ -766,3 +766,5 @@
   Image of URL {url} failed to download with status code {status}.
   If this is a custom image, check if the URL is correct.
   If not, Shenhe may be rate limited by the image host, please try again later.
+"806": Human verification required
+"807": A human verification was triggered upon check-in, please check-in manually on the HoYoLAB website.
