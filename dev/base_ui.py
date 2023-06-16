@@ -138,7 +138,7 @@ def get_error_handle_embed(
     elif isinstance(e, genshin.errors.GenshinException):
         if isinstance(e, genshin.errors.DataNotPublic):
             embed.set_author(name=text_map.get(22, lang))
-            embed.description = f"{text_map.get(21, lang)}"
+            embed.description = text_map.get(21, lang)
         elif isinstance(e, genshin.errors.InvalidCookies):
             embed.set_author(name=text_map.get(36, lang))
             embed.description = text_map.get(767, lang)
@@ -343,6 +343,11 @@ class BaseButton(discord.ui.Button):
         self.label = text_map.get(773, lang)
         self.disabled = True
         await i.response.edit_message(view=self.view)
+
+    def restore_state(self):
+        self.label = self.original_label
+        self.emoji = self.original_emoji
+        self.disabled = self.original_disabled
 
     async def restore(self, i: Inter):
         self.label = self.original_label
