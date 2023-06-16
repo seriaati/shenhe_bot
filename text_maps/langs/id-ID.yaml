@@ -364,7 +364,7 @@
 "417": "Lihat statistik genshin: Hari aktif, oculus, jumlah chest"
 "418": UID pengguna genshin
 "419": Lihat tingkat eksplorasi area
-"420": Lihat info hadiah check-in harian Hoyolab kamu
+"420": Lihat info hadiah check-in harian HoYoLab kamu
 "421": Lihat semua karakter yang dimiliki (perlu /register)
 "422": Lihat buku harian traveler (perlu /register)
 "423": bulan
@@ -548,7 +548,7 @@
 "601": Nickname
 "602": Pilih akun yang ingin kamu ubah nicknamenya
 "603": Klaim hadiah
-"604": Check-in harian Hoyolab
+"604": Check-in harian HoYoLab
 "605": Hadiah yang diklaim
 "606": Status saat ini
 "608": Harap tunggu Shenhe sedang memproses data karaktermu...
@@ -764,3 +764,5 @@
   Gambar URL {url} gagal diunduh dengan kode status {status}.
   Jika ini adalah gambar kustom, periksa apakah URL sudah benar.
   Jika tidak, Shenhe mungkin dibatasi oleh host gambar, silakan coba lagi nanti.
+"806": Diperlukan verifikasi manusia
+"807": Verifikasi manusia dipicu saat check-in, harap check-in secara manual di situs web HoYoLAB.
