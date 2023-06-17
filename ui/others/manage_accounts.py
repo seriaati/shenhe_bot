@@ -4,7 +4,6 @@ import discord
 from discord import ui
 from logingateway import HuTaoLoginAPI
 from logingateway.exception import UserTokenNotFound
-from apps.text_map.convert_locale import HUTAO_LOGIN_LANGS
 
 import dev.asset as asset
 import dev.config as config
@@ -12,6 +11,7 @@ from apps.db.tables.cookies import Cookie
 from apps.db.tables.hoyo_account import HoyoAccount
 from apps.db.tables.user_settings import Settings
 from apps.text_map import text_map
+from apps.text_map.convert_locale import HUTAO_LOGIN_LANGS
 from dev.base_ui import BaseButton, BaseModal, BaseView
 from dev.enum import GameType
 from dev.models import DefaultEmbed, Inter, LoginInfo
