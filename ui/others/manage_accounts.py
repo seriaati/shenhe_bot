@@ -9,7 +9,12 @@ from apps.text_map.convert_locale import HUTAO_LOGIN_LANGS
 import dev.asset as asset
 import dev.config as config
 from apps.db.tables.cookies import Cookie, Cookie, Cookie, Cookie
-from apps.db.tables.hoyo_account import HoyoAccount, HoyoAccount, HoyoAccount, HoyoAccount
+from apps.db.tables.hoyo_account import (
+    HoyoAccount,
+    HoyoAccount,
+    HoyoAccount,
+    HoyoAccount,
+)
 from apps.db.tables.user_settings import Settings, Settings, Settings, Settings
 from apps.text_map import text_map, text_map, text_map, text_map
 from dev.base_ui import BaseButton, BaseModal, BaseView
