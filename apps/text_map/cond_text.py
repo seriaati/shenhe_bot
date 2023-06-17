@@ -1,7 +1,7 @@
 import yaml
 from discord import Locale
 
-from .convert_locale import to_paths
+from .convert_locale import CROWDIN_LANGS
 
 
 class CondText:
@@ -19,8 +19,8 @@ class CondText:
                     except Exception:  # skipcq: PYL-W0703
                         print(f"Error loading {lang}/{file}.yaml")
 
-    def get_text(self, lang: str | Locale, file: str, key: str) -> str:
-        lang = to_paths(lang)
+    def get_text(self, lang: str, file: str, key: str) -> str:
+        lang = CROWDIN_LANGS.get(lang, "en-US")
         if lang not in self.data:
             if lang == "zh-CN":
                 lang = "zh-TW"

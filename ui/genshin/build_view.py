@@ -83,7 +83,7 @@ class CharacterSelect(ui.Select):
             options.append(
                 discord.SelectOption(
                     label=f"{text_map.get(162, lang)} {index+1}",
-                    description=f"{text_map.get_weapon_name(weapon_id, lang)} | {cond_text.get_text(str(lang), 'build', build.artifact)}",
+                    description=f"{text_map.get_weapon_name(weapon_id, lang)} | {cond_text.get_text(lang, 'build', build.artifact)}",
                     value=str(index),
                 )
             )

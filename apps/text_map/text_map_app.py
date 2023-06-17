@@ -1,15 +1,15 @@
 import json
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
 import discord
 import yaml
 
-from .convert_locale import CROWDIN_FILE_PATHS, to_ambr_top, to_paths
+from .convert_locale import CROWDIN_LANGS, to_ambr_top
 
 
 class TextMap:
     def __init__(self):
-        self.langs = CROWDIN_FILE_PATHS.values()
+        self.langs = CROWDIN_LANGS.values()
         self.lang_maps: Dict[str, Dict[str, str]] = {}
 
         self.artifact: Dict[str, Dict[str, str]] = {}
@@ -35,11 +35,11 @@ class TextMap:
     def get(
         self,
         map_hash: int,
-        lang: discord.Locale | str = "en-US",
+        lang: Union[discord.Locale, str] = "en-US",
         user_locale: Optional[str] = None,
     ) -> str:
-        lang = user_locale or lang
-        path = to_paths(lang)
+        lang = str(user_locale or lang)
+        path = CROWDIN_LANGS.get(lang, "en-US")
         lang_text_map = self.lang_maps[path]
         text = lang_text_map.get(str(map_hash), "")
         if not text:
