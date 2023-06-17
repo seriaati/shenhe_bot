@@ -2,7 +2,6 @@ import calendar
 
 from discord import ButtonStyle, Embed, ui
 from discord.errors import InteractionResponded
-from genshin import GeetestTriggered
 
 import dev.asset as asset
 import dev.config as config
@@ -10,7 +9,7 @@ from apps.db.tables.hoyo_account import HoyoAccount, convert_game_type
 from apps.text_map import text_map
 from dev.base_ui import BaseButton, BaseView, get_error_handle_embed
 from dev.enum import GameType
-from dev.models import DefaultEmbed, ErrorEmbed, Inter
+from dev.models import DefaultEmbed, Inter
 from utils import divide_chunks, get_dt_now
 from utils.genshin import get_checkin_url
 from utils.text_map import get_game_name
@@ -99,7 +98,7 @@ class ClaimReward(BaseButton):
             reward = await client.claim_daily_reward(
                 game=convert_game_type(self.view.game)
             )
-        except Exception as e:
+        except Exception as e:  # skipcq: PYL-W0703
             await self.restore(i)
 
             view = BaseView()
