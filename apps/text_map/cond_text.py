@@ -1,5 +1,4 @@
 import yaml
-from discord import Locale
 
 from .convert_locale import CROWDIN_LANGS
 
