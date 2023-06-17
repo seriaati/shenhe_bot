@@ -739,7 +739,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             await view.start(i, uid, lang)
         elif game_ is GameType.GENSHIN:
             data, en_data, card_data = await enka.get_enka_data(
-                uid, convert_locale.to_enka(lang), self.bot.pool
+                uid, convert_locale.ENKA_LANGS.get(lang, "en"), self.bot.pool
             )
 
             embeds = [
@@ -1167,7 +1167,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         i: models.Inter = inter  # type: ignore
         lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
-        genshin_db_locale = convert_locale.to_genshin_db(lang)
+        genshin_db_locale = convert_locale.GENSHIN_DB_LANGS.get(lang, "English")
 
         the_card = None
         card_type = None
@@ -1254,7 +1254,7 @@ class GenshinCog(commands.Cog, name="genshin"):
     ) -> List[app_commands.Choice[str]]:
         i: models.Inter = inter  # type: ignore
         lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
-        genshin_db_locale = convert_locale.to_genshin_db(lang)
+        genshin_db_locale = convert_locale.GENSHIN_DB_LANGS.get(lang, "English")
 
         choices: List[app_commands.Choice] = []
 

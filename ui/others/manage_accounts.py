@@ -10,7 +10,8 @@ import dev.config as config
 from apps.db.tables.cookies import Cookie
 from apps.db.tables.hoyo_account import HoyoAccount
 from apps.db.tables.user_settings import Settings
-from apps.text_map import text_map, to_hutao_login_lang
+from apps.text_map import text_map
+from apps.text_map.convert_locale import HUTAO_LOGIN_LANGS
 from dev.base_ui import BaseButton, BaseModal, BaseView
 from dev.enum import GameType
 from dev.models import DefaultEmbed, Inter, LoginInfo
@@ -121,7 +122,7 @@ class GenerateLink(ui.Button):
             user_id=str(i.user.id),
             guild_id=str(i.guild_id),
             channel_id=str(i.channel_id),
-            language=to_hutao_login_lang(lang),
+            language=HUTAO_LOGIN_LANGS.get(lang, "en"),
         )
 
         embed = DefaultEmbed(description=text_map.get(728, lang))

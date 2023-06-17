@@ -1,9 +1,8 @@
 import json
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Tuple
 
 import aiofiles
 from dateutil import parser
-from discord import Locale
 
 from dev.models import AbyssChamber, AbyssFloor, AbyssHalf
 from utils import get_dt_now, get_text, parse_html, time_in_range
@@ -12,7 +11,7 @@ TOWER_SCHEDULE = "GenshinData/ExcelBinOutput/TowerScheduleExcelConfigData.json"
 
 
 async def get_abyss_blessing(
-    text_map: Dict[str, Dict[str, str]], lang: Union[Locale, str]
+    text_map: Dict[str, Dict[str, str]], lang: str
 ) -> Tuple[str, str]:
     async with aiofiles.open(TOWER_SCHEDULE) as f:
         tower: List[Dict[str, Any]] = json.loads(await f.read())
@@ -37,7 +36,7 @@ async def get_abyss_blessing(
 
 
 async def get_ley_line_disorders(
-    text_map: Dict[str, Dict[str, str]], lang: Union[Locale, str]
+    text_map: Dict[str, Dict[str, str]], lang: str
 ) -> Dict[int, List[str]]:
     async with aiofiles.open(TOWER_SCHEDULE) as f:
         tower: List[Dict[str, Any]] = json.loads(await f.read())
@@ -76,7 +75,7 @@ async def get_ley_line_disorders(
 
 
 async def get_abyss_enemies(
-    text_map: Dict[str, Dict[str, str]], lang: Union[Locale, str]
+    text_map: Dict[str, Dict[str, str]], lang: str
 ) -> List[AbyssFloor]:
     result: List[AbyssFloor] = []
 

@@ -88,7 +88,7 @@ GENSHIN_OPTIMIZER_LANGS = {
     "vi": 15,
 }
 
-CROWDIN_FILE_PATHS = {
+CROWDIN_LANGS = {
     "de": "de-DE",
     "en-US": "en-US",
     "es-ES": "es-ES",
@@ -103,15 +103,6 @@ CROWDIN_FILE_PATHS = {
     "zh-TW": "zh-TW",
     "uk": "uk-UA",
     "id": "id-ID",
-}
-
-AMBR_EVENT_LANGS = {
-    "zh-TW": "CHT",
-    "zh-CN": "CHS",
-    "en-US": "EN",
-    "ja": "JP",
-    "ko": "KR",
-    "ru": "RU",
 }
 
 HUTAO_LOGIN_LANGS = {
@@ -141,33 +132,9 @@ GENSHIN_DB_LANGS = {
 }
 
 
-def to_enka(lang: Locale | str):
-    return ENKA_LANGS.get(str(lang)) or "en"
-
-
 def to_ambr_top(lang: Locale | str):
     return AMBR_LANGS.get(str(lang)) or "en"
 
 
 def to_genshin_py(lang: Locale | str):
     return GENSHIN_PY_LANGS.get(str(lang)) or "en-us"
-
-
-def to_go(lang: Locale | str):
-    return GENSHIN_OPTIMIZER_LANGS.get(str(lang)) or 4
-
-
-def to_paths(lang: Locale | str):
-    return CROWDIN_FILE_PATHS.get(str(lang)) or "en-US"
-
-
-def to_event_lang(lang: Locale | str):
-    return AMBR_EVENT_LANGS.get(str(lang), "EN")
-
-
-def to_hutao_login_lang(lang: Locale | str):
-    return HUTAO_LOGIN_LANGS.get(str(lang), "en")
-
-
-def to_genshin_db(lang: Locale | str):
-    return GENSHIN_DB_LANGS.get(str(lang), "English")
