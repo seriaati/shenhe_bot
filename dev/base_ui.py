@@ -144,6 +144,9 @@ def get_error_handle_embed(
             embed.description = text_map.get(767, lang)
         elif isinstance(e, genshin.errors.AlreadyClaimed):
             embed.set_author(name=text_map.get(40, lang))
+        elif isinstance(e, genshin.errors.GeetestTriggered):
+            embed.set_author(name=text_map.get(806, lang))
+            embed.description = text_map.get(807, lang)
         elif isinstance(e, genshin.errors.RedemptionClaimed):
             embed.set_author(name=text_map.get(106, lang))
         elif isinstance(e, genshin.errors.RedemptionInvalid):
@@ -344,14 +347,9 @@ class BaseButton(discord.ui.Button):
         self.disabled = True
         await i.response.edit_message(view=self.view)
 
-    def restore_state(self):
+    async def restore(self, i: Inter, **kwargs):
         self.label = self.original_label
         self.emoji = self.original_emoji
         self.disabled = self.original_disabled
 
-    async def restore(self, i: Inter):
-        self.label = self.original_label
-        self.emoji = self.original_emoji
-        self.disabled = self.original_disabled
-
-        await i.edit_original_response(view=self.view)
+        await i.edit_original_response(view=self.view, **kwargs)

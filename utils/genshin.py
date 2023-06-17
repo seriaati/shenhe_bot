@@ -477,11 +477,15 @@ async def update_talents_json(
     await write_json(pool, f"talents/{uid}.json", talents_)
 
 
+CHECKIN_URLS = {
+    enum.GameType.GENSHIN: asset.genshin_checkin_url,
+    enum.GameType.HSR: asset.hsr_checkin_url,
+    enum.GameType.HONKAI: asset.honkai_checkin_url,
+}
+
+
 def get_checkin_url(game: enum.GameType) -> str:
-    if game is enum.GameType.GENSHIN:
-        return asset.genshin_checkin_url
-    if game is enum.GameType.HSR:
-        return asset.hsr_checkin_url
-    if game is enum.GameType.HONKAI:
-        return asset.honkai_checkin_url
+    """Get the check-in URL of a game."""
+    if game in CHECKIN_URLS:
+        return CHECKIN_URLS[game]
     raise ValueError("Invalid game type")

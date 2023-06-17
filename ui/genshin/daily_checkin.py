@@ -8,7 +8,7 @@ import dev.asset as asset
 import dev.config as config
 from apps.db.tables.hoyo_account import HoyoAccount, convert_game_type
 from apps.text_map import text_map
-from dev.base_ui import BaseButton, BaseView
+from dev.base_ui import BaseButton, BaseView, get_error_handle_embed
 from dev.enum import GameType
 from dev.models import DefaultEmbed, ErrorEmbed, Inter
 from utils import divide_chunks, get_dt_now
@@ -99,22 +99,19 @@ class ClaimReward(BaseButton):
             reward = await client.claim_daily_reward(
                 game=convert_game_type(self.view.game)
             )
-        except GeetestTriggered:
-            self.restore_state()
-            await i.edit_original_response(view=self.view)
+        except Exception as e:
+            await self.restore(i)
 
-            embed = ErrorEmbed(description=text_map.get(807, self.view.lang))
-            embed.set_author(name=text_map.get(806, self.view.lang))
             view = BaseView()
             url = get_checkin_url(self.view.game)
             view.add_item(
                 ui.Button(emoji=asset.hoyolab_emoji, url=url, label="HoYoLAB")
             )
+            embed = get_error_handle_embed(i.user, e, self.view.lang)
             await i.followup.send(embed=embed, view=view, ephemeral=True)
         else:
-            self.restore_state()
             r_embed = await self.view.fetch_embed(i)
-            await i.edit_original_response(embed=r_embed, view=self.view)
+            await self.restore(i, embed=r_embed)
 
             reward_str = f"{reward.amount}x {reward.name}"
             embed = DefaultEmbed(
