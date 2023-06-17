@@ -115,3 +115,4 @@ hsr_checkin_url = (
 honkai_checkin_url = (
     "https://act.hoyolab.com/bbs/event/signin-bh3/index.html?act_id=e202110291205111"
 )
+expedition_emoji = "<:people_icon:1119773002310090843>"
