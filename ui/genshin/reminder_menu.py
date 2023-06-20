@@ -50,13 +50,13 @@ class View(BaseView):
     async def start(self, i: Inter) -> None:
         """Start view"""
         await self._init(i)
-        self._add_components()
+        self.add_components()
         embed = self.make_start_embed()
 
         await i.response.send_message(embed=embed, view=self)
         self.message = await i.original_response()
 
-    def _add_components(self) -> None:
+    def add_components(self) -> None:
         """Add items to view"""
         self.clear_items()
         if self.user.game is GameType.GENSHIN:
@@ -70,7 +70,7 @@ class View(BaseView):
         self.add_item(Expedition(text_map.get(809, self.lang)))
         self.add_item(PrivacySettings(text_map.get(585, self.lang)))
 
-    async def _change_toggle(self, i: Inter, t: bool) -> None:
+    async def change_toggle(self, i: Inter, t: bool) -> None:
         db = i.client.db
 
         if self.notif_type is NotifType.RESIN:
@@ -483,7 +483,7 @@ class NotificationON(ui.Button):
         self.view: View
 
     async def callback(self, i: Inter):
-        await self.view._change_toggle(i, True)
+        await self.view.change_toggle(i, True)
 
 
 class NotificationOFF(ui.Button):
@@ -499,7 +499,7 @@ class NotificationOFF(ui.Button):
         self.view: View
 
     async def callback(self, i: Inter):
-        await self.view._change_toggle(i, False)
+        await self.view.change_toggle(i, False)
 
 
 class ChangeSettings(ui.Button):
@@ -586,7 +586,7 @@ class GOBack(ui.Button):
         self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view._add_components()
+        self.view.add_components()
         embed = self.view.make_start_embed()
         await i.response.edit_message(embed=embed, view=self.view)
 
