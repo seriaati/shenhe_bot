@@ -98,11 +98,11 @@
 "109": Code redeemed successfully
 "124": Back to default
 "125": |-
-  • By default, shenhe responds to you with the same language your discord uses
-  • Changing language will override the default language
-  • If any text is not translated yet, shenhe will respond to you with English
-  • Names of genshin characters, weapons, and other game elements will be translated automatically
-  • Interested in translating Shenhe to your language? Check out the [crowdin](https://crowdin.com/project/shenhe-bot) page
+  - By default, shenhe responds to you with the same language your discord uses
+  - Changing language will override the default language
+  - If any text is not translated yet, shenhe will respond to you with English
+  - Names of genshin characters, weapons, and other game elements will be translated automatically
+  - Interested in translating Shenhe to your language? Check out the [crowdin](https://crowdin.com/project/shenhe-bot) page
 "126": Auto code redemption
 "127": Code redemption failed
 "128": Language
@@ -245,11 +245,11 @@
 "274": Invalid image URL
 "275": Custom Image
 "276": |-
-  • You can set custom images for the character cards in </profile:1020580644419551336>
-  • You can have up to 125 images for each character
-  • Please provide an image URL, a good tool to use [imgur](https://imgur.com/)
-  • Alternatively, upload an image using </img-upload:1041966109533929522>
-  • For version 1, Use [this](https://croppola.com/) to crop image, choose the ratio of 2.64:1
+  - You can set custom images for the character cards in </profile:1020580644419551336>
+  - You can have up to 125 images for each character
+  - Please provide an image URL, a good tool to use [imgur](https://imgur.com/)
+  - Alternatively, upload an image using </img-upload:1041966109533929522>
+  - For version 1, Use [this](https://croppola.com/) to crop image, choose the ratio of 2.64:1
 "277": Current Image
 "278": Sort by...
 "279": Filter by...
@@ -257,8 +257,8 @@
 "281": Speed%
 "282": Go back
 "285": |-
-  • Automatically redeem Genshin Impact codes found in [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)
-  • You can also redeem codes manually using </redeem:1044926380456017924>
+  - Automatically redeem Genshin Impact codes found in [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)
+  - You can also redeem codes manually using </redeem:1044926380456017924>
 "286": UID is invalid or not found in enka.network
 "287": Please turn on the character showcase toggle in-game
 "292": Max HP
@@ -273,7 +273,6 @@
 "302": Threshold
 "303": Current resin
 "305": Use /remind to change the settings
-"306": Resin is almost full!!
 "308": Item amount
 "309": Everything is farmable on Sunday! ヾ(≧▽≦*)o
 "310": Please select an option from the autocomplete instead of typing your own
@@ -326,7 +325,6 @@
 "360": Hydro infusion
 "361": Choose your information source
 "363": The link you have provided is invalid
-"366": Your P.T. is ready to use!
 "367": This UID has no player data in it
 "368": Use </wish import:1000187021635104890> to import your wish history
 "369": Wish history
@@ -384,8 +382,7 @@
 "438": Set notification features
 "439": function
 "440": toggle
-"441": Resin notification (need /register)
-"442": Talent notification
+"442": Talent farm reminder
 "443": Check privacy settings
 "444": You can use this command with /search to get more information about a beta item
 "445": There are currently no beta items, check back later
@@ -456,10 +453,10 @@
 "510": Sumeru
 "511": 'The caches have been wiped due to cache changes, if you really need the data, please DM seria#5334'
 "512": |-
-  • Notify you when your parametric transformer is ready
-  • 1 notification per day
+  - Notify you when your parametric transformer is ready.
+  - You can also set the time (in hours) before the PT is ready to be notified.
+  - Decimals are allowed, e.g. 0.5 hours = 30 minutes.
 "515": Notification settings
-"518": Realm currency is almost full!
 "519": |-
   [Enka.network](https://enka.network/) is currently down, please try again later.
   Check their [twitter](https://twitter.com/EnkaNetwork) for updates.
@@ -480,18 +477,15 @@
 "536": Dark mode
 "537": Light mode
 "538": |
-  • This setting changes the appearance of your cards
-  • If there is no dark mode version of the card, it will be displayed in light mode
-  • Default is light mode
-  • See below for an example
+  - This setting changes the appearance of your cards
+  - If there is no dark mode version of the card, it will be displayed in light mode
+  - Default is light mode
+  - See below for an example
 "539": Settings
 "542": Item not found
 "543": Data is from cache
 "544": Manage your accounts in Shenhe
 "545": You don't have any account registered
-"546": |-
-  • You can register multiple accounts in Shenhe
-  • You can switch between accounts using the dropdown menu
 "547": TW, HK, MO
 "548": Celestia
 "549": Irminsul
@@ -505,7 +499,7 @@
 "559": Switch account
 "562": Choose a custom image
 "563": |-
-  • Read [the docs](https://bit.ly/shenhe-docs) regarding account security
+  - Read [the docs](https://bit.ly/shenhe-docs) regarding account security
 "564": Latency
 "565": Credits
 "566": |-
@@ -518,22 +512,22 @@
 "576": "Owned characters: {current}/{total}"
 "577": "Maxed friendship level: {current}/{total}"
 "578": Friendship Lv.
-"582": Resin notification
+"582": Resin reminder
 "583": Select a weekday
-"584": Realm currency notification
+"584": Realm currency reminder
 "585": Test DM
 "586": Notify you when your resin exceeds a certain amount
 "587": Can be used to ugprade
 "588": View on Enka.network
 "589": Refreshes {in_x_seconds}
 "590": |-
-  • Notify you when a character's talent domain is farmable
-  • Selecting a character that already has notification enabled will disable it
+  - Notify you when a character's talent domain is farmable
+  - Selecting a character that already has notification enabled will disable it
 "591": Current settings
 "592": |-
-  • Set reminders to do the homework provided by Genshin on-time
-  • Reminder settings are separate for each account you have registered, except talent and weapon notification
-  • Click on the buttons below for more information on each feature
+  - Set reminders to do the homework provided by Genshin on-time
+  - Reminder settings are separate for each account you have registered, except talent and weapon notification
+  - Click on the buttons below for more information on each feature
 "593": Reminders
 "594": Change settings
 "595": |-
@@ -574,10 +568,10 @@
 "627": Toggle daily check-in
 "630": Shenhe has automatically disabled the auto daily check-in feature for you, to enable it back, please use </claim:1020580644365021250>
 "631": Shenhe has automatically disabled this remind feature for you, to enable it back, please use </remind:1020580644365021255>
-"632": Weapon notification
+"632": Weapon farm reminder
 "633": |-
-  • Notify you when a weapon's domain is farmable
-  • Selecting a weapon that already has notification enabled will disable its notification
+  - Notify you when a weapon's domain is farmable
+  - Selecting a weapon that already has notification enabled will disable its notification
 "634": Add/Remove weapons
 "635": Remove all weapons
 "636": Current weapons
@@ -634,9 +628,9 @@
   Only support YAML files exported from Shenhe
 "688": Are you sure?
 "689": |-
-  • You are about to clear your wish history for this account, this action cannot be undone.
-  • It is recommended to export your wish history before clearing it.
-  • You may have wishes stored in Shenhe that is no longer saved in-game, if you clear your wish history, you will lose those wishes.
+  - You are about to clear your wish history for this account, this action cannot be undone.
+  - It is recommended to export your wish history before clearing it.
+  - You may have wishes stored in Shenhe that is no longer saved in-game, if you clear your wish history, you will lose those wishes.
 "690": Shenhe has found **{a}** wishes in this link/file
 "691": Confirm wish import
 "692": Import your Genshin wish history from a YAML file exported by Shenhe
@@ -650,7 +644,7 @@
 "701": All
 "702": The link you have provided has expired, please generate a new one
 "703": Element
-"704": PT notification
+"704": PT reminder
 "705": Spiral abyss enemies
 "706": Ley line disorder of this floor
 "707": First Half
@@ -728,10 +722,10 @@
 "775": Enter code
 "776": Redeem code
 "777": |-
-  • If anything is not working, you can redeem on the website:
-  • [Genshin Impact](https://genshin.hoyoverse.com/en/gift) | [Honkai Star Rail](https://hsr.hoyoverse.com/gift)
-  • The code selector gathers currently available Genshin codes from [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes), select to redeem
-  • The code input method allows you to enter up to 3 codes (at least 1) manually
+  - If anything is not working, you can redeem on the website:
+  - [Genshin Impact](https://genshin.hoyoverse.com/en/gift) | [Honkai Star Rail](https://hsr.hoyoverse.com/gift)
+  - The code selector gathers currently available Genshin codes from [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes), select to redeem
+  - The code input method allows you to enter up to 3 codes (at least 1) manually
 "778": Code redemption service is currently busy, please try again later
 "779": See [Shenhe's documentation](https://bit.ly/shenhe-docs) for how to get the wish history link
 "780": Account Manager
@@ -763,7 +757,17 @@
 "804": Image Download Failed
 "805": |-
   Image of URL {url} failed to download with status code {status}.
-  If this is a custom image, check if the URL is correct.
-  If not, Shenhe may be rate limited by the image host, please try again later.
+  - If this is a custom image, check if the URL is correct.
+  - If not, Shenhe may be rate limited by the image host, please try again later.
 "806": Human verification required
 "807": A human verification was triggered upon check-in, please check-in manually on the HoYoLAB website.
+"808": |-
+  - Notify you when one or more expeidtion is finished.
+  - You can also set the time (in hours) before the expedition finishes to be notified.
+  - Decimals are allowed, e.g. 0.5 hours = 30 minutes.
+"809": Expedition reminder
+"810": Hour Before
+"811": Trailblaze power reminder
+"812": |-
+  - Notify you when your trailblaze power exceeds a certain amount.
+"813": Current trailblaze power
