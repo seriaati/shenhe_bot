@@ -27,6 +27,8 @@ class Notif:
         """Talent notifications"""
         self.weapon = tables.WeaponNotifTable(pool)
         """Weapon notifications"""
+        self.exped = tables.ExpedNotifTable(pool)
+        """Expedition notifications"""
 
 
 class Database:
@@ -51,4 +53,9 @@ class Database:
         """Wish history"""
 
     async def create(self):
-        await self.users.alter()
+        await self.notifs.resin.alter()
+        await self.notifs.pot.alter()
+        await self.notifs.pt.alter()
+        await self.notifs.talent.alter()
+        await self.notifs.weapon.alter()
+        await self.notifs.exped.create()
