@@ -21,32 +21,14 @@ from apps.db.json import read_json, write_json
 from apps.db.tables.hoyo_account import HoyoAccount
 from apps.enka.api_docs import get_character_skill_order
 from apps.text_map import cond_text, text_map, to_ambr_top
-from data.game.artifact_map import artifact_map
-from data.game.character_map import character_map
 from data.game.fight_prop import fight_prop
-from data.game.weapon_map import weapon_map
 
-from .general import get_dt_now
+from .general import get_dt_now, open_json
 from .text_map import get_city_name, translate_main_stat
 
-
-def calculate_artifact_score(substats: dict):
-    tier_four_val = {
-        "FIGHT_PROP_HP": 1196,
-        "FIGHT_PROP_HP_PERCENT": 5.8,
-        "FIGHT_PROP_ATTACK": 76,
-        "FIGHT_PROP_ATTACK_PERCENT": 5.8,
-        "FIGHT_PROP_DEFENSE": 92,
-        "FIGHT_PROP_DEFENSE_PERCENT": 7.3,
-        "FIGHT_PROP_CHARGE_EFFICIENCY": 6.5,
-        "FIGHT_PROP_ELEMENT_MASTERY": 23,
-        "FIGHT_PROP_CRITICAL": 3.9,
-        "FIGHT_PROP_CRITICAL_HURT": 7.8,
-    }
-    result = 0
-    for sub, val in substats.items():
-        result += val / tier_four_val.get(sub) * 11
-    return result
+character_map = open_json("data/game/character_map.json")
+artifact_map = open_json("data/game/artifact_map.json")
+weapon_map = open_json("data/game/weapon_map.json")
 
 
 def get_character_builds(
