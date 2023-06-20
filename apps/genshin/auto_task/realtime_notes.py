@@ -176,12 +176,12 @@ class RealtimeNotes:
                         notif_user.type, notif_user.uid, notes, dc_user, lang
                     )
                     await self._send_notif(dc_user, embed, notif_user.type)
-                    # await db.update(
-                    #     user.user_id,
-                    #     user.uid,
-                    #     current=notif_user.current + 1,
-                    #     last_notif=get_dt_now(),
-                    # )
+                    await db.update(
+                        user.user_id,
+                        user.uid,
+                        current=notif_user.current + 1,
+                        last_notif=get_dt_now(),
+                    )
                 elif not check and notif_user.current != 0:
                     # Reset the notification counter if the user's current amount is less than the threshold
                     await db.update(user.user_id, user.uid, current=0)
@@ -296,7 +296,7 @@ class RealtimeNotes:
         elif isinstance(notif_user, ExpedNotif) and (
             all(not e.finished for e in notes.expeditions)
             or all(
-                e.remaining_time.total_seconds() * 3600 > notif_user.hour_before
+                e.remaining_time.total_seconds() // 3600 > notif_user.hour_before
                 for e in notes.expeditions
             )
         ):
