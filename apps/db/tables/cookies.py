@@ -29,12 +29,13 @@ class CookieTable:
         )
 
     async def insert(self, cookie: Cookie) -> None:
-        """Insert a new cookie"""
+        """Insert a new cookie or update if exists"""
         await self.pool.execute(
             """
             INSERT INTO cookies (ltuid, ltoken, cookie_token)
             VALUES ($1, $2, $3)
-            ON CONFLICT (ltuid) DO NOTHING
+            ON CONFLICT (ltuid)
+            DO UPDATE SET ltoken = $2, cookie_token = $3
             """,
             cookie.ltuid,
             cookie.ltoken,
