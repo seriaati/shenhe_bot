@@ -23,7 +23,6 @@ from dev.models import BotModel, DefaultEmbed, ErrorEmbed
 from utils import log
 from utils.general import get_dc_user, get_dt_now
 from utils.genshin import get_character_emoji as get_genshin_character_emoji
-from utils.star_rail import get_character_emoji as get_sr_character_emoji
 from utils.text_map import get_game_name
 
 
