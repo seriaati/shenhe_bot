@@ -29,12 +29,20 @@ class TalentNotif(WTNotifBase):
 class WTNotifTable:
     def __init__(self, pool: Pool, notif_type: NotifType):
         self.pool = pool
-        self.type = notif_type
+        self.notif_type = notif_type
+
+    async def alter(self) -> None:
+        await self.pool.execute(
+            f"""
+            ALTER TABLE public.{self.notif_type.value}
+            ADD COLUMN IF NOT EXISTS game text NOT NULL DEFAULT 'genshin'
+            """
+        )
 
     async def insert(self, user_id: int) -> None:
         await self.pool.execute(
             f"""
-            INSERT INTO {self.type.value} (user_id, item_list)
+            INSERT INTO {self.notif_type.value} (user_id, item_list)
             VALUES ($1, $2)
             ON CONFLICT (user_id) DO NOTHING
             """,
@@ -44,7 +52,7 @@ class WTNotifTable:
 
     async def update(self, user_id: int, **kwargs) -> None:
         await self.pool.execute(
-            f"UPDATE {self.type.value} SET "
+            f"UPDATE {self.notif_type.value} SET "
             + ", ".join(f"{key} = ${i}" for i, key in enumerate(kwargs, 2))
             + " WHERE user_id = $1",
             user_id,
@@ -54,7 +62,7 @@ class WTNotifTable:
     async def get(self, user_id: int) -> Record:
         """Get user notification data"""
         row = await self.pool.fetchrow(
-            f"SELECT * FROM {self.type.value} WHERE user_id = $1",
+            f"SELECT * FROM {self.notif_type.value} WHERE user_id = $1",
             user_id,
         )
         return row
@@ -62,7 +70,7 @@ class WTNotifTable:
     async def get_all(self) -> typing.List[Record]:
         """Get all notification users with toggle on"""
         rows = await self.pool.fetch(
-            f"SELECT * FROM {self.type.value} WHERE toggle = true"
+            f"SELECT * FROM {self.notif_type.value} WHERE toggle = true"
         )
         return rows
 

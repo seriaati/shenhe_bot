@@ -5,13 +5,14 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 import aiofiles
 import discord
-import genshin
 from discord import app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 from discord.utils import format_dt
 from dotenv import load_dotenv
 from enkanetwork import Assets
+from genshin import Client
+from genshin.models import Notes
 
 import dev.asset as asset
 import dev.exceptions as exceptions
@@ -71,7 +72,9 @@ class GenshinCog(commands.Cog, name="genshin"):
         self.card_data: Dict[str, List[Dict[str, Any]]] = {}
         for lang in languages:
             try:
-                async with aiofiles.open(f"data/cards/card_data_{lang}.json", "r") as f:
+                async with aiofiles.open(
+                    f"data/cards/card_data_{lang}.json", "r", encoding="utf-8"
+                ) as f:
                     self.card_data[lang] = json.loads(await f.read())
             except FileNotFoundError:
                 self.card_data[lang] = []
@@ -201,9 +204,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         )
 
     @staticmethod
-    def parse_notes_embed(
-        notes: genshin.models.Notes, lang: str
-    ) -> models.DefaultEmbed:
+    def parse_notes_embed(notes: Notes, lang: str) -> models.DefaultEmbed:
         if notes.current_resin == notes.max_resin:
             resin_recover_time = text_map.get(1, lang)
         else:
@@ -1022,7 +1023,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         lang = await self.bot.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
         lang = convert_locale.to_genshin_py(lang)
-        client = genshin.Client()
+        client = Client()
 
         zh_tw_annoucements = await client.get_genshin_announcements(lang="zh-tw")
         annoucements = await client.get_genshin_announcements(lang=lang)
