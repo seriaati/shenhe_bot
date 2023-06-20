@@ -13,3 +13,6 @@
 [submodule "HSRMaps"]
 	path = HSRMaps
 	url = https://github.com/FortOfFans/HSRMaps
+[submodule "yatta"]
+	path = yatta
+	url = https://github.com/seriaati/yatta
