@@ -1,14 +1,17 @@
 import io
 import random
-from typing import Optional, Dict, Any
-from PIL import Image, ImageDraw
-import mihomo
-from dev.asset import trailblazer_ids
-from apps.text_map import text_map
+from typing import Any, Dict, Optional
+
 import discord.utils as dutils
-from data.star_rail.hsr_maps import tree_info
+import mihomo
+from PIL import Image, ImageDraw
 
 import utils.draw as utils
+from apps.text_map import text_map
+from dev.asset import trailblazer_ids
+from utils.general import open_json
+
+tree_info = open_json("HSRMaps/maps/en/avatartree.json")
 
 
 def draw_profile_card_v1(

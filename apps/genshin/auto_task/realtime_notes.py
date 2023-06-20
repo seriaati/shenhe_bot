@@ -8,13 +8,22 @@ from discord import Forbidden, User
 from discord.utils import format_dt
 
 import dev.asset as asset
-from apps.db.tables.notes_notif import NotifBase, PotNotif, PTNotif, ResinNotif
+from apps.db.tables.notes_notif import (
+    ExpedNotif,
+    NotifBase,
+    PotNotif,
+    PTNotif,
+    ResinNotif,
+)
 from apps.text_map import text_map
-from dev.enum import NotifType
+from apps.text_map.convert_locale import to_genshin_py
+from dev.enum import GameType, NotifType
 from dev.exceptions import AccountNotFound
 from dev.models import BotModel, DefaultEmbed, ErrorEmbed
 from utils import log
 from utils.general import get_dc_user, get_dt_now
+from utils.genshin import get_character_emoji as get_genshin_character_emoji
+from utils.text_map import get_game_name
 
 
 class RealtimeNotes:
@@ -23,7 +32,9 @@ class RealtimeNotes:
 
         self._total: Dict[NotifType, int] = {}
         self._success: Dict[NotifType, int] = {}
-        self._notes_dict: Dict[int, genshin.models.Notes] = {}
+        self._notes_cache: Dict[
+            int, Union[genshin.models.Notes, genshin.models.StarRailNote]
+        ] = {}
 
     async def start(self) -> None:
         """Start the RealtimeNotes process.
@@ -71,9 +82,10 @@ class RealtimeNotes:
         resin = await self.bot.db.notifs.resin.get_all()
         pot = await self.bot.db.notifs.pot.get_all()
         pt = await self.bot.db.notifs.pt.get_all()
+        exped = await self.bot.db.notifs.exped.get_all()
 
         # Add notification objects to the result list
-        users = resin + pot + pt
+        users = resin + pot + pt + exped
         for user in users:
             result.append(user)
             self._total[user.type] = self._total.get(user.type, 0) + 1
@@ -112,6 +124,8 @@ class RealtimeNotes:
                 db = self.bot.db.notifs.pot
             elif notif_user.type is NotifType.PT:
                 db = self.bot.db.notifs.pt
+            elif notif_user.type is NotifType.EXPED:
+                db = self.bot.db.notifs.exped
             else:
                 raise ValueError("Invalid notification type")
 
@@ -123,11 +137,18 @@ class RealtimeNotes:
 
             try:
                 # Retrieve the latest notes from Genshin Impact API
-                if user.uid in self._notes_dict:
-                    notes = self._notes_dict[user.uid]
+                if user.uid in self._notes_cache:
+                    notes = self._notes_cache[user.uid]
                 else:
                     client = await user.client
-                    notes = await client.get_genshin_notes(user.uid)
+                    if user.game is GameType.GENSHIN:
+                        notes = await client.get_genshin_notes(
+                            user.uid, lang=to_genshin_py(lang)
+                        )
+                    else:
+                        notes = await client.get_starrail_notes(
+                            user.uid, lang=to_genshin_py(lang)
+                        )
             except Exception as e:  # skipcq: PYL-W0703
                 # Disable notifications and create error embed if API request fails
                 await db.update(user.user_id, user.uid, toggle=False, current=0)
@@ -136,8 +157,8 @@ class RealtimeNotes:
                     await self._send_notif(dc_user, embed, notif_user.type)
             else:
                 # Cache the latest notes
-                if user.uid not in self._notes_dict:
-                    self._notes_dict[user.uid] = notes
+                if user.uid not in self._notes_cache:
+                    self._notes_cache[user.uid] = notes
 
                 # Check if the threshold is exceeded and reset the notification counter if necessary
                 check = await self._check_notes(notif_user)
@@ -151,7 +172,7 @@ class RealtimeNotes:
 
                     # Send the notification and update the notification counter
                     embed = self._create_notif_embed(
-                        notif_user.type, notif_user.uid, notes, dc_user, lang
+                        notif_user.type, notif_user.uid, notes, lang
                     )
                     await self._send_notif(dc_user, embed, notif_user.type)
                     await db.update(
@@ -195,6 +216,8 @@ class RealtimeNotes:
             map_hash = 584
         elif notif_type is NotifType.PT:
             map_hash = 704
+        elif notif_type is NotifType.EXPED:
+            map_hash = 809
         else:
             raise AssertionError("Invalid notification type")
 
@@ -243,20 +266,45 @@ class RealtimeNotes:
         Returns:
             bool: True if the notification should be triggered, False otherwise.
         """
-        notes = self._notes_dict[notif_user.uid]
+        notes = self._notes_cache[notif_user.uid]
         if (
             isinstance(notif_user, ResinNotif)
+            and isinstance(notes, genshin.models.Notes)
             and notes.current_resin < notif_user.threshold
         ):
             return False
+
         if (
             isinstance(notif_user, PotNotif)
+            and isinstance(notes, genshin.models.Notes)
             and notes.current_realm_currency < notif_user.threshold
         ):
             return False
-        if isinstance(notif_user, PTNotif) and (
-            notes.remaining_transformer_recovery_time is None
-            or notes.remaining_transformer_recovery_time.total_seconds() > 0
+
+        if (
+            isinstance(notif_user, PTNotif)
+            and isinstance(notes, genshin.models.Notes)
+            and (
+                notes.remaining_transformer_recovery_time is None
+                or notes.remaining_transformer_recovery_time.total_seconds() // 3600
+                > notif_user.hour_before
+            )
+        ):
+            return False
+
+        if isinstance(notif_user, ExpedNotif) and (
+            all(not e.finished for e in notes.expeditions)
+            or all(
+                e.remaining_time.total_seconds() // 3600 > notif_user.hour_before
+                for e in notes.expeditions
+            )
+        ):
+            return False
+
+        if (
+            isinstance(notif_user, ResinNotif)
+            and isinstance(notes, genshin.models.StarRailNote)
+            and notes.current_stamina < notif_user.threshold
         ):
             return False
 
@@ -266,8 +314,7 @@ class RealtimeNotes:
     def _create_notif_embed(
         notif_type: NotifType,
         uid: int,
-        notes: genshin.models.Notes,
-        user: User,
+        notes: Union[genshin.models.Notes, genshin.models.StarRailNote],
         lang: str,
     ) -> DefaultEmbed:
         """
@@ -283,23 +330,42 @@ class RealtimeNotes:
         Returns:
             DefaultEmbed: The notification embed.
         """
-
+        game = (
+            GameType.GENSHIN
+            if isinstance(notes, genshin.models.Notes)
+            else GameType.HSR
+        )
         if notif_type is NotifType.RESIN:
-            if notes.current_resin == notes.max_resin:
+            if isinstance(notes, genshin.models.Notes):
+                current_resin = notes.current_resin
+                max_resin = notes.max_resin
+                recovery_time = notes.resin_recovery_time
+            else:
+                current_resin = notes.current_stamina
+                max_resin = notes.max_stamina
+                recovery_time = notes.stamina_recovery_time
+            if current_resin == max_resin:
                 remain_time = text_map.get(1, lang)  # "Full"
             else:
-                remain_time = format_dt(notes.resin_recovery_time, "R")
+                remain_time = format_dt(recovery_time, "R")
 
             embed = DefaultEmbed(
                 description=f"""
-                {text_map.get(303, lang)}: {notes.current_resin}/{notes.max_resin}
+                {text_map.get(303 if game is GameType.GENSHIN else 813, lang)}: {current_resin}/{max_resin}
                 {text_map.get(15, lang)}: {remain_time}
+                
                 UID: {uid}
                 """,
             )
-            embed.set_title(306, lang, user)
-            embed.set_thumbnail(url=asset.resin_icon)
-        elif notif_type is NotifType.POT:
+            embed.set_author(
+                name=f"{text_map.get(582 if game is GameType.GENSHIN else 811, lang)} - {get_game_name(game, lang)}"
+            )
+            embed.set_thumbnail(
+                url=asset.resin_icon
+                if game is GameType.GENSHIN
+                else asset.trailblaze_power_icon
+            )
+        elif notif_type is NotifType.POT and isinstance(notes, genshin.models.Notes):
             if notes.current_realm_currency == notes.max_realm_currency:
                 remain_time = text_map.get(1, lang)  # "Full"
             else:
@@ -307,21 +373,56 @@ class RealtimeNotes:
 
             embed = DefaultEmbed(
                 description=f"""
-                {text_map.get(102, lang)}: {notes.current_resin}/{notes.max_resin}
+                {text_map.get(102, lang)}: {notes.current_realm_currency}/{notes.max_realm_currency}
                 {text_map.get(15, lang)}: {remain_time}
+                
                 UID: {uid}
                 """,
             )
-            embed.set_title(518, lang, user)
+            embed.set_author(name=text_map.get(584, lang))
             embed.set_thumbnail(url=asset.realm_currency_icon)
-        elif notif_type is NotifType.PT:
-            embed = DefaultEmbed(description=f"UID: {uid}")
-            embed.set_title(366, lang, user)
+        elif notif_type is NotifType.PT and isinstance(notes, genshin.models.Notes):
+            if notes.transformer_recovery_time is None:
+                raise AssertionError("Transformer recovery time is None")
+            embed = DefaultEmbed(
+                description=f"""
+                {text_map.get(15, lang)}: {format_dt(notes.transformer_recovery_time, "R")}
+                
+                UID: {uid}
+                """
+            )
+            embed.set_author(name=text_map.get(704, lang))
             embed.set_thumbnail(url=asset.pt_icon)
+        elif notif_type is NotifType.EXPED:
+            if isinstance(notes, genshin.models.Notes):
+                expeds = [
+                    f"{get_genshin_character_emoji(str(e.character.id))} {e.character.name} - {text_map.get(695, lang) if e.finished else format_dt(e.completion_time, 'R')}"
+                    for e in notes.expeditions
+                ]
+            else:
+                expeds = [
+                    f"{e.name} - {text_map.get(695, lang) if e.finished else format_dt(e.completion_time, 'R')}"
+                    for e in notes.expeditions
+                ]
+            expeds_str = "\n".join(expeds)
+            embed = DefaultEmbed(
+                description=f"""
+                {expeds_str}
+                
+                UID: {uid}
+                """
+            )
+            embed.set_author(
+                name=f"{text_map.get(809, lang)} - {get_game_name(game, lang)}"
+            )
         else:
             raise AssertionError("Invalid notification type")
 
         embed.set_footer(text=text_map.get(305, lang))
+        embed.set_author(
+            name=embed.author.name,
+            icon_url=asset.genshin_icon if game is GameType.GENSHIN else asset.hsr_icon,
+        )
         return embed
 
     async def _send_notif(

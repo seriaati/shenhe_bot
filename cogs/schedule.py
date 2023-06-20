@@ -12,11 +12,12 @@ from dotenv import load_dotenv
 
 import ambr
 import apps.genshin as genshin_app
+import apps.star_rail.auto_task as star_rail_auto_task
 import dev.models as models
 from apps.genshin import auto_task
 from dev.base_ui import capture_exception
 from utils import convert_dict_to_zipped_json, fetch_cards, get_dt_now, log
-from utils.general import get_dc_user
+from utils.general import get_dc_user, open_json
 
 load_dotenv()
 
@@ -61,6 +62,7 @@ class Schedule(commands.Cog):
             asyncio.create_task(auto_task.DailyCheckin(self.bot).start())
 
         if now.hour == 1 and now.minute < self.loop_interval:  # 1am
+            asyncio.create_task(star_rail_auto_task.DataUpdater(self.bot).start())
             asyncio.create_task(self.update_shenhe_cache_and_data())
             if now.day in (3, 10, 18, 25):
                 asyncio.create_task(self.generate_abyss_json())
@@ -143,9 +145,8 @@ class Schedule(commands.Cog):
         await genshin.utility.update_characters_ambr()
         client = ambr.AmbrTopAPI(self.bot.session, "cht")
         eng_client = ambr.AmbrTopAPI(self.bot.session, "en")
-        things_to_update = ["character", "weapon", "artifact"]
-        with open("data/game/character_map.json", "r", encoding="utf-8") as f:
-            character_map = json.load(f)
+        things_to_update = ("character", "weapon", "artifact")
+        character_map = open_json("data/game/character_map.json")
         character_map["10000005"] = {
             "name": "旅行者",
             "element": "Anemo",

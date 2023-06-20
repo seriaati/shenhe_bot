@@ -5,7 +5,7 @@ import zipfile
 from datetime import datetime
 from io import BytesIO
 from itertools import islice
-from typing import Dict, Generator, List, TypeVar, Union
+from typing import Any, Dict, Generator, List, TypeVar, Union
 
 import aiohttp
 import discord
@@ -183,3 +183,25 @@ async def upload_img(url: str, session: aiohttp.ClientSession) -> str:
     ) as resp:
         data = await resp.json()
     return data["image"]["url"]
+
+
+def is_float(string: str) -> bool:
+    try:
+        float(string)
+        return True
+    except ValueError:
+        return False
+
+
+def open_json(path: str) -> Dict[str, Any]:
+    try:
+        with open(path, "r", encoding="utf-8") as f:  # skipcq: PTC-W6004
+            data = json.load(f)
+    except FileNotFoundError:
+        data = {}
+    return data
+
+
+def write_json(path: str, data: Dict[str, Any]) -> None:
+    with open(path, "w", encoding="utf-8") as f:  # skipcq: PTC-W6004
+        json.dump(data, f)
