@@ -28,6 +28,7 @@ class NotifType(Enum):
     PT = "pt_notification"
     TALENT = "talent_notification"
     WEAPON = "weapon_notification"
+    EXPED = "exped_notif"
 
 
 class GameType(Enum):

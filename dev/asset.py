@@ -116,3 +116,5 @@ honkai_checkin_url = (
     "https://act.hoyolab.com/bbs/event/signin-bh3/index.html?act_id=e202110291205111"
 )
 expedition_emoji = "<:people_icon:1119773002310090843>"
+trailblaze_power_emoji = "<:trailblaze_power:1120556064509788160>"
+trailblaze_power_icon = "https://api.yatta.top/hsr/assets/UI/item/11.png"

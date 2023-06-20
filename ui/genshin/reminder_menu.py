@@ -15,6 +15,7 @@ from dev.enum import GameType, NotifType
 from dev.exceptions import GameNotSupported, InvalidInput, NumbersOnly
 from dev.models import DefaultEmbed, Inter
 from utils import divide_chunks, get_character_emoji, get_weapon_emoji
+from utils.general import is_float
 
 
 class View(BaseView):
@@ -25,14 +26,16 @@ class View(BaseView):
         self.notif_type: NotifType
         self.uid: int
         self.author: Union[discord.User, discord.Member]
+        self.game: GameType
 
     async def _init(self, i: Inter) -> None:
         """Initialize view attributes"""
         self.user = await i.client.db.users.get(i.user.id)
+        self.game = self.user.game
         lang = (await self.user.settings).lang
         self.lang = lang or str(i.locale)
-        if self.user.game is not GameType.GENSHIN:
-            raise GameNotSupported(self.user.game, [GameType.GENSHIN])
+        if self.user.game not in (GameType.GENSHIN, GameType.HSR):
+            raise GameNotSupported(self.user.game, [GameType.GENSHIN, GameType.HSR])
 
         self.uid = self.user.uid
         self.author = i.user
@@ -47,23 +50,27 @@ class View(BaseView):
     async def start(self, i: Inter) -> None:
         """Start view"""
         await self._init(i)
-        self.add_components()
+        self._add_components()
         embed = self.make_start_embed()
 
         await i.response.send_message(embed=embed, view=self)
         self.message = await i.original_response()
 
-    def add_components(self) -> None:
+    def _add_components(self) -> None:
         """Add items to view"""
         self.clear_items()
-        self.add_item(ResinNotification(text_map.get(582, self.lang)))
-        self.add_item(PotNotification(text_map.get(584, self.lang)))
-        self.add_item(PTNotification(text_map.get(704, self.lang)))
-        self.add_item(TalentNotification(text_map.get(442, self.lang)))
-        self.add_item(WeaponNotification(text_map.get(632, self.lang)))
+        if self.user.game is GameType.GENSHIN:
+            self.add_item(ResinNotification(text_map.get(582, self.lang)))
+            self.add_item(PotNotification(text_map.get(584, self.lang)))
+            self.add_item(PTNotification(text_map.get(704, self.lang)))
+            self.add_item(TalentNotification(text_map.get(442, self.lang)))
+            self.add_item(WeaponNotification(text_map.get(632, self.lang)))
+        elif self.user.game is GameType.HSR:
+            self.add_item(TraiblazePower(text_map.get(811, self.lang)))
+        self.add_item(Expedition(text_map.get(809, self.lang)))
         self.add_item(PrivacySettings(text_map.get(585, self.lang)))
 
-    async def change_toggle(self, i: Inter, t: bool) -> None:
+    async def _change_toggle(self, i: Inter, t: bool) -> None:
         db = i.client.db
 
         if self.notif_type is NotifType.RESIN:
@@ -76,6 +83,8 @@ class View(BaseView):
             await db.notifs.talent.update(i.user.id, toggle=t)
         elif self.notif_type is NotifType.WEAPON:
             await db.notifs.weapon.update(i.user.id, toggle=t)
+        elif self.notif_type is NotifType.EXPED:
+            await db.notifs.exped.update(i.user.id, self.uid, toggle=t)
 
         on_button: NotificationON = self.get_item("notification_on")
         on_button.style = discord.ButtonStyle.blurple if t else discord.ButtonStyle.gray
@@ -87,7 +96,6 @@ class View(BaseView):
         await i.response.edit_message(view=self)
 
     def _add_toggles(self, toggle: bool) -> None:
-        self.clear_items()
         self.add_item(NotificationON(text_map.get(99, self.lang), toggle))
         self.add_item(NotificationOFF(text_map.get(100, self.lang), toggle))
 
@@ -97,7 +105,7 @@ class View(BaseView):
 
         # Get the database for resin notifications and insert the user's ID and the UID of the current reminder menu
         db = i.client.db.notifs.resin
-        await db.insert(i.user.id, self.uid)
+        await db.insert(i.user.id, self.uid, self.user.game)
 
         # Get the user's data from the database
         user = await db.get(i.user.id, self.uid)
@@ -109,13 +117,21 @@ class View(BaseView):
         """
 
         # Create an embed for the notification
-        embed = DefaultEmbed(description=text_map.get(586, self.lang))
-        embed.add_field(name=text_map.get(591, self.lang), value=value)
-        embed.set_author(
-            name=text_map.get(582, self.lang), icon_url=i.user.display_avatar.url
+        embed = DefaultEmbed(
+            description=text_map.get(
+                586 if self.game is GameType.GENSHIN else 812, self.lang
+            )
+        )
+        embed.add_field(
+            name=text_map.get(591, self.lang),
+            value=value,
+        )
+        embed.set_title(
+            582 if self.game is GameType.GENSHIN else 811, self.lang, i.user
         )
 
         # Add the toggles to the view
+        self.clear_items()
         self.add_item(ChangeSettings(text_map.get(594, self.lang)))
         self._add_toggles(user.toggle)
         self.add_item(GOBack())
@@ -130,7 +146,7 @@ class View(BaseView):
         self.notif_type = NotifType.POT
 
         db = i.client.db.notifs.pot
-        await db.insert(i.user.id, self.uid)
+        await db.insert(i.user.id, self.uid, self.user.game)
         user = await db.get(i.user.id, self.uid)
 
         value = f"""
@@ -138,11 +154,10 @@ class View(BaseView):
         {text_map.get(103, self.lang)}: {user.max}
         """
         embed = DefaultEmbed(description=text_map.get(639, self.lang))
-        embed.set_author(
-            name=text_map.get(584, self.lang), icon_url=i.user.display_avatar.url
-        )
+        embed.set_title(584, self.lang, i.user)
         embed.add_field(name=text_map.get(591, self.lang), value=value)
 
+        self.clear_items()
         self.add_item(ChangeSettings(text_map.get(594, self.lang)))
         self._add_toggles(user.toggle)
         self.add_item(GOBack())
@@ -156,18 +171,20 @@ class View(BaseView):
         self.notif_type = NotifType.PT
 
         db = i.client.db.notifs.pt
-        await db.insert(i.user.id, self.uid)
+        await db.insert(i.user.id, self.uid, self.user.game)
         user = await db.get(i.user.id, self.uid)
 
-        value = f"""
-        {text_map.get(103, self.lang)}: {user.max}
-        """
         embed = DefaultEmbed(description=text_map.get(512, self.lang))
-        embed.add_field(name=text_map.get(591, self.lang), value=value)
-        embed.set_author(
-            name=text_map.get(704, self.lang), icon_url=i.user.display_avatar.url
+        embed.add_field(
+            name=text_map.get(591, self.lang),
+            value=f"""
+            {text_map.get(103, self.lang)}: {user.max}
+            {text_map.get(810, self.lang)}: {user.hour_before}
+            """,
         )
+        embed.set_title(704, self.lang, i.user)
 
+        self.clear_items()
         self.add_item(ChangeSettings(text_map.get(594, self.lang)))
         self._add_toggles(user.toggle)
         self.add_item(GOBack())
@@ -190,9 +207,7 @@ class View(BaseView):
 
         # Create an embed for the notification
         embed = DefaultEmbed(description=text_map.get(590, self.lang))
-        embed.set_author(
-            name=text_map.get(442, self.lang), icon_url=i.user.display_avatar.url
-        )
+        embed.set_title(442, self.lang, i.user)
 
         # If the user has no items, add a message to the embed
         if not user.item_list:
@@ -212,6 +227,7 @@ class View(BaseView):
                     value="".join(value),
                 )
 
+        self.clear_items()
         self._add_toggles(user.toggle)
         self.add_item(AddWeapon(self.lang))
         self.add_item(RemoveAllWeapon(self.lang))
@@ -233,9 +249,7 @@ class View(BaseView):
 
         # Create an embed for the notification
         embed = DefaultEmbed(description=text_map.get(633, self.lang))
-        embed.set_author(
-            name=text_map.get(632, self.lang), icon_url=i.user.display_avatar.url
-        )
+        embed.set_title(639, self.lang, i.user)
 
         # If the user has no items, add a message to the embed
         if not user.item_list:
@@ -255,6 +269,7 @@ class View(BaseView):
                     value="".join(value),
                 )
 
+        self.clear_items()
         self._add_toggles(user.toggle)
         self.add_item(AddCharacter(self.lang))
         self.add_item(RemoveAllCharacter(self.lang))
@@ -263,10 +278,34 @@ class View(BaseView):
         # Edit the response message with the embed and the current view
         await i.response.edit_message(embed=embed, view=self)
 
+    async def exped_notif(self, i: Inter, *, responded: bool = False) -> None:
+        self.notif_type = NotifType.EXPED
+
+        db = i.client.db.notifs.exped
+        await db.insert(i.user.id, self.uid, self.user.game)
+        user = await db.get(i.user.id, self.uid)
+
+        embed = DefaultEmbed(description=text_map.get(808, self.lang))
+        embed.set_title(809, self.lang, i.user)
+        embed.add_field(
+            name=text_map.get(591, self.lang),
+            value=f"{text_map.get(810, self.lang)}: {user.hour_before}",
+        )
+
+        self.clear_items()
+        self.add_item(ChangeSettings(text_map.get(594, self.lang)))
+        self._add_toggles(user.toggle)
+        self.add_item(GOBack())
+
+        if not responded:
+            await i.response.edit_message(embed=embed, view=self)
+        else:
+            await i.edit_original_response(embed=embed, view=self)
+
 
 class ResinNotification(ui.Button):
     def __init__(self, label: str):
-        super().__init__(emoji=asset.resin_emoji, label=label)
+        super().__init__(emoji=asset.resin_emoji, label=label, row=0)
         self.view: View
 
     async def callback(self, i: Inter):
@@ -275,7 +314,7 @@ class ResinNotification(ui.Button):
 
 class PotNotification(ui.Button):
     def __init__(self, label: str):
-        super().__init__(emoji=asset.realm_currency_emoji, label=label)
+        super().__init__(emoji=asset.realm_currency_emoji, label=label, row=0)
         self.view: View
 
     async def callback(self, i: Inter):
@@ -284,7 +323,7 @@ class PotNotification(ui.Button):
 
 class TalentNotification(ui.Button):
     def __init__(self, label: str):
-        super().__init__(emoji=asset.talent_book_emoji, label=label, row=2)
+        super().__init__(emoji=asset.talent_book_emoji, label=label, row=1)
         self.view: View
 
     async def callback(self, i: Inter):
@@ -293,7 +332,7 @@ class TalentNotification(ui.Button):
 
 class WeaponNotification(ui.Button):
     def __init__(self, label: str):
-        super().__init__(emoji=asset.weapon_emoji, label=label, row=2)
+        super().__init__(emoji=asset.weapon_emoji, label=label, row=1)
         self.view: View
 
     async def callback(self, i: Inter):
@@ -302,7 +341,7 @@ class WeaponNotification(ui.Button):
 
 class PTNotification(ui.Button):
     def __init__(self, label: str):
-        super().__init__(emoji=asset.pt_emoji, label=label)
+        super().__init__(emoji=asset.pt_emoji, label=label, row=0)
         self.view: View
 
     async def callback(self, i: Inter):
@@ -416,7 +455,7 @@ class PrivacySettings(ui.Button):
 
 class TestItOut(ui.Button):
     def __init__(self, lang: str, embed: discord.Embed):
-        super().__init__(emoji="📨", label=text_map.get(596, lang))
+        super().__init__(emoji="📨", label=text_map.get(596, lang), row=2)
         self.lang = lang
         self.embed = embed
 
@@ -444,7 +483,7 @@ class NotificationON(ui.Button):
         self.view: View
 
     async def callback(self, i: Inter):
-        await self.view.change_toggle(i, True)
+        await self.view._change_toggle(i, True)
 
 
 class NotificationOFF(ui.Button):
@@ -460,7 +499,7 @@ class NotificationOFF(ui.Button):
         self.view: View
 
     async def callback(self, i: Inter):
-        await self.view.change_toggle(i, False)
+        await self.view._change_toggle(i, False)
 
 
 class ChangeSettings(ui.Button):
@@ -481,10 +520,11 @@ class ChangeSettings(ui.Button):
             if t and m:
                 if not t.isdigit() or not m.isdigit():
                     raise NumbersOnly
-                if int(t) < 0 or int(t) > 160:
-                    raise InvalidInput(0, 160)
-                if int(m) < 0 or int(m) > 10:
-                    raise InvalidInput(0, 10)
+                max_resin = 160 if self.view.game is GameType.GENSHIN else 180
+                if int(t) < 0 or int(t) > max_resin:
+                    raise InvalidInput(0, max_resin)
+                if int(m) < 0:
+                    raise InvalidInput(0, 99)
                 db = i.client.db.notifs.resin
                 await db.update(i.user.id, self.view.uid, threshold=int(t), max=int(m))
                 await self.view.resin_notif(i, responded=True)
@@ -498,10 +538,10 @@ class ChangeSettings(ui.Button):
             if t and m:
                 if not t.isdigit() or not m.isdigit():
                     raise NumbersOnly
-                if int(t) < 0 or int(t) > 99999:
-                    raise InvalidInput(0, 99999)
-                if int(m) < 0 or int(m) > 10:
-                    raise InvalidInput(0, 10)
+                if int(t) < 0 or int(t) > 2400:
+                    raise InvalidInput(0, 2400)
+                if int(m) < 0:
+                    raise InvalidInput(0, 99)
                 db = i.client.db.notifs.pot
                 await db.update(i.user.id, self.view.uid, threshold=int(t), max=int(m))
                 await self.view.pot_notif(i, responded=True)
@@ -511,14 +551,33 @@ class ChangeSettings(ui.Button):
             await i.response.send_modal(modal)
             await modal.wait()
             m = modal.max_notif.value
-            if m:
-                if not m.isdigit():
+            h = modal.hour_before.value
+            if m and h:
+                if not m.isdigit() or not is_float(h):
                     raise NumbersOnly
-                if int(m) < 0 or int(m) > 10:
-                    raise InvalidInput(0, 10)
+                if int(m) < 0:
+                    raise InvalidInput(0, 99)
+                if float(h) < 0 or float(h) > 168:
+                    raise InvalidInput(0, 168)
                 db = i.client.db.notifs.pt
-                await db.update(i.user.id, self.view.uid, max=int(m))
+                await db.update(
+                    i.user.id, self.view.uid, max=int(m), hour_before=float(h)
+                )
                 await self.view.pt_notif(i, responded=True)
+
+        elif notif_type is NotifType.EXPED:
+            modal = ExpedModal(lang)
+            await i.response.send_modal(modal)
+            await modal.wait()
+            h = modal.hour_before.value
+            if h:
+                if not is_float(h):
+                    raise NumbersOnly
+                if float(h) < 0 or float(h) > 20:
+                    raise InvalidInput(0, 20)
+                db = i.client.db.notifs.exped
+                await db.update(i.user.id, self.view.uid, hour_before=float(h))
+                await self.view.exped_notif(i, responded=True)
 
 
 class GOBack(ui.Button):
@@ -527,7 +586,7 @@ class GOBack(ui.Button):
         self.view: View
 
     async def callback(self, i: discord.Interaction):
-        self.view.add_components()
+        self.view._add_components()
         embed = self.view.make_start_embed()
         await i.response.edit_message(embed=embed, view=self.view)
 
@@ -570,11 +629,27 @@ class PotModal(BaseModal):
 
 class PTModal(BaseModal):
     max_notif = ui.TextInput(label="MAX_NOTIF", max_length=2)
+    hour_before = ui.TextInput(label="HOUR_BEFORE", max_length=4)
 
     def __init__(self, lang: str):
         super().__init__(title=text_map.get(515, lang))
         self.max_notif.label = text_map.get(103, lang)
         self.max_notif.placeholder = text_map.get(155, lang)
+        self.hour_before.label = text_map.get(810, lang)
+        self.hour_before.placeholder = text_map.get(170, lang).format(a=0.5)
+
+    async def on_submit(self, i: discord.Interaction) -> None:
+        await i.response.defer()
+        self.stop()
+
+
+class ExpedModal(BaseModal):
+    hour_before = ui.TextInput(label="HOUR_BEFORE", max_length=4)
+
+    def __init__(self, lang: str):
+        super().__init__(title=text_map.get(515, lang))
+        self.hour_before.label = text_map.get(810, lang)
+        self.hour_before.placeholder = text_map.get(170, lang).format(a=0.5)
 
     async def on_submit(self, i: discord.Interaction) -> None:
         await i.response.defer()
@@ -716,3 +791,25 @@ class WeaponSelect(ui.Select):
         await i.client.db.notifs.weapon.update(i.user.id, item_list=self.item_list)
 
         await self.view.weapon_notif(i)
+
+
+class Expedition(ui.Button):
+    def __init__(self, label: str):
+        super().__init__(label=label, emoji=asset.expedition_emoji, row=1)
+        self.view: View
+
+    async def callback(self, i: Inter):
+        await self.view.exped_notif(i)
+
+
+class TraiblazePower(ui.Button):
+    def __init__(self, label: str):
+        super().__init__(
+            emoji=asset.trailblaze_power_emoji,
+            label=label,
+            row=0,
+        )
+        self.view: View
+
+    async def callback(self, i: Inter):
+        await self.view.resin_notif(i)
