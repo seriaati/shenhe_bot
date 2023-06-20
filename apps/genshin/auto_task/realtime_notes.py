@@ -386,7 +386,7 @@ class RealtimeNotes:
                 raise AssertionError("Transformer recovery time is None")
             embed = DefaultEmbed(
                 description=f"""
-                {text_map.get(15, lang)}: {format_dt(notes.transformer_recovery_time, "R")}         
+                {text_map.get(15, lang)}: {format_dt(notes.transformer_recovery_time, "R")}
                 
                 UID: {uid}
                 """
