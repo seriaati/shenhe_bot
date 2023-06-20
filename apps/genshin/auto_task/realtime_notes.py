@@ -275,14 +275,14 @@ class RealtimeNotes:
         ):
             return False
 
-        elif (
+        if (
             isinstance(notif_user, PotNotif)
             and isinstance(notes, genshin.models.Notes)
             and notes.current_realm_currency < notif_user.threshold
         ):
             return False
 
-        elif (
+        if (
             isinstance(notif_user, PTNotif)
             and isinstance(notes, genshin.models.Notes)
             and (
@@ -293,7 +293,7 @@ class RealtimeNotes:
         ):
             return False
 
-        elif isinstance(notif_user, ExpedNotif) and (
+        if isinstance(notif_user, ExpedNotif) and (
             all(not e.finished for e in notes.expeditions)
             or all(
                 e.remaining_time.total_seconds() // 3600 > notif_user.hour_before
@@ -302,12 +302,13 @@ class RealtimeNotes:
         ):
             return False
 
-        elif (
+        if (
             isinstance(notif_user, ResinNotif)
             and isinstance(notes, genshin.models.StarRailNote)
             and notes.current_stamina < notif_user.threshold
         ):
             return False
+
         return True
 
     @staticmethod
