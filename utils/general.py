@@ -195,7 +195,7 @@ def is_float(string: str) -> bool:
 
 def open_json(path: str) -> Dict[str, Any]:
     try:
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, "r", encoding="utf-8") as f:  # skipcq: PTC-W6004
             data = json.load(f)
     except FileNotFoundError:
         data = {}
@@ -203,5 +203,5 @@ def open_json(path: str) -> Dict[str, Any]:
 
 
 def write_json(path: str, data: Dict[str, Any]) -> None:
-    with open(path, "w", encoding="utf-8") as f:
+    with open(path, "w", encoding="utf-8") as f:  # skipcq: PTC-W6004
         json.dump(data, f)
