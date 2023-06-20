@@ -173,7 +173,7 @@ class RealtimeNotes:
 
                     # Send the notification and update the notification counter
                     embed = self._create_notif_embed(
-                        notif_user.type, notif_user.uid, notes, dc_user, lang
+                        notif_user.type, notif_user.uid, notes, lang
                     )
                     await self._send_notif(dc_user, embed, notif_user.type)
                     await db.update(
@@ -315,7 +315,6 @@ class RealtimeNotes:
         notif_type: NotifType,
         uid: int,
         notes: Union[genshin.models.Notes, genshin.models.StarRailNote],
-        user: User,
         lang: str,
     ) -> DefaultEmbed:
         """
