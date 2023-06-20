@@ -98,11 +98,11 @@
 "109": 兑换码兑换成功
 "124": 返回预设
 "125": |-
-  - By default, shenhe responds to you with the same language your discord uses
-  - Changing language will override the default language
-  - If any text is not translated yet, shenhe will respond to you with English
-  - Names of genshin characters, weapons, and other game elements will be translated automatically
-  - Interested in translating Shenhe to your language? Check out the [crowdin](https://crowdin.com/project/shenhe-bot) page
+  - 在预设情况下，申鹤会用你的 Discord 语言来回复你
+  - 在这里改变语言将会覆盖预设的语言
+  - 如果任何一个字串还尚未被翻译，申鹤将会使用英文
+  - 原神的游戏元素，像是角色、武器名称等将会自动翻译
+  - 有兴趣将申鹤翻译为你会说的语言吗？欢迎查看申鹤的 [crowdin](https://crowdin.com/project/shenhe-bot) 页面
 "126": 自动兑换兑换码
 "127": 兑换码兑换失败
 "128": 语言
@@ -245,11 +245,11 @@
 "274": 无效的图片链接
 "275": 自定义图片
 "276": |-
-  - You can set custom images for the character cards in </profile:1020580644419551336>
-  - You can have up to 125 images for each character
-  - Please provide an image URL, a good tool to use [imgur](https://imgur.com/)
-  - Alternatively, upload an image using </img-upload:1041966109533929522>
-  - For version 1, Use [this](https://croppola.com/) to crop image, choose the ratio of 2.64:1
+  - 你可以为 </profile:1020580644419551336> 中的角色自行设定图像。
+  - 每个角色最多可以有 125 张图像
+  - 请提供图片网址，[imgur](https://imgur.com/) 是一个好工具
+  - 或者，使用 </img-upload:1041966109533929522> 上传图片
+  - 对于卡片样式 1 ，请使用 [这个工具](https://croppola.com/) 裁剪图片并选择 2.64:1 的比例
 "277": 当前图片
 "278": 排序方式...
 "279": 筛选条件…
@@ -257,8 +257,8 @@
 "281": 移速%
 "282": 返回副词条选择
 "285": |-
-  - Automatically redeem Genshin Impact codes found in [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)
-  - You can also redeem codes manually using </redeem:1044926380456017924>
+  - 自动兑换在 [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes) 找到的原神兑换码
+  - 你也可以通过 </redeem:1044926380456017924> 手动兑换兑换码
 "286": UID 无效或无法在 enka.network 中找到
 "287": 请在游戏中打开「显示角色详情」
 "292": 生命值上限
@@ -381,7 +381,7 @@
 "438": 设置提醒功能
 "439": 功能
 "440": 开关
-"442": Talent farm reminder
+"442": 刷天赋素材提醒
 "443": 启用提醒功能前请先确认隐私设定
 "444": 你可以将这个指令与 /search 配合使用来查看一个测试版物品的详细信息
 "445": 目前没有任何测试版的物品，请稍后再试
@@ -452,9 +452,9 @@
 "510": 须弥
 "511": '角色缓存由于缓存方式变更而已被移除，如果你真的需要之前的角色缓存，请联系 seria#5334'
 "512": |-
-  - Notify you when your parametric transformer is ready.
-  - You can also set the time (in hours) before the PT is ready to be notified.
-  - Decimals are allowed, e.g. 0.5 hours = 30 minutes.
+  - 在你的质变仪可使用时提醒你。
+  - 你也可以设定质变仪可使用前的多长时间（小时）要被提醒。
+  - 允许小数点，例如 0.5 小时＝30分钟。
 "515": 通知设置
 "519": |-
   [Enka.network](https://enka.network/) 目前已关闭，请稍后再试。
@@ -476,10 +476,10 @@
 "536": 深色模式
 "537": 亮色模式
 "538": |
-  - This setting changes the appearance of your cards
-  - If there is no dark mode version of the card, it will be displayed in light mode
-  - Default is light mode
-  - See below for an example
+  - 这个设置将会更改卡片的样式
+  - 如果该卡片的深色模式尚未制作完成，将会显示为浅色模式
+  - 预设模式为浅色
+  - 示例如下
 "539": 设置
 "542": 物品不存在
 "543": 角色资料源自缓存
@@ -498,7 +498,7 @@
 "559": 切换账户
 "562": 选择一个自定义图片
 "563": |-
-  - Read [the docs](https://bit.ly/shenhe-docs) regarding account security
+  - 阅读关于账户安全的 [文档](https://bit.ly/shenhe-docs)
 "564": 延迟
 "565": 制作人员
 "566": |-
@@ -511,22 +511,22 @@
 "576": "已拥有角色: {current}/{total}"
 "577": "已达最大好感度: {current}/{total}"
 "578": 好感度
-"582": Resin reminder
+"582": 树脂提醒
 "583": 选择一个星期其中一天
-"584": Realm currency reminder
+"584": 洞天宝钱提醒
 "585": 测试私信
 "586": 在你的树脂超过一定数量时通知您
 "587": 可用于升级：
 "588": 在 Enka.network 上查看
 "589": '{in_x_seconds} 刷新'
 "590": |-
-  - Notify you when a character's talent domain is farmable
-  - Selecting a character that already has notification enabled will disable it
+  - 在角色的天赋素材可以刷取时通知你
+  - 选择已启用通知的角色将关闭它的通知
 "591": 当前设置
 "592": |-
-  - Set reminders to do the homework provided by Genshin on-time
-  - Reminder settings are separate for each account you have registered, except talent and weapon notification
-  - Click on the buttons below for more information on each feature
+  - 这个功能能帮助你准时做完原神给你的功课
+  - 不同账户之间的提醒设定是独立的，除了天赋及武器提醒
+  - 点击下方不同按钮以查看更多信息
 "593": 提醒
 "594": 更改设置
 "595": |-
@@ -567,10 +567,10 @@
 "627": 每日签到开关
 "630": 申鹤已自动关闭你的自动签到功能，如欲重新开启，请使用 </claim:1020580644365021250> 指令
 "631": 申鹤已自动为您关闭此提醒功能，要重新启用，请使用</remind:1020580644365021255>
-"632": Weapon farm reminder
+"632": 刷武器素材提醒
 "633": |-
-  - Notify you when a weapon's domain is farmable
-  - Selecting a weapon that already has notification enabled will disable its notification
+  - 在武器的突破素材可以刷取时通知你
+  - 选择已启用通知的武器将关闭它的通知
 "634": 添加/删除武器
 "635": 移除所有武器
 "636": 当前已设定的武器
@@ -626,9 +626,9 @@
   你可以使用 </wish file-import:123123> 指令从文件中导入祈愿记录，目前仅支持申鹤导出的 YAML 文件。
 "688": 你确定吗？
 "689": |-
-  - You are about to clear your wish history for this account, this action cannot be undone.
-  - It is recommended to export your wish history before clearing it.
-  - You may have wishes stored in Shenhe that is no longer saved in-game, if you clear your wish history, you will lose those wishes.
+  - 你即将清除这个账户的所有祈愿记录，此操作无法撤销。
+  - 建议清除祈愿记录前先进行导出备份。
+  - 你可能有储存在申鹤，但已经不在游戏内的祈愿记录，你将会永远失去那些祈愿记录。
 "690": 申鹤在这个链接/文件中发现了 **{a}** 笔祈愿记录资料
 "691": 确认祈愿记录导入
 "692": 从申鹤导出的 YAML 文件中导入你的祈愿记录
@@ -642,7 +642,7 @@
 "701": 所有
 "702": 你提供的链接已过期，请生成一个新链接
 "703": 元素
-"704": PT reminder
+"704": 质变仪提醒
 "705": 深境螺旋敌人列表
 "706": 这一层的地脉异常
 "707": 上半
@@ -721,10 +721,10 @@
 "775": 输入兑换码
 "776": 兑换兑换码
 "777": |-
-  - If anything is not working, you can redeem on the website:
-  - [Genshin Impact](https://genshin.hoyoverse.com/en/gift) | [Honkai Star Rail](https://hsr.hoyoverse.com/gift)
-  - The code selector gathers currently available Genshin codes from [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes), select to redeem
-  - The code input method allows you to enter up to 3 codes (at least 1) manually
+  - 如果有发生任何错误，你可以在网站上进行兑换：
+  - [原神](https://genshin.hoyoverse.com/en/gift) | [星穹铁道](https://hsr.hoyoverse.com/gift)
+  - 兑换码选择器会由 [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes) 搜集目前可兑换的原神兑换码, 选择一个兑换码来兑换
+  - 手动输入兑换码来兑换一到三个兑换码
 "778": 兑换服务目前正在忙碌，请稍后再试
 "779": 请 [点击此处](https://bit.ly/shenhe-docs) 查看申鹤的使用说明，以了解如何获取祈愿历史链接。
 "780": 账户管理
@@ -755,18 +755,18 @@
 "803": 请求错误，API 目前可能不可用
 "804": 图片加载失败
 "805": |-
-  Image of URL {url} failed to download with status code {status}.
-  - If this is a custom image, check if the URL is correct.
-  - If not, Shenhe may be rate limited by the image host, please try again later.
+  链接为 {url} 的图片下载失败，状态码为 {status}。
+  - 如果这是一个自定义图片，请确认链接是否正确。
+  - 如果不是，申鹤可能被图片托管商进行了请求限制，请稍后再试。
 "806": 需要进行人机验证
 "807": 登录时触发了人机验证，请前往 HoYoLAB 网站手动登录。
 "808": |-
-  - Notify you when one or more expeidtion is finished.
-  - You can also set the time (in hours) before the expedition finishes to be notified.
-  - Decimals are allowed, e.g. 0.5 hours = 30 minutes.
-"809": Expedition reminder
-"810": Hour Before
-"811": Trailblaze power reminder
+  - 在一或多个探索派遣完成时通知你。
+  - 你也可以设定探索派遣完成前的多长时间（小时）要被提醒。
+  - 允许小数点，例如 0.5 小时＝30分钟。
+"809": 探索派遣提醒
+"810": 小时前
+"811": 开拓力提醒
 "812": |-
-  - Notify you when your trailblaze power exceeds a certain amount.
-"813": Current trailblaze power
+  - 在你的开拓力超过一定数量时提醒你。
+"813": 当前开拓力
