@@ -98,11 +98,11 @@
 "109": Kode berhasil ditukarkan
 "124": Kembali ke default
 "125": |-
-  - By default, shenhe responds to you with the same language your discord uses
-  - Changing language will override the default language
-  - If any text is not translated yet, shenhe will respond to you with English
-  - Names of genshin characters, weapons, and other game elements will be translated automatically
-  - Interested in translating Shenhe to your language? Check out the [crowdin](https://crowdin.com/project/shenhe-bot) page
+  - Secara default, shenhe merespon kamu dengan bahasa yang sama dengan yang digunakan discord kamu
+  - Mengubah bahasa akan menimpa bahasa default
+  - Jika ada teks yang belum diterjemahkan, shenheakan menjawab kamu dalam bahasa Inggris
+  - Nama karakter genshin, senjata, dan elemen game lainnya akan diterjemahkan secara otomatis
+  - Tertarik menerjemahkan Shenhe ke bahasa kamu? Lihat halaman [crowdin](https://crowdin.com/project/shenhe-bot).
 "126": Penukaran kode otomatis
 "127": Penukaran kode gagal
 "128": Bahasa
@@ -245,11 +245,11 @@
 "274": Invalid image URL
 "275": Kustom Gambar
 "276": |-
-  - You can set custom images for the character cards in </profile:1020580644419551336>
-  - You can have up to 125 images for each character
-  - Please provide an image URL, a good tool to use [imgur](https://imgur.com/)
-  - Alternatively, upload an image using </img-upload:1041966109533929522>
-  - For version 1, Use [this](https://croppola.com/) to crop image, choose the ratio of 2.64:1
+  - Kamu dapat mengatur gambar kustomuntuk kartu karakter di </profile:1020580644419551336>
+  - Kamu dapat memiliki hingga 125 gambar untuk setiap karakter
+  - Berikan URL gambar, alat yang bagus untuk menggunakan [imgur](https://imgur.com/)
+  - Atau, unggah gambar menggunakan </img-upload:1041966109533929522>
+  - Untuk versi 1, Gunakan [this](https://croppola.com/) untuk memotong gambar, pilih rasio 2.64:1
 "277": Gambar Saat Ini
 "278": Urut berdasarkan...
 "279": Filter berdasarkan...
@@ -257,8 +257,8 @@
 "281": Speed%
 "282": Kambali
 "285": |-
-  - Automatically redeem Genshin Impact codes found in [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)
-  - You can also redeem codes manually using </redeem:1044926380456017924>
+  - Otomatis tukarkan kode Genshin Impact yang ada di [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)
+  - Kamu juga dapat menukarkan kode secara manual menggunakan </redeem:1044926380456017924>
 "286": UID tidak valid atau tidak ditemukan di enka.network
 "287": Silakan aktifkan "Tampilkan Rincian" karakter di dalam game kamu
 "292": Max HP
@@ -381,7 +381,7 @@
 "438": Atur fitur notifikasi
 "439": fungsi
 "440": beralih
-"442": Talent farm reminder
+"442": Pengingat farm talenta
 "443": Cek pengaturan privasi
 "444": Kamu dapat menggunakan command /search untuk mendapat informasi lebih lanjut tentang item beta
 "445": Saat ini tidak ada item beta, periksa lagi nanti
@@ -452,9 +452,9 @@
 "510": Sumeru
 "511": 'Cache telah dihapus karena perubahan cache, jika kamu benar-benar membutuhkan datanya, silakan DM seria#5334'
 "512": |-
-  - Notify you when your parametric transformer is ready.
-  - You can also set the time (in hours) before the PT is ready to be notified.
-  - Decimals are allowed, e.g. 0.5 hours = 30 minutes.
+  - Beri tahu kamu saat parametrik transformer kaamu siap.
+  - Kamu juga dapat mengatur waktu (dalam jam) sebelum PT siap diberitahukan.
+  - Desimal diperbolehkan, misal 0.5 jam = 30 menit.
 "515": Pengaturan Notifikasi
 "519": |-
   [Enka.network](https://enka.network/) sedang tidak aktif, silakan coba lagi nanti.
@@ -476,10 +476,10 @@
 "536": Mode Gelap
 "537": Mode Terang
 "538": |
-  - This setting changes the appearance of your cards
-  - If there is no dark mode version of the card, it will be displayed in light mode
-  - Default is light mode
-  - See below for an example
+  - Pengaturan ini mengubah tampilan kartu kamu
+  - Jika tidak ada versi mode gelap dari kartu, maka akan ditampilkan dalam mode terang
+  - Default adalah mode terang
+  - Lihat di bawah untuk contoh
 "539": Pengaturan
 "542": item tidak ditemukan
 "543": Data dari cache
@@ -498,7 +498,7 @@
 "559": Ganti Akun
 "562": Pilih Gambar Kustom
 "563": |-
-  - Read [the docs](https://bit.ly/shenhe-docs) regarding account security
+  - Baca [the docs](https://bit.ly/shenhe-docs) terkait keamanan akun
 "564": Latensi
 "565": Kredit
 "566": |-
@@ -511,22 +511,22 @@
 "576": "Karakter yang dimiliki: {current}/{total}"
 "577": "Tingkat pertemanan maksimal: {current}/{total}"
 "578": Friendship Lv.
-"582": Resin reminder
+"582": Pengingat resin
 "583": Pilih Hari
-"584": Realm currency reminder
+"584": Pengingat Realm currency
 "585": Test DM
 "586": Memberitahumu ketika realm currency kamu melebihi jumlah tertentu
 "587": Dapat digunakan untuk ugprade
 "588": Lihat di Enka.network
 "589": merefresh {in_x_seconds}
 "590": |-
-  - Notify you when a character's talent domain is farmable
-  - Selecting a character that already has notification enabled will disable it
+  - Memberi tahu kamu saat domain talenta karakter dapat difarm
+  - Memilih karakter yang telah mengaktifkan notifikasi akan menonaktifkannya
 "591": Pengaturan saat ini
 "592": |-
-  - Set reminders to do the homework provided by Genshin on-time
-  - Reminder settings are separate for each account you have registered, except talent and weapon notification
-  - Click on the buttons below for more information on each feature
+  - Tetapkan pengingat untuk mengerjakan pekerjaan rumah yang disediakan oleh Genshin tepat waktu
+  - Pengaturan pengingat terpisah untuk setiap akun yang telah kamu daftarkan, kecuali pemberitahuan talenta dan senjata
+  - Klik tombol di bawah untuk informasi lebih lanjut tentang setiap fitur
 "593": Pengingat
 "594": Ubah pengaturan
 "595": |-
@@ -567,10 +567,10 @@
 "627": Alihkan check-in harian
 "630": Shenhe telah secara otomatis menonaktifkan fitur check-in harian otomatis untukmu, untuk mengaktifkannya kembali, silakan gunakan </claim:1020580644365021250>
 "631": Shenhe telah menonaktifkan fitur pengingat ini secara otomatis untuk kamu, untuk mengaktifkannya kembali, harap gunakan </remind:1020580644365021255>
-"632": Weapon farm reminder
+"632": Pengingat farm senjata
 "633": |-
-  - Notify you when a weapon's domain is farmable
-  - Selecting a weapon that already has notification enabled will disable its notification
+  - Memberi tahu kamu saat domain senjata dapat difarm
+  - Memilih senjata yang notifikasinya sudah diaktifkan akan menonaktifkan notifikasinya
 "634": Tambah/Hapus senjata
 "635": Hapus semua senjata
 "636": Senjata saat ini
@@ -627,9 +627,9 @@
   Hanya mendukung file YAML yang diekspor dari Shenhe
 "688": Apa kamu yakin?
 "689": |-
-  - You are about to clear your wish history for this account, this action cannot be undone.
-  - It is recommended to export your wish history before clearing it.
-  - You may have wishes stored in Shenhe that is no longer saved in-game, if you clear your wish history, you will lose those wishes.
+  - kamu akan menghapus riwayat keinginan untuk akun ini, tindakan ini tidak dapat diurungkan.
+  - Disarankan untuk mengekspor riwayat keinginan kamu sebelum menghapusnya.
+  - Kamu mungkin memiliki keinginan yang disimpan di Shenhe yang tidak lagi disimpan dalam game, jika kamu menghapus riwayat keinginan, kamu akan kehilangan keinginan tersebut.
 "690": Shenhe telah menemukan **{a}** wish di tautan/file ini
 "691": Konfirmasi impor wish
 "692": Impor riwayat keinginan Genshin kamu dari file YAML yang diekspor oleh Shenhe
@@ -643,7 +643,7 @@
 "701": Semua
 "702": Tautan yang kamu berikan telah kedaluwarsa, harap buat yang baru
 "703": Elemen
-"704": PT reminder
+"704": Pengingat PT
 "705": Musuh spiral abyss
 "706": Gangguan ley line di lantai ini
 "707": Babak Pertama
@@ -721,10 +721,10 @@
 "775": Masukkan kode
 "776": Redeem kode
 "777": |-
-  - If anything is not working, you can redeem on the website:
+  - Jika ada yang tidak berfungsi, kamu dapat menebus di situs web:
   - [Genshin Impact](https://genshin.hoyoverse.com/en/gift) | [Honkai Star Rail](https://hsr.hoyoverse.com/gift)
-  - The code selector gathers currently available Genshin codes from [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes), select to redeem
-  - The code input method allows you to enter up to 3 codes (at least 1) manually
+  - Pemilih kode mengumpulkan kode Genshin yang tersedia saat ini dari [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes), pilih untuk ditukarkan
+  - Metode input kode memungkinkan kamu memasukkan hingga 3 kode (setidaknya 1) secara manual
 "778": Layanan penukaran kode sedang sibuk, silakan coba lagi nanti
 "779": Lihat [Shenhe's documentation](https://bit.ly/shenhe-docs) untuk cara mendapatkan tautan riwayat keinginan
 "780": Manager Akun
@@ -755,18 +755,18 @@
 "803": Kesalahan Permintaan, API mungkin tidak tersedia
 "804": Gagal Mengunduh Gambar
 "805": |-
-  Image of URL {url} failed to download with status code {status}.
-  - If this is a custom image, check if the URL is correct.
-  - If not, Shenhe may be rate limited by the image host, please try again later.
+  Gambar URL {url} gagal diunduh dengan kode status {status}.
+  - Jika ini adalah gambar khusus, periksa apakah URL sudah benar.
+  - Jika tidak, Shenhe mungkin dibatasi oleh host gambar, silakan coba lagi nanti.
 "806": Diperlukan verifikasi manusia
 "807": Verifikasi manusia dipicu saat check-in, harap check-in secara manual di situs web HoYoLAB.
 "808": |-
-  - Notify you when one or more expeidtion is finished.
-  - You can also set the time (in hours) before the expedition finishes to be notified.
-  - Decimals are allowed, e.g. 0.5 hours = 30 minutes.
-"809": Expedition reminder
-"810": Hour Before
-"811": Trailblaze power reminder
+  - Memberitahu kmu ketika satu atau lebih ekspedisi selesai.
+  - Kamu juga dapat mengatur waktu (dalam jam) sebelum ekspedisi selesai untuk diberitahukan.
+  - Desimal diperbolehkan, misal 0.5 jam = 30 menit.
+"809": Pengingat ekspedisi
+"810": Jam Sebelumnya
+"811": Pengingat trailblaze power
 "812": |-
-  - Notify you when your trailblaze power exceeds a certain amount.
-"813": Current trailblaze power
+  - Memberitahu kamu ketika trailblaze power kamu melebihi jumlah tertentu.
+"813": Trailblaze power saat ini
