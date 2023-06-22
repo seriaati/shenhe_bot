@@ -1,4 +1,4 @@
-from typing import List
+from typing import Sequence
 
 from dev.enum import CheckInAPI, GameType
 
@@ -88,7 +88,7 @@ class WishFileImportError(Exception):
 
 
 class GameNotSupported(Exception):
-    def __init__(self, current: GameType, supported: List[GameType]) -> None:
+    def __init__(self, current: GameType, supported: Sequence[GameType]) -> None:
         self.current = current
         self.supported = supported
 
