@@ -108,5 +108,5 @@ def card(
         offset = (offset[0], offset[1] + 199)
 
     fp = io.BytesIO()
-    im.save(fp, "PNG", optimize=True)
+    im.save(fp, "WEBP", lossless=True)
     return fp
