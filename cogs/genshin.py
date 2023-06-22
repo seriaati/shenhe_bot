@@ -174,34 +174,43 @@ class GenshinCog(commands.Cog, name="genshin"):
                 raise exceptions.AutocompleteError
         else:
             user = await self.bot.db.users.get(member.id)
-        if user.game is not GameType.GENSHIN:
-            raise exceptions.GameNotSupported(user.game, [GameType.GENSHIN])
+        supported = (GameType.GENSHIN, GameType.HSR)
+        if user.game not in supported:
+            raise exceptions.GameNotSupported(user.game, supported)
 
         lang = await self.bot.db.settings.get(i.user.id, Settings.LANG)
         lang = lang or str(i.locale)
         dark_mode = await self.bot.db.settings.get(i.user.id, Settings.DARK_MODE)
-
-        client = await user.client
-        client.lang = convert_locale.to_genshin_py(lang)
-        notes = await client.get_genshin_notes(user.uid)
-
         draw_input = models.DrawInput(
             loop=self.bot.loop,
             session=self.bot.session,
             lang=lang,
             dark_mode=dark_mode,
         )
-        fp = await main_funcs.draw_realtime_card(
-            draw_input,
-            notes,
-        )
-        fp.seek(0)
 
-        await i.followup.send(
-            embed=self.parse_notes_embed(notes, lang),
-            files=[discord.File(fp, filename="realtime_notes.png")],
-            ephemeral=ephemeral,
-        )
+        client = await user.client
+        client.lang = convert_locale.to_genshin_py(lang)
+        if user.game is GameType.GENSHIN:
+            notes = await client.get_genshin_notes(user.uid)
+            fp = await main_funcs.draw_realtime_card(
+                draw_input,
+                notes,
+            )
+        else:
+            notes = await client.get_starrail_notes(user.uid)
+            fp = await main_funcs.draw_hsr_check_card(draw_input, notes)
+
+        fp.seek(0)
+        if isinstance(notes, Notes):
+            await i.followup.send(
+                embed=self.parse_notes_embed(notes, lang),
+                file=discord.File(fp, filename="realtime_notes.webp"),
+                ephemeral=ephemeral,
+            )
+        else:
+            await i.followup.send(
+                file=discord.File(fp, filename="hsr_check.webp"), ephemeral=ephemeral
+            )
 
     @staticmethod
     def parse_notes_embed(notes: Notes, lang: str) -> models.DefaultEmbed:
