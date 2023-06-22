@@ -1,7 +1,6 @@
-import random
-import mihomo
 import functools
 import io
+import random
 from typing import Dict, List, Optional, Tuple
 
 import asyncpg
@@ -9,15 +8,16 @@ import discord
 import enkanetwork as enka
 import genshin
 import matplotlib.pyplot as plt
+import mihomo
 
 import apps.draw.draw_funcs as funcs
 import apps.draw.draw_funcs.star_rail as star_rail
-from dev.exceptions import CardNotReady
 import dev.models as models
 from ambr import Material
 from apps.db.json import read_json, write_json
 from apps.db.tables.abyss_board import AbyssBoardEntry
 from apps.wish.models import RecentWish, WishData
+from dev.exceptions import CardNotReady
 from utils import calculate_time, download_images, extract_urls
 from utils.draw import get_hsr_card_data
 
@@ -499,5 +499,24 @@ async def draw_hsr_profile_card_v1(
         draw_input.dark_mode,
         image_url,
         card_data,
+    )
+    return await draw_input.loop.run_in_executor(None, func)
+
+
+@calculate_time
+async def draw_hsr_check_card(
+    draw_input: models.DrawInput, notes: genshin.models.StarRailNote
+) -> io.BytesIO:
+    urls = set()
+    for e in notes.expeditions:
+        for a in e.avatars:
+            urls.add(a)
+    await download_images(list(urls), draw_input.session)
+
+    func = functools.partial(
+        star_rail.draw_check_card,
+        notes,
+        draw_input.dark_mode,
+        str(draw_input.lang),
     )
     return await draw_input.loop.run_in_executor(None, func)
