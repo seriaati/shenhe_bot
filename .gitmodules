@@ -16,3 +16,6 @@
 [submodule "yatta"]
 	path = yatta
 	url = https://github.com/seriaati/yatta
+[submodule "ambr_top"]
+	path = ambr_top
+	url = https://github.com/seriaati/ambr
