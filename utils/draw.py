@@ -6,9 +6,9 @@ import aiofiles
 import aiohttp
 import discord
 import enkanetwork as enka
+import yaml
 from fontTools.ttLib import TTFont
 from PIL import Image, ImageDraw, ImageFont
-import yaml
 
 import dev.asset as asset
 from apps.text_map import text_map
@@ -345,3 +345,11 @@ with open("yelan/star_rail/profile/1/data.yaml") as data_file:
 def get_hsr_card_data(id: str) -> typing.Optional[typing.Dict[str, typing.Any]]:
     """Get the data for a card"""
     return hsr_card_data.get(id)
+
+
+def seconds_to_hour_minute(seconds: float) -> str:
+    """Convert seconds to hour and minute"""
+    seconds = round(seconds)
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    return f"{hours}h {minutes}m"
