@@ -97,11 +97,11 @@
 "109": 交換完了！
 "124": デフォルトに戻す
 "125": |-
-  - By default, shenhe responds to you with the same language your discord uses
-  - Changing language will override the default language
-  - If any text is not translated yet, shenhe will respond to you with English
-  - Names of genshin characters, weapons, and other game elements will be translated automatically
-  - Interested in translating Shenhe to your language? Check out the [crowdin](https://crowdin.com/project/shenhe-bot) page
+  - デフォルトでは申鶴はあなたがDiscordで使用している言語で応答します。
+  - 言語設定を変更するとデフォルトの言語を上書きします。
+  - 未翻訳のテキストは英語で表示されます。
+  - 原神のキャラクターや武器などのゲーム内の要素は自動的に翻訳されます。
+  - 申鶴の翻訳に興味がありますか？[crowdin](https://crowdin.com/project/shenhe-bot)をチェックしてください！
 "126": 自動交換コード引き換え
 "127": コードの引き換えに失敗しました
 "128": 言語設定
@@ -243,11 +243,11 @@
 "274": 無効な画像URL
 "275": カスタム画像
 "276": |-
-  - You can set custom images for the character cards in </profile:1020580644419551336>
-  - You can have up to 125 images for each character
-  - Please provide an image URL, a good tool to use [imgur](https://imgur.com/)
-  - Alternatively, upload an image using </img-upload:1041966109533929522>
-  - For version 1, Use [this](https://croppola.com/) to crop image, choose the ratio of 2.64:1
+  - </profile:1020580644419551336>で使用するビルドカード用のカスタム画像を設定することができます。
+  -  各キャラクターに125枚まで画像を設定することができます。
+  -  画像のURLを送信してください。おすすめのツールは[imgur](https://imgur.com/)です。
+  -  </img-upload:1041966109533929522>で画像をアップロードすることも出来ます。
+  -  バージョン１用の画像のトリミングには[これ](https://croppola.com/)を使用し、2.64:1の比率を選択してください。
 "277": 現在の画像
 "278": 並び順
 "279": フィルター
@@ -255,8 +255,8 @@
 "281": 速度%
 "282": 戻る
 "285": |-
-  - Automatically redeem Genshin Impact codes found in [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)
-  - You can also redeem codes manually using </redeem:1044926380456017924>
+  - [Pocket Tactics](https://www.pockettactics.com/genshin-impact/codes)で見つかった交換コードを自動で交換します
+  - </redeem:1044926380456017924>で手動で交換もできます
 "286": UID が無効か、enka.network で見つかりません
 "287": ゲーム内のキャラクターラインナップの右下にある「キャラ詳細」を「キャラ詳細表示中」にしてください
 "292": 最大HP
@@ -378,7 +378,7 @@
 "438": リマインダーを設定
 "439": 関数
 "440": トグル
-"442": Talent farm reminder
+"442": 天賦素材周回リマインダー
 "443": リマインダーを有効にする前に、プライバシー設定を確認してください
 "444": /search とこのコマンドを一緒に使用することでベータ版のアイテムの情報を取得
 "445": 現在、ベータ版アイテムの情報はありません。後で確認してみてください
