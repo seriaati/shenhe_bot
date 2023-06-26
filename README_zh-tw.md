@@ -4,6 +4,8 @@
 
 > 雷電將軍的繪圖由[**Asaki**](https://www.pixiv.net/en/artworks/104574600)繪製
 
+[English](https://github.com/seriaati/shenhe_bot/blob/main/README.md) | 中文
+
 **申鶴** 原先是一個原神專用的 Discord 機器人。然而，隨著這個項目的發展，申鶴已成為支援所有 **Hoyoverse 遊戲** 的 Discord 機器人。
 
 <p align="center">
@@ -25,17 +27,17 @@
 - **可定制性:** 深色或淺色模式，由你決定！不喜歡卡片中的繪圖？選你自己想要的。不想要通知？隨時關閉它們。
 - **免費:** 申鶴完全免費使用，使所有 Hoyoverse 玩家都能夠優化他們的遊戲體驗。
 
-# Invite Shenhe
-Interested? [Click on this link](https://discordapp.com/oauth2/authorize?client_id=1000045812522430626&scope=bot+applications.commands&permissions=0) to try out Shenhe!
+# 邀請申鶴
+有興趣嗎？[點擊這個連結](https://discordapp.com/oauth2/authorize?client_id=1000045812522430626&scope=bot+applications.commands&permissions=0)來試試申鶴！
 
-# Third-party repos and libraries used in this project:
+# 本項目中使用的第三方工具:
 - [**discord.py**](https://github.com/Rapptz/discord.py)
 - [**genshin.py**](https://github.com/thesadru/genshin.py)
 - [**Enkanetwork.py**](https://github.com/mrwan200/EnkaNetwork.py)
 - [**mihomo**](https://github.com/KT-Yeh/mihomo)
-- **GenshinData** (Private repo)
+- **GenshinData** (私人項目)
 
-# Support Me
-I developed Shenhe by myself (with 3rd party libraries and helps from other developers) in my free-time.  
-Supporting is never an obligation but is always appreciated and motivates me to invest more time in the project and to keep this project alive.  
-If you like my work, you can sponsor me on [Ko-Fi](https://ko-fi.com/seriaati).
+# 贊助我
+我在自己的閒暇時間獨自開發了申鶴。  
+贊助從來不是一種必要的，但它是值得感激的，它將激勵我投入更多時間和精力來維護這個項目，讓它繼續存在下去。   
+如果你喜歡我的作品，你可以在[Ko-Fi](https://ko-fi.com/seriaati)上贊助我。
