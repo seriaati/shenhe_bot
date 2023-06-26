@@ -4,6 +4,8 @@
 
 > Raiden Shogun artwork by [**Asaki**](https://www.pixiv.net/en/artworks/104574600)
 
+English | [中文](https://github.com/seriaati/shenhe_bot/blob/main/README_zh-tw.md)
+
 **Shenhe** was orignially a Discord bot for Genshin Impact. However, as the project evolved, it is now a Discord bot for all **Hoyoverse games**.
 
 <p align="center">
