@@ -2,7 +2,8 @@
   <img src="https://i.imgur.com/tBlJndT.png"/>
 </p>
 
-> Raiden Shogun artwork by [**Asaki**](https://www.pixiv.net/en/artworks/104574600)
+> Raiden Shogun artwork by [**Asaki**](https://www.pixiv.net/en/artworks/104574600)  
+> Logo desinged by [**Ayaakaa**](https://github.com/Ayaakaa)
 
 English | [中文](https://github.com/seriaati/shenhe_bot/blob/main/README_zh-tw.md)
 
