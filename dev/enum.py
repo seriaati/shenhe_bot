@@ -37,7 +37,7 @@ class GameType(Enum):
     HONKAI = "honkai"
 
 
-class Category(Enum):
+class BoardCategory(Enum):
     SINGLE_STRIKE = "single_strike_damage"
     CHARACTER_USAGE_RATE = "character_usage_rate"
     FULL_CLEAR = "full_clear"
@@ -82,3 +82,4 @@ CATEGORY_HASHES = {
     HSRWikiCategory.RELIC: 825,
     HSRWikiCategory.BOOK: 823,
     HSRWikiCategory.MESSAGE: 826,
+}
