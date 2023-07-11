@@ -188,4 +188,6 @@ apps/draw/cache/*
 shenhe.db-shm
 shenhe.db-wal
 command_map.json
+data/genshin/text_maps/*
+data/star_rail/text_maps/*
 !/**/.gitkeep
