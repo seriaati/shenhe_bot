@@ -17,7 +17,7 @@ from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
 from dev.base_ui import BaseButton, BaseSelect, BaseView
-from dev.enum import Category
+from dev.enum import BoardCategory
 from utils import get_abyss_season_date_range, get_character_emoji
 from utils.genshin import get_current_abyss_season
 
@@ -35,7 +35,7 @@ class View(BaseView):
         self.dark_mode: bool
         self.author: Union[discord.User, discord.Member]
 
-        self.category: typing.Optional[Category] = None
+        self.category: typing.Optional[BoardCategory] = None
         self.area: Area = Area.GLOBAL
         self.season: int = 0
 
@@ -116,11 +116,11 @@ class View(BaseView):
 
         # get leaderboard entries
         season = None if self.season == 0 else self.season
-        if self.category is Category.SINGLE_STRIKE:
+        if self.category is BoardCategory.SINGLE_STRIKE:
             entries = await i.client.db.leaderboard.abyss.get_all(self.category, season)
-        elif self.category is Category.CHARACTER_USAGE_RATE:
+        elif self.category is BoardCategory.CHARACTER_USAGE_RATE:
             entries = await i.client.db.leaderboard.abyss_character.get_all(season)
-        elif self.category is Category.FULL_CLEAR:
+        elif self.category is BoardCategory.FULL_CLEAR:
             entries = await i.client.db.leaderboard.abyss.get_all(self.category, season)
         else:
             entries = []
@@ -142,7 +142,7 @@ class View(BaseView):
         # draw leaderboards
         if isinstance(entries[0], AbyssBoardEntry):
             current_user, users = self.get_board_users(entries)  # type: ignore
-            if self.category is Category.SINGLE_STRIKE:
+            if self.category is BoardCategory.SINGLE_STRIKE:
                 embed, fp = await self.draw_single_strike(
                     current_user, users, i.client.session, i.client.loop
                 )
@@ -330,7 +330,7 @@ class LeaderboardSelect(BaseSelect):
         self.view: View
 
     async def callback(self, i: models.Inter):
-        self.view.category = Category(self.values[0])
+        self.view.category = BoardCategory(self.values[0])
         await self.loading(i)
         await self.view.return_leaderboard(i)
         await self.restore(i)

@@ -9,7 +9,7 @@ import dev.asset as asset
 from apps.db.tables.abyss_board import AbyssBoardEntry
 from apps.draw.draw_funcs import leaderboard
 from apps.text_map import text_map
-from dev.enum import Category
+from dev.enum import BoardCategory
 from dev.models import (
     BoardUser,
     CharacterUsageResult,
@@ -210,7 +210,7 @@ def strike_board(
         80,
         [89, 198, 199, 201, 430],
         lang,
-        Category.SINGLE_STRIKE,
+        BoardCategory.SINGLE_STRIKE,
     )
     fp = io.BytesIO()
     im.save(fp, format="PNG", optimize=True)
@@ -231,7 +231,7 @@ def full_clear_board(
         160,
         [89, 198, 186, 293, 610],
         lang,
-        Category.FULL_CLEAR,
+        BoardCategory.FULL_CLEAR,
     )
     fp = io.BytesIO()
     im.save(fp, format="PNG", optimize=True)

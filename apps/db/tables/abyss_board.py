@@ -3,7 +3,7 @@ from typing import List, Optional
 from asyncpg import Pool
 from pydantic import BaseModel, Field
 
-from dev.enum import Category
+from dev.enum import BoardCategory
 
 
 class SingleStrikeCharacter(BaseModel):
@@ -76,7 +76,7 @@ class AbyssBoard:
         )
 
     async def get_all(
-        self, category: Category, season: Optional[int] = None
+        self, category: BoardCategory, season: Optional[int] = None
     ) -> List[AbyssBoardEntry]:
         """
         Get abyss leaderboard entries
@@ -89,16 +89,18 @@ class AbyssBoard:
             List[AbyssBoardEntry]: List of abyss leaderboard entries
         """
         order = (
-            "single_strike DESC" if category == Category.SINGLE_STRIKE else "runs ASC"
+            "single_strike DESC"
+            if category == BoardCategory.SINGLE_STRIKE
+            else "runs ASC"
         )
         if season is None:
-            if category is Category.FULL_CLEAR:
+            if category is BoardCategory.FULL_CLEAR:
                 query = f"SELECT * FROM abyss_leaderboard WHERE stars_collected = 36 ORDER BY {order}"
             else:
                 query = f"SELECT * FROM abyss_leaderboard ORDER BY {order}"
             return [AbyssBoardEntry(**i) for i in await self.pool.fetch(query)]
 
-        if category is Category.FULL_CLEAR:
+        if category is BoardCategory.FULL_CLEAR:
             query = f"SELECT * FROM abyss_leaderboard WHERE stars_collected = 36 AND season = $1 ORDER BY {order}"
         else:
             query = (

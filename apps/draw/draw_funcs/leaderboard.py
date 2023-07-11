@@ -7,7 +7,7 @@ import dev.asset as asset
 from ambr import Character
 from apps.db.tables.abyss_board import AbyssBoardEntry
 from apps.text_map import text_map
-from dev.enum import Category
+from dev.enum import BoardCategory
 from dev.models import BoardUser
 from utils import circular_crop, get_cache, get_font, global_write, shorten_text
 
@@ -19,7 +19,7 @@ def board(
     title_hash: int,
     column_hashes: List[int],
     lang: discord.Locale | str,
-    category: Category,
+    category: BoardCategory,
 ) -> Image.Image:
     current_user = None
     user_above = None
@@ -47,7 +47,7 @@ def board(
             break
 
         current = u == current_user
-        if category is Category.SINGLE_STRIKE:
+        if category is BoardCategory.SINGLE_STRIKE:
             user_card = ss_user_card(dark_mode, u, current)
         else:
             user_card = run_user_card(dark_mode, u, current)
@@ -60,7 +60,7 @@ def board(
         for u in users_to_draw:
             if u is not None:
                 current = u == current_user
-                if category is Category.SINGLE_STRIKE:
+                if category is BoardCategory.SINGLE_STRIKE:
                     user_card = ss_user_card(dark_mode, u, current)
                 else:
                     user_card = run_user_card(dark_mode, u, current)
