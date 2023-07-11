@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import re
 import zipfile
 from datetime import datetime
@@ -203,5 +204,5 @@ def open_json(path: str) -> Dict[str, Any]:
 
 
 def write_json(path: str, data: Dict[str, Any]) -> None:
-    with open(path, "w", encoding="utf-8") as f:  # skipcq: PTC-W6004
-        json.dump(data, f)
+    with open(path, "w+", encoding="utf-8") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
