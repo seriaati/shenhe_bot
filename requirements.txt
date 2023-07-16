@@ -14,7 +14,7 @@ GGanalysis @ git+https://github.com/OneBST/GGanalysis
 hoyolab_rss_feeds==2.1.1
 hutao-login-gateway @ git+https://github.com/Hu-tao-bot/login-service-library-python
 jishaku==2.5.1
-matplotlib==3.7.1
+matplotlib==3.7.2
 mihomo @ git+https://github.com/KT-Yeh/mihomo
 mystbin-py==5.1.0
 Pillow==9.5.0
