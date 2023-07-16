@@ -1,11 +1,11 @@
 from typing import List, Union
 
 import discord
+from ambr import AmbrAPI
 from discord import ui
 
 import dev.asset as asset
 import dev.config as config
-from ambr import AmbrTopAPI
 from apps.db.tables.hoyo_account import HoyoAccount
 from apps.text_map import text_map, to_ambr_top
 from data.game.elements import convert_elements, elements
@@ -360,7 +360,7 @@ class AddWeapon(ui.Button):
         self.view: View
 
     async def callback(self, i: discord.Interaction):
-        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.lang))  # type: ignore
+        ambr = AmbrAPI(i.client.session, to_ambr_top(self.lang))  # type: ignore
         weapon_types = await ambr.get_weapon_types()
 
         self.view.clear_items()
@@ -665,7 +665,7 @@ class ElementButton(ui.Button):
     async def callback(self, i: Inter):
         user = await i.client.db.notifs.talent.get(i.user.id)
 
-        client = AmbrTopAPI(i.client.session, to_ambr_top(self.view.lang))
+        client = AmbrAPI(i.client.session, to_ambr_top(self.view.lang))
         characters = await client.get_character()
         if not isinstance(characters, list):
             raise AssertionError("Characters is not a list")
@@ -728,7 +728,7 @@ class WeaponTypeButton(ui.Button):
     async def callback(self, i: Inter):
         user = await i.client.db.notifs.weapon.get(i.user.id)
 
-        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.view.lang))
+        ambr = AmbrAPI(i.client.session, to_ambr_top(self.view.lang))
         weapons = await ambr.get_weapon()
         if not isinstance(weapons, list):
             raise AssertionError("Expected list of weapons, got something else")

@@ -6,11 +6,11 @@ from typing import Dict, List, Optional, Tuple, Union
 
 import aiohttp
 import discord
+from ambr import AmbrAPI, Character
 
 import dev.asset as asset
 import dev.config as config
 import dev.models as models
-from ambr import AmbrTopAPI, Character
 from apps.db.tables.abyss_board import AbyssBoardEntry
 from apps.db.tables.abyss_chara_board import AbyssCharaBoardEntry
 from apps.db.tables.user_settings import Settings
@@ -288,7 +288,7 @@ class View(BaseView):
                 else:
                     temp_dict[c] = 1
 
-        client = AmbrTopAPI(session, to_ambr_top(self.lang))
+        client = AmbrAPI(session, to_ambr_top(self.lang))
         for key, value in temp_dict.items():
             if key in asset.traveler_ids:
                 key = f"{key}-anemo"

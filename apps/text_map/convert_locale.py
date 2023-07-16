@@ -1,19 +1,61 @@
+from ambr import Language as AmbrLanguage
 from discord import Locale
-from mihomo import Language
+from mihomo import Language as MihomoLanguage
+from yatta import Language as YattaLanguage
+
+AMBR_LANGS = {
+    "zh-CN": AmbrLanguage.CHS,
+    "zh-TW": AmbrLanguage.CHT,
+    "de": AmbrLanguage.DE,
+    "en-US": AmbrLanguage.EN,
+    "es-ES": AmbrLanguage.ES,
+    "fr": AmbrLanguage.FR,
+    "ja": AmbrLanguage.JP,
+    "ko": AmbrLanguage.KR,
+    "th": AmbrLanguage.TH,
+    "pt-BR": AmbrLanguage.PT,
+    "ru": AmbrLanguage.RU,
+    "vi": AmbrLanguage.VI,
+}
+
+
+def to_ambr_lang(lang: str) -> AmbrLanguage:
+    return AMBR_LANGS.get(lang, AmbrLanguage.EN)
+
+
+YATTA_LANGS = {
+    "zh-CN": YattaLanguage.CN,
+    "zh-TW": YattaLanguage.CHT,
+    "de": YattaLanguage.DE,
+    "en-US": YattaLanguage.EN,
+    "es-ES": YattaLanguage.ES,
+    "fr": YattaLanguage.FR,
+    "ja": YattaLanguage.JP,
+    "ko": YattaLanguage.KR,
+    "th": YattaLanguage.TH,
+    "pt-BR": YattaLanguage.PT,
+    "ru": YattaLanguage.RU,
+    "vi": YattaLanguage.VI,
+}
+
+
+def to_yatta_lang(lang: str) -> YattaLanguage:
+    return YATTA_LANGS.get(lang, YattaLanguage.EN)
+
 
 MIHOMO_LANGS = {
-    "zh-CN": Language.CHS,
-    "zh-TW": Language.CHT,
-    "de": Language.DE,
-    "en-US": Language.EN,
-    "es-ES": Language.ES,
-    "fr": Language.FR,
-    "ja": Language.JP,
-    "ko": Language.KR,
-    "th": Language.TH,
-    "pt-BR": Language.PT,
-    "ru": Language.RU,
-    "vi": Language.VI,
+    "zh-CN": MihomoLanguage.CHS,
+    "zh-TW": MihomoLanguage.CHT,
+    "de": MihomoLanguage.DE,
+    "en-US": MihomoLanguage.EN,
+    "es-ES": MihomoLanguage.ES,
+    "fr": MihomoLanguage.FR,
+    "ja": MihomoLanguage.JP,
+    "ko": MihomoLanguage.KR,
+    "th": MihomoLanguage.TH,
+    "pt-BR": MihomoLanguage.PT,
+    "ru": MihomoLanguage.RU,
+    "vi": MihomoLanguage.VI,
 }
 
 ENKA_LANGS = {
@@ -34,7 +76,7 @@ ENKA_LANGS = {
     "id": "id",
 }
 
-AMBR_LANGS = {
+AMBR_TOP_LANGS = {
     "zh-CN": "chs",
     "zh-TW": "cht",
     "de": "de",
@@ -132,8 +174,8 @@ GENSHIN_DB_LANGS = {
 }
 
 
-def to_ambr_top(lang: Locale | str):
-    return AMBR_LANGS.get(str(lang)) or "en"
+def to_ambr_top(lang: Locale | str) -> str:
+    return AMBR_TOP_LANGS.get(str(lang)) or "en"
 
 
 def to_genshin_py(lang: Locale | str):

@@ -1,12 +1,12 @@
 from typing import Dict, List, Optional
 
+import ambr
 import discord
 import yaml
 from discord import app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 
-import ambr
 import dev.models as models
 from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
@@ -124,7 +124,7 @@ class WishCog(commands.GroupCog, name="wish"):
         member = member or i.user
         lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
 
-        client = ambr.AmbrTopAPI(self.bot.session, to_ambr_top(lang))
+        client = ambr.AmbrAPI(self.bot.session, to_ambr_top(lang))
 
         wishes: List[WishItem] = []
         uid = await i.client.db.users.get_uid(member.id)

@@ -8,6 +8,7 @@ from typing import Dict, List, Optional, Union
 import discord
 import psutil
 import pygit2
+from ambr import AmbrAPI, Character
 from discord import app_commands, utils
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -15,7 +16,6 @@ from discord.ui import Button, View
 from dotenv import load_dotenv
 
 import dev.asset as asset
-from ambr import AmbrTopAPI, Character
 from apps.db import custom_image
 from apps.db.tables.user_settings import Settings
 from apps.text_map import text_map, to_ambr_top
@@ -216,7 +216,7 @@ class OthersCog(commands.Cog, name="others"):
         await i.response.defer()
 
         lang = await self.bot.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
-        ambr = AmbrTopAPI(self.bot.session, to_ambr_top(lang))
+        ambr = AmbrAPI(self.bot.session, to_ambr_top(lang))
         character = await ambr.get_character(character_id)
         if not isinstance(character, Character):
             raise AutocompleteError

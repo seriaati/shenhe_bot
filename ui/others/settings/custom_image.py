@@ -1,12 +1,12 @@
 from typing import List, Union
 
 import discord
+from ambr import AmbrAPI
 from discord import ui
 
 import apps.db.custom_image as image
 import dev.asset as asset
 import dev.config as config
-from ambr import AmbrTopAPI
 from apps.text_map import text_map, to_ambr_top
 from data.game.elements import get_element_emoji, get_element_list
 from dev.base_ui import BaseModal, BaseView, EnkaView
@@ -67,7 +67,7 @@ class GoBackCharacter(ui.Button):
 
 
 async def element_button_callback(i: Inter, view: View, element: str):
-    ambr = AmbrTopAPI(i.client.session, to_ambr_top(view.lang))
+    ambr = AmbrAPI(i.client.session, to_ambr_top(view.lang))
     characters = await ambr.get_character()
     if not isinstance(characters, List):
         raise TypeError("characters is not a list")

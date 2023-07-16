@@ -9,18 +9,18 @@ import asyncpg
 import discord
 import genshin
 import yaml
+from ambr import AmbrAPI, Character, CharacterDetail, Material, Weapon
 from discord import Locale
 from discord.utils import get
 
 import dev.asset as asset
 import dev.enum as enum
 import dev.models as models
-from ambr import AmbrTopAPI, Character, Domain, Material, Weapon
-from ambr.models import CharacterDetail
 from apps.db.json import read_json, write_json
 from apps.db.tables.hoyo_account import HoyoAccount
 from apps.enka.api_docs import get_character_skill_order
 from apps.text_map import cond_text, text_map, to_ambr_top
+from apps.text_map.convert_locale import to_ambr_lang
 from data.game.fight_prop import fight_prop
 
 from .general import get_dt_now, open_json
@@ -184,25 +184,38 @@ def get_uid_tz(uid: Optional[int]) -> int:
     return region_map.get(str_uid[0], 0)
 
 
-async def get_farm_data(
-    lang: Locale | str, session: aiohttp.ClientSession, weekday: int
-) -> List[models.FarmData]:
+async def get_farm_data(lang: Locale | str, weekday: int) -> List[models.FarmData]:
     result: List[models.FarmData] = []
 
-    client = AmbrTopAPI(session, to_ambr_top(lang))
-    domains = await client.get_domains()
-    c_upgrades = await client.get_character_upgrade()
-    w_upgrades = await client.get_weapon_upgrade()
-    if not isinstance(c_upgrades, list):
-        raise AssertionError
-    if not isinstance(w_upgrades, list):
-        raise AssertionError
+    client = AmbrAPI(to_ambr_lang(str(lang)))
+    domain_data = await client.fetch_domains()
+    upgrade_data = await client.fetch_upgrade_data()
+    upgrades = upgrade_data.character + upgrade_data.weapon
+
+    match weekday:
+        case 0:
+            domains = domain_data.monday
+        case 1:
+            domains = domain_data.tuesday
+        case 2:
+            domains = domain_data.wednesday
+        case 3:
+            domains = domain_data.thursday
+        case 4:
+            domains = domain_data.friday
+        case 5:
+            domains = domain_data.saturday
+        case 6:
+            domains = domain_data.sunday
+        case _:
+            domains = []
 
     for domain in domains:
-        if domain.weekday != weekday:
-            continue
         farm_data = models.FarmData(domain=domain)
-        if len([r for r in domain.rewards if len(str(r.id)) == 6]) == 4:
+        for upgrade in upgrades:
+            if any(item in domain.rewards for item in upgrade.items):
+                farm_data.upgrades.append(upgrade)
+        if len([r for r in domain.rewards if len(str(r)) == 6]) == 4:
             for w_upgrade in w_upgrades:
                 upgrade_items = [
                     (await client.get_material(item.id)) for item in w_upgrade.items
@@ -299,7 +312,7 @@ async def get_character_suggested_talent_levels(
     character_id: str, session: aiohttp.ClientSession
 ) -> List[int]:
     chinese_character_name = text_map.get_character_name(character_id, "zh-TW")
-    ambr = AmbrTopAPI(session)
+    ambr = AmbrAPI(session)
     character = await ambr.get_character(character_id)
     if not isinstance(character, Character):
         return [1, 1, 1]
@@ -386,7 +399,7 @@ async def get_character_fanarts(character_id: str) -> List[str]:
 async def calc_e_q_boost(
     session: aiohttp.ClientSession, character_id: str
 ) -> enum.TalentBoost:
-    client = AmbrTopAPI(session)
+    client = AmbrAPI(session)
     detail = await client.get_character_detail(character_id)
     if not isinstance(detail, CharacterDetail):
         raise ValueError("Invalid character ID")

@@ -1,8 +1,8 @@
+from ambr import AmbrAPI
 from discord import Interaction, app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
 
-from ambr import AmbrTopAPI
 from apps.db.tables.user_settings import Settings
 from apps.text_map import to_ambr_top
 from dev.models import BotModel, Inter
@@ -31,7 +31,7 @@ class CalcCog(commands.GroupCog, name="calc"):
     async def calc_weapon(self, inter: Interaction):
         i: Inter = inter  # type: ignore
         lang = await self.bot.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
-        ambr = AmbrTopAPI(i.client.session, to_ambr_top(lang))
+        ambr = AmbrAPI(i.client.session, to_ambr_top(lang))
         view = calc_weapon.View(lang, await ambr.get_weapon_types())
         view.author = i.user
         await i.response.send_message(view=view)

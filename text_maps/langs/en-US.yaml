@@ -448,7 +448,7 @@
 "505": An error has occured while trying to send you a notification
 "506": Last month
 "507": How many 5-star banner weapons do you wish to pull?
-"508": Search anything genshin related
+"508": Search any in-game items
 "509": query
 "510": Sumeru
 "511": The caches have been wiped due to cache changes, if you really need the data, please DM seria#5334
@@ -771,3 +771,21 @@
 "812": |-
   - Notify you when your trailblaze power exceeds a certain amount.
 "813": Current trailblaze power
+"814": category
+"815": Character
+"816": Weapon
+"817": Item
+"818": Artifact
+"819": Monster
+"820": Food
+"821": Furniture
+"822": Name Card
+"823": Book
+"824": Light Cone
+"825": Relic
+"826": Message
+"827": Material
+"828": Select a game!
+"829": Select a category!
+"830": "Error: Category {category} not found"
+"831": TCG Card

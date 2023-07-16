@@ -4,17 +4,17 @@ from typing import Any, Dict, List
 
 import aiofiles
 import aiohttp
+import ambr
 import discord
 import genshin
 from discord import utils
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 
-import ambr
 import apps.genshin as genshin_app
-import apps.star_rail.auto_task as star_rail_auto_task
 import dev.models as models
-from apps.genshin import auto_task
+from apps.genshin import auto_task as genshin_auto_task
+from data.update_data import DataUpdater
 from dev.base_ui import capture_exception
 from utils import convert_dict_to_zipped_json, fetch_cards, get_dt_now, log
 from utils.general import get_dc_user, open_json
@@ -55,14 +55,14 @@ class Schedule(commands.Cog):
         now = get_dt_now()
 
         if now.minute < self.loop_interval:  # every hour
-            asyncio.create_task(auto_task.RealtimeNotes(self.bot).start())
+            asyncio.create_task(genshin_auto_task.RealtimeNotes(self.bot).start())
             asyncio.create_task(self.save_codes())
 
         if now.hour == 0 and now.minute < self.loop_interval:  # midnight
-            asyncio.create_task(auto_task.DailyCheckin(self.bot).start())
+            asyncio.create_task(genshin_auto_task.DailyCheckin(self.bot).start())
 
         if now.hour == 1 and now.minute < self.loop_interval:  # 1am
-            asyncio.create_task(star_rail_auto_task.DataUpdater(self.bot).start())
+            asyncio.create_task(DataUpdater(self.bot).start())
             asyncio.create_task(self.update_shenhe_cache_and_data())
             if now.day in (3, 10, 18, 25):
                 asyncio.create_task(self.generate_abyss_json())
@@ -74,15 +74,14 @@ class Schedule(commands.Cog):
                 21: -7,  # Europe
             }
             asyncio.create_task(
-                auto_task.WTNotifs(self.bot, hour_dict[now.hour]).start()
+                genshin_auto_task.WTNotifs(self.bot, hour_dict[now.hour]).start()
             )
 
         if now.hour == 10 and now.minute < self.loop_interval:  # 10am
-            asyncio.create_task(auto_task.AutoRedeem(self.bot).exec())
+            asyncio.create_task(genshin_auto_task.AutoRedeem(self.bot).exec())
 
     @schedule_error_handler
     async def update_shenhe_cache_and_data(self) -> None:
-        await self.update_ambr_cache()
         await self.update_text_map()
         await self.update_game_data()
         await self.update_card_data()
@@ -143,8 +142,8 @@ class Schedule(commands.Cog):
         """Updates genshin game data and adds emojis"""
         log.info("[Schedule][Update Game Data] Start")
         await genshin.utility.update_characters_ambr()
-        client = ambr.AmbrTopAPI(self.bot.session, "cht")
-        eng_client = ambr.AmbrTopAPI(self.bot.session, "en")
+        client = ambr.AmbrAPI(ambr.Language.CHT)
+        eng_client = ambr.AmbrAPI()
         things_to_update = ("character", "weapon", "artifact")
         character_map = open_json("data/game/character_map.json")
         character_map["10000005"] = {
@@ -165,11 +164,11 @@ class Schedule(commands.Cog):
         for thing in things_to_update:
             objects = None
             if thing == "character":
-                objects = await client.get_character()
+                objects = await client.fetch_characters()
             elif thing == "weapon":
-                objects = await client.get_weapon()
+                objects = await client.fetch_weapons()
             elif thing == "artifact":
-                objects = await client.get_artifact()
+                objects = await client.fetch_artiact_sets()
 
             if not isinstance(objects, List) or objects is None:
                 continue
@@ -185,33 +184,27 @@ class Schedule(commands.Cog):
                     object_map[str(obj.id)] = {
                         "name": obj.name,
                         "element": obj.element,
-                        "rarity": obj.rairty,
+                        "rarity": obj.rarity,
                         "icon": obj.icon,
                     }
-                    eng_object = await eng_client.get_character(obj.id)
-                    if (
-                        isinstance(eng_object, ambr.Character)
-                        and eng_object is not None
-                    ):
-                        english_name = eng_object.name
+                    eng_object = await eng_client.fetch_character_detail(obj.id)
+                    english_name = eng_object.name
                 elif isinstance(obj, ambr.Weapon):
                     object_map[str(obj.id)] = {
                         "name": obj.name,
                         "rarity": obj.rarity,
                         "icon": obj.icon,
                     }
-                    eng_object = await eng_client.get_weapon(obj.id)
-                    if isinstance(eng_object, ambr.Weapon) and eng_object is not None:
-                        english_name = eng_object.name
+                    eng_object = await eng_client.fetch_weapon_detail(obj.id)
+                    english_name = eng_object.name
                 elif isinstance(obj, ambr.Artifact):
                     object_map[str(obj.id)] = {
                         "name": obj.name,
                         "rarity": obj.rarity_list,
                         "icon": obj.icon,
                     }
-                    eng_object = await eng_client.get_artifact(obj.id)
-                    if isinstance(eng_object, ambr.Artifact) and eng_object is not None:
-                        english_name = eng_object.name
+                    eng_object = await eng_client.fetch_artifact_set_detail(obj.id)
+                    english_name = eng_object.name
 
                 object_map[str(obj.id)]["eng"] = english_name
                 object_id = str(obj.id)
@@ -289,15 +282,6 @@ class Schedule(commands.Cog):
 
         log.info("[Schedule][Update Card Data] Ended")
 
-    @schedule_error_handler
-    async def update_ambr_cache(self):
-        """Updates data from ambr.top"""
-        log.info("[Schedule][Update Ambr Cache] Start")
-        client = ambr.AmbrTopAPI(self.bot.session)
-        await client.update_cache(all_lang=True)
-        await client.update_cache(static=True)
-        log.info("[Schedule][Update Ambr Cache] Ended")
-
     @run_tasks.before_loop
     async def before_run_tasks(self):
         await self.bot.wait_until_ready()
@@ -306,7 +290,6 @@ class Schedule(commands.Cog):
     @commands.command(name="update-data")
     async def update_data(self, ctx: commands.Context):
         message = await ctx.send("Updating data...")
-        await asyncio.create_task(self.update_ambr_cache())
         await asyncio.create_task(self.update_text_map())
         await asyncio.create_task(self.update_game_data())
         await asyncio.create_task(self.update_card_data())
@@ -327,15 +310,15 @@ class Schedule(commands.Cog):
     async def daily_checkin(self, ctx: commands.Context, task: str):
         if task == "daily-checkin":
             await ctx.send("Starting daily check-in...")
-            await auto_task.DailyCheckin(self.bot, True).start()
+            await genshin_auto_task.DailyCheckin(self.bot, True).start()
             await ctx.send("Daily check-in ended")
         elif task == "realtime-notes":
             await ctx.send("Starting realtime notes...")
-            await auto_task.RealtimeNotes(self.bot).start()
+            await genshin_auto_task.RealtimeNotes(self.bot).start()
             await ctx.send("Realtime notes ended")
         elif task == "wt-notifs":
             await ctx.send("Starting weapon talent notifs...")
-            await auto_task.WTNotifs(self.bot, 0).start()
+            await genshin_auto_task.WTNotifs(self.bot, 0).start()
             await ctx.send("Weapon talent notifs ended")
         else:
             await ctx.send(f"Task {task} not found")

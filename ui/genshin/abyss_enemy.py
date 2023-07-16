@@ -1,10 +1,10 @@
 from typing import Dict, List
 
 import discord
+from ambr import AmbrAPI, Material, Monster
 from discord import ui
 
 import dev.config as config
-from ambr import AmbrTopAPI, Material, Monster
 from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
@@ -80,7 +80,7 @@ class BuffButton(ui.Button):
 
 async def select_callback(i: Inter, view: View, value: str):
     await image_gen_transition(i, view, view.lang)
-    ambr = AmbrTopAPI(i.client.session, to_ambr_top(view.lang))  # type: ignore
+    ambr = AmbrAPI(i.client.session, to_ambr_top(view.lang))  # type: ignore
     halfs = view.halfs[value]
     embeds = []
     attachments = []

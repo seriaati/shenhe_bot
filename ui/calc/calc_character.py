@@ -1,14 +1,14 @@
 from typing import List
 
+import ambr.models as ambr_models
 import attr
 import discord
+from ambr import AmbrAPI
 from discord import ui, utils
 
-import ambr.models as ambr_models
 import dev.asset as asset
 import dev.config as config
 import dev.models as models
-from ambr import AmbrTopAPI
 from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.enka.api_docs import get_character_skill_order
@@ -45,7 +45,7 @@ class ElementButton(ui.Button):
 
     async def callback(self, i: models.Inter):
         lang = await i.client.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
-        ambr = AmbrTopAPI(i.client.session, to_ambr_top(lang))
+        ambr = AmbrAPI(i.client.session, to_ambr_top(lang))
         characters = await ambr.get_character()
         if not isinstance(characters, List):
             raise TypeError("characters is not a list")
@@ -394,7 +394,7 @@ class TargetLevelModal(BaseModal):
         init_q = self.init_levels[3]
         init_ascension = self.init_levels[4]
 
-        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.lang))
+        ambr = AmbrAPI(i.client.session, to_ambr_top(self.lang))
         character = await ambr.get_character_detail(self.character_id)
         if not isinstance(character, ambr_models.CharacterDetail):
             raise TypeError("character is not a ambr_models.Character")

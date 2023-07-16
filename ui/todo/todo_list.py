@@ -1,13 +1,13 @@
 from typing import Dict, List, Tuple
 
 import asyncpg
+from ambr import AmbrAPI, Material
 from discord import ButtonStyle, Locale, SelectOption
 from discord.ui import Button, Select, TextInput
 
 import dev.asset as asset
 import dev.config as config
 import dev.models as models
-from ambr import AmbrTopAPI, Material
 from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
@@ -257,7 +257,7 @@ async def return_todo(i: models.Inter):
         )
     else:
         dark_mode = await i.client.db.settings.get(i.user.id, Settings.DARK_MODE)
-        client = AmbrTopAPI(i.client.session, to_ambr_top(lang))
+        client = AmbrAPI(i.client.session, to_ambr_top(lang))
 
         for item in todo_items:
             if item.name.isdigit():

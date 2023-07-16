@@ -3,11 +3,11 @@ from datetime import timedelta
 from io import BytesIO
 from typing import Any, Dict, List, Tuple, Union
 
+import ambr.models as ambr
 import sentry_sdk
+from ambr.client import AmbrAPI
 from discord import File, Forbidden
 
-import ambr.models as ambr
-from ambr.client import AmbrTopAPI
 from apps.db.tables.talent_notif import TalentNotif, WeaponNotif
 from apps.db.tables.user_settings import Settings
 from apps.draw.main_funcs import draw_material_card
@@ -157,12 +157,12 @@ class WTNotifs:
                 await asyncio.sleep(0.5)
 
     async def _get_domains(self, lang: str):
-        client = AmbrTopAPI(self.bot.session, to_ambr_top(lang))
+        client = AmbrAPI(self.bot.session, to_ambr_top(lang))
         domains = await client.get_domains()
         return [d for d in domains if d.weekday == self._now.weekday()]
 
     async def _get_upgrade(self, item_id: str, lang: str, notif_type: NotifType):
-        client = AmbrTopAPI(self.bot.session, to_ambr_top(lang))
+        client = AmbrAPI(self.bot.session, to_ambr_top(lang))
         if notif_type is NotifType.TALENT:
             upgrade = await client.get_character_upgrade(item_id)
         else:  # notif_type is NotifType.WEAPON:
@@ -173,7 +173,7 @@ class WTNotifs:
         return upgrade
 
     async def _get_item(self, item_id: str, lang: str, notif_type: NotifType):
-        client = AmbrTopAPI(self.bot.session, to_ambr_top(lang))
+        client = AmbrAPI(self.bot.session, to_ambr_top(lang))
         if notif_type is NotifType.TALENT:
             item = await client.get_character(item_id)
         else:

@@ -1,10 +1,9 @@
-import json
 import random
 from datetime import timedelta
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
-import aiofiles
 import discord
+from ambr import AmbrAPI, Character, Material, Weapon
 from discord import app_commands
 from discord.app_commands import locale_str as _
 from discord.ext import commands
@@ -19,7 +18,6 @@ import dev.exceptions as exceptions
 import dev.models as models
 import ui
 import utils.general as general
-from ambr import AmbrTopAPI, Character, Material, Weapon
 from apps.db.json import read_json
 from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
@@ -27,7 +25,8 @@ from apps.genshin import enka, leaderboard
 from apps.genshin_data import abyss
 from apps.text_map import convert_locale, text_map
 from data.cards.dice_element import get_dice_emoji
-from dev.enum import GameType
+from data.load_maps import ambr_maps, tcg_data, yatta_maps
+from dev.enum import CATEGORY_HASHES, GameType, GenshinWikiCategory, HSRWikiCategory
 from ui.others import manage_accounts
 from utils import disable_view_items, get_character_emoji, get_uid_region_hash
 from utils.genshin import update_talents_json
@@ -41,7 +40,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         self.bot: models.BotModel = bot
         self.debug = self.bot.debug
 
-        # Right click commands
+    async def cog_load(self) -> None:
         self.search_uid_context_menu = app_commands.ContextMenu(
             name=_("UID"), callback=self.search_uid_ctx_menu
         )
@@ -62,51 +61,6 @@ class GenshinCog(commands.Cog, name="genshin"):
         self.bot.tree.add_command(self.characters_context_menu)
         self.bot.tree.add_command(self.stats_context_menu)
         self.bot.tree.add_command(self.check_context_menu)
-
-    async def cog_load(self) -> None:
-        async with self.bot.session.get(
-            "https://genshin-db-api.vercel.app/api/languages"
-        ) as r:
-            languages = await r.json()
-
-        self.card_data: Dict[str, List[Dict[str, Any]]] = {}
-        for lang in languages:
-            try:
-                async with aiofiles.open(
-                    f"data/cards/card_data_{lang}.json", "r", encoding="utf-8"
-                ) as f:
-                    self.card_data[lang] = json.loads(await f.read())
-            except FileNotFoundError:
-                self.card_data[lang] = []
-
-        maps_to_open = (
-            "avatar",
-            "weapon",
-            "material",
-            "reliquary",
-            "monster",
-            "food",
-            "furniture",
-            "namecard",
-            "book",
-        )
-        self.text_map_files: List[Dict[str, Any]] = []
-        for map_ in maps_to_open:
-            try:
-                async with aiofiles.open(
-                    f"text_maps/{map_}.json", "r", encoding="utf-8"
-                ) as f:
-                    data = json.loads(await f.read())
-            except FileNotFoundError:
-                data = {}
-            self.text_map_files.append(data)
-        try:
-            async with aiofiles.open(
-                "text_maps/item_name.json", "r", encoding="utf-8"
-            ) as f:
-                self.item_names = json.loads(await f.read())
-        except FileNotFoundError:
-            self.item_names = {}
 
     async def cog_unload(self) -> None:
         self.bot.tree.remove_command(
@@ -329,7 +283,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             client = await user.client
             client.lang = convert_locale.to_genshin_py(lang)
             genshin_user = await client.get_partial_genshin_user(user.uid)
-            ambr = AmbrTopAPI(self.bot.session)
+            ambr = AmbrAPI(self.bot.session)
             characters = await ambr.get_character(
                 include_beta=False, include_traveler=False
             )
@@ -461,7 +415,7 @@ class GenshinCog(commands.Cog, name="genshin"):
                 g_characters, client, self.bot.pool, user.uid, self.bot.session
             )
 
-        client = AmbrTopAPI(self.bot.session)
+        client = AmbrAPI(self.bot.session)
         characters = await client.get_character(
             include_beta=False, include_traveler=False
         )
@@ -868,46 +822,53 @@ class GenshinCog(commands.Cog, name="genshin"):
         await view.start(i)
 
     @app_commands.command(
-        name="search", description=_("Search anything related to genshin", hash=508)
+        name="search", description=_("Search any in-game items", hash=508)
     )
-    @app_commands.rename(query=_("query", hash=509))
-    async def search(self, inter: discord.Interaction, query: str):
+    @app_commands.choices(
+        game=[
+            app_commands.Choice(name=_("Genshin Impact", hash=313), value="genshin"),
+            app_commands.Choice(name=_("Honkai: Star Rail", hash=770), value="hsr"),
+        ]
+    )
+    @app_commands.rename(
+        game=_("game", hash=784),
+        category=_("category", hash=814),
+        query=_("query", hash=509),
+    )
+    async def search(
+        self, inter: discord.Interaction, game: str, category: str, query: str
+    ):
         i: models.Inter = inter  # type: ignore
-
-        if not query.isdigit():
-            raise exceptions.AutocompleteError
-
         await i.response.defer()
 
         user_locale = await self.bot.db.settings.get(i.user.id, Settings.LANG)
         lang = user_locale or i.locale
         ambr_top_locale = convert_locale.to_ambr_top(lang)
         dark_mode = await self.bot.db.settings.get(i.user.id, Settings.DARK_MODE)
-        client = AmbrTopAPI(self.bot.session, ambr_top_locale)
+        client = AmbrAPI(self.bot.session, ambr_top_locale)
 
-        item_type = None
-        for index, file in enumerate(self.text_map_files):
-            if query in file:
-                item_type = index
-                break
-        if item_type is None:
-            raise exceptions.ItemNotFound
+        game_ = GameType(game)
+        category_ = (
+            HSRWikiCategory(category)
+            if game_ is GameType.HSR
+            else GenshinWikiCategory(category)
+        )
 
-        if item_type == 0:  # character
-            character = await client.get_character_detail(query)
+        if category_ is GenshinWikiCategory.CHARACTER:
+            character = await client.get_character_detail(str(query))
             if character is None:
                 raise exceptions.ItemNotFound
             await ui.search_nav.parse_character_wiki(
                 character, i, lang, client, dark_mode
             )
 
-        elif item_type == 1:  # weapon
+        elif category_ is GenshinWikiCategory.WEAPON:
             weapon = await client.get_weapon_detail(int(query))
             if weapon is None:
                 raise exceptions.ItemNotFound
             await ui.search_nav.parse_weapon_wiki(weapon, i, lang, client, dark_mode)
 
-        elif item_type == 2:  # material
+        elif category_ is GenshinWikiCategory.MATERIAL:
             material = await client.get_material_detail(int(query))
             if material is None:
                 raise exceptions.ItemNotFound
@@ -915,25 +876,25 @@ class GenshinCog(commands.Cog, name="genshin"):
                 material, i, lang, client, dark_mode
             )
 
-        elif item_type == 3:  # artifact
+        elif category_ is GenshinWikiCategory.ARTIFACT:
             artifact = await client.get_artifact_detail(int(query))
             if artifact is None:
                 raise exceptions.ItemNotFound
             await ui.search_nav.parse_artifact_wiki(artifact, i, lang)
 
-        elif item_type == 4:  # monster
+        elif category_ is GenshinWikiCategory.MONSTER:
             monster = await client.get_monster_detail(int(query))
             if monster is None:
                 raise exceptions.ItemNotFound
             await ui.search_nav.parse_monster_wiki(monster, i, lang, client, dark_mode)
 
-        elif item_type == 5:  # food
+        elif category_ is GenshinWikiCategory.FOOD:
             food = await client.get_food_detail(int(query))
             if food is None:
                 raise exceptions.ItemNotFound
             await ui.search_nav.parse_food_wiki(food, i, lang, client, dark_mode)
 
-        elif item_type == 6:  # furniture
+        elif category_ is GenshinWikiCategory.FURNITURE:
             furniture = await client.get_furniture_detail(int(query))
             if furniture is None:
                 raise exceptions.ItemNotFound
@@ -941,48 +902,78 @@ class GenshinCog(commands.Cog, name="genshin"):
                 furniture, i, lang, client, dark_mode
             )
 
-        elif item_type == 7:  # namecard
+        elif category_ is GenshinWikiCategory.NAME_CARD:
             namecard = await client.get_name_card_detail(int(query))
             if namecard is None:
                 raise exceptions.ItemNotFound
             await ui.search_nav.parse_namecard_wiki(namecard, i, lang)
 
-        elif item_type == 8:  # book
+        elif category_ is GenshinWikiCategory.BOOK:
             book = await client.get_book_detail(int(query))
             if book is None:
                 raise exceptions.ItemNotFound
             await ui.search_nav.parse_book_wiki(book, i, lang, client)
 
+        else:
+            raise exceptions.AutocompleteError
+
+    @search.autocomplete("category")
+    async def category_autocomplete(
+        self, i: discord.Interaction, current: str
+    ) -> List[app_commands.Choice[str]]:
+        lang = await self.bot.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
+        try:
+            game = GameType(i.namespace.game)
+        except ValueError:
+            return [app_commands.Choice(name=text_map.get(828, lang), value="")]
+        wiki_category = (
+            GenshinWikiCategory if game is GameType.GENSHIN else HSRWikiCategory
+        )
+        choices: List[app_commands.Choice[str]] = []
+        for category in wiki_category:
+            name = text_map.get(CATEGORY_HASHES[category])
+            if current.lower() in name.lower():
+                choices.append(app_commands.Choice(name=name, value=category.value))
+        return choices
+
     @search.autocomplete("query")
     async def query_autocomplete(
         self, i: discord.Interaction, current: str
     ) -> List[app_commands.Choice[str]]:
-        lang = await self.bot.db.settings.get(i.user.id, Settings.LANG)
-        lang = lang or str(i.locale)
-        ambr_top_locale = convert_locale.to_ambr_top(lang)
-        result: List[app_commands.Choice] = []
-        for queries in self.text_map_files:
-            for item_id, query_names in queries.items():
-                if item_id in ("10000005", "10000007"):
-                    continue
+        lang = await self.bot.db.settings.get(i.user.id, Settings.LANG) or str(i.locale)
+        try:
+            game = GameType(i.namespace.game)
+        except ValueError:
+            return [app_commands.Choice(name=text_map.get(828, lang), value="")]
+        try:
+            if game is GameType.GENSHIN:
+                category = GenshinWikiCategory(i.namespace.category)
+                ambr_top_lang = convert_locale.to_ambr_top_lang(lang).value
+                map_ = ambr_maps[category][ambr_top_lang]
+            else:
+                category = HSRWikiCategory(i.namespace.category)
+                yatta_lang = convert_locale.to_yatta_lang(lang).value
+                map_ = yatta_maps[category][yatta_lang]
+        except ValueError:
+            return [app_commands.Choice(name=text_map.get(829, lang), value="")]
+        except KeyError:
+            return [
+                app_commands.Choice(
+                    name=text_map.get(830, lang).format(category=i.namespace.category),
+                    value="",
+                )
+            ]
 
-                item_name = query_names[ambr_top_locale]
-                if current.lower() in item_name.lower() and item_name:
-                    result.append(app_commands.Choice(name=item_name, value=item_id))
-                elif " " in current:
-                    splited = current.split(" ")
-                    all_match = True
-                    for word in splited:
-                        if word.lower() not in item_name.lower():
-                            all_match = False
-                            break
-                    if all_match and item_name != "":
-                        result.append(
-                            app_commands.Choice(name=item_name, value=item_id)
-                        )
-        if not current:
-            random.shuffle(result)
-        return result[:25]
+        if current:
+            return [
+                app_commands.Choice(name=k, value=v)
+                for k, v in map_.items()
+                if current.lower() in k.lower()
+            ][:25]
+        else:
+            return random.sample(
+                [app_commands.Choice(name=k, value=v) for k, v in map_.items()], 25
+            )
 
     @app_commands.command(
         name="beta",
@@ -992,7 +983,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         lang = await self.bot.db.settings.get(i.user.id, Settings.LANG)
         lang = lang or str(i.locale)
 
-        client = AmbrTopAPI(self.bot.session, convert_locale.to_ambr_top(lang))
+        client = AmbrAPI(self.bot.session, convert_locale.to_ambr_top(lang))
         result = ""
         first_icon_url = ""
         characters = await client.get_character()
@@ -1158,7 +1149,7 @@ class GenshinCog(commands.Cog, name="genshin"):
             )
             scenario_dict[str(scenario.id)] = scenario
 
-        ambr = AmbrTopAPI(self.bot.session, convert_locale.to_ambr_top(lang))
+        ambr = AmbrAPI(self.bot.session, convert_locale.to_ambr_top(lang))
         characters = await ambr.get_character(include_beta=False)
 
         if isinstance(characters, List):
@@ -1182,7 +1173,7 @@ class GenshinCog(commands.Cog, name="genshin"):
         the_card = None
         card_type = None
 
-        for card in self.card_data[genshin_db_locale]:
+        for card in tcg_data[genshin_db_locale]:
             if card["id"] == int(card_id):
                 the_card = card
                 card_type = card["cardType"]
@@ -1268,7 +1259,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         choices: List[app_commands.Choice] = []
 
-        cards = self.card_data[genshin_db_locale]
+        cards = tcg_data[genshin_db_locale]
         for card in cards:
             if current.lower() in card["name"].lower():
                 choices.append(

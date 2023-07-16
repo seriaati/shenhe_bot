@@ -166,11 +166,7 @@ ambr/cache/it/*
 ambr/cache/static/*
 data/cache/*
 backup.db
-text_maps/avatar.json
-text_maps/dailyDungeon.json
-text_maps/material.json
-text_maps/reliquary.json
-text_maps/weapon.json
+text_maps/*.json
 data/game/artifact_map.json
 data/game/character_map.json
 data/game/weapon_map.json
@@ -188,6 +184,6 @@ apps/draw/cache/*
 shenhe.db-shm
 shenhe.db-wal
 command_map.json
-data/genshin/text_maps/*
-data/star_rail/text_maps/*
+data/genshin/text_maps/*.json
+data/star_rail/text_maps/*.json
 !/**/.gitkeep

@@ -1,12 +1,12 @@
 from typing import Dict, List
 
+import ambr.models as ambr_models
 import discord
+from ambr import AmbrAPI
 from discord import ui
 
-import ambr.models as ambr_models
 import dev.asset as asset
 import dev.config as config
-from ambr import AmbrTopAPI
 from apps.draw import main_funcs
 from apps.text_map import text_map
 from data.game.elements import get_element_emoji
@@ -99,7 +99,7 @@ async def parse_character_wiki(
     character: ambr_models.CharacterDetail,
     i: Inter,
     lang: discord.Locale | str,
-    client: AmbrTopAPI,
+    client: AmbrAPI,
     dark_mode: bool,
 ) -> None:
     embeds: List[discord.Embed] = []
@@ -218,7 +218,7 @@ async def parse_weapon_wiki(
     weapon: ambr_models.WeaponDetail,
     i: Inter,
     lang: discord.Locale | str,
-    client: AmbrTopAPI,
+    client: AmbrAPI,
     dark_mode: bool,
 ):
     rarity_str = ""
@@ -298,7 +298,7 @@ async def parse_material_wiki(
     material: ambr_models.MaterialDetail,
     i: Inter,
     lang: discord.Locale | str,
-    client: AmbrTopAPI,
+    client: AmbrAPI,
     dark_mode: bool,
 ):
     rarity_str = ""
@@ -397,7 +397,7 @@ async def parse_monster_wiki(
     monster: ambr_models.MonsterDetail,
     i: Inter,
     lang: discord.Locale | str,
-    client: AmbrTopAPI,
+    client: AmbrAPI,
     dark_mode: bool,
 ):
     embed = DefaultEmbed(monster.name, monster.description)
@@ -432,7 +432,7 @@ async def parse_food_wiki(
     food: ambr_models.FoodDetail,
     i: Inter,
     lang: discord.Locale | str,
-    client: AmbrTopAPI,
+    client: AmbrAPI,
     dark_mode: bool,
 ):
     rarity_str = ""
@@ -479,7 +479,7 @@ async def parse_furniture_wiki(
     furniture: ambr_models.FurnitureDetail,
     i: Inter,
     lang: discord.Locale | str,
-    client: AmbrTopAPI,
+    client: AmbrAPI,
     dark_mode: bool,
 ):
     embed = DefaultEmbed(furniture.name)
@@ -535,7 +535,7 @@ async def parse_book_wiki(
     book: ambr_models.BookDetail,
     i: Inter,
     lang: discord.Locale | str,
-    client: AmbrTopAPI,
+    client: AmbrAPI,
 ):
     rarity_str = ""
     for _ in range(book.rarity):

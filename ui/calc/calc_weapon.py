@@ -1,12 +1,12 @@
 import typing
 
 import discord
+from ambr import AmbrAPI, Material, WeaponDetail
 from discord import ui
 
 import dev.asset as asset
 import dev.config as config
 import dev.models as models
-from ambr import AmbrTopAPI, Material, WeaponDetail
 from apps.db.tables.user_settings import Settings
 from apps.draw import main_funcs
 from apps.text_map import text_map, to_ambr_top
@@ -48,7 +48,7 @@ class WeaponTypeButton(ui.Button):
         self.view: View
 
     async def callback(self, i: models.Inter):
-        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.view.lang))
+        ambr = AmbrAPI(i.client.session, to_ambr_top(self.view.lang))
         weapons = await ambr.get_weapon()
         if not isinstance(weapons, typing.List):
             raise TypeError("weapons is not a list")
@@ -146,7 +146,7 @@ class LevelModal(BaseModal):
                 ephemeral=True,
             )
 
-        ambr = AmbrTopAPI(i.client.session, to_ambr_top(self.lang))
+        ambr = AmbrAPI(i.client.session, to_ambr_top(self.lang))
         weapon = await ambr.get_weapon_detail(int(self.weapon_id))
         if not isinstance(weapon, WeaponDetail):
             raise TypeError("weapon is not a WeaponDetail")
