@@ -4,6 +4,7 @@ import typing
 from datetime import datetime
 
 import aiohttp
+import ambr.models as ambr
 import asyncpg
 import cachetools
 import discord
@@ -15,7 +16,6 @@ from logingateway import HuTaoLoginAPI
 from logingateway.model import Player
 from pyppeteer.browser import Browser
 
-import ambr.models as ambr
 from apps.db.main import Database
 from apps.text_map import text_map
 
@@ -274,6 +274,7 @@ class FarmData:
         self.domain = domain
         self.characters: typing.List[ambr.Character] = []
         self.weapons: typing.List[ambr.Weapon] = []
+        self.reward_icon_map: typing.Dict[int, str] = {}
 
 
 @define

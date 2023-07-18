@@ -35,7 +35,7 @@ def draw_domain_card(
         basic_card = basic_card.resize((basic_card.width, new_height))
 
         lid = Image.open(
-            f"yelan/templates/farm/[light] {city_id_dict.get(data.domain.city.id, 'unknown')}.png"
+            f"yelan/templates/farm/[light] {city_id_dict.get(data.domain.city.value, 'unknown')}.png"
         )
         basic_card.paste(lid, (0, 0), lid)
 
@@ -50,9 +50,9 @@ def draw_domain_card(
 
         index = 0
         for reward in data.domain.rewards:
-            if len(str(reward.id)) != 6:
+            if len(str(reward)) != 6:
                 continue
-            icon = get_cache(reward.icon)
+            icon = get_cache(data.reward_icon_map[reward])
             icon = icon.resize((82, 82))
             basic_card.paste(icon, (1286 + (-85) * index, 17), icon)
             index += 1

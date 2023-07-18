@@ -843,7 +843,7 @@ class GenshinCog(commands.Cog, name="genshin"):
 
         user_locale = await self.bot.db.settings.get(i.user.id, Settings.LANG)
         lang = user_locale or i.locale
-        ambr_top_locale = convert_locale.to_ambr_top(lang)
+        ambr_lang = convert_locale.to_ambr_lang(str(lang))
         dark_mode = await self.bot.db.settings.get(i.user.id, Settings.DARK_MODE)
         client = AmbrAPI(self.bot.session, ambr_top_locale)
 
@@ -999,21 +999,6 @@ class GenshinCog(commands.Cog, name="genshin"):
             embed.set_thumbnail(url=first_icon_url)
         embed.set_footer(text=text_map.get(444, lang))
         await i.response.send_message(embed=embed)
-
-    @staticmethod
-    def get_beta_items(
-        result: str,
-        items: List[Character | Weapon | Material],
-        first_icon_url: str,
-    ) -> Tuple[str, str]:
-        for item in items:
-            if item.beta:
-                if item.name == "？？？":
-                    continue
-                result += f"• {item.name}\n"
-                if first_icon_url == "":
-                    first_icon_url = item.icon
-        return result, first_icon_url
 
     @app_commands.command(
         name="banners", description=_("View ongoing Genshin banners", hash=375)

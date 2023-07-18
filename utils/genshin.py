@@ -250,8 +250,10 @@ async def get_farm_data(lang: Locale | str, weekday: int) -> List[models.FarmDat
 
 def get_domain_title(domain: Domain, lang: discord.Locale | str) -> str:
     if "Forgery" in text_map.get_domain_name(domain.id, "en-US"):
-        return f"{get_city_name(domain.city.id, str(lang))} - {text_map.get(91, lang)}"
-    return f"{get_city_name(domain.city.id, str(lang))} - {text_map.get(105, lang).title()}"
+        return (
+            f"{get_city_name(domain.city.value, str(lang))} - {text_map.get(91, lang)}"
+        )
+    return f"{get_city_name(domain.city.value, str(lang))} - {text_map.get(105, lang).title()}"
 
 
 def convert_ar_to_wl(ar: int) -> int:
@@ -308,9 +310,7 @@ def level_to_ascension_phase(level: int) -> int:
     raise ValueError("Level is too high")
 
 
-async def get_character_suggested_talent_levels(
-    character_id: str, session: aiohttp.ClientSession
-) -> List[int]:
+async def get_character_suggested_talent_levels(character_id: str) -> List[int]:
     chinese_character_name = text_map.get_character_name(character_id, "zh-TW")
     ambr = AmbrAPI(session)
     character = await ambr.get_character(character_id)
@@ -436,7 +436,7 @@ async def update_talents_json(
             character_id = f"{character.id}-{character.element.lower()}"
 
         if boost_dict is None or character_id not in boost_dict:
-            boost = await calc_e_q_boost(session, character_id)
+            boost = await calc_e_q_boost(character_id)
             if boost_dict is None:
                 boost_dict = {}
             boost_dict[str(character_id)] = boost.value

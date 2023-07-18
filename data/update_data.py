@@ -1,14 +1,14 @@
 from typing import Dict, List
 
-from discord import Forbidden, Guild
-
 from ambr_top import AmbrAPI
 from ambr_top import Language as AmbrLanguage
+from discord import Forbidden, Guild
+from yatta import Language as YattaLanguage
+from yatta import Message, YattaAPI
+
 from dev.enum import GenshinWikiCategory, HSRWikiCategory
 from dev.models import BotModel
 from utils.general import open_json, write_json
-from yatta import Language as YattaLanguage
-from yatta import Message, YattaAPI
 
 
 class DataUpdater:
