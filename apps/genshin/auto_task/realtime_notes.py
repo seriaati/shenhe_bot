@@ -396,7 +396,7 @@ class RealtimeNotes:
         elif notif_type is NotifType.EXPED:
             if isinstance(notes, genshin.models.Notes):
                 expeds = [
-                    f"{get_genshin_character_emoji(str(e.character.id))} {e.character.name} - {text_map.get(695, lang) if e.finished else format_dt(e.completion_time, 'R')}"
+                    f"- {text_map.get(695, lang) if e.finished else format_dt(e.completion_time, 'R')}"
                     for e in notes.expeditions
                 ]
             else:

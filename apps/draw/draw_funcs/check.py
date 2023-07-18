@@ -71,13 +71,6 @@ def card(
     offset = (241, 1175)
     expeditions = note.expeditions
     for expedition in expeditions:
-        character = expedition.character
-
-        # name
-        font = get_font(lang, 40, "Medium")
-        fill = asset.primary_text if not dark_mode else asset.white
-        draw.text(offset, character.name, font=font, fill=fill)
-
         # status
         font = get_font(lang, 25)
         fill = "#444444" if not dark_mode else asset.white
@@ -100,7 +93,7 @@ def card(
         )
 
         # icon
-        icon = get_cache(character.icon)
+        icon = get_cache(expedition.character_icon)
         icon = circular_crop(icon)
         icon = icon.resize((100, 100))
         im.paste(icon, (offset[0] - 131, offset[1] - 4), icon)

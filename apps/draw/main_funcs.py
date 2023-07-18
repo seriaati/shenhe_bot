@@ -178,7 +178,7 @@ async def draw_realtime_card(
     draw_input: models.DrawInput,
     note: genshin.models.Notes,
 ) -> io.BytesIO:
-    urls = [e.character.icon for e in note.expeditions]
+    urls = [e.character_icon for e in note.expeditions]
     await download_images(urls, draw_input.session)
     func = functools.partial(
         funcs.check.card, note, draw_input.lang, draw_input.dark_mode
