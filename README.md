@@ -1,3 +1,5 @@
+# THIS PROJECT IS DISCONTINUED 此項目已停更
+
 <p align="center">
   <img src="https://i.imgur.com/tBlJndT.png"/>
 </p>
